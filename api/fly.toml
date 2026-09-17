@@ -1,0 +1,28 @@
+# fly.toml — skeleton. Run `fly launch --no-deploy` from api/ to attach a real
+# app name and org, then `fly volumes create mushma_data --size 1` and
+# `fly deploy` to ship it. See ../README.md for the full flow.
+app = "mushma-api"
+primary_region = "cdg"
+
+[build]
+
+[env]
+  DATA_DIR = "/data"
+
+[[mounts]]
+  source = "mushma_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/health"

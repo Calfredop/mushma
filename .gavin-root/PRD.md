@@ -97,10 +97,20 @@ All seven milestones below are v1; there is no smaller cut.
 - **Frontend.** A static SPA built with Vite + React + TypeScript and MapLibre
   GL, hosted on **Vercel**. Uses i18n (it/en) and a PWA service worker.
 - **Backend.** A small **Python + FastAPI** API plus a scheduled data pipeline,
-  hosted on **Fly.io or Railway**. The pipeline runs daily: it ingests weather
+  hosted on **Fly.io**. The pipeline runs daily: it ingests weather
   history and forecast plus recent sightings, scores the grid and stores the
   results. The API serves scores, cell detail and breakdowns, hotspots,
   sightings and history. The frontend never computes the model.
+  Decided over Railway: Fly Machines run the daily pipeline on a native
+  `--schedule` flag with no extra cron tooling, and Fly's per-VM + per-GB
+  volume pricing is cheaper at this scale than Railway's Hobby plan floor.
+- **Storage.** **DuckDB reading Parquet files** on a Fly Volume, not
+  Postgres/PostGIS. At ~12k cells × 3 species × 365 days ≈ 13M rows/year the
+  workload is a daily batch write followed by read-mostly analytical queries —
+  a good fit for columnar Parquet, and DuckDB queries it directly with no
+  separate database server to run or pay for. Static grid geometry (cell
+  polygons, habitat, terrain) ships to the map separately from the daily score
+  table and doesn't need a spatial database either.
 - **API contract first.** The OpenAPI schema and fixture data are written
   before the data layer exists, so the frontend is built in parallel with the
   pipeline instead of after it.
@@ -182,7 +192,6 @@ BY 4.0, per-dataset GBIF licenses, Copernicus). Show credits in the app.
 
 ## Open questions
 
-- Storage for scores and history: Postgres/PostGIS, or DuckDB/Parquet files?
 - How to deliver the grid to the map: vector tiles, a compact binary/JSON grid, or raster PNGs?
 - Basemap tile provider (MapTiler, self-hosted Protomaps PMTiles, OSM-based).
 - How far back to backfill history (bounded by the ERA5-Land archive and API rate limits).

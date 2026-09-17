@@ -17,13 +17,24 @@ sightings. It is for a group of friends and a portfolio. The PRD
 This file is the single source of project instructions: `CLAUDE.md` and
 `GEMINI.md` import it. Edit here.
 
-## Layout (planned — update once scaffolded)
+## Layout
 
-- `web/` — Vite + React + TypeScript SPA, MapLibre GL, i18n (it/en; library chosen in M5), PWA. Deployed to Vercel.
+- `web/` — Vite + React + TypeScript (strict) SPA, MapLibre GL, i18n (it/en;
+  library chosen in M5), PWA. Deployed to Vercel.
+  - `cd web && pnpm install` then `pnpm dev` (dev server), `pnpm test`
+    (Vitest), `pnpm run lint` (ESLint), `pnpm run format:check` (Prettier),
+    `pnpm run build` (type-check + production build).
 - `api/` — Python + FastAPI service and the scheduled data pipeline
-  (ingest → grid scoring → store). Deployed to Fly.io or Railway.
+  (ingest → grid scoring → store). Storage is DuckDB reading Parquet files on
+  a Fly Volume (not Postgres/PostGIS — see PRD → Architecture). Deployed to
+  Fly.io.
+  - `cd api && uv sync` then `uv run fastapi dev src/api/main.py` (dev
+    server), `uv run pytest`, `uv run ruff check .`,
+    `uv run ruff format --check .`.
 - `.gavin-root/docs/` — research and reports (species ecology, sightings
   profile, validation). Cards write their findings there.
+
+See the root `README.md` for the full dev and deploy commands.
 
 ## Tooling
 
