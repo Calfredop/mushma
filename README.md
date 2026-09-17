@@ -83,6 +83,23 @@ The backfill stays under the free API limits (it keeps a shared tally in
 `api/data/raw/open_meteo/usage.json`), resumes where it stopped, and skips anything already stored.
 Sources, method, checks and the backfill-depth decision are in `.gavin-root/docs/weather-ingest.md`.
 
+### Sightings
+
+Public porcini, ovoli and gallinacci sightings come from GBIF (which already carries research-grade
+iNaturalist records) and, for the last two weeks GBIF hasn't caught up with, iNaturalist directly.
+They validate the model and back the hotspots list's "recent sightings" signal:
+
+```sh
+cd api
+uv run python -m api.sightings.ingest resolve-taxa   # check config against each API's taxonomy
+uv run python -m api.sightings.ingest fetch          # GBIF history + recent iNaturalist -> store
+uv run python -m api.sightings.ingest profile        # counts, licenses, town-proximity bias
+```
+
+Only a cell id and species ever land in the store: no sighting's coordinates are kept, so nothing
+finer than a 1 km cell can leave it. Method, quality filters and the first pull's profile are in
+`.gavin-root/docs/sightings-profile.md`.
+
 To build and run the production container locally:
 
 ```sh
