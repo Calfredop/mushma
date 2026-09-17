@@ -1,11 +1,11 @@
 """Model config (``config/model.yaml``): species groups and weather preparation."""
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 import numpy as np
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 MODEL_FILE = CONFIG_DIR / "model.yaml"
@@ -35,9 +35,40 @@ class PrecipitationScale(_Strict):
         return self.intercept + self.per_km * np.minimum(elevation, self.max_elevation_m) / 1000
 
 
+SeasonRole = Literal["train", "holdout", "live"]
+
+
+class BacktestSplit(_Strict):
+    """Which seasons (calendar years) tune the rules, which judge them, and which are still open."""
+
+    train_seasons: list[int]
+    holdout_seasons: list[int]
+    live_seasons: list[int]
+    frozen_factor_kinds: list[str]
+
+    @model_validator(mode="after")
+    def _disjoint(self) -> "BacktestSplit":
+        roles = [*self.train_seasons, *self.holdout_seasons, *self.live_seasons]
+        repeated = sorted({season for season in roles if roles.count(season) > 1})
+        if repeated:
+            raise ValueError(f"seasons in more than one role: {repeated}")
+        return self
+
+    def role_of(self, season: int) -> SeasonRole | None:
+        for role, seasons in (
+            ("train", self.train_seasons),
+            ("holdout", self.holdout_seasons),
+            ("live", self.live_seasons),
+        ):
+            if season in seasons:
+                return role  # type: ignore[return-value]
+        return None
+
+
 class ModelConfig(_Strict):
     groups: dict[str, list[str]]
     precipitation_scale: PrecipitationScale
+    backtest: BacktestSplit
 
     @property
     def cited(self) -> dict[str, list[str]]:

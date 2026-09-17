@@ -50,3 +50,23 @@ def test_a_model_config_citing_an_unknown_reference_is_refused(tmp_path: Path) -
 
     with pytest.raises(RuleConfigError, match="somebody_else"):
         load_rules(model_file=path)
+
+
+def test_the_backtest_split_is_fixed_and_disjoint() -> None:
+    split = load_model_config().backtest
+
+    assert split.train_seasons == list(range(2016, 2024))
+    assert split.holdout_seasons == [2024, 2025]
+    assert split.live_seasons == [2026]
+    assert split.role_of(2020) == "train" and split.role_of(2025) == "holdout"
+    assert split.role_of(2030) is None
+
+
+def test_a_season_in_two_roles_is_refused(tmp_path: Path) -> None:
+    raw = yaml.safe_load(MODEL_FILE.read_text())
+    raw["backtest"]["holdout_seasons"] = [2023, 2024]
+    path = tmp_path / "model.yaml"
+    path.write_text(yaml.safe_dump(raw))
+
+    with pytest.raises(ValueError, match="2023"):
+        load_model_config(path)

@@ -88,6 +88,10 @@ All seven milestones below are v1; there is no smaller cut.
   seasons into train and hold-out before tuning. Report lift and AUC per
   species and season against a habitat-only baseline, and tune thresholds on
   the train seasons only. Set accuracy targets after the first backtest.
+  Split fixed in Model v1, before any score met a sighting: train on the
+  seasons 2016–2023, hold out 2024 and 2025, and report 2026 only once it
+  ends. Season windows, altitude bands and habitat affinities stay frozen,
+  because the species research drew them partly from sightings of every year.
 - **Known data traps.** Sightings are presence-only and biased toward trails,
   towns and popular areas. iNaturalist hides the exact location of some records
   (geoprivacy), so check coordinate uncertainty. Sparse species-days are noisy:
