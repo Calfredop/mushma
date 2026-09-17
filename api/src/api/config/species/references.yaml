@@ -636,6 +636,20 @@ references:
     - ovoli.md R15
     - gallinacci.md R25
     - gallinacci.md R26
+  mushma_sir_gauge_check_2026:
+    citation: 'mushma rain check: downscaled Open-Meteo era5_seamless daily precipitation against the SIR Toscana
+      (Servizio Idrologico Regionale) rain gauges inside woodland cells, 2025 (133 gauges) and 2026-01-01 to 09-06
+      (145 gauges), validated and pre-validated days only. See .gavin-root/docs/weather-ingest.md, Ground truth'
+    url: https://www.sir.toscana.it/
+    kind: analysis
+    region: Tuscany
+    verified: verified
+    supports: the reanalysis holds about 70 % of gauge rain in woodland, less with height (0.79 below 400 m, 0.69 at
+      400-800 m, 0.63 above, 2025); a gauge-total fit on 2025 of scale = 1.28 + 0.29 per km of elevation brings
+      2026 to 0.99 overall (0.96-1.03 per band).
+    cited_as:
+    - weather-ingest.md
+    - model-v1-validation.md
   myboletus_finferli:
     citation: 'MyBoletus. Chanterelles in Europe: where to find them, season and habitat'
     url: https://myboletus.com/en/funghi/finferli/

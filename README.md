@@ -100,6 +100,24 @@ Only a cell id and species ever land in the store: no sighting's coordinates are
 finer than a 1 km cell can leave it. Method, quality filters and the first pull's profile are in
 `.gavin-root/docs/sightings-profile.md`.
 
+### Model
+
+Per-species rules (`api/src/api/config/species/`, one file per species key, every rule with a cited
+source) score each woodland cell and day from 0 to 1: a conditions index, not a probability. Groups
+(porcini, ovoli, gallinacci) take the max over their keys and `combined` the max over the groups in
+season. Every score keeps its factor breakdown.
+
+```sh
+cd api
+uv run python -m api.model.pipeline rules                                          # validate and summarise
+uv run python -m api.model.pipeline score --start 2026-09-03 --end 2026-09-24      # recent days + forecast
+uv run python -m api.model.pipeline score --start 2025-01-01 --end 2025-12-31 --no-factors  # history
+```
+
+Scores land in `api/data/scores/tuscany/` (`daily/` for every key, `factors/` for the breakdowns).
+A year of every cell takes about 25 seconds. How a score is computed is in
+`api/src/api/config/species/README.md`; the evidence is in `.gavin-root/docs/species-ecology.md`.
+
 To build and run the production container locally:
 
 ```sh

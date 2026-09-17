@@ -71,9 +71,14 @@ All seven milestones below are v1; there is no smaller cut.
   altitude band, and optionally aspect.
 - **Score semantics.** A score is a 0–1 *index* of how favourable conditions
   are, not a calibrated probability. The UI calls it a "conditions score" and
-  never shows "% chance" unless a backtest calibrates it. The **combined** score
-  across species is defined in Model v1 (default proposal: the max across
-  species that are in season).
+  never shows "% chance" unless a backtest calibrates it. Decided in Model v1:
+  a species' score is the max over its taxa (porcini has four rule sets, one
+  per sub-species, and the breakdown names the winner), and the **combined**
+  score is the max over the species in season, with the winner's breakdown
+  (0 and no breakdown when none is in season). Max keeps the index meaning
+  ("the best conditions of the three, here, today") and never inflates; a
+  probabilistic OR would treat scores as probabilities. The API serves it as
+  its own species key, `combined`.
 - **Lag makes the outlook robust.** Porcini fruit roughly 10–15 days after
   rain, so the +7-day outlook is driven mostly by rain that has already fallen.
   The weather forecast mainly adds temperature, frost and drying. Use this in
@@ -95,6 +100,9 @@ All seven milestones below are v1; there is no smaller cut.
   woodland (2025) it holds about 70 % of the measured rain (79 % below 400 m,
   63 % above 800 m). Rain thresholds taken from gauge-based studies must be
   tuned on it or the rain rescaled (see `.gavin-root/docs/weather-ingest.md`).
+  Model v1 rescales it before scoring, by 1.28 + 0.29 per km of cell height
+  (fitted to the 2025 gauges, 0.99 of gauge rain on 2026), and the backtest
+  compares that with the raw rain.
 - **Known gaps (v1).** Soil chemistry (gallinacci prefer acidic soils) is not
   modelled; SoilGrids (ISRIC) or the Regione Toscana pedological map are
   candidates if the backtest shows it matters. Aspect is attached to cells but

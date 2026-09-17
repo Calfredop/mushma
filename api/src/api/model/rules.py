@@ -17,11 +17,10 @@ import yaml
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
 from api.grid.habitats import load_vocabulary
+from api.model.config import CONFIG_DIR, MODEL_FILE, load_model_config
 from api.weather.config import load_weather_config
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 SPECIES_DIR = CONFIG_DIR / "species"
-MODEL_FILE = CONFIG_DIR / "model.yaml"
 REFERENCES_FILE = "references.yaml"
 
 Role = Literal["gate", "driver", "stopper"]
@@ -451,10 +450,15 @@ def load_rules(species_dir: Path = SPECIES_DIR, model_file: Path = MODEL_FILE) -
     """Load and validate every species file in ``species_dir``; raise :class:`RuleConfigError`
     naming the file and the rule on the first file that fails."""
     refs = _validate(_References, _read_yaml(species_dir / REFERENCES_FILE), REFERENCES_FILE)
-    groups: dict[str, list[str]] = {
-        str(group): [str(key) for key in keys]
-        for group, keys in (_read_yaml(model_file)["groups"] or {}).items()
-    }
+    try:
+        model = load_model_config(model_file)
+    except (OSError, yaml.YAMLError, ValidationError) as error:
+        raise RuleConfigError(f"{model_file.name}: {error}") from error
+    for rule, cited in model.cited.items():
+        unknown = [s for s in cited if s not in refs.references]
+        if unknown:
+            raise RuleConfigError(f"{model_file.name}: {rule} cites unknown sources {unknown}")
+    groups = model.groups
     habitats = set(load_vocabulary().habitats)
     ingested = set(load_weather_config().variables)
 
