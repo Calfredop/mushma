@@ -1,7 +1,7 @@
 ---
 order: 1
 title: M1 · Foundations: repo, tooling, CI, deploy skeletons
-status: In Progress
+status: Done
 priority: high
 complexity: moderate
 ---
