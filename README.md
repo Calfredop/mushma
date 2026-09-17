@@ -37,6 +37,11 @@ pnpm run build       # type-check + production build
 Copy `web/.env.example` to `web/.env` and set `VITE_API_BASE_URL` to point at
 a running `api/` (defaults to `http://localhost:8000`).
 
+`web/src/api/schema.ts` is a TypeScript client generated from `api/openapi.json`
+(the API's contract). After changing any `api/` route or response model, run
+`uv run python scripts/export_openapi.py` in `api/`, then
+`pnpm run generate:api` in `web/`, and commit both. CI fails if either drifts.
+
 ## api/
 
 ```sh
