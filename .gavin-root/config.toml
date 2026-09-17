@@ -1,0 +1,11 @@
+version = 1
+
+[agent]
+profile = "claude-code"
+command = "claude"
+
+# What a worktree gavin creates has to run before anyone can work in it.
+# The commands run chained with `&&` in one visible session in the new
+# worktree, and an agent started there waits for them to finish.
+# [worktree]
+# setup = ["npm install"]
