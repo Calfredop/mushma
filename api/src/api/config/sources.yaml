@@ -84,3 +84,25 @@ ecmwf_open_data:
   license: CC BY 4.0
   attribution: "Forecasts © European Centre for Medium-Range Weather Forecasts (ECMWF), CC BY 4.0"
   notes: Served through Open-Meteo (model ecmwf_ifs). Use is also subject to the ECMWF Terms of Use.
+
+gbif:
+  name: GBIF — Global Biodiversity Information Facility occurrence records
+  homepage: https://www.gbif.org/
+  license: Per-record (CC0, CC BY 4.0 or CC BY-NC 4.0); the store keeps each record's license
+  attribution: "Occurrence data © GBIF.org contributors, gbif.org"
+  notes: >-
+    Free API, no key required; the terms of use ask that reuse of a mixed-source query be citable
+    (a GBIF download DOI is the norm for publications, but a live occurrence/search is exempt for
+    an app like this). Individual records can carry CC0, CC BY 4.0 or CC BY-NC 4.0; only counts per
+    cell ever leave mushma (PRD → Sightings privacy), so no per-record licence text reaches the UI.
+
+inaturalist:
+  name: iNaturalist — community wildlife observations
+  homepage: https://www.inaturalist.org/
+  license: Per-record (most CC BY-NC 4.0); the store keeps each record's license
+  attribution: "Observations © iNaturalist.org contributors, inaturalist.org"
+  notes: >-
+    Used only for the most recent observations (days, not months): research-grade iNaturalist
+    records are also published through GBIF (dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7) with a
+    days-to-weeks delay, so the direct API call closes that gap and is deduplicated against it by
+    observation id. Free API, no key required for read-only search.

@@ -1,0 +1,66 @@
+# Sightings ingest: which taxa to fetch, and the quality thresholds and iNaturalist recency window
+# used to turn raw occurrence records into per-cell counts (PRD → Model: Validation, Known data
+# traps; Sightings privacy). See .gavin-root/docs/sightings-profile.md.
+#
+# gbif_taxon_key / inaturalist_taxon_id were resolved once against each API's own species match
+# (`uv run python -m api.sightings.ingest resolve-taxa`) on 2026-09-17 and pinned here so a later
+# backbone change can't silently re-target a rule. Boletus aestivalis is a synonym of B. reticulatus
+# in the GBIF backbone (usageKey 5954691 for both), so the porcini group has four keys, not five.
+species:
+  porcini:
+    common_name: {it: Porcini, en: Porcini}
+    taxa:
+      - scientific_name: Boletus edulis
+        gbif_taxon_key: 5954958
+        inaturalist_taxon_id: 48701
+      - scientific_name: Boletus aereus
+        gbif_taxon_key: 8733688
+        inaturalist_taxon_id: 333772
+      - scientific_name: Boletus reticulatus  # covers the aestivalis synonym
+        gbif_taxon_key: 5954691
+        inaturalist_taxon_id: 350216
+      - scientific_name: Boletus pinophilus
+        gbif_taxon_key: 5954949
+        inaturalist_taxon_id: 335942
+  ovoli:
+    common_name: {it: Ovoli, en: "Caesar's mushroom"}
+    taxa:
+      - scientific_name: Amanita caesarea
+        gbif_taxon_key: 5240269
+        inaturalist_taxon_id: 204588
+  gallinacci:
+    common_name: {it: Gallinacci, en: Chanterelle}
+    taxa:
+      - scientific_name: Cantharellus cibarius
+        gbif_taxon_key: 5249504
+        inaturalist_taxon_id: 47347
+
+# GBIF occurrence/search is paged over this lon/lat bbox (the region's, not a polygon clip): cells.py
+# joins each record to the woodland grid afterwards, which drops anything outside Tuscany's actual
+# boundary or off the grid. hasCoordinate and hasGeospatialIssue keep out records GBIF already
+# flagged as ungeoreferenced or contradictory.
+gbif:
+  endpoint: https://api.gbif.org/v1/occurrence/search
+  match_endpoint: https://api.gbif.org/v1/species/match
+  page_size: 300
+
+# iNaturalist observations, filtered to a named place rather than a bbox (place_id below is
+# "Toscana"). recent_days bounds how far back the daily ingest looks for records not yet in GBIF.
+inaturalist:
+  endpoint: https://api.inaturalist.org/v1/observations
+  place_id: 13073 # Toscana
+  page_size: 200
+  recent_days: 14
+  quality_grades: [research, needs_id] # excludes "casual" (e.g. flagged captive/cultivated)
+
+# A record's coordinate precision must be at least as good as the 1 km cell it would be assigned to,
+# or assigning it to one cell claims more precision than the source gave (PRD: never re-sharpen an
+# obscured record). town_centroid_distance_m catches the common placeholder pattern of pinning an
+# observation to a village square rather than the actual find, checked against the same ISTAT
+# inhabited-locality points the grid uses (api.grid.places).
+quality:
+  max_coordinate_uncertainty_m: 1000
+  town_centroid_distance_m: 75
+
+# Source ids (sources.yaml) the app must credit wherever sightings are shown.
+credits: [gbif, inaturalist]
