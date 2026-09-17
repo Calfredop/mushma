@@ -1,0 +1,256 @@
+# Draft rule config. Evidence and rule ids (OVO-*) are in .gavin-root/docs/species-ecology.md
+# and its appendix species-ecology/ovoli.md. Parameters are priors for the M3 backtest, not tuned values.
+schema_version: 1
+key: ovoli_caesarea
+group: ovoli
+taxon: Amanita caesarea
+synonyms: [Agaricus caesareus, Amanita aurantiaca, Volvoamanita caesarea]
+status: draft
+i18n_key: species.ovoli_caesarea
+records:
+  gbif_taxon_keys: [5240269]
+  inat_taxon_ids: [204588]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    GBIF 5240269 holds about 785 US and Mexican records that belong to other sect. Caesareae species:
+    never use the global record set, filter to Italy. Tuscany has 39 GBIF records (35 unique
+    observer-days) and 50 iNaturalist observations (2026-09-17); dedupe by observer, day and cell.
+notes: >-
+  No peer-reviewed field study links ovoli fruiting to rain amount, lag or soil temperature in numbers.
+  Hosts, altitude and season are well supported; the weather rules come from Tuscan community-level
+  studies, Open-Meteo climatology over the observed season, and forager lore.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: summer_autumn
+          dates: ["01-06", "01-09", "05-11", "30-11"]
+    confidence: plausible
+    source: [lagana2002_polish_bot, gyosheva_bulgaria_rdb, iucn_caesarea2019, funghintoscana_blog_ovolo, funghimagazine_ovolo, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      OVO-01. Corrects the "July–October" hypothesis: the Tuscan median record is 13 October and only
+      about 10 % of records fall in June–August. Central-Italy iNaturalist records are over-represented
+      in September (3.4x vs all fungi) and October (2.2x), not in August (0.9x). The partial summer
+      weight lets storm flushes score while the moisture rules do the limiting.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        deciduous_oak: 1.0
+        chestnut: 0.9
+        evergreen_oak: 0.7
+        macchia: 0.4
+        transitional_woodland_shrub: 0.4
+        mixed_broadleaf: 0.35
+        mixed_broadleaf_conifer: 0.35
+        mediterranean_pine: 0.15
+        beech: 0.1
+        riparian: 0.05
+        exotic_broadleaf: 0.05
+        mountain_pine: 0.05
+        other_conifer: 0.05
+        fir_spruce: 0.0
+      default: 0.0
+    confidence: strong
+    source: [iucn_caesarea2019, lagana2002_polish_bot, lagana1999_czech_mycol, daza2006, cano_cajigas2015, sardegna_foreste_caesarea, amint_caesarea, funghintoscana_blog_ovolo]
+    derived: true
+    data: available
+    notes: >-
+      OVO-02. Strong that Quercus and Castanea are the hosts; the numeric ranking is derived.
+      transitional_woodland_shrub 0.4 was added in the merge (not in the appendix): clearings, edges and
+      heath with scattered oaks are repeatedly described as favoured.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [null, null, 750, 1100]}
+    confidence: plausible
+    source: [iucn_caesarea2019, amint_caesarea, innatura_ovolo, funghintoscana_blog_ovolo, funghimagazine_ovolo, lagana2002_polish_bot, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      OVO-03. Full to about the Italian p90 (752-769 m), zero at 1100 m. Italian records top out at 943 m;
+      IUCN: "only seldom above 1200 m".
+
+  - id: rain_trigger
+    role: driver
+    weight: 1
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 20, 28]
+    confidence: folklore
+    source: [casadelassetas_caesarea, bmeteo_funghi_luglio, salerni2002_oak]
+    derived: true
+    data: available
+    notes: >-
+      OVO-05 + OVO-06. 10-15 mm storms give nothing; 30-50 mm summer storms with soil staying wet give
+      sudden emergences (lore). Lag 18-22 days (Spanish lore) vs 8-11 days in warm weather (Italian lore
+      for thermophilic porcini). Weight 1, not 2, because it overlaps rain_30d and has no scientific source.
+      The backtest should also try lag [10, 15, 24, 32].
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: sum, window_days: 30}
+    response: {trapezoid: [25, 75, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, alday2017, openmeteo_climatology_ovoli]
+    derived: true
+    data: available
+    notes: >-
+      OVO-08. 30-day rain correlates with fruiting in Tuscan oak woods (all macrofungi). The edges separate
+      dry-summer (20-80 mm) from peak-season (75-135 mm) 30-day totals at four Tuscan points.
+
+  - id: soil_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_temperature
+    input: {variable: soil_temperature_0_to_7cm_mean, aggregate: mean, window_days: 14}
+    response: {trapezoid: [9, 14, 26, 32]}
+    confidence: plausible
+    source: [daza2006, openmeteo_climatology_ovoli, mushma_occurrence_check_2026, funghimagazine_ovolo]
+    derived: true
+    data: available
+    notes: >-
+      OVO-10. "Warm soil after rain". Lower edges from the half-month soil temperatures at which Tuscan
+      records thin out (14-16 °C bulk, tail to 8-10 °C). The upper edges are placeholders: the lab mycelium
+      optimum is 24-28 °C and no source says heat stops fruiting when the soil is moist. The appendix asks
+      for the mean over the lag window; a fixed 14-day window approximates it.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 7}
+    response: {trapezoid: [8, 13, 25, 30]}
+    confidence: plausible
+    source: [openmeteo_climatology_ovoli]
+    derived: true
+    data: available
+    enabled: false
+    notes: OVO-11. Alternative to soil_temperature, never both.
+
+  - id: soil_moisture
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_moisture
+    input: {variable: soil_moisture_0_to_7cm_mean, aggregate: mean, window_days: 7}
+    response: {trapezoid: [0.15, 0.22, null, null]}
+    confidence: plausible
+    source: [bmeteo_funghi_luglio, salerni2002_oak, openmeteo_climatology_ovoli]
+    derived: true
+    data: available
+    enabled: false
+    notes: >-
+      OVO-07. "The soil stays wet for a few days" after the storm. Absolute Open-Meteo (ERA5-Land-scale)
+      values: dry summer topsoil 0.12-0.18, peak season 0.23-0.31 m³/m³. Alternative to evaporative_demand;
+      keep one. A percentile_of_normal version is safer across soil textures once the climatology exists.
+
+  - id: evaporative_demand
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, aggregate: mean, window_days: 7}
+    response: {trapezoid: [null, null, 4, 6]}
+    floor: 0.4
+    confidence: plausible
+    source: [agreda2015, bmeteo_funghi_luglio, openmeteo_climatology_ovoli]
+    derived: true
+    data: available
+    notes: >-
+      OVO-14. High ET0 dries the topsoil and cancels the trigger (extrapolated from Mediterranean pine
+      yield models). July-August ET0 in Tuscany is 4.1-5.7 mm/day; peak season 1.5-3.2.
+
+  - id: cold_nights
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.cold_nights
+    input: {variable: temperature_2m_min, aggregate: mean, window_days: 7}
+    response: {trapezoid: [5, 10, null, null]}
+    floor: 0.3
+    confidence: plausible
+    source: [funghimagazine_ovolo, funghintoscana_blog_ovolo, openmeteo_climatology_ovoli, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      OVO-12. Records thin out as half-month Tmin falls from 10-13 °C to 7-10 °C and stop at 4-8 °C.
+      Floor 0.3 (not 0) because it overlaps soil_temperature, which already falls to 0 at 9 °C.
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [funghimagazine_ovolo]
+    derived: true
+    data: available
+    notes: >-
+      OVO-13. Any frost in the last week -> 0. No ovoli-specific frost source; the cited page only says the
+      species "does not tolerate cold". Low impact: first frosts in the low hills mostly come after the window.
+
+  - id: waterlogging
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.waterlogging
+    input: {variable: soil_moisture_0_to_7cm_mean, aggregate: mean, window_days: 7}
+    response: {trapezoid: [null, null, 0.38, 0.40]}
+    floor: 0.8
+    confidence: folklore
+    source: [gyosheva_bulgaria_rdb, funghimagazine_ovolo, myboletus_ovoli]
+    derived: true
+    data: available
+    enabled: false
+    notes: OVO-16. Well-drained soils preferred; >=0.40 m³/m³ -> x0.8. Low priority.
+
+known_gaps:
+  - id: aspect
+    description: OVO-04. South-facing slopes favoured near the upper limit (N-facing x0.8 above 500 m on slopes >10°); the only Tuscan plot record faces NE.
+    needs: [engine support for an aspect multiplier conditional on elevation and slope]
+    confidence: folklore
+    source: [innatura_ovolo, casadelassetas_caesarea, cano_cajigas2015, myboletus_ovoli]
+  - id: spring_rain
+    description: OVO-09. Wet springs precede richer autumn fruiting (community-level); Mar-May rain as % of normal, x0.8 at <=60 %, x1 at >=100 %.
+    needs: [a calendar-anchored window aggregate, backfill climatology]
+    confidence: plausible
+    source: [salerni2002_oak]
+  - id: drying_wind
+    description: OVO-15. Within 5 days of the storm, >=2 days with gusts >=40 km/h and min RH <=35 % halve the trigger.
+    needs: [a compound multi-variable condition in count_days]
+    confidence: folklore
+    source: [bmeteo_funghi_luglio]
+  - id: lag_temperature
+    description: OVO-06 refinement. Shift the lag 3-4 days earlier when lag-window Tmin mean >=16 °C, later when <=11 °C.
+    needs: [a temperature-dependent lag in rain_event]
+    confidence: folklore
+    source: [bmeteo_funghi_luglio]
+  - id: substrate
+    description: OVO-17. Siliceous, slightly acid soils preferred (sources disagree); absent from all four Tuscan calcicolous oak plots.
+    needs: [soil_ph, lithology_calcareous]
+    confidence: plausible
+    source: [daza2006, cano_cajigas2015, lagana1999_czech_mycol, casadelassetas_caesarea]
+  - id: canopy_management
+    description: OVO-18/19. Open, sunny stands, clearings, edges and cleared fruit-chestnut groves; declines with abandonment; harmed by N deposition.
+    needs: [canopy_cover, management history, nitrogen deposition]
+    confidence: plausible
+    source: [cano_cajigas2015, innatura_ovolo, funghintoscana_blog_ovolo, iucn_caesarea2019, gyosheva_bulgaria_rdb]

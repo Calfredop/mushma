@@ -1,0 +1,363 @@
+# Draft rule config. Evidence and rule ids (GAL-*) are in .gavin-root/docs/species-ecology.md
+# and its appendix species-ecology/gallinacci.md. Parameters are priors for the M3 backtest, not tuned values.
+schema_version: 1
+key: gallinacci_cibarius
+group: gallinacci
+taxon: Cantharellus cibarius s.l.
+synonyms: [Cantharellus pallens, Cantharellus subpruinosus, Cantharellus alborufescens, Cantharellus ilicis, Cantharellus ferruginascens, Cantharellus amethysteus]
+status: draft
+i18n_key: species.gallinacci_cibarius
+records:
+  gbif_taxon_keys: [9623860]
+  inat_taxon_ids: [47348]
+  exclude_gbif_taxon_keys: [9226626, 5249532]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    Genus-level include: C. cibarius s.str. is said to be absent under a Mediterranean climate, so Tuscan
+    "C. cibarius" records are mostly C. pallens and C. alborufescens. GBIF keeps C. cinereus (9226626) and
+    C. melanoxeros (5249532) in Cantharellus: exclude them (iNaturalist files them under Craterellus).
+    Tuscany: 48 GBIF and 116 iNaturalist records (2026-09-17), 111 of them 2019-2025. Pool seasons.
+notes: >-
+  One rule set for the group. Responds to sustained moisture over weeks and fruit bodies persist (about
+  44 days on average), so the rain logic is broader and slower than for porcini. The acid-soil preference
+  cannot be modelled in v1 (see soil_ph and lithology below).
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: lowland_long
+          dates: ["15-04", "10-05", "15-12", "25-01"]
+          elevation_weight: [null, null, 600, 1000]
+        - label: mountain_summer_autumn
+          dates: ["01-06", "01-07", "15-10", "15-11"]
+          elevation_weight: [600, 1000, null, null]
+    confidence: plausible
+    source: [olariaga2017, micoex2016_pallens, bmeteo_cantharellus, cacciatoridifunghi_finferli, myboletus_finferli, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      GAL-02 + GAL-03. Lowland window wraps the year end and keeps summer in on purpose: moisture and heat
+      rules make the summer gap, and rainy summers do fruit. Tuscan records: spring mode May-June, trough
+      July-August, big mode October-November running into January. The appendix blends the two windows
+      linearly across 600-1000 m; this schema takes the max of the weighted windows, which is close.
+
+  - id: season_two_flush
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: spring
+          dates: ["15-04", "10-05", "30-06", "31-07"]
+        - label: autumn
+          dates: ["20-08", "20-09", "15-12", "25-01"]
+    confidence: folklore
+    source: [micoex2016_pallens, cacciatoridifunghi_finferli, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    enabled: false
+    notes: GAL-04. Alternative to season, only for comparison in the backtest.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        chestnut: 1.0
+        evergreen_oak: 0.7
+        beech: 0.7
+        fir_spruce: 0.6
+        mixed_broadleaf_conifer: 0.6
+        deciduous_oak: 0.5
+        mediterranean_pine: 0.5
+        mountain_pine: 0.4
+        mixed_broadleaf: 0.3
+        macchia: 0.3
+        transitional_woodland_shrub: 0.2
+        other_conifer: 0.2
+        riparian: 0.1
+        exotic_broadleaf: 0.0
+      default: 0.0
+    confidence: plausible
+    source: [lagana1999_czech_mycol, olariaga2017, pilz2003, conedera2016_castanea, micoex2016_pallens, rt_tipi_forestali_p1, cacciatoridifunghi_finferli]
+    derived: true
+    data: available
+    notes: >-
+      GAL-05. Chestnut is strong: present in 9/9 Tuscan chestnut coppice plots vs 5/10 evergreen oak, 2/7 fir
+      and 1/4 calcicolous oak. Chestnut avoids limestone, so it doubles as a soil-pH proxy.
+      transitional_woodland_shrub 0.2 was added in the merge (the appendix proposed no new term).
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [null, null, 1000, 1700]}
+    confidence: plausible
+    source: [lagana1999_czech_mycol, muse_censimento_alborufescens, cacciatoridifunghi_finferli, myboletus_finferli, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      GAL-06. Tuscan Cantharellus records (n=116): median 289 m, p90 740 m, max 1431 m. Observer effort
+      pulls the median low; keep the altitude gate permissive.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: sum, window_days: 30}
+    response: {trapezoid: [15, 70, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, straatsma2001, ivanochko2021, tahvanainen2020]
+    derived: true
+    data: available
+    notes: GAL-08. 30-day window from the Tuscan oak study; 50-100 mm cumulative from Saskatchewan; edges derived.
+
+  - id: rain_frequency
+    role: driver
+    weight: 0.5
+    kind: count_days
+    i18n_key: factor.rain_frequency
+    input: {variable: precipitation_sum, op: gte, threshold: 5, window_days: 20}
+    response: {trapezoid: [0, 3, null, null]}
+    floor: 0.3
+    confidence: plausible
+    source: [micocyl2021, bmeteo_cantharellus]
+    derived: true
+    data: available
+    notes: >-
+      GAL-09. The number of rain events in the previous 15-20 days matters (Castilla y León program).
+      0 days -> 0.3, 1 -> ~0.53, 2 -> ~0.77, >=3 -> 1 (the appendix steps are 0.3/0.6/0.85/1.0).
+      Half weight because it overlaps rain_30d.
+
+  - id: rain_trigger
+    role: driver
+    weight: 1
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 20, null, null]
+      lag_days: [4, 10, 30, 50]
+    confidence: plausible
+    source: [pilz2003, rochon2011, ehlers_hobby2010, micocyl2021, cacciatoridifunghi_finferli]
+    derived: true
+    data: available
+    notes: >-
+      GAL-10. Onset about a week after wetting, flushes every 2-3 weeks, fruit bodies persisting 44 days on
+      average: a long plateau and slow decay, the main structural difference from porcini.
+
+  - id: soil_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_temperature
+    input: {variable: soil_temperature_0_to_7cm_mean, aggregate: mean, window_days: 7}
+    response: {trapezoid: [5, 9, 20, 25]}
+    confidence: folklore
+    source: [straatsma1986_thesis, deshaware2021, bmeteo_cantharellus, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      GAL-13. No field temperature band exists; the lab mycelium optimum is 20-24 °C. The lower edges keep
+      the December-January lowland records in; the upper zero sits where Tuscan summer soils are.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 7}
+    response: {trapezoid: [4, 8, 21, 26]}
+    confidence: folklore
+    source: [straatsma1986_thesis, deshaware2021, bmeteo_cantharellus]
+    derived: true
+    data: available
+    enabled: false
+    notes: GAL-14. Fallback for soil_temperature, never both.
+
+  - id: soil_moisture
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_moisture
+    input: {variable: soil_moisture_0_to_7cm_mean, aggregate: percentile_of_normal, window_days: 7}
+    response: {trapezoid: [15, 40, null, null]}
+    confidence: plausible
+    source: [pilz2003, tahvanainen2020]
+    derived: true
+    data: derived
+    enabled: false
+    notes: >-
+      GAL-11. The mycelium lives in the top 5-10 cm. The appendix weights 0-7 cm 0.6 and 7-28 cm 0.4; this
+      draft uses 0-7 cm only. Needs the backfill climatology.
+
+  - id: water_balance_60d
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 60}
+    response: {trapezoid: [-150, -30, null, null]}
+    floor: 0.5
+    confidence: plausible
+    source: [salerni2002_oak, straatsma2001, tahvanainen2020]
+    derived: true
+    data: derived
+    notes: GAL-12. A dry preceding two months damps the whole flush (x0.5 at <=-150 mm, x1 at >=-30 mm).
+
+  - id: drought_14d
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.drought
+    input: {variable: water_balance, aggregate: sum, window_days: 14}
+    response: {trapezoid: [-70, -40, null, null]}
+    floor: 0.2
+    confidence: plausible
+    source: [olariaga2017, pilz2003, ehlers_hobby2010, mushma_occurrence_check_2026]
+    derived: true
+    data: derived
+    notes: >-
+      GAL-17. Two dry, high-evaporation weeks suppress fruiting; floor 0.2 because fruit bodies persist and
+      the Mediterranean segregates tolerate drought. The appendix applies it only when 14-day rain < 10 mm;
+      the 14-day water balance rarely falls below -40 mm otherwise.
+
+  - id: heat
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.heat
+    input: {variable: temperature_2m_max, aggregate: mean, window_days: 7}
+    response: {trapezoid: [null, null, 29, 33]}
+    floor: 0.3
+    confidence: folklore
+    source: [mushma_occurrence_check_2026, olariaga2017]
+    derived: true
+    data: available
+    notes: GAL-18. A sustained hot spell suppresses fruiting; the only evidence is the July-August record trough.
+
+  - id: heat_vpd
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.heat
+    input: {variable: vapour_pressure_deficit_max, aggregate: mean, window_days: 7}
+    response: {trapezoid: [null, null, 2.0, 3.0]}
+    floor: 0.3
+    confidence: folklore
+    source: [mushma_occurrence_check_2026, olariaga2017]
+    derived: true
+    data: available
+    enabled: false
+    notes: GAL-18 alternative on dry air. The appendix applies the stronger of heat and heat_vpd; the schema has no max-of, so pick one.
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: -2, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.3
+    confidence: folklore
+    source: [ehlers_hobby2010, pilz2003]
+    derived: true
+    data: available
+    notes: GAL-16. Repeated frost (Tmin <=-2 °C on 2+ of 7 nights) -> x0.3; persistent fruit bodies make a hard zero too strong.
+
+  - id: hard_frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: -5, window_days: 10}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [ehlers_hobby2010]
+    derived: true
+    data: available
+    notes: GAL-16. Any Tmin <=-5 °C in the last 10 days -> 0.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 10}
+    response: {trapezoid: [null, null, 4, 5]}
+    confidence: folklore
+    source: [ehlers_hobby2010]
+    derived: true
+    data: available
+    notes: GAL-16. >=5 cm of snow -> 0 for about 10 days.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 4, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.8
+    confidence: folklore
+    source: [forager_wind_pages, pilz2003]
+    derived: true
+    data: available
+    notes: >-
+      GAL-19. No gallinacci source: the porcini drying rule at half effect (floor 0.8 instead of 0.6),
+      because long-lived fruit bodies dry slowly.
+
+  - id: soil_ph
+    role: gate
+    kind: static_band
+    i18n_key: factor.soil_ph
+    input: {attribute: soil_ph}
+    response: {trapezoid: [3.5, 4.0, 6.0, 7.8]}
+    floor: 0.3
+    confidence: plausible
+    source: [pilz2003, olariaga2017, lagana1999_czech_mycol, jansen_van_dobben1987, straatsma1986_thesis, deshaware2021]
+    derived: true
+    data: missing
+    enabled: false
+    notes: >-
+      GAL-20, known gap. Field range pH 4.0-5.5 for the acidophilous members; softened (floor 0.3, full to
+      6.0) because C. alborufescens prefers limestone. Tuscan plots: about 10x lower abundance on calcareous
+      oak plots (pH 6.8-7.4) than in chestnut, with host and substrate confounded.
+
+  - id: lithology
+    role: gate
+    kind: static_band
+    i18n_key: factor.lithology
+    input: {attribute: lithology_calcareous}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.4
+    confidence: plausible
+    source: [lagana1999_czech_mycol, olariaga2017, rt_db_geologico]
+    derived: true
+    data: missing
+    enabled: false
+    notes: >-
+      GAL-21, the cheaper proxy for soil_ph: calcareous share of the cell (0-1) -> x1 siliceous, ~x0.7
+      mixed, x0.4 calcareous. The appendix exempts evergreen oak on limestone (x0.8), which needs a
+      habitat interaction the schema lacks.
+
+known_gaps:
+  - id: aspect
+    description: GAL-07. Below 600 m in June-September, north- and east-facing slopes get a slight edge (S/SW/W x0.85).
+    needs: [engine support for an aspect multiplier conditional on elevation and season]
+    confidence: folklore
+    source: [olariaga2017, myboletus_finferli]
+  - id: spring_warmth
+    description: GAL-15. The spring window opens after about 430 growing degree-days (base 5 °C) since 1 January; binds only at high elevation.
+    needs: [a cumulative-since-date aggregate]
+    confidence: plausible
+    source: [ivanochko2021]
+  - id: acid_forest_subtypes
+    description: Regione Toscana forest types split several classes by substrate (castagneto acidofilo, cerreta acidofila, pineta acidofila di pino nero); keeping them in the grid gives a free soil-pH proxy.
+    needs: [M2 woodland grid forest sub-types]
+    confidence: plausible
+    source: [rt_tipi_forestali_p1]
+  - id: stand_soil_management
+    description: Low-nitrogen soils, stand age (fruiting from 10-40 years), moss and litter, soil texture and drainage, clearcutting and trampling all matter.
+    needs: [stand_age, canopy_cover, litter_depth, soil_texture, nitrogen deposition]
+    confidence: plausible
+    source: [pilz2003, jansen_van_dobben1987, ivanochko2021, rochon2011]

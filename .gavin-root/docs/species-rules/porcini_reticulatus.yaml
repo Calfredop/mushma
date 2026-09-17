@@ -1,0 +1,227 @@
+# Draft rule config. Evidence and rule ids (POR-*) are in .gavin-root/docs/species-ecology.md.
+# Parameters are priors for the M3 backtest, not tuned values.
+schema_version: 1
+key: porcini_reticulatus
+group: porcini
+taxon: Boletus reticulatus
+synonyms: [Boletus aestivalis]
+status: draft
+i18n_key: species.porcini_reticulatus
+records:
+  gbif_taxon_keys: [5954691]
+  inat_taxon_ids: [350216]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    GBIF taxonKey 5954691 includes the synonym B. aestivalis (5954988). 28 of 39 Tuscan GBIF rows are
+    soil-DNA MATERIAL_SAMPLE records from the 2019 "Global soil organisms" dataset: exclude them.
+    Validate the porcini group score, not this key alone.
+notes: >-
+  The summer porcino ("fungo del caldo"). No quantitative weather study exists for this taxon: the rain
+  logic is borrowed from B. edulis, temperature and cold-night rules are shifted using qualitative sources.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: late_spring_summer
+          dates: ["01-05", "01-06", "30-09", "15-11"]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-S1, tail widened by the occurrence cross-check: central-Italy iNaturalist records are
+      over-represented Jun–Sep (4.2x, 2.7x, 1.8x, 2.6x vs all fungi) and still 0.8x in October (9 records),
+      so the ramp now ends mid-November instead of 31 October.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        chestnut: 1.0
+        deciduous_oak: 0.9
+        mixed_broadleaf_conifer: 0.6
+        beech: 0.5
+        mixed_broadleaf: 0.5
+        evergreen_oak: 0.4
+        transitional_woodland_shrub: 0.4
+        fir_spruce: 0.3
+        mountain_pine: 0.3
+        macchia: 0.2
+        mediterranean_pine: 0.2
+        other_conifer: 0.2
+        riparian: 0.15
+        exotic_broadleaf: 0.05
+      default: 0.0
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, beugelsdijk2008, santolamazza2023]
+    derived: true
+    data: available
+    notes: POR-H3. Chestnut and oak mainly; rarer under beech, pine and fir.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [0, 150, 1100, 1500]}
+    confidence: plausible
+    source: [matteucci2008_micoponte, muse_censimento_boletus, rt_tipi_forestali_p4, arrigoni_viciani_castagneti, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-A3. Hills to lower mountain, the chestnut and oak belt. Central-Italy iNaturalist records:
+      median 714 m, p90 1272 m (n=56).
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: plausible
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-R1 + POR-R2, transferred from B. edulis (strong there, plausible here).
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: sum, window_days: 30}
+    response: {trapezoid: [20, 80, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018]
+    derived: true
+    data: available
+    notes: POR-M1, transferred from B. edulis and community studies.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [9, 13, 21, 25]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, matteucci2008_micoponte, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: >-
+      POR-T3. The B. edulis band shifted warmer: "fungo del caldo" (IGP), "tipicamente termofila e
+      xerofila" (Matteucci). Low confidence within plausible.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d; compare in the backtest.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.75
+    confidence: plausible
+    source: [salerni2023_amiata, andrew2025]
+    derived: true
+    data: derived
+    notes: POR-X1. Milder than for B. edulis (x0.75) because this taxon is thermophilous.
+
+  - id: cold_nights
+    role: stopper
+    kind: count_days
+    i18n_key: factor.cold_nights
+    input: {variable: temperature_2m_min, op: lte, threshold: 5, window_days: 7}
+    response: {trapezoid: [null, null, 2, 3]}
+    floor: 0.5
+    confidence: folklore
+    source: [funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: >-
+      POR-X5. "Stops with the first cold": Tmin <=5 °C on 3+ of the last 7 nights -> x0.5.
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.1
+    confidence: folklore
+    source: [funghimagazine_fino_quando, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: POR-X3. Least frost-tolerant of the four (x0.1).
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [borgotaro_igp_rt, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 5, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: >-
+      POR-X6. ET0 threshold raised to 5 mm/day because this taxon fruits in summer at low altitude, where
+      4 mm/day is normal. All numbers are guesses.
+
+known_gaps:
+  - id: aspect
+    description: POR-A6. Tolerates or prefers sunny exposures (S x1.0, E/W x1.0, N x0.9).
+    needs: [engine support for aspect multipliers]
+    confidence: folklore
+    source: [matteucci2008_micoponte]
+  - id: temperature_drop
+    description: POR-T6. Temperature-drop bonus; see porcini_edulis.
+    needs: [a change-detection factor kind]
+    confidence: folklore
+    source: [bmeteo_pioggia_funghi]
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive.
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: stand_and_soil
+    description: >-
+      POR-N1. Mycelium is more frequent in mature (40-year) chestnut orchards than young ones; prefers
+      clay or sand-mixed loam.
+    needs: [stand_age, soil_texture]
+    confidence: plausible
+    source: [santolamazza2023, beugelsdijk2008]

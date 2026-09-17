@@ -1,0 +1,288 @@
+# Draft rule config. Evidence and rule ids (POR-*) are in .gavin-root/docs/species-ecology.md.
+# Parameters are priors for the M3 backtest, not tuned values.
+schema_version: 1
+key: porcini_edulis
+group: porcini
+taxon: Boletus edulis
+synonyms: [Boletus edulis s.s., Boletus quercicola, Boletus betulicola]
+status: draft
+i18n_key: species.porcini_edulis
+records:
+  gbif_taxon_keys: [5954958]
+  inat_taxon_ids: [48701]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    About 30 Tuscan fruit-body records (iNaturalist, 2026-09-17). Too few to validate this key alone:
+    validate the porcini group score.
+notes: >-
+  The only porcini taxon with direct weather-fruiting studies (Amiata, Germany, Spain).
+  The shared rain logic below is borrowed by the other three porcini keys.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: summer_autumn
+          dates: ["01-07", "01-09", "15-11", "20-12"]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, salerni2023_amiata, gm_siena_boletus, museo_porcino_borgotaro, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-S3. "Da fine settembre alla prima neve, rare le forme estive" (IGP); Amiata peaks moved from
+      October to August in 2002, so the window is broad and temperature does the fine timing.
+      Central-Italy iNaturalist records are over-represented Aug–Oct (1.8x, 3.1x, 1.7x vs all fungi).
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        beech: 1.0
+        chestnut: 0.9
+        fir_spruce: 0.9
+        mixed_broadleaf_conifer: 0.8
+        mountain_pine: 0.5
+        deciduous_oak: 0.5
+        mixed_broadleaf: 0.4
+        other_conifer: 0.3
+        transitional_woodland_shrub: 0.3
+        evergreen_oak: 0.2
+        mediterranean_pine: 0.2
+        macchia: 0.1
+        riparian: 0.1
+        exotic_broadleaf: 0.05
+      default: 0.0
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, salerni2023_amiata, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, beugelsdijk2008]
+    derived: true
+    data: available
+    notes: POR-H1. Affinities scaled from host rankings in Italian sources; beech, fir and chestnut lead.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [200, 700, 1600, 1900]}
+    confidence: plausible
+    source: [salerni2023_amiata, matteucci2008_micoponte, muse_censimento_boletus, rt_tipi_forestali_p4, borgotaro_igp_rt, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-A1. "Dalla media all'alta montagna"; placed on the Tuscan beech and fir belts. Tuscan
+      iNaturalist records: p10 478 m, median 1024 m, p90 1386 m (n=27).
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: strong
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia, bmeteo_pioggia_funghi]
+    derived: true
+    data: available
+    notes: >-
+      POR-R1 + POR-R2. Amiata B. edulis counts correlate with >=20 mm rain days, peaking 12 days
+      later (r about 0.6). Lag shape and the 10->30 mm ramp are derived (30 mm = the PRD hypothesis and
+      the low end of forager lore). Strong for the lag; the amount ramp is plausible.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: sum, window_days: 30}
+    response: {trapezoid: [20, 80, null, null]}
+    confidence: strong
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, salerni2023_amiata]
+    derived: true
+    data: available
+    notes: >-
+      POR-M1. 30-day rain drives fruiting in Tuscan oak woods (community) and a 26-day window at
+      2-4 mm/day fits B. edulis in German beech. The effect is strong; the 20->80 mm ramp is derived.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [6, 10, 17, 22]}
+    confidence: plausible
+    source: [brejon_hoffman2026_preprint, salerni2023_amiata]
+    derived: true
+    data: available
+    notes: >-
+      POR-T1. German optimum about 13 °C over 20 days (preprint); the upper shoulder is widened because
+      Amiata fruited in an 18.6 °C summer. Needs lapse-rate-corrected temperature per cell.
+
+  - id: soil_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_temperature
+    input: {variable: soil_temperature_0_to_7cm_mean, aggregate: mean, window_days: 10}
+    response: {trapezoid: [6, 10, 17, 22]}
+    confidence: folklore
+    source: [brejon_hoffman2026_preprint, bmeteo_pioggia_funghi]
+    derived: true
+    data: available
+    enabled: false
+    notes: POR-T5. Alternative to air_temperature, never both. No porcini soil-temperature threshold found in a primary source.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014, martinez_de_aragon2007, agreda2016]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d (P - ET0 instead of P); compare both in the backtest.
+
+  - id: soil_moisture
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_moisture
+    input: {variable: soil_moisture_7_to_28cm_mean, aggregate: percentile_of_normal, window_days: 7}
+    response: {trapezoid: [10, 40, null, null]}
+    confidence: plausible
+    source: [karavani2018, garcia_bustamante2021]
+    derived: true
+    data: derived
+    enabled: false
+    notes: >-
+      POR-M2. Same-month soil moisture limits yield (Mediterranean pine, community). Percentile against
+      the cell's calendar-month climatology, because model soil moisture is not comparable with field
+      thresholds. Needs the backfill climatology.
+
+  - id: early_season_wetness
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.early_season_wetness
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 60}
+    response: {trapezoid: [50, 100, null, null]}
+    floor: 0.6
+    confidence: plausible
+    source: [alday2017, taye2016, parlade2017, garcia_bustamante2021, salerni2002_oak]
+    derived: true
+    data: derived
+    enabled: false
+    notes: >-
+      POR-M4. 60-day rain as % of the cell's climatology: x0.6 at <=50 %, x1 at >=100 %. Autumn only in
+      the source reading; Soria found no effect of previous-summer rain, so it stays a weak multiplier.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.5
+    confidence: plausible
+    source: [salerni2023_amiata, karavani2018, andrew2025]
+    derived: true
+    data: derived
+    notes: >-
+      POR-X1. Tmax spikes about 8 °C above the period mean correlated negatively with fruit bodies for
+      up to about 3 weeks at Amiata. The multiplier is derived.
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.2
+    confidence: folklore
+    source: [borgotaro_igp_rt, brejon_hoffman2026_preprint, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X3. Two or more frosty nights in a week -> x0.2. Thresholds derived.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4. "Alla prima neve" ends the season. >=1 cm of snow in 3 days -> 0.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 4, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: >-
+      POR-X6. Forager lore: drying wind (tramontana, grecale) after rain wastes the trigger. No source
+      gives numbers; ET0 stands in for wind + dry air + sun. Every number is a guess to tune.
+
+  - id: drought_45d
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.drought
+    input: {variable: precipitation_sum, aggregate: sum, window_days: 45}
+    response: {trapezoid: [10, 15, null, null]}
+    confidence: plausible
+    source: [brejon_hoffman2026_preprint, agreda2015, salerni2002_oak]
+    derived: true
+    data: available
+    enabled: false
+    notes: POR-X2. Mostly subsumed by rain_30d (0 at <=20 mm in 30 days); kept for the backtest to compare.
+
+known_gaps:
+  - id: aspect
+    description: >-
+      POR-A5. Below 1000 m favour north-facing slopes (N x1.0, E/W x0.9, S x0.8). The engine has no
+      elevation-conditional multiplier, and the PRD lets v1 skip aspect.
+    needs: [engine support for an aspect multiplier conditional on elevation]
+    confidence: folklore
+    source: [rt_tipi_forestali_p4, bmeteo_pioggia_funghi, bonet2010]
+  - id: temperature_drop
+    description: >-
+      POR-T6. A >=3 °C drop in 7-day mean Tmax, 3-15 days before, helps trigger fruiting (x1.1 bonus).
+      Bonuses above 1 and change-over-time inputs are not in schema v1.
+    needs: [a change-detection factor kind]
+    confidence: folklore
+    source: [bmeteo_pioggia_funghi, karavani2018]
+  - id: lag_temperature
+    description: POR-R3. The rain lag lengthens by about 3 days when the 10 days after the trigger average under 10 °C.
+    needs: [a temperature-dependent lag in rain_event]
+    confidence: folklore
+    source: [blog_prevedere_porcini, funghimagazine_giorni_pioggia]
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive (IGP rule).
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: stand_and_soil
+    description: >-
+      POR-N1. Stand age (30- vs 60-year fir), basal area, thinning, litter removal and soil texture/pH
+      change B. edulis yield.
+    needs: [stand_age, canopy_cover, litter_depth, soil_texture, soil_ph]
+    confidence: strong
+    source: [salerni_perini2004, salerni2023_amiata, parlade2017, bonet2010, martinez_pena2012, beugelsdijk2008]

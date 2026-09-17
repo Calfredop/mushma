@@ -1,0 +1,200 @@
+# Draft rule config. Evidence and rule ids (POR-*) are in .gavin-root/docs/species-ecology.md.
+# Parameters are priors for the M3 backtest, not tuned values.
+schema_version: 1
+key: porcini_pinophilus
+group: porcini
+taxon: Boletus pinophilus
+synonyms: [Boletus pinicola]
+status: draft
+i18n_key: species.porcini_pinophilus
+records:
+  gbif_taxon_keys: [5954949]
+  inat_taxon_ids: [335942]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    Only 3 GBIF and 7 iNaturalist Tuscan records (2026-09-17). "Boletus pinicola" does not match in the
+    GBIF backbone (it resolves to class level), so map verbatim names to 5954949 by hand in the ingest.
+notes: >-
+  The most cold-tolerant porcino, and the earliest and latest to fruit. Hosts disagree between sources
+  (pines only in the Netherlands, beech, fir and chestnut in Italy); the Italian view is used.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: spring
+          dates: ["01-05", "20-05", "30-06", "20-07"]
+        - label: autumn
+          dates: ["15-08", "15-09", "15-11", "15-12"]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, micoweb_pinophilus]
+    derived: true
+    data: available
+    notes: >-
+      POR-S4. A summer form from June in chestnut and an autumn form under beech and fir (IGP). The
+      spring flush is the least certain part. Too few records to cross-check.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        beech: 0.9
+        fir_spruce: 0.8
+        chestnut: 0.8
+        mixed_broadleaf_conifer: 0.8
+        mountain_pine: 0.6
+        other_conifer: 0.3
+        mediterranean_pine: 0.3
+        deciduous_oak: 0.3
+        mixed_broadleaf: 0.3
+        transitional_woodland_shrub: 0.2
+        evergreen_oak: 0.1
+        macchia: 0.05
+        riparian: 0.05
+        exotic_broadleaf: 0.05
+      default: 0.0
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, beugelsdijk2008]
+    derived: true
+    data: available
+    notes: POR-H2. Beech, fir and chestnut per Italian sources; pines moderate.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [300, 800, 1600, 1900]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, matteucci2008_micoponte, muse_censimento_boletus, rt_tipi_forestali_p4]
+    derived: true
+    data: available
+    notes: POR-A2. Cool, humid mountain sites; the summer form also in mid-altitude chestnut.
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: plausible
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-R1 + POR-R2, transferred from B. edulis.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: sum, window_days: 30}
+    response: {trapezoid: [20, 80, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018]
+    derived: true
+    data: available
+    notes: POR-M1, transferred from B. edulis and community studies.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [4, 8, 15, 20]}
+    confidence: plausible
+    source: [muse_censimento_boletus, matteucci2008_micoponte, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: POR-T2. The coolest band, from "copes better with cool climates". Low confidence within plausible.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d; compare in the backtest.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.5
+    confidence: plausible
+    source: [salerni2023_amiata, andrew2025]
+    derived: true
+    data: derived
+    notes: POR-X1, as for B. edulis.
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.2
+    confidence: folklore
+    source: [borgotaro_igp_rt, brejon_hoffman2026_preprint, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X3.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [borgotaro_igp_rt, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 4, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-X6. All numbers are guesses.
+
+known_gaps:
+  - id: aspect
+    description: POR-A5. Below 1000 m favour north-facing slopes (N x1.0, E/W x0.9, S x0.8).
+    needs: [engine support for an aspect multiplier conditional on elevation]
+    confidence: folklore
+    source: [rt_tipi_forestali_p4, bmeteo_pioggia_funghi]
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive.
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: soil
+    description: POR-N1. "Poor, acid, sandy soil" in Dutch sampling.
+    needs: [soil_ph, soil_texture]
+    confidence: plausible
+    source: [beugelsdijk2008]

@@ -1,0 +1,879 @@
+# Shared bibliography for the draft species rules. Every factor `source` id must resolve here.
+# Built from the evidence appendices in .gavin-root/docs/species-ecology/ (cited_as gives the local R-number).
+# verified = page, abstract or PDF opened; snippet-only = seen in search results or metadata only.
+schema_version: 1
+references:
+  agreda2015:
+    citation: 'Ágreda T., Águeda B., Olano J.M., Vicente-Serrano S.M., Fernández-Toirán M. (2015) Increased evapotranspiration
+      demand in a Mediterranean climate might cause a decline in fungal yields under global warming. Global Change
+      Biology 21: 3499–3510'
+    doi: 10.1111/gcb.12960
+    kind: peer_reviewed
+    verified: verified
+    supports: water balance vs rain models, bimodal spring and late-summer–autumn response (guild level).
+    cited_as:
+    - porcini.md R9
+    - ovoli.md R10
+  agreda2016:
+    citation: 'Ágreda T., Águeda B., Fernández-Toirán M., Vicente-Serrano S.M., Olano J.M. (2016) Long-term monitoring
+      reveals a highly structured interspecific variability in climatic control of sporocarp production. Agricultural
+      and Forest Meteorology 223: 39–47'
+    doi: 10.1016/j.agrformet.2016.03.015
+    kind: peer_reviewed
+    verified: verified
+    supports: 'climate control well before the season; timing of the summer–autumn rain signal (species named in
+      the abstract: none).'
+    cited_as:
+    - porcini.md R10
+  alday2017:
+    citation: 'Alday J.G., Martínez de Aragón J., de-Miguel S., Bonet J.A. (2017) Mushroom biomass and diversity
+      are driven by different spatio-temporal scales along Mediterranean elevation gradients. Scientific Reports
+      7: 45824'
+    doi: 10.1038/srep45824
+    kind: peer_reviewed
+    verified: verified
+    supports: late-summer–early-autumn precipitation as main driver; elevation not significant (community).
+    cited_as:
+    - porcini.md R16
+    - ovoli.md R11
+  alonso_ponce2011:
+    citation: 'Alonso Ponce R. et al. (2011) Rockroses and Boletus edulis ectomycorrhizal association: realized
+      niche and climatic suitability in Spain. Fungal Ecology 4: 224–232'
+    doi: 10.1016/j.funeco.2010.10.002
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: mesothermal, Mediterranean, humid climatic niche; strongly acid loam soils.
+    cited_as:
+    - porcini.md R33
+  ambrosio_zotti2015:
+    citation: 'Ambrosio E., Zotti M. (2015) Mycobiota of three Boletus edulis (and allied species) productive sites.
+      Sydowia 67: 197–216'
+    url: https://www.academia.edu/31148543/Mycobiota_of_three_Boletus_edulis_and_allied_species_productive_sites
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: soil properties and geochemistry more strongly correlated with the community than vegetation and climate.
+    cited_as:
+    - porcini.md R44
+  amint_caesarea:
+    citation: Curti P. (rev. Cittadini M.). Scheda Amanita caesarea. AMINT – Funghi Italiani
+    url: https://www.funghiitaliani.it/Amanite/schede%20funghi/caesarea/Amanita%20caesarea.htm
+    kind: society
+    verified: verified
+    supports: warm, dry zones; under chestnut and Turkey oak; up to 900 m; summer–autumn.
+    cited_as:
+    - ovoli.md R17
+  andrew2018:
+    citation: 'Andrew C. et al. (2018) Explaining European fungal fruiting phenology with climate variability. Ecology
+      99: 1306–1315'
+    doi: 10.1002/ecy.2237
+    kind: peer_reviewed
+    verified: verified
+    supports: altitude shifts fruiting by up to 30 d (spring delays, autumnal accelerations); temperature drives
+      autumn ectomycorrhizal phenology.
+    cited_as:
+    - porcini.md R20
+    - ovoli.md R12
+  andrew2025:
+    citation: 'Andrew C. (2025) Not always optimal: fungal fruiting triggers indicate climate sensitivity in cooler
+      regions. Fungal Ecology 75: 101416'
+    doi: 10.1016/j.funeco.2025.101416
+    kind: peer_reviewed
+    verified: verified
+    supports: all 127 species sensitive to daily temperature extremes.
+    cited_as:
+    - porcini.md R21
+  arrigoni_viciani_castagneti:
+    citation: 'Arrigoni P.V., Viciani D. Caratteri fisionomici e fitosociologici dei castagneti toscani. Parlatorea
+      5: 55–99 (year not verified)'
+    url: https://www.researchgate.net/publication/236342898
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: chestnut rarely above ~1000 m in Tuscany.
+    cited_as:
+    - porcini.md R30
+  ballabio2019_lucas:
+    citation: 'Ballabio C. et al. (2019). Mapping LUCAS topsoil chemical properties at European scale using Gaussian
+      process regression. Geoderma 355: 113912'
+    doi: 10.1016/j.geoderma.2019.113912
+    kind: peer_reviewed
+    verified: verified
+    supports: an EU topsoil pH and CaCO3 map as a candidate proxy.
+    cited_as:
+    - gallinacci.md R22
+  baptista2010:
+    citation: 'Baptista P., Martins A., Tavares R.M., Lino-Neto T. (2010). Diversity and fruiting pattern of macrofungi
+      associated with chestnut (Castanea sativa) in the Trás-os-Montes region (Northeast Portugal). Fungal Ecology
+      3(1): 9–19'
+    doi: 10.1016/j.funeco.2009.06.002
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: only the general statement that fruiting in a chestnut orchard fluctuated with rainfall.
+    cited_as:
+    - ovoli.md R9
+    - gallinacci.md R35
+  beugelsdijk2008:
+    citation: 'Beugelsdijk D.C.M. et al. (2008) A phylogenetic study of Boletus section Boletus in Europe. Persoonia
+      20: 1–7'
+    doi: 10.3767/003158508X283692
+    url: https://pmc.ncbi.nlm.nih.gov/articles/2865352
+    kind: peer_reviewed
+    verified: verified
+    supports: four species; synonyms within B. edulis; per-species host and soil notes (Netherlands-centred sampling).
+    cited_as:
+    - porcini.md R23
+  blog_prevedere_porcini:
+    citation: '"Prevedere l''uscita dei porcini" (blog, author "Giancarlo")'
+    url: http://prevedereuscitaporcini.blogspot.com/2016/12/ecco-i-giorni-necessari-per-far-sbucare.html
+    kind: web
+    verified: verified
+    supports: 8 d minimum at 60 mm / 14 °C, up to 14 d; longer in cooler high beech than in chestnut at 600–700
+      m.
+    cited_as:
+    - porcini.md R38
+  bmeteo_cantharellus:
+    citation: 'Oppicelli N. (2025-07-22). Cantharellus cibarius: il fungo più amato d''Europa. 3B Meteo Funghi'
+    url: https://funghi.3bmeteo.com/cantharellus-cibarius/
+    kind: web
+    verified: verified
+    supports: acid/subacid soils; 15–24 °C; 3–4 days of light rain then cool nights; regional seasons.
+    cited_as:
+    - gallinacci.md R30
+  bmeteo_funghi_luglio:
+    citation: 'Oppicelli N. (2026-07-01). Funghi a luglio: il segreto è leggere pioggia e vento. Passione Funghi
+      – 3BMeteo'
+    url: https://funghi.3bmeteo.com/funghi-a-luglio/
+    kind: web
+    verified: verified
+    supports: 30–50 mm summer storms plus soil staying wet → sudden A. caesarea and B. aereus emergences in the
+      Tyrrhenian hills of central Italy; 10–15 mm storms insufficient (generic); lags of 8–11 d in warm conditions
+      (thermophilic porcini) to 15–20 d with cool nights (generic); dry downslope winds cancel rain within 48 h.
+    cited_as:
+    - ovoli.md R24
+  bmeteo_pioggia_funghi:
+    citation: '3bmeteo Funghi, "Pioggia e funghi: quanta ne deve cadere, e perché serve?"'
+    url: https://funghi.3bmeteo.com/pioggia-e-funghi-porcini/
+    kind: web
+    verified: verified
+    supports: 40–50 to 90–100 mm over ~2 weeks; repeated moderate rain; taxon rain preferences. Its claims on north
+      slopes and temperature drops were seen in other 3bmeteo pages via search summaries only.
+    cited_as:
+    - porcini.md R35
+  boddy2014:
+    citation: 'Boddy L., Büntgen U., Egli S., Gange A.C., Heegaard E., Kirk P.M., Mohammad A., Kauserud H. (2014)
+      Climate variation effects on fungal fruiting. Fungal Ecology 10: 20–33'
+    doi: 10.1016/j.funeco.2013.10.006
+    url: https://www.mn.uio.no/ibv/english/people/aca/haavarka/boddy-et-al-2014.pdf
+    kind: peer_reviewed
+    verified: verified
+    supports: review of yield drivers (Table 4), ET importance in the Mediterranean, preceding-year lags, variable
+      temperature effects, season extension.
+    cited_as:
+    - porcini.md R15
+  bonet2010:
+    citation: 'Bonet J.A., Palahí M., Colinas C., Pukkala T., Fischer C.R., Miina J., Martínez de Aragón J. (2010)
+      Modelling the production and species richness of wild mushrooms in pine forests of the Central Pyrenees in
+      northeastern Spain. Canadian Journal of Forest Research 40: 347–356'
+    doi: 10.1139/X09-198
+    kind: peer_reviewed
+    verified: verified
+    supports: basal area 15–20 m²/ha; slope, elevation, aspect and autumn rainfall as predictors.
+    cited_as:
+    - porcini.md R14
+  borgotaro_igp_2014:
+    citation: Consorzio per la tutela dell'IGP Fungo di Borgotaro, Disciplinare (version 01/09/2014)
+    url: https://www.fungodiborgotaro.com/ita/16/disciplinare/
+    kind: institutional
+    verified: verified
+    supports: same per-taxon habitat and months as R1; harvest 1 Apr–30 Nov; extended conifer list.
+    cited_as:
+    - porcini.md R2
+  borgotaro_igp_rt:
+    citation: Disciplinare di produzione "Fungo di Borgotaro" IGP (older consolidated text, Arts. 1–9; hosted by
+      Regione Toscana)
+    url: http://prodtrad.regione.toscana.it/dopigp_img/7_74.doc
+    kind: institutional
+    verified: verified
+    supports: four taxa and names; per-taxon habitat and months; eligible host species; 100 m wood-edge rule; litter
+      protection.
+    cited_as:
+    - porcini.md R1
+  brejon_hoffman2026_preprint:
+    citation: 'Brejon Lamartinière E., Hoffman J.I. (2025, version posted 8 June 2026) Predicting porcini: a decade
+      of sporocarp monitoring reveals the meteorological triggers of Boletus edulis fruiting in central European
+      beech forests. bioRxiv preprint, not peer-reviewed'
+    doi: 10.64898/2025.12.12.693895
+    kind: preprint
+    verified: verified
+    supports: 20-day temperature window, optimum ≈13 °C, fruiting at 10–15 °C, 26-day precipitation window at 2–4
+      mm/day, drought year failure, frost end.
+    cited_as:
+    - porcini.md R6
+  buntgen2012:
+    citation: 'Büntgen U., Kauserud H., Egli S. (2012) Linking climate variability to mushroom productivity and
+      phenology. Frontiers in Ecology and the Environment 10: 14–19'
+    doi: 10.1890/110064
+    kind: peer_reviewed
+    verified: verified
+    supports: Swiss mycorrhizal fruiting 10 days later after 1991; precipitation and temperature determine activity.
+      (The card's "Büntgen et al. 2012" could also mean the truffle drought paper cited in R15; not used.)
+    cited_as:
+    - porcini.md R19
+  cacciatoridifunghi_finferli:
+    citation: Cacciatoridifunghi.it (2022-06-01). Dove si trovano i finferli o galletti?
+    url: https://www.cacciatoridifunghi.it/blog/trova-i-funghi/dove-si-trovano-i-finferli-o-galletti/
+    kind: web
+    verified: verified
+    supports: May–November in lowlands, July–September in mountains, rarer above 1500 m; acid soils without waterlogging;
+      early-summer flush after a rainy June.
+    cited_as:
+    - gallinacci.md R31
+  cano_cajigas2015:
+    citation: Cano Cajigas J.M. (2015). Respuesta molecular de Amanita caesarea (Scop.:Fr.) Pers. frente a distintas
+      cepas rizobacterianas. Proyecto Fin de Carrera, Universidad Politécnica de Madrid
+    url: https://oa.upm.es/38108/7/PFC_JOSE_MARIA_CANO_CAJIGAS.pdf
+    kind: thesis
+    verified: verified
+    supports: silicicolous, heliophilous, thermophilous ecology; clearings with heath and Cistus; host list; SW
+      Spain October to mid-November with occasional spring–summer fruiting; pH ~6–6.5; benefit of shallow soil working.
+    cited_as:
+    - ovoli.md R6
+  casadelassetas_caesarea:
+    citation: Martínez P. Amanita caesarea, oronja placer del César. La Casa de las Setas (blog)
+    url: https://lacasadelassetas.com/blog/amanita-caesarea-oronja-placer-del-cesar/
+    kind: web
+    verified: verified
+    supports: rain episodes of 15–20 l/m²; 18–22 days lag; S/SE-facing sunny clearings; siliceous soils.
+    cited_as:
+    - ovoli.md R23
+  conedera2016_castanea:
+    citation: 'Conedera M., Tinner W., Krebs P., de Rigo D., Caudullo G. (2016). Castanea sativa in Europe: distribution,
+      habitat, usage and threats. In: European Atlas of Forest Tree Species. Publ. Off. EU'
+    url: https://forest.jrc.ec.europa.eu/media/atlas/Castanea_sativa.pdf
+    kind: institutional
+    verified: verified
+    supports: chestnut "does not thrive on limestone", very acidic to neutral soils.
+    cited_as:
+    - gallinacci.md R17
+  danell1994_mycorrhiza:
+    citation: 'Danell E. (1994). Formation and growth of the ectomycorrhiza of Cantharellus cibarius. Mycorrhiza
+      5: 89–97'
+    doi: 10.1007/BF00202339
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: mycelium in the top 5–10 cm, as cited in [R2].
+    cited_as:
+    - gallinacci.md R14
+  danell1994_thesis:
+    citation: 'Danell E. (1994). Cantharellus cibarius: mycorrhiza formation and ecology. Acta Universitatis Upsaliensis,
+      Comprehensive Summaries of Uppsala Dissertations from the Faculty of Science and Technology 35'
+    url: http://uu.diva-portal.org/smash/record.jsf?pid=diva2:295603
+    kind: thesis
+    verified: snippet-only
+    supports: the source of the pH 4.0–5.5 figure as cited in [R2].
+    cited_as:
+    - gallinacci.md R13
+  daza2006:
+    citation: 'Daza A., Manjón J.L., Camacho M., Romero de la Osa L., Aguilar A., Santamaría C. (2006). Effect of
+      carbon and nitrogen sources, pH and temperature on in vitro culture of several isolates of Amanita caesarea
+      (Scop.:Fr.) Pers. Mycorrhiza 16(2): 133–136'
+    doi: 10.1007/s00572-005-0025-6
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: optimum pH 6–7 and 24–28 °C for mycelial growth; isolates from Q. suber and C. sativa in SW Spain.
+      The introduction's phenology statement is snippet-only (seen via R6 and a search snippet).
+    cited_as:
+    - ovoli.md R5
+  de_rigo2016_qcerris:
+    citation: 'de Rigo D., Enescu C.M., Houston Durrant T., Caudullo G. (2016). Quercus cerris in Europe: distribution,
+      habitat, usage and threats. In: European Atlas of Forest Tree Species'
+    url: https://forest.jrc.ec.europa.eu/media/atlas/Quercus_cerris.pdf
+    kind: institutional
+    verified: verified
+    supports: grows on weakly acid to shallow calcareous soils.
+    cited_as:
+    - gallinacci.md R18
+  deshaware2021:
+    citation: 'Deshaware S., Marathe S.J., Bedade D., Deska J., Shamekh S. (2021). Investigation on mycelial growth
+      requirements of Cantharellus cibarius under laboratory conditions. Archives of Microbiology 203(4): 1539–1545'
+    doi: 10.1007/s00203-020-02142-0
+    kind: peer_reviewed
+    verified: verified
+    supports: in vitro optimum pH 6.0 and 22.5 °C.
+    cited_as:
+    - gallinacci.md R11
+  egli2006:
+    citation: 'Egli S., Peter M., Buser C., Stahel W., Ayer F. (2006). Mushroom picking does not impair future harvests
+      – results of a long-term study in Switzerland. Biological Conservation 129(2): 271–276'
+    doi: 10.1016/j.biocon.2005.10.042
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: context on harvest impact only; not used for any rule.
+    cited_as:
+    - gallinacci.md R15
+  ehlers_hobby2010:
+    citation: 'Ehlers T., Hobby T. (2010). The chanterelle mushroom harvest on northern Vancouver Island, British
+      Columbia: factors relating to successful commercial development. BC Journal of Ecosystems and Management 11(1&2):
+      72–83'
+    url: https://jem-online.org/index.php/jem/article/download/55/25/383
+    kind: peer_reviewed
+    verified: verified
+    supports: flushes every 2–3 weeks until cold weather; a hot, dry summer delayed production to late October;
+      pH 4.0–5.5 in northern California (citing Bergemann & Largent 2000). Concerns C. formosus.
+    cited_as:
+    - gallinacci.md R9
+  forager_wind_pages:
+    citation: 'Forager pages on wind: Funghi Magazine, "Vento e freddo bloccheranno le nascite al Nord?"'
+    url: https://funghimagazine.it/vento-e-freddo-al-nord-tanti-porcini-al-centro-sud/
+    kind: web
+    verified: snippet-only
+    supports: tramontana and other drying winds as the main enemy; no wind after rain.
+    cited_as:
+    - porcini.md R39
+  funghimagazine_fino_quando:
+    citation: Funghi Magazine, "Fino a quando nascono i Porcini"
+    url: https://funghimagazine.it/fino-a-quando-nascono-i-porcini/
+    kind: web
+    verified: verified
+    supports: end of season with snow, constant cold wind and frost; B. reticulatus stops with first cold; B. aereus
+      hardier.
+    cited_as:
+    - porcini.md R37
+  funghimagazine_giorni_pioggia:
+    citation: Funghi Magazine, "Quanti giorni dopo la pioggia nascono i funghi Porcini?"
+    url: https://funghimagazine.it/quanti-giorni-dopo-la-pioggia-nascono-i-funghi-porcini/
+    kind: web
+    verified: verified
+    supports: 30–80 mm in ½–2 days; 10–22 d to first growth, 15 d "ideal"; no wind after rain.
+    cited_as:
+    - porcini.md R36
+  funghimagazine_ovolo:
+    citation: Funghi Magazine. Amanita caesarea – Ovolo buono
+    url: https://funghimagazine.it/amanita-caesarea-ovolo-buono-funghi-commestibili/
+    kind: web
+    verified: verified
+    supports: June–October; fruits after steady heat; storm water must drain; regional altitude limits (NW ~500
+      m, NE ~600 m, Apennines ~1000 m, south 1200 m); hosts.
+    cited_as:
+    - ovoli.md R22
+  funghintoscana_blog_ovolo:
+    citation: '"Angiolo" (2020-04-11). Repetita(?) juvant 4 – Ovolo e alcune Amanite. Funghi in Toscana (blog)'
+    url: https://funghintoscana.blogspot.com/2020/04/repetita-juvant-4-ovolo-e-alcune.html
+    kind: web
+    verified: verified
+    supports: Tuscany mid-May to November, up to 1000 m; open woods, clearings, burnt areas, cleared fruit-chestnut
+      groves, Erica; decline with abandonment.
+    cited_as:
+    - ovoli.md R21
+  garcia_bustamante2021:
+    citation: 'García-Bustamante E., González-Rouco J.F., García-Lozano E., Martínez-Peña F., Navarro J. (2021)
+      Impact of local and regional climate variability on fungi production from Pinus sylvestris forests in Soria,
+      Spain. International Journal of Climatology 41: 5625–5643'
+    doi: 10.1002/joc.7144
+    kind: peer_reviewed
+    verified: verified
+    supports: B. edulis favoured by wet early season, cooler summers and mild autumns; start-of-season soil conditions.
+    cited_as:
+    - porcini.md R11
+  gelardi2020:
+    citation: 'Gelardi M. (2020) Diversity, biogeographic distribution, ecology, and ectomycorrhizal relationships
+      of the edible porcini mushrooms (Boletus s. str., Boletaceae) worldwide: state of the art and an annotated
+      checklist. Springer book chapter'
+    doi: 10.1007/978-3-030-37378-8_8
+    kind: monograph
+    verified: snippet-only
+    supports: lead only (per-species hosts); not read.
+    cited_as:
+    - porcini.md R41
+  gm_ancona_caesarea:
+    citation: Gruppo Micologico Naturalistico Ancona. Scheda Amanita caesarea
+    url: https://www.gruppomicologicoancona.it/micologia/ritrovamenti-e-schede/schede-descrittive/amanita-caesarea.html
+    kind: society
+    verified: verified
+    supports: warm climates; broadleaf woods in summer–autumn; chestnut–oak record (Monti Sibillini, 30 Sep 2012).
+    cited_as:
+    - ovoli.md R20
+  gm_siena_boletus:
+    citation: 'Gruppo Micologico Naturalistico Siena, schede tecniche: B. aereus'
+    url: https://www.gruppomicologicosiena.it/cms/micologia/schede-tecniche-micologiche/72-boletus-aereus-bull
+    kind: society
+    verified: verified
+    supports: B. aereus early summer to late autumn, broadleaves and pines with "scopi"; B. edulis August–November,
+      plain to mountain.
+    cited_as:
+    - porcini.md R27
+  gyosheva_bulgaria_rdb:
+    citation: 'Gyosheva M. Amanita caesarea. In: Red Data Book of the Republic of Bulgaria, Vol. 1 (Plants and Fungi)'
+    url: http://e-ecodb.bas.bg/rdb/en/vol1/Amacaesa.html
+    kind: institutional
+    verified: verified
+    supports: fruiting June–October; light, warm oak and mixed deciduous forests on drained soils; long-term decline;
+      threats.
+    cited_as:
+    - ovoli.md R8
+  hall1998:
+    citation: 'Hall I.R., Lyon A.J.E., Wang Y., Sinclair L. (1998) Ectomycorrhizal fungi with edible fruiting bodies
+      2. Boletus edulis. Economic Botany 52: 44–56'
+    doi: 10.1007/BF02861294
+    kind: peer_reviewed
+    verified: verified
+    supports: B. edulis s.l. as a complex; hosts in Fagaceae, Pinaceae, Betulaceae.
+    cited_as:
+    - porcini.md R22
+  innatura_ovolo:
+    citation: InNatura (content credited to AMINT). Ovolo buono
+    url: https://www.innatura.info/amanita-caesarea-2/
+    kind: web
+    verified: verified
+    supports: south-facing sunny clearings; up to 900 m; summer–autumn; uncommon in northern Italy.
+    cited_as:
+    - ovoli.md R18
+  iucn_caesarea2019:
+    citation: 'Gonçalves S.C. (2019). Amanita caesarea. The IUCN Red List of Threatened Species 2019: e.T125433663A125435485'
+    doi: 10.2305/IUCN.UK.2019-3.RLTS.T125433663A125435485.en
+    url: https://redlist.info/iucn/species_view/208468
+    kind: institutional
+    verified: verified
+    supports: native range, hosts, habitats, "only seldom above 1200 m", threats.
+    cited_as:
+    - ovoli.md R7
+  ivanochko2021:
+    citation: 'Ivanochko G., Svendsen E., Hrycan W., Tanino K. (2021). Characterization of chanterelle (Cantharellus
+      cibarius) and pine mushrooms (Tricholoma magnivelare) in northern Saskatchewan. Canadian Journal of Plant
+      Science 101: 853–870'
+    doi: 10.1139/cjps-2021-0136
+    kind: peer_reviewed
+    verified: verified
+    supports: GDD5 of 500 ± 70; cumulative precipitation of 50–100 mm; stand age 41–60 years; moderately open canopy.
+    cited_as:
+    - gallinacci.md R6
+  jansen_van_dobben1987:
+    citation: 'Jansen E., van Dobben H.F. (1987). Is decline of Cantharellus cibarius in the Netherlands due to
+      air pollution? Ambio 16(4): 211–213'
+    url: https://www.jstor.org/stable/4313357
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: marked Dutch decline linked to soil change, partly from air pollution (content also via [R2]).
+    cited_as:
+    - gallinacci.md R12
+  karavani2018:
+    citation: 'Karavani A., De Cáceres M., Martínez de Aragón J., Bonet J.A., de-Miguel S. (2018) Effect of climatic
+      and soil moisture conditions on mushroom productivity and related ecosystem services in Mediterranean pine
+      stands facing climate change. Agricultural and Forest Meteorology 248: 432–440'
+    doi: 10.1016/j.agrformet.2017.10.024
+    kind: peer_reviewed
+    verified: verified
+    supports: same-month soil moisture, 1-month precipitation delay, temperature effect by season stage (lumped
+      community).
+    cited_as:
+    - porcini.md R7
+  kauserud2012:
+    citation: 'Kauserud H. et al. (2012) Warming-induced shift in European mushroom fruiting phenology. PNAS 109:
+      14488–14493'
+    doi: 10.1073/pnas.1200789109
+    kind: peer_reviewed
+    verified: verified
+    supports: season widening and later end, 1970–2007; mycorrhizal seasons more compressed.
+    cited_as:
+    - porcini.md R18
+    - gallinacci.md R16
+  kodaira2024:
+    citation: 'Kodaira M., et al. (2024). Amanita satotamagotake sp. nov., a cryptic species formerly included in
+      Amanita caesareoides. Mycoscience 65(2): 49–67'
+    doi: 10.47371/mycosci.2023.12.001
+    kind: peer_reviewed
+    verified: verified
+    supports: sect. Caesareae taxonomy; A. jacksonii is North American; East Asian taxa once called A. caesarea.
+    cited_as:
+    - ovoli.md R13
+  lagana1999_czech_mycol:
+    citation: 'Laganà A., Salerni E., Barluzzi C., Perini C., De Dominicis V. (1999). Mycocoenological studies in
+      Mediterranean forest ecosystems: calcicolous deciduous oak woods of central-southern Tuscany (Italy). Czech
+      Mycology 52(1): 1–16'
+    url: https://czechmycology.org/_cm/CM52101.pdf
+    kind: peer_reviewed
+    verified: verified
+    supports: presence in 1/10 evergreen-oak and 1/9 chestnut plots, 0/4 calcicolous deciduous-oak plots (pH 6.8–7.4);
+      summer sampling gaps.
+    cited_as:
+    - ovoli.md R2
+    - gallinacci.md R3
+  lagana2002_cryptogamie:
+    citation: 'Laganà A., Salerni E., Barluzzi C., Perini C., De Dominicis V. (2002). Macrofungi as long-term indicators
+      of forest health and management in central Italy. Cryptogamie, Mycologie 23(1): 39–50'
+    url: https://sciencepress.mnhn.fr/sites/default/files/articles/pdf/cryptogamie-mycologie2002v23f1a5.pdf
+    kind: peer_reviewed
+    verified: verified
+    supports: the hot, dry summer of 1998 penalised species fruiting after the first rains (community-level).
+    cited_as:
+    - ovoli.md R4
+  lagana2002_fir:
+    citation: 'Laganà A., Angiolini C., Loppi S., Salerni E., Perini C., Barluzzi C., De Dominicis V. (2002). Periodicity,
+      fluctuations and successions of macrofungi in fir forests (Abies alba Miller) in Tuscany, Italy. Forest Ecology
+      and Management 169(3): 187–202'
+    doi: 10.1016/S0378-1127(01)00672-7
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: 'Laganà A., Angiolini C., Loppi S., Salerni E., Perini C., Barluzzi C., De Dominicis V. (2002). Periodicity,
+      fluctuations and successions of macrofungi in fir forests (Abies alba Miller) in Tuscany, Italy. Forest Ecology
+      and Management 169(3): 187–202. https://doi.org/10.1016/S0378-1127(01)00672-7 snippet-only (metadata only).
+      Lead only; not used for rules.'
+    cited_as:
+    - gallinacci.md R34
+  lagana2002_polish_bot:
+    citation: 'Laganà A., Salerni E., Barluzzi C., De Dominicis V., Perini C. (2002). Fungi (Macromycetes) in various
+      types of Mediterranean forest ecosystems (Tuscany, Italy). Polish Botanical Journal 47(2): 143–165'
+    url: https://archive.org/details/polish-botanical-journal-47-002-143-165
+    kind: peer_reviewed
+    verified: verified
+    supports: the only record in chestnut coppice St. 6 (550 m, NE, sandstone); absence from holm-oak and fir plots;
+      autumn-limited fruiting in the hill belt; July–August drought as critical on the coast.
+    cited_as:
+    - ovoli.md R1
+  leonardi2017:
+    citation: 'Leonardi P., Graziosi S., Zambonelli A., Salerni E. (2017) The economic potential of mushrooms in
+      an artificial Pinus nigra forest. Italian Journal of Mycology 46: 48–59'
+    doi: 10.6092/issn.2531-7342/7287
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: Amiata black pine survey edible species list without porcini (weak).
+    cited_as:
+    - porcini.md R43
+  martinez_de_aragon2007:
+    citation: 'Martínez de Aragón J., Bonet J.A., Fischer C.R., Colinas C. (2007) Productivity of ectomycorrhizal
+      and selected edible saprotrophic fungi in pine forests of the pre-Pyrenees mountains, Spain: predictive equations
+      for forest management of mycological resources. Forest Ecology and Management 252: 239–256'
+    doi: 10.1016/j.foreco.2007.06.040
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: annual precipitation, precipitation minus Sep/Oct evapotranspiration, minimum August soil temperature
+      (community yield).
+    cited_as:
+    - porcini.md R13
+  martinez_pena2012:
+    citation: 'Martínez-Peña F., de-Miguel S., Pukkala T., Bonet J.A., Ortega-Martínez P., Aldea J., Martínez de
+      Aragón J. (2012) Yield models for ectomycorrhizal mushrooms in Pinus sylvestris forests with special focus
+      on Boletus edulis and Lactarius group deliciosus. Forest Ecology and Management 282: 63–69'
+    doi: 10.1016/j.foreco.2012.06.034
+    kind: peer_reviewed
+    verified: verified
+    supports: rainfall and temperature significant; basal area strong for B. edulis.
+    cited_as:
+    - porcini.md R12
+  matteucci2008_micoponte:
+    citation: 'Matteucci S. (2008) I Boletus del gruppo edulis, i "principi" del bosco. MicoPonte 2: 4–14 (text
+      version)'
+    url: https://www.micoponte.it/File/I%20Boletus%20del%20gruppo%20edulis,%20i%20principi%20del%20bosco.pdf
+    kind: society
+    verified: verified
+    supports: per-taxon habitat, season, altitude tendency and thermal preference; vernacular names.
+    cited_as:
+    - porcini.md R24
+  micocyl2021:
+    citation: Micocyl, Junta de Castilla y León (2021-06-15). Fructificación de especies típicas de inicio de verano
+    url: https://www.micocyl.es/noticias/fructificacion-de-especies-tipicas-de-inicio-de-verano
+    kind: institutional
+    verified: verified
+    supports: summer fruiting of C. cibarius tied to the amount of rain and the number of rain events in the previous
+      15–20 days.
+    cited_as:
+    - gallinacci.md R27
+  micoex2016_pallens:
+    citation: Sociedad Micológica Extremeña (MICOEX) (2016-09-17). Cantharellus subpruinosus = Cantharellus pallens
+    url: https://micoex.org/2016/09/17/cantharellus-subpruinosus/
+    kind: society
+    verified: verified
+    supports: spring and autumn fruiting, sporadic in warm winters; chestnut, cork oak and maritime pine hosts.
+    cited_as:
+    - gallinacci.md R28
+  micoweb_pinophilus:
+    citation: Micoweb, Boletus pinophilus
+    url: https://www.micoweb.it/boleti/boletus-pinophilus
+    kind: web
+    verified: verified
+    supports: mainly autumnal, sporadic late spring; conifers and beech, chestnut, birch.
+    cited_as:
+    - porcini.md R42
+  muse_censimento_alborufescens:
+    citation: 'MUSE – Museo delle Scienze (Trento). Censimento dei macromiceti: Cantharellus alborufescens'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=450082&ar=tv
+    kind: society
+    verified: verified
+    supports: NE Italy records at 25–1350 m, 23 May–28 November; association with Q. ilex and Q. suber.
+    cited_as:
+    - gallinacci.md R29
+  muse_censimento_boletus:
+    citation: 'Censimento dei macromiceti (Federazioni dei gruppi micologici del Trentino-Alto Adige, Veneto, Friuli
+      Venezia Giulia; hosted by MUSE), species pages with texts by M. Floriani: B. aereus'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=159002&ar=tv
+    kind: society
+    verified: verified
+    supports: phenology and altitude extremes (NE Italy), B. pinophilus earliest/latest, B. aereus mainly central-southern
+      Italy and confused with B. aestivalis, nomenclature (B. pinicola illegitimate).
+    cited_as:
+    - porcini.md R25
+  museo_porcino_borgotaro:
+    citation: Museo del Fungo Porcino di Borgotaro, "Gli habitat del Porcino"
+    url: https://fungoporcinodiborgotaro.museidelcibo.it/il-prodotto/caratteristiche/gli-habitat-del-porcino/
+    kind: institutional
+    verified: verified
+    supports: per-taxon hosts and season; B. aereus at low elevations.
+    cited_as:
+    - porcini.md R26
+  mushma_occurrence_check_2026:
+    citation: 'mushma occurrence cross-check: GBIF occurrence and species APIs, iNaturalist observations and histogram
+      APIs, and the Open-Meteo elevation API, queried 2026-09-17. Aggregates only (counts by month, elevation quantiles);
+      no coordinates are stored or published'
+    url: https://api.gbif.org/v1/occurrence/search
+    kind: analysis
+    verified: verified
+    supports: Tuscan and central-Italy record counts by month and elevation; month enrichment against the all-fungi
+      observer baseline; GBIF taxon keys and synonymy; the MATERIAL_SAMPLE trap. See species-ecology.md, Season
+      cross-check.
+    cited_as:
+    - species-ecology.md
+    - porcini.md R34
+    - ovoli.md R14
+    - ovoli.md R15
+    - gallinacci.md R25
+    - gallinacci.md R26
+  myboletus_finferli:
+    citation: 'MyBoletus. Chanterelles in Europe: where to find them, season and habitat'
+    url: https://myboletus.com/en/funghi/finferli/
+    kind: web
+    verified: verified
+    supports: 300–1100 m; hill season from late May, 900–1200 m from July to October; E/NE exposure; "tolerates
+      moderate drought".
+    cited_as:
+    - gallinacci.md R32
+  myboletus_ovoli:
+    citation: 'MyBoletus. Ovoli (Amanita caesarea): guida per trovare il fungo dei re'
+    url: https://myboletus.com/it/funghi/ovoli/
+    kind: web
+    verified: verified
+    supports: July–September peak August (Italy-wide); 200–900 m; not in beech woods; acid, well-drained soils;
+      waterlogging and cold soil unfavourable; shaded aspects delay it.
+    cited_as:
+    - ovoli.md R25
+  olariaga2017:
+    citation: 'Olariaga I., Moreno G., Manjón J.L., Salcedo I., Hofstetter V., Rodríguez D., Buyck B. (2017). Cantharellus
+      (Cantharellales, Basidiomycota) revisited in Europe through a multigene phylogeny. Fungal Diversity 83: 263–292'
+    doi: 10.1007/s13225-016-0376-7
+    url: https://www.fungipedia.org/media/kunena/attachments/2683/CantharellusmonografiaEuropa.pdf
+    kind: peer_reviewed
+    verified: verified
+    supports: the eight European species and their synonyms (subpruinosus = pallens); ecology, climate and soil
+      preference per taxon; Tuscan specimens (Siena province); low host specificity.
+    cited_as:
+    - gallinacci.md R1
+  openmeteo_climatology_ovoli:
+    citation: 'Open-Meteo Historical Weather API (ERA5/ERA5-Land "best match"), daily 2016–2025, timezone=Europe/Rome,
+      points 43.28N 11.20E; 43.02N 11.10E; 44.08N 10.45E; 43.47N 10.42E (grid elevations 463, 499, 209, 259 m),
+      variables: soil temperature 0–7/7–28 cm, Tmin, Tmean, precipitation, soil moisture 0–7 cm, ET0;'
+    url: https://archive-api.open-meteo.com/v1/archive
+    kind: analysis
+    verified: verified
+    supports: all climatology-derived thresholds.
+    cited_as:
+    - ovoli.md R16
+  oria_de_rueda2008:
+    citation: 'Oria-de-Rueda J.A., Martín-Pinto P., Olaizola J. (2008) Bolete productivity of cistaceous scrublands
+      in northwestern Spain. Economic Botany 62: 323–330'
+    doi: 10.1007/s12231-008-9031-x
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: B. edulis and B. aereus fruit in Cistus ladanifer scrub (37.8 and 22.5 kg/ha).
+    cited_as:
+    - porcini.md R32
+  parlade2017:
+    citation: 'Parladé J., Martínez-Peña F., Pera J. (2017) Effects of forest management and climatic variables
+      on the mycelium dynamics and sporocarp production of the ectomycorrhizal fungus Boletus edulis. Forest Ecology
+      and Management 390: 73–79'
+    doi: 10.1016/j.foreco.2017.01.025
+    kind: peer_reviewed
+    verified: verified
+    supports: autumn precipitation positive, no temperature effect, cutting reduces mycelium, harvesting no effect
+      (P. sylvestris, Soria).
+    cited_as:
+    - porcini.md R8
+  pasta2016_qpubescens:
+    citation: 'Pasta S., de Rigo D., Caudullo G. (2016). Quercus pubescens in Europe: distribution, habitat, usage
+      and threats. In: European Atlas of Forest Tree Species'
+    url: https://forest.jrc.ec.europa.eu/media/atlas/Quercus_pubescens.pdf
+    kind: institutional
+    verified: verified
+    supports: '"indifferent to pH", prefers lime-rich soils in the north of its range.'
+    cited_as:
+    - gallinacci.md R19
+  pilz2003:
+    citation: Pilz D., Norvell L., Danell E., Molina R. (2003). Ecology and management of commercially harvested
+      chanterelle mushrooms. Gen. Tech. Rep. PNW-GTR-576. USDA Forest Service, PNW Research Station
+    url: https://research.fs.usda.gov/treesearch/5298
+    kind: institutional
+    verified: verified
+    supports: pH 4.0–5.5 and low N (p. 19); 14 host genera, fruiting at stand age 10–40 years, weather effects,
+      growth 2–5 cm/month and 44-day mean persistence (p. 20); mycelium in the top 5–10 cm, N and deposition, picking
+      and trampling (pp. 23–24); culture at 20 °C.
+    cited_as:
+    - gallinacci.md R2
+  poggio2021_soilgrids:
+    citation: 'Poggio L. et al. (2021). SoilGrids 2.0: producing soil information for the globe with quantified
+      spatial uncertainty. SOIL 7: 217–240'
+    doi: 10.5194/soil-7-217-2021
+    kind: peer_reviewed
+    verified: verified
+    supports: 250 m global pH(H2O) at six depths, with uncertainty.
+    cited_as:
+    - gallinacci.md R21
+  rochon2011:
+    citation: 'Rochon C., Paré D., Pélardy N., Khasa D.P., Fortin J.A. (2011). Ecology and productivity of Cantharellus
+      cibarius var. roseocanus in two eastern Canadian jack pine stands. Botany 89(10): 663–675'
+    doi: 10.1139/b11-058
+    kind: peer_reviewed
+    verified: verified
+    supports: rain 1 week before and air temperature 2 weeks before correlate with productivity; moss, C:N, stand
+      density, texture.
+    cited_as:
+    - gallinacci.md R7
+  rt_db_geologico:
+    citation: Regione Toscana. DataBase Geologico in scala 1:10.000 (Geoscopio DB Geologico)
+    url: https://dati.toscana.it/dataset/dbg/resource/914208a2-693b-4bdd-b75e-9e25088946b1
+    kind: dataset
+    verified: snippet-only
+    supports: a lithology layer for a calcareous/siliceous reclassification.
+    cited_as:
+    - gallinacci.md R24
+  rt_db_pedologico:
+    citation: Regione Toscana. DataBase Pedologico in scala 1:10.000 (Spatialite, CC-BY)
+    url: https://dati.toscana.it/dataset/dbped/resource/966fbdd4-3ee9-4762-8954-4ceacd6e66a4
+    kind: dataset
+    verified: verified
+    supports: an available regional soil database; the pH attribute is not confirmed.
+    cited_as:
+    - gallinacci.md R23
+  rt_tipi_forestali_p1:
+    citation: Regione Toscana, Giunta Regionale. I tipi forestali (series "Boschi e macchie di Toscana"), part I
+    url: https://www.regione.toscana.it/documents/10180/24010/I%20tipi%20forestali%20-%20parte%20I/50dd71a3-3925-488b-9b22-66672479dcb0
+    kind: institutional
+    verified: verified
+    supports: substrate-specific forest types ("Castagneto acidofilo", "Castagneto mesofilo su arenaria", "Castagneto
+      mesotrofico su rocce vulcaniche del M. Amiata", "Cerreta acidofila…", "Querceto acidofilo di roverella a cerro",
+      "Pineta acidofila di pino nero").
+    cited_as:
+    - gallinacci.md R20
+  rt_tipi_forestali_p4:
+    citation: Regione Toscana, Giunta Regionale (1998) Boschi e macchie di Toscana – I tipi forestali (Mondino G.P.,
+      Bernetti G. et al.), parte IV (and parte I)
+    url: https://www.regione.toscana.it/documents/10180/24010/I%20tipi%20forestali%20-%20parte%20IV/8fa2a8d0-3d68-48ed-8471-c44fc2c87f87
+    kind: institutional
+    verified: verified
+    supports: Tuscan beech belt 900–1700 (1800) m; fir 900–1300 (1500) m, north aspects below 1000 m; Amiata beech
+      types.
+    cited_as:
+    - porcini.md R29
+  salerni2002_oak:
+    citation: 'Salerni E., Laganà A., Perini C., Loppi S., De Dominicis V. (2002) Effects of temperature and rainfall
+      on fruiting of macrofungi in oak forests of the Mediterranean area. Israel Journal of Plant Sciences 50: 189–198'
+    doi: 10.1560/GV8J-VPKL-UV98-WVU1
+    kind: peer_reviewed
+    verified: verified
+    supports: 'Tuscan oak forests (whole community, lumped): 30-day rain correlation, annual and spring rain. The
+      10-day species peak is cited from R3''s discussion.'
+    cited_as:
+    - porcini.md R5
+    - ovoli.md R3
+    - gallinacci.md R4
+  salerni2023_amiata:
+    citation: 'Salerni E., Paoli L., Perini C. (2023) Combined impact of forest management and climate change on
+      Boletus edulis productivity: may mycosilviculture mitigate the effects of climate extremes? Italian Journal
+      of Mycology 52: 76–88'
+    doi: 10.6092/issn.2531-7342/16464
+    kind: peer_reviewed
+    verified: verified
+    supports: Amiata B. edulis s.s. site data, monthly peaks, R20 day-12 lag signal, heat-spike suppression, thinning
+      and litter effects, B. pinophilus sporadic in fir plantation.
+    cited_as:
+    - porcini.md R3
+  salerni_perini2004:
+    citation: 'Salerni E., Perini C. (2004) Experimental study for increasing productivity of Boletus edulis s.l.
+      in Italy. Forest Ecology and Management 201: 161–170'
+    doi: 10.1016/j.foreco.2004.06.027
+    kind: peer_reviewed
+    verified: verified
+    supports: stand age (30 vs 60 yr), B. badius replacement, medium thinning positive, litter removal negative.
+    cited_as:
+    - porcini.md R4
+  santolamazza2023:
+    citation: Santolamazza-Carbone S., Iglesias-Bernabé L., Landin M., Rueda E.B., Barreal M.E., Gallego P.P. (2023)
+      Artificial intelligence unveils key interactions between soil properties and climate factors on Boletus edulis
+      and B. reticulatus mycelium in chestnut orchards of different ages. Frontiers in Soil Science 3
+    doi: 10.3389/fsoil.2023.1159793
+    kind: peer_reviewed
+    verified: verified
+    supports: B. reticulatus mycelium with prior water deficit + high soil moisture; more in mature orchards (Galicia,
+      mycelium).
+    cited_as:
+    - porcini.md R31
+  sardegna_foreste_aereus:
+    citation: Sardegna Foreste, scheda Boletus aereus
+    url: https://www.sardegnaforeste.it/fungo/boletus-aereus
+    kind: institutional
+    verified: verified
+    supports: holm oak, chestnut, Arbutus/Erica macchia hosts.
+    cited_as:
+    - porcini.md R28
+  sardegna_foreste_caesarea:
+    citation: Sardegna Foreste (Agenzia Forestas, Regione Sardegna). Amanita caesarea
+    url: https://www.sardegnaforeste.it/fungo/amanita-caesarea
+    kind: institutional
+    verified: verified
+    supports: warm broadleaf woods (Castanea, Quercus), often with Arbutus and Erica.
+    cited_as:
+    - ovoli.md R19
+  sitta_floriani2008:
+    citation: 'Sitta N., Floriani M. (2008) Nationalization and globalization trends in the wild mushroom commerce
+      of Italy with emphasis on porcini (Boletus edulis and allied species). Economic Botany 62: 307–322'
+    doi: 10.1007/s12231-008-9037-4
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: nothing encodable; trade history.
+    cited_as:
+    - porcini.md R40
+  straatsma1986_thesis:
+    citation: Straatsma G. (1986). Physiology of mycelial growth of the mycorrhizal mushroom Cantharellus cibarius
+      Fr. PhD thesis, Landbouwhogeschool Wageningen
+    url: https://edepot.wur.nl/202849
+    kind: thesis
+    verified: verified
+    supports: in vitro growth best at 20–24 °C (optimum about 22 °C) and pH 5.5–6.0 (Tables 2 and 5).
+    cited_as:
+    - gallinacci.md R10
+  straatsma2001:
+    citation: 'Straatsma G., Ayer F., Egli S. (2001). Species richness, abundance, and phenology of fungal fruit
+      bodies over 21 years in a Swiss forest plot. Mycological Research 105(5): 515–523'
+    doi: 10.1017/S0953756201004154
+    url: https://research.wur.nl/en/publications/species-richness-abundance-and-phenology-of-fungal-fruit-bodies-o
+    kind: peer_reviewed
+    verified: verified
+    supports: productivity vs June–October rain; fruiting time vs July–August temperature (all fungi).
+    cited_as:
+    - gallinacci.md R5
+  tahvanainen2020:
+    citation: Tahvanainen V. (2020). The availability and supply of marketed mushrooms in Eastern Finland. Dissertationes
+      Forestales 291
+    doi: 10.14214/df.291
+    url: https://dissertationesforestales.fi/pdf/10325
+    kind: thesis
+    verified: verified
+    supports: June + July precipitation raises C. cibarius supply (coefficient 0.0058 per mm, R² 34.6%).
+    cited_as:
+    - gallinacci.md R8
+  taye2016:
+    citation: 'Taye Z.M., Martínez-Peña F., Bonet J.A., Martínez-de-Aragón J., de-Miguel S. (2016) Meteorological
+      conditions and site characteristics driving edible mushroom production in Pinus pinaster forests of Central
+      Spain. Fungal Ecology 23: 30–41'
+    doi: 10.1016/j.funeco.2016.05.008
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: late summer and early autumn precipitation drive emergence and yield (B. edulis among the species).
+    cited_as:
+    - porcini.md R17

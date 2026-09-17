@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mushma.local/schemas/species-rules/v1/references.schema.json",
+  "title": "mushma rule references (draft v1)",
+  "description": "Shared bibliography. Every factor's `source` ids must resolve here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "references": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9_]+$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "citation",
+          "kind",
+          "verified",
+          "supports"
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "doi"
+            ]
+          },
+          {
+            "required": [
+              "url"
+            ]
+          }
+        ],
+        "properties": {
+          "citation": {
+            "type": "string",
+            "minLength": 10
+          },
+          "doi": {
+            "type": "string",
+            "pattern": "^10\\.\\S+/\\S+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "kind": {
+            "enum": [
+              "peer_reviewed",
+              "preprint",
+              "thesis",
+              "institutional",
+              "society",
+              "monograph",
+              "dataset",
+              "analysis",
+              "web"
+            ]
+          },
+          "region": {
+            "type": "string"
+          },
+          "verified": {
+            "description": "verified: the page, abstract or PDF was opened. snippet-only: only seen in search results.",
+            "enum": [
+              "verified",
+              "snippet-only"
+            ]
+          },
+          "supports": {
+            "type": "string"
+          },
+          "cited_as": {
+            "description": "Where the evidence appendices cite it, e.g. 'porcini.md R3'.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
