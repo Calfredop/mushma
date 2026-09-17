@@ -1,2 +1,32 @@
 .DS_Store
 .claude/settings.local.json
+
+# env
+.env
+.env.*
+!.env.example
+
+# node / web
+node_modules/
+web/dist/
+web/dev-dist/
+web/.vite/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# python / api
+__pycache__/
+*.pyc
+.venv/
+api/.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# local data caches (reproducible, never committed)
+api/data/
+
+# editors
+.vscode/
+.idea/
