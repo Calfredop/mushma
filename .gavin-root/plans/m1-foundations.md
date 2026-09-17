@@ -14,7 +14,7 @@ Depends on: nothing. Every other card except the species research builds on this
 - [x] Pin runtimes: `.python-version` for uv, `.nvmrc` + `engines` for pnpm; CI uses the same versions
 - [x] Decide storage for grid, scores and history (Postgres/PostGIS vs DuckDB/Parquet); estimate ~12k cells × 3 species × 365 days/year. Record the choice in the PRD and remove it from Open questions.
 - [x] Choose Fly.io or Railway for the API. Railway has native cron jobs; Fly needs a scheduled Machine or supercronic. It must fit the chosen storage and the cost ceiling. Record it in the PRD.
-- [ ] CI with GitHub Actions: lint + test for `web/` and `api/` on push and PR
+- [x] CI with GitHub Actions: lint + test for `web/` and `api/` on push and PR
 - [x] Deploy skeletons: `web/` to Vercel, `api/` to Fly/Railway. The web app reads the API base URL from env.
 - [x] Root README with dev commands for both apps
 - [x] Replace the "planned" Layout section in AGENTS.md with the real layout and commands (CLAUDE.md and GEMINI.md import it)
