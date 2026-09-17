@@ -50,6 +50,11 @@ uv run ruff format --check .
 
 `GET /health` returns `{"status": "ok"}`.
 
+There's no data layer yet (M2/M3), so the API only runs in fixture mode:
+set `MUSHMA_FIXTURES=1` (see `api/.env.example`) to serve the real routes
+(`/scores`, `/spot`, `/cells/{id}`, `/hotspots`, `/sightings`) from a
+hand-shaped fixture dataset. Without it those routes return 503.
+
 To build and run the production container locally:
 
 ```sh
