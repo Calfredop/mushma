@@ -125,6 +125,35 @@ All seven milestones below are v1; there is no smaller cut.
   weather on a coarser point set and downscale to cells. Adjust temperature by
   elevation (lapse rate); rain can be taken from the nearest or interpolated
   point. Request daily data in `Europe/Rome` so a day's rain is a local day.
+- **Basemap: self-hosted.** Decided in M5. Two files, both extracted by
+  `web/scripts/extract-basemap.sh` and pinned to a build date:
+  - a Tuscany extract of the **Protomaps** daily OpenStreetMap build (vector
+    tiles, maxzoom 14, ~190 MB), styled with `@protomaps/basemaps`;
+  - a Tuscany extract of **Mapterhorn** elevation (maxzoom 11, ~33 MB) for
+    hillshade, because foragers read the terrain.
+
+  Both go in a **Cloudflare R2** bucket (free tier: 10 GB storage, free
+  egress). The Protomaps Cloudflare Worker serves them as plain z/x/y tiles on
+  the free Workers plan (100k requests/day), so no custom domain is needed;
+  one can serve the files directly later. That is **€0/month** at our traffic.
+  Glyphs and sprites come from Protomaps' `basemaps-assets` until M7
+  self-hosts them. Attribution: "Protomaps © OpenStreetMap" (ODbL) and
+  "© Mapterhorn".
+
+  Rejected options (terms checked 2026-09-17):
+  - MapTiler: the free plan is capped at 100k requests/month and suspends
+    when exceeded, and the next plan is $30/month. Its terms allow only a
+    temporary per-user browser cache and forbid bulk tile downloads.
+  - OpenFreeMap: no SLA, and its terms forbid automated collection, which
+    covers pre-fetching an area.
+  - Stadia: non-commercial cap and a 100 MB offline limit, and it's unclear
+    whether a PWA counts as a mobile app.
+  - tile.openstreetmap.org: "Offline use is not permitted".
+
+  Owning the extract is the only option that clearly allows M7's offline
+  caching. One catch for M7: the Cache API can't store `206` range responses,
+  so cache the Worker's z/x/y responses or per-area extracts, never raw
+  PMTiles range requests.
 
 ### Candidate data sources
 
@@ -137,6 +166,8 @@ All seven milestones below are v1; there is no smaller cut.
 | Soil (optional, v1 gap) | SoilGrids (ISRIC), Regione Toscana pedological map |
 | Sightings | GBIF occurrence API (includes iNaturalist research-grade), iNaturalist API for the most recent records |
 | Boundaries / place names | ISTAT boundaries (region, comuni) |
+| Basemap and hillshade | Protomaps build of OpenStreetMap, Mapterhorn terrain (self-hosted extracts; see Architecture → Basemap) |
+| Place search | Photon (komoot), OpenStreetMap data |
 
 Respect each source's license and attribution requirements (e.g. Open-Meteo CC
 BY 4.0, per-dataset GBIF licenses, Copernicus). Show credits in the app.
@@ -193,5 +224,4 @@ BY 4.0, per-dataset GBIF licenses, Copernicus). Show credits in the app.
 ## Open questions
 
 - How to deliver the grid to the map: vector tiles, a compact binary/JSON grid, or raster PNGs?
-- Basemap tile provider (MapTiler, self-hosted Protomaps PMTiles, OSM-based).
 - How far back to backfill history (bounded by the ERA5-Land archive and API rate limits).
