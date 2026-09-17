@@ -85,7 +85,12 @@ All seven milestones below are v1; there is no smaller cut.
   the train seasons only. Set accuracy targets after the first backtest.
 - **Known data traps.** Sightings are presence-only and biased toward trails,
   towns and popular areas. iNaturalist hides the exact location of some records
-  (geoprivacy), so check coordinate uncertainty. Sparse species-days are noisy.
+  (geoprivacy), so check coordinate uncertainty. Sparse species-days are noisy:
+  the first Tuscany pull (GBIF + iNaturalist, 2026-09-17) kept only 134
+  sightings across the three species after quality filtering and the
+  woodland-cell join, with no detectable town-proximity bias at cell
+  resolution yet — too little data to call the trap above ruled out (see
+  `.gavin-root/docs/sightings-profile.md`).
   Reanalysis rain is too dry in the hills: against 133 SIR Toscana gauges in
   woodland (2025) it holds about 70 % of the measured rain (79 % below 400 m,
   63 % above 800 m). Rain thresholds taken from gauge-based studies must be
