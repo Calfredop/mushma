@@ -207,7 +207,7 @@
       ]
     },
     "habitat": {
-      "description": "Draft habitat vocabulary; M2 woodland grid owns the final list. Mapped from ISPRA Corine Land Cover IV level (see species-ecology.md). macchia and transitional_woodland_shrub may fall outside the woodland mask.",
+      "description": "Habitat vocabulary, owned by the woodland grid: api/src/api/config/habitats.yaml (api/tests/grid/test_habitats.py checks the two match). See ../woodland-grid.md for how cells get their habitat fractions. macchia and transitional_woodland_shrub count as wooded area but not towards the woodland mask.",
       "enum": [
         "beech",
         "chestnut",

@@ -50,6 +50,21 @@ uv run ruff format --check .
 
 `GET /health` returns `{"status": "ok"}`.
 
+### Woodland grid
+
+The static 1 km grid (woodland mask, habitat, terrain, soil pH, place labels) is built by a
+reproducible script. It downloads every source into `api/data/raw/` once (about 2 GB unpacked,
+gitignored) and writes `api/data/grid/tuscany/`: about 10 minutes the first time (SoilGrids is
+slow), under 2 minutes after that.
+
+```sh
+cd api
+uv run python -m api.grid.build --region tuscany
+```
+
+Set `DATA_DIR` to build somewhere else (it is `/data` on Fly). Outputs, sources and the woodland
+rule are described in `.gavin-root/docs/woodland-grid.md`.
+
 To build and run the production container locally:
 
 ```sh
