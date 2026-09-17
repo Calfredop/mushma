@@ -29,6 +29,22 @@ uv run python -m api.sightings.ingest fetch          # GBIF history + recent iNa
 uv run python -m api.sightings.ingest profile        # counts, licenses, town-proximity bias
 ```
 
+## Changes since the first pull (M3 · Model v1, 2026-09-17)
+
+Two traps the species research had flagged were fixed before the backtest used these records as
+ground truth. The profile below describes the first pull as it was.
+
+- **Soil-DNA samples dropped.** `quality.exclude_basis_of_record: [MATERIAL_SAMPLE]` removes the 28
+  "Global soil organisms" records (all 2019, all porcini). They record mycelium in a soil core, not a
+  fruiting body on a day. `fetch` also deletes stored GBIF records a tightened filter now rejects.
+- **Gallinacci widened to the genus.** The taxon is now *Cantharellus* (GBIF 9623860, rank GENUS;
+  iNaturalist 47348) minus *C. cinereus* (9226626) and *C. melanoxeros* (5249532), which GBIF files
+  under *Cantharellus*. Tuscan "*C. cibarius*" is mostly *C. pallens* and *C. alborufescens*
+  (species-ecology.md, key finding 4), and the rules target *C. cibarius* s.l. GBIF records now
+  carry their own `species_key` so the exclusion works on genus searches.
+- **Result.** 121 stored sightings (was 134): porcini 61 (was 89), ovoli 29, gallinacci 31 (was
+  16). From 2016 on, as unique cell-days: porcini 44, ovoli 25, gallinacci 26.
+
 ## Taxa
 
 `config/sightings.yaml` pins each species' GBIF usage key and iNaturalist taxon id, resolved once

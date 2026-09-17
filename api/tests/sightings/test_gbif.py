@@ -119,6 +119,25 @@ def test_is_last_page_follows_gbifs_end_of_records_flag() -> None:
 # --- parsing -------------------------------------------------------------------------------------
 
 
+def test_match_url_can_ask_for_a_genus() -> None:
+    url = match_url("https://api.gbif.org/v1/species/match", "Cantharellus", rank="GENUS")
+
+    assert parse_qs(urlparse(url).query)["rank"] == ["GENUS"]
+
+
+def test_parse_occurrences_keeps_each_records_own_species_key() -> None:
+    record = _record()
+    record.update({"taxonKey": 5249504, "speciesKey": 5249504})
+    genus_only = _record()
+    genus_only.update({"key": 1, "taxonKey": 9623860})
+    genus_only.pop("speciesKey", None)
+
+    rows = parse_occurrences([{"results": [record, genus_only]}], 9623860, FETCHED)
+
+    assert rows["taxon_key"].tolist() == [9623860, 9623860]
+    assert rows["species_key"].tolist() == [5249504, 9623860]
+
+
 def test_parse_occurrences_extracts_the_fields_the_store_needs() -> None:
     pages = [{"results": [_record()]}]
 
@@ -136,6 +155,7 @@ def test_parse_occurrences_extracts_the_fields_the_store_needs() -> None:
         "dataset_key",
         "license",
         "inaturalist_observation_id",
+        "species_key",
         "fetched_at",
     ]
     row = rows.iloc[0]

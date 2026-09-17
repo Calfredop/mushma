@@ -31,6 +31,7 @@ OCCURRENCE_COLUMNS = [
     "dataset_key",
     "license",
     "inaturalist_observation_id",
+    "species_key",
     "fetched_at",
 ]
 
@@ -54,8 +55,8 @@ class TaxonMatch:
         return self.accepted_usage_key or self.usage_key
 
 
-def match_url(endpoint: str, name: str) -> str:
-    params = {"name": name, "rank": "SPECIES", "strict": "true"}
+def match_url(endpoint: str, name: str, rank: str = "SPECIES") -> str:
+    params = {"name": name, "rank": rank, "strict": "true"}
     return f"{endpoint}?{urllib.parse.urlencode(params)}"
 
 
@@ -146,6 +147,9 @@ def parse_occurrences(pages: list[dict], taxon_key: int, fetched_at: datetime) -
             "dataset_key": record.get("datasetKey"),
             "license": record.get("license"),
             "inaturalist_observation_id": _inaturalist_observation_id(record),
+            # The record's own species (the searched key can be a genus); taxonKey when the
+            # record is only identified to a higher rank.
+            "species_key": int(record.get("speciesKey") or record["taxonKey"]),
             "fetched_at": fetched_at,
         }
         for page in pages

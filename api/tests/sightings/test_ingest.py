@@ -12,6 +12,7 @@ from api.sightings.ingest import (
     normalize_inaturalist,
     profile_stats,
     resolve_taxa,
+    stale_gbif_record_ids,
     write_meta,
 )
 from api.sightings.store import SightingsStore
@@ -51,6 +52,7 @@ def test_normalize_gbif_maps_taxon_key_to_species() -> None:
                 "dataset_key": "50c9509d-22c7-4a22-a47d-8c48425ef4a7",
                 "license": "CC0",
                 "inaturalist_observation_id": "900",
+                "species_key": 5240269,
                 "fetched_at": FETCHED,
             }
         ]
@@ -69,7 +71,7 @@ def test_normalize_inaturalist_maps_taxon_id_to_species() -> None:
             {
                 "source": "inaturalist",
                 "record_id": "42",
-                "taxon_id": 47347,  # Cantharellus cibarius -> gallinacci
+                "taxon_id": 47348,  # Cantharellus (genus) -> gallinacci
                 "event_date": date(2026, 9, 1),
                 "lat": 43.8,
                 "lon": 11.2,
@@ -85,6 +87,47 @@ def test_normalize_inaturalist_maps_taxon_id_to_species() -> None:
     normalized = normalize_inaturalist(rows, CONFIG)
 
     assert normalized.iloc[0]["species"] == "gallinacci"
+
+
+def _gbif_row(record_id: str, taxon_key: int, species_key: int) -> dict:
+    return {
+        "source": "gbif",
+        "record_id": record_id,
+        "taxon_key": taxon_key,
+        "event_date": date(2026, 9, 1),
+        "lat": 43.8,
+        "lon": 11.2,
+        "coordinate_uncertainty_m": 20.0,
+        "basis_of_record": "HUMAN_OBSERVATION",
+        "dataset_key": "x",
+        "license": "CC0",
+        "inaturalist_observation_id": None,
+        "species_key": species_key,
+        "fetched_at": FETCHED,
+    }
+
+
+def test_normalize_gbif_drops_species_excluded_from_a_genus_taxon() -> None:
+    rows = pd.DataFrame(
+        [
+            _gbif_row("1", 9623860, 5249504),  # Cantharellus cibarius: kept
+            _gbif_row("2", 9623860, 9226626),  # Cantharellus cinereus: excluded
+            _gbif_row("3", 9623860, 9623860),  # identified to genus only: kept
+        ]
+    )
+
+    normalized = normalize_gbif(rows, CONFIG)
+
+    assert normalized["record_id"].tolist() == ["1", "3"]
+    assert set(normalized["species"]) == {"gallinacci"}
+    assert "basis_of_record" in normalized
+
+
+def test_stale_gbif_records_are_the_fetched_ones_no_longer_kept() -> None:
+    fetched = pd.DataFrame({"record_id": ["1", "2", "3"]})
+    stored = pd.DataFrame({"record_id": ["1"]})
+
+    assert stale_gbif_record_ids(fetched, stored) == ["2", "3"]
 
 
 # --- resolve-taxa ----------------------------------------------------------------------------
@@ -123,9 +166,9 @@ def test_resolve_taxa_confirms_every_pinned_key(capsys: pytest.CaptureFixture) -
                 "matchType": "EXACT",
                 "status": "ACCEPTED",
             },
-            "Cantharellus+cibarius": {
-                "usageKey": 5249504,
-                "canonicalName": "Cantharellus cibarius",
+            "name=Cantharellus&rank=GENUS": {
+                "usageKey": 9623860,
+                "canonicalName": "Cantharellus",
                 "matchType": "EXACT",
                 "status": "ACCEPTED",
             },

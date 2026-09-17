@@ -97,7 +97,8 @@ All seven milestones below are v1; there is no smaller cut.
   (geoprivacy), so check coordinate uncertainty. Sparse species-days are noisy:
   the first Tuscany pull (GBIF + iNaturalist, 2026-09-17) kept only 134
   sightings across the three species after quality filtering and the
-  woodland-cell join, with no detectable town-proximity bias at cell
+  woodland-cell join (121 once Model v1 dropped 28 soil-DNA samples and widened
+  gallinacci to the *Cantharellus* genus), with no detectable town-proximity bias at cell
   resolution yet — too little data to call the trap above ruled out (see
   `.gavin-root/docs/sightings-profile.md`).
   Reanalysis rain is too dry in the hills: against 133 SIR Toscana gauges in

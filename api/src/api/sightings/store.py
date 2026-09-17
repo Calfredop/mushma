@@ -113,6 +113,36 @@ class SightingsStore:
             con.unregister("incoming")
             partial.replace(path)
 
+    def remove(self, source: str, record_ids: list[str]) -> int:
+        """Delete ``(source, record_id)`` rows, e.g. records a tightened filter now rejects.
+        Returns how many rows went."""
+        if not record_ids or not self.record_files():
+            return 0
+        removed = 0
+        con = duckdb.connect()
+        for path in self.record_files():
+            (hits,) = con.execute(
+                f"SELECT count(*) FROM read_parquet('{path}') "
+                "WHERE source = ? AND record_id IN (SELECT unnest(?))",
+                [source, list(record_ids)],
+            ).fetchone()
+            if not hits:
+                continue
+            partial = path.with_name("data.parquet.part")
+            con.execute(
+                f"""
+                COPY (
+                    SELECT * FROM read_parquet('{path}')
+                    WHERE NOT (source = $source AND record_id IN (SELECT unnest($ids)))
+                    ORDER BY date, cell_id, source, record_id
+                ) TO '{partial}' (FORMAT parquet, COMPRESSION zstd)
+                """,
+                {"source": source, "ids": list(record_ids)},
+            )
+            partial.replace(path)
+            removed += hits
+        return removed
+
     def counts_by_cell(self, con: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
         """Sighting counts per species and cell: the only aggregate this module hands back out
         (PRD → Sightings privacy: counts per cell, never coordinates or individual records)."""

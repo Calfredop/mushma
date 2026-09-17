@@ -30,10 +30,15 @@ species:
         inaturalist_taxon_id: 204588
   gallinacci:
     common_name: {it: Gallinacci, en: Chanterelle}
+    # The genus, not C. cibarius: Tuscan "C. cibarius" is mostly C. pallens and C. alborufescens,
+    # and the rules target C. cibarius s.l. (species-ecology.md, key finding 4). GBIF files
+    # C. cinereus and C. melanoxeros under Cantharellus; iNaturalist puts them in Craterellus.
     taxa:
-      - scientific_name: Cantharellus cibarius
-        gbif_taxon_key: 5249504
-        inaturalist_taxon_id: 47347
+      - scientific_name: Cantharellus
+        rank: GENUS
+        gbif_taxon_key: 9623860
+        inaturalist_taxon_id: 47348
+        exclude_gbif_taxon_keys: [9226626, 5249532]  # C. cinereus, C. melanoxeros
 
 # GBIF occurrence/search is paged over this lon/lat bbox (the region's, not a polygon clip): cells.py
 # joins each record to the woodland grid afterwards, which drops anything outside Tuscany's actual
@@ -61,6 +66,9 @@ inaturalist:
 quality:
   max_coordinate_uncertainty_m: 1000
   town_centroid_distance_m: 75
+  # Soil-DNA samples (the 2019 "Global soil organisms" dataset put 28 in Tuscany's porcini) record
+  # mycelium in the ground, not a fruiting body on a day.
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
 
 # Source ids (sources.yaml) the app must credit wherever sightings are shown.
 credits: [gbif, inaturalist]

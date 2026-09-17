@@ -35,7 +35,7 @@ def test_species_of_looks_up_by_gbif_or_inaturalist_taxon_id() -> None:
 
     assert config.species_of(5240269) == "ovoli"
     assert config.species_of(999999) is None
-    assert config.species_of_inaturalist(47347) == "gallinacci"
+    assert config.species_of_inaturalist(47348) == "gallinacci"
     assert config.species_of_inaturalist(999999) is None
 
 
@@ -94,3 +94,24 @@ def test_a_non_positive_quality_threshold_is_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="max_coordinate_uncertainty_m"):
         load_sightings_config(path)
+
+
+def test_gallinacci_are_fetched_as_the_cantharellus_genus_minus_two_misplaced_species() -> None:
+    (taxon,) = load_sightings_config().species["gallinacci"].taxa
+
+    # Tuscan "C. cibarius" is mostly C. pallens and C. alborufescens (species-ecology.md), and
+    # GBIF keeps C. cinereus and C. melanoxeros, which iNaturalist files under Craterellus.
+    assert (taxon.scientific_name, taxon.rank) == ("Cantharellus", "GENUS")
+    assert (taxon.gbif_taxon_key, taxon.inaturalist_taxon_id) == (9623860, 47348)
+    assert taxon.exclude_gbif_taxon_keys == [9226626, 5249532]
+
+
+def test_species_level_taxa_default_to_species_rank_with_no_exclusions() -> None:
+    porcini = load_sightings_config().species["porcini"]
+
+    assert {t.rank for t in porcini.taxa} == {"SPECIES"}
+    assert all(t.exclude_gbif_taxon_keys == [] for t in porcini.taxa)
+
+
+def test_soil_dna_material_samples_are_not_sightings() -> None:
+    assert load_sightings_config().quality.exclude_basis_of_record == ["MATERIAL_SAMPLE"]

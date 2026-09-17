@@ -1,7 +1,7 @@
 """Sightings config: species taxa, quality thresholds and the iNaturalist recency window, from
 ``config/sightings.yaml``."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -14,6 +14,10 @@ class Taxon:
     scientific_name: str
     gbif_taxon_key: int
     inaturalist_taxon_id: int
+    # GBIF rank the name is matched at: a genus pulls every species under it...
+    rank: str = "SPECIES"
+    # ...except these species keys, which GBIF files under the genus but are not the target.
+    exclude_gbif_taxon_keys: list[int] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -46,6 +50,8 @@ class INaturalistSpec:
 class QualitySpec:
     max_coordinate_uncertainty_m: float
     town_centroid_distance_m: float
+    # GBIF basisOfRecord values that are not a fruiting body someone saw (e.g. soil DNA).
+    exclude_basis_of_record: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -62,6 +68,14 @@ class SightingsConfig:
             if gbif_taxon_key in species.gbif_taxon_keys:
                 return key
         return None
+
+    def excluded_gbif_species(self, gbif_taxon_key: int) -> list[int]:
+        """Species keys to drop from the records fetched for this configured taxon key."""
+        for species in self.species.values():
+            for taxon in species.taxa:
+                if taxon.gbif_taxon_key == gbif_taxon_key:
+                    return taxon.exclude_gbif_taxon_keys
+        return []
 
     def species_of_inaturalist(self, inaturalist_taxon_id: int) -> str | None:
         """The species key whose taxa include this iNaturalist taxon id, if any."""

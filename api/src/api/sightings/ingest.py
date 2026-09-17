@@ -59,6 +59,7 @@ COMMON_COLUMNS = [
     "lat",
     "lon",
     "coordinate_uncertainty_m",
+    "basis_of_record",
     "license",
     "obscured",
     "fetched_at",
@@ -76,7 +77,9 @@ def resolve_taxa(
     matches = {}
     for species in config.species.values():
         for taxon in species.taxa:
-            payload = client.get(match_url(config.gbif.match_endpoint, taxon.scientific_name))
+            payload = client.get(
+                match_url(config.gbif.match_endpoint, taxon.scientific_name, taxon.rank)
+            )
             match = parse_taxon_match(taxon.scientific_name, payload)
             matches[taxon.scientific_name] = match
             if not match.is_exact:
@@ -95,16 +98,28 @@ def resolve_taxa(
 
 
 def normalize_gbif(rows: pd.DataFrame, config: SightingsConfig) -> pd.DataFrame:
-    normalized = rows.copy()
+    """GBIF rows in the common schema, minus species a genus-level taxon excludes."""
+    excluded = [
+        species_key in config.excluded_gbif_species(taxon_key)
+        for taxon_key, species_key in zip(rows["taxon_key"], rows["species_key"], strict=True)
+    ]
+    normalized = rows[~pd.Series(excluded, index=rows.index, dtype=bool)].copy()
     normalized["species"] = normalized["taxon_key"].map(config.species_of)
     normalized["obscured"] = False
-    return normalized[[*COMMON_COLUMNS, "inaturalist_observation_id"]]
+    return normalized[[*COMMON_COLUMNS, "inaturalist_observation_id"]].reset_index(drop=True)
 
 
 def normalize_inaturalist(rows: pd.DataFrame, config: SightingsConfig) -> pd.DataFrame:
     normalized = rows.copy()
     normalized["species"] = normalized["taxon_id"].map(config.species_of_inaturalist)
+    normalized["basis_of_record"] = None
     return normalized[COMMON_COLUMNS]
+
+
+def stale_gbif_record_ids(fetched: pd.DataFrame, stored: pd.DataFrame) -> list[str]:
+    """GBIF records fetched this run that did not make it into the store, so any copy a looser
+    earlier run stored must go."""
+    return sorted(set(fetched["record_id"]) - set(stored["record_id"]))
 
 
 # --- fetch ---------------------------------------------------------------------------------
@@ -230,7 +245,11 @@ def run_fetch(
     combined = pd.concat(
         [gbif_rows[COMMON_COLUMNS], deduplicated[COMMON_COLUMNS]], ignore_index=True
     )
-    kept, filter_counts = drop_low_quality(combined, config.quality.max_coordinate_uncertainty_m)
+    kept, filter_counts = drop_low_quality(
+        combined,
+        config.quality.max_coordinate_uncertainty_m,
+        config.quality.exclude_basis_of_record,
+    )
     log(f"quality filters: {filter_counts}")
 
     localities_archive = download(
@@ -255,6 +274,10 @@ def run_fetch(
 
     store = SightingsStore(root / "sightings" / region.id)
     store.upsert(stored_rows)
+    stale = stale_gbif_record_ids(gbif_raw, stored_rows[stored_rows["source"] == "gbif"])
+    removed = store.remove("gbif", stale)
+    if removed:
+        log(f"removed {removed} previously stored GBIF records the filters now reject")
     write_meta(config, store, region.id)
     off_grid = len(kept) - len(stored_rows)
     log(f"stored: {len(stored_rows)} sightings ({off_grid} off the woodland grid)")

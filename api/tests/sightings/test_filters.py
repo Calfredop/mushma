@@ -153,3 +153,18 @@ def test_flag_near_localities_handles_no_rows() -> None:
     flags = flag_near_localities(pd.DataFrame(columns=["lon", "lat"]), locality, distance_m=75)
 
     assert flags.empty
+
+
+def test_drop_low_quality_drops_excluded_kinds_of_record_and_counts_them() -> None:
+    rows = pd.DataFrame(
+        [
+            _row(record_id="1", basis_of_record="HUMAN_OBSERVATION"),
+            _row(record_id="2", basis_of_record="MATERIAL_SAMPLE"),
+            _row(record_id="3", basis_of_record=None),
+        ]
+    )
+
+    kept, counts = drop_low_quality(rows, 1000, exclude_basis_of_record=["MATERIAL_SAMPLE"])
+
+    assert kept["record_id"].tolist() == ["1", "3"]
+    assert counts.excluded_basis == 1

@@ -147,6 +147,24 @@ def test_upsert_keeps_rows_the_new_batch_does_not_mention(tmp_path: Path) -> Non
     assert [r[4] for r in _all(store)] == ["1", "2"]
 
 
+def test_remove_deletes_records_a_later_filter_rejects(tmp_path: Path) -> None:
+    store = SightingsStore(tmp_path)
+    store.upsert(
+        pd.DataFrame(
+            [
+                _stored_row(record_id="1"),
+                _stored_row(record_id="2", date=date(2019, 5, 1)),
+                _stored_row(record_id="2", source="inaturalist"),
+            ]
+        )
+    )
+
+    removed = store.remove("gbif", ["2", "99"])
+
+    assert removed == 1
+    assert [(r[3], r[4]) for r in _all(store)] == [("gbif", "1"), ("inaturalist", "2")]
+
+
 def test_counts_by_cell_aggregates_without_exposing_individual_records(tmp_path: Path) -> None:
     store = SightingsStore(tmp_path)
     store.upsert(

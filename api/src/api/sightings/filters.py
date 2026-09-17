@@ -33,10 +33,13 @@ class FilterCounts:
     too_imprecise: int
     unknown_uncertainty: int
     kept: int
+    excluded_basis: int = 0
 
 
 def drop_low_quality(
-    rows: pd.DataFrame, max_uncertainty_m: float
+    rows: pd.DataFrame,
+    max_uncertainty_m: float,
+    exclude_basis_of_record: list[str] | tuple[str, ...] = (),
 ) -> tuple[pd.DataFrame, FilterCounts]:
     """Drop records with no date, no coordinates, or a precision too coarse to trust to one cell.
 
@@ -45,6 +48,8 @@ def drop_low_quality(
     with a deceptively small stated radius (api.sightings.inaturalist docstring), and PRD →
     Sightings privacy forbids re-sharpening it. A *missing* uncertainty is not treated as coarse
     (some precise records legitimately omit it), but is counted so it shows up in the profile.
+    Records whose ``basis_of_record`` is in ``exclude_basis_of_record`` (soil-DNA samples) are not
+    sightings of a fruiting body and are dropped too.
     """
     uncertainty = rows["coordinate_uncertainty_m"]
     missing_date = rows["event_date"].isna()
@@ -52,8 +57,12 @@ def drop_low_quality(
     obscured = rows["obscured"].fillna(False).astype(bool)
     too_imprecise = (uncertainty.notna() & (uncertainty > max_uncertainty_m)) | obscured
     unknown_uncertainty = uncertainty.isna() & ~missing_coordinates
+    basis = (
+        rows["basis_of_record"] if "basis_of_record" in rows else pd.Series(None, index=rows.index)
+    )
+    excluded_basis = basis.isin(list(exclude_basis_of_record))
 
-    drop = missing_date | missing_coordinates | too_imprecise
+    drop = missing_date | missing_coordinates | too_imprecise | excluded_basis
     kept = rows[~drop].reset_index(drop=True)
     counts = FilterCounts(
         input=len(rows),
@@ -62,6 +71,7 @@ def drop_low_quality(
         too_imprecise=int(too_imprecise.sum()),
         unknown_uncertainty=int(unknown_uncertainty.sum()),
         kept=len(kept),
+        excluded_basis=int(excluded_basis.sum()),
     )
     return kept, counts
 
