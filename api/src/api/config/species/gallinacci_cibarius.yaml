@@ -1,5 +1,6 @@
-# Draft rule config. Evidence and rule ids (GAL-*) are in .gavin-root/docs/species-ecology.md
-# and its appendix species-ecology/gallinacci.md. Parameters are priors for the M3 backtest, not tuned values.
+# Species rules for one key, loaded and validated by api.model.rules (see README.md here).
+# Evidence and rule ids (GAL-*): .gavin-root/docs/species-ecology.md and species-ecology/gallinacci.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
 schema_version: 1
 key: gallinacci_cibarius
 group: gallinacci
@@ -20,7 +21,7 @@ records:
 notes: >-
   One rule set for the group. Responds to sustained moisture over weeks and fruit bodies persist (about
   44 days on average), so the rain logic is broader and slower than for porcini. The acid-soil preference
-  cannot be modelled in v1 (see soil_ph and lithology below).
+  is a disabled alternative in v1 (see soil_ph and lithology below).
 
 factors:
   - id: season
@@ -316,12 +317,15 @@ factors:
     confidence: plausible
     source: [pilz2003, olariaga2017, lagana1999_czech_mycol, jansen_van_dobben1987, straatsma1986_thesis, deshaware2021]
     derived: true
-    data: missing
+    data: available
     enabled: false
     notes: >-
-      GAL-20, known gap. Field range pH 4.0-5.5 for the acidophilous members; softened (floor 0.3, full to
+      GAL-20. Field range pH 4.0-5.5 for the acidophilous members; softened (floor 0.3, full to
       6.0) because C. alborufescens prefers limestone. Tuscan plots: about 10x lower abundance on calcareous
-      oak plots (pH 6.8-7.4) than in chestnut, with host and substrate confounded.
+      oak plots (pH 6.8-7.4) than in chestnut, with host and substrate confounded. The woodland grid now
+      carries SoilGrids 2.0 topsoil pH (0-30 cm, modelled at 250 m; woodland cells median 6.64, range
+      5.44-7.66, see woodland-grid.md), so the rule can run. It stays disabled: SoilGrids is a hint with
+      wide uncertainty, and the gallinacci records are too few for the backtest to tell it apart.
 
   - id: lithology
     role: gate

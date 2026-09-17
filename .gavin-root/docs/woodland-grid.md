@@ -118,8 +118,8 @@ and counted per cell. Rasterized totals match the vector areas to within 41 ha f
 ## Habitat per cell
 
 The vocabulary is the one the species rules were drafted with, now owned by
-`api/src/api/config/habitats.yaml` (a test checks it equals the `habitat` enum in
-`species-rules/species.schema.json`). Each habitat belongs to a broad group:
+`api/src/api/config/habitats.yaml` (a test checks that every species rule in
+`api/src/api/config/species/` scores exactly this vocabulary). Each habitat belongs to a broad group:
 
 | group (UCS 2019) | habitats (CLC 2018 IV level) |
 |---|---|

@@ -1,13 +1,5 @@
-import json
-from pathlib import Path
-
-import pytest
-
 from api.grid.habitats import load_vocabulary
-
-SPECIES_SCHEMA = (
-    Path(__file__).resolve().parents[3] / ".gavin-root/docs/species-rules/species.schema.json"
-)
+from api.model.rules import load_rules
 
 
 def test_vocabulary_groups_every_habitat_and_falls_back_inside_the_group() -> None:
@@ -21,8 +13,9 @@ def test_vocabulary_groups_every_habitat_and_falls_back_inside_the_group() -> No
     assert not vocabulary.groups["macchia"].woodland
 
 
-@pytest.mark.skipif(not SPECIES_SCHEMA.exists(), reason="species rule schema not in the repo")
-def test_vocabulary_matches_the_species_rule_schema() -> None:
-    schema = json.loads(SPECIES_SCHEMA.read_text())
+def test_every_species_rule_scores_every_habitat_in_the_vocabulary() -> None:
+    habitats = set(load_vocabulary().habitats)
 
-    assert set(load_vocabulary().habitats) == set(schema["$defs"]["habitat"]["enum"])
+    for species in load_rules().species.values():
+        (habitat,) = [f for f in species.factors if f.kind == "habitat"]
+        assert set(habitat.input.affinity) == habitats, species.key

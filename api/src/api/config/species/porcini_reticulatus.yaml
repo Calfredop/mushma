@@ -1,5 +1,6 @@
-# Draft rule config. Evidence and rule ids (POR-*) are in .gavin-root/docs/species-ecology.md.
-# Parameters are priors for the M3 backtest, not tuned values.
+# Species rules for one key, loaded and validated by api.model.rules (see README.md here).
+# Evidence and rule ids (POR-*): .gavin-root/docs/species-ecology.md and species-ecology/porcini.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
 schema_version: 1
 key: porcini_reticulatus
 group: porcini

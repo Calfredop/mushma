@@ -11,7 +11,7 @@ or identifying specimens.
 |---|---|
 | This synthesis: key findings, rules at a glance, season cross-check, variable mapping, habitat vocabulary, combined-score proposal, hand-offs | this file |
 | Full evidence per species, rule by rule, with local reference lists (`[R1]`…) | [`species-ecology/porcini.md`](species-ecology/porcini.md), [`species-ecology/ovoli.md`](species-ecology/ovoli.md), [`species-ecology/gallinacci.md`](species-ecology/gallinacci.md) |
-| Draft rule config (one file per species key), shared bibliography, JSON Schema, scoring semantics, lint | [`species-rules/`](species-rules/README.md) |
+| Rule config (one file per species key), shared bibliography, scoring semantics; loaded and validated by `api.model.rules` (moved there by M3 · Model v1) | [`api/src/api/config/species/`](../../api/src/api/config/species/README.md) |
 
 ## How to read the rules
 
@@ -29,7 +29,7 @@ or identifying specimens.
 statement ("about two weeks after rain"), from another climate, or from sightings. The config marks
 them `derived: true` and says how in `notes`. They are **priors for the backtest**, not findings.
 
-**References.** 91 sources in [`species-rules/references.yaml`](species-rules/references.yaml): 45
+**References.** 91 sources in [`references.yaml`](../../api/src/api/config/species/references.yaml): 45
 peer-reviewed, 1 preprint, 4 theses, 14 institutional, 7 mycological society, 1 monograph, 2 datasets,
 2 of our own analyses and 15 web pages (the folklore). 73 were opened (`verified`) and 18 are
 `snippet-only`. Every DOI cited was checked to resolve (doi.org handle API, 2026-09-17).
@@ -324,9 +324,10 @@ Notes for M2:
 
 ## Rule config and scoring
 
-The draft config is in [`species-rules/`](species-rules/README.md): six species keys
+The draft config was written to `species-rules/` and now lives in
+[`api/src/api/config/species/`](../../api/src/api/config/species/README.md): six species keys
 (`porcini_edulis`, `porcini_reticulatus`, `porcini_aereus`, `porcini_pinophilus`, `ovoli_caesarea`,
-`gallinacci_cibarius`), `references.yaml` and JSON Schemas. The schema's shape:
+`gallinacci_cibarius`) and `references.yaml`. The schema's shape:
 
 - **Score** = Π gates (season, habitat, altitude) × Π stoppers × the weighted geometric mean of the
   drivers. Any driver at 0 zeroes the score (no rain, no fruiting), while partial values trade off.
@@ -338,10 +339,11 @@ The draft config is in [`species-rules/`](species-rules/README.md): six species 
 - **Breakdown.** Each factor's value and raw input, plus a proposed **impact**: its share of the
   score's log-shortfall. Impacts sum to 1, and a factor at 0 takes all the impact ("blocked by
   frost").
-- **Verification.** The draft passes `validate.py`. That lint was itself checked against 16
-  deliberately broken copies (empty source, unknown source id, unordered trapezoid, driver without a
+- **Verification.** The draft passed an interim lint (`validate.py`, checked against 16
+  deliberately broken copies). M3 replaced it with the real loader, `api.model.rules`, whose tests
+  refuse 21 broken copies (empty source, unknown source id, unordered trapezoid, driver without a
   weight, unknown habitat key or variable, enabled rule on missing data, derived rule without notes,
-  bad date, and more); it caught all 16, and the untouched control passed.
+  bad date, and more).
 
 ## Combined score: proposal for M3 to decide
 
@@ -402,7 +404,7 @@ distribution, or by scaling by backtest lift. Report which group wins how often 
 | gallinacci | *Cantharellus* genus 9623860, excluding *C. cinereus* 9226626 and *C. melanoxeros* 5249532 | genus 47348 | the name *C. cibarius* is misapplied to Mediterranean segregates; 111 of 116 records are from 2019–2025 |
 
 **M3 · Model v1**
-- Start from `species-rules/` (schema, config, scoring semantics and breakdown impact above).
+- Start from the rule config (schema, config, scoring semantics and breakdown impact above).
 - **Circularity.** Season windows and altitude bands used sightings from all years. Either freeze
   them as priors (do not tune them), or re-derive them on the train seasons before the hold-out.
 - **Compare these alternative pairs**: rain vs water balance, air vs soil temperature, lag

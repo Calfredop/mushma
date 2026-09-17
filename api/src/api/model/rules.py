@@ -1,0 +1,480 @@
+"""The species rule config: one YAML file per species key, a shared bibliography, and the group
+roll-up in ``config/model.yaml``.
+
+Rules are data (AGENTS.md): every factor carries a ``source`` that resolves to
+``species/references.yaml`` and a ``confidence``. :func:`load_rules` validates the files and
+refuses anything the engine could not score faithfully: a rule without a source, an unordered
+trapezoid, an enabled rule on data v1 does not have, an unknown habitat or weather variable. See
+``config/species/README.md`` for the scoring semantics.
+"""
+
+from dataclasses import dataclass
+from datetime import date
+from pathlib import Path
+from typing import Annotated, Literal
+
+import yaml
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
+
+from api.grid.habitats import load_vocabulary
+from api.weather.config import load_weather_config
+
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
+SPECIES_DIR = CONFIG_DIR / "species"
+MODEL_FILE = CONFIG_DIR / "model.yaml"
+REFERENCES_FILE = "references.yaml"
+
+Role = Literal["gate", "driver", "stopper"]
+ROLE_ORDER: tuple[Role, ...] = ("gate", "driver", "stopper")
+Confidence = Literal["strong", "plausible", "folklore"]
+Group = Literal["porcini", "ovoli", "gallinacci"]
+
+# Daily Open-Meteo variables a rule may name (checked against both APIs by the species research),
+# plus the series the engine derives. Only the ones the weather ingest fetches can be enabled.
+DailyVariable = Literal[
+    "precipitation_sum",
+    "rain_sum",
+    "snowfall_sum",
+    "precipitation_hours",
+    "temperature_2m_min",
+    "temperature_2m_max",
+    "temperature_2m_mean",
+    "soil_temperature_0_to_7cm_mean",
+    "soil_temperature_7_to_28cm_mean",
+    "soil_moisture_0_to_7cm_mean",
+    "soil_moisture_7_to_28cm_mean",
+    "wind_speed_10m_max",
+    "wind_speed_10m_mean",
+    "wind_gusts_10m_max",
+    "wind_direction_10m_dominant",
+    "et0_fao_evapotranspiration",
+    "vapour_pressure_deficit_max",
+    "relative_humidity_2m_mean",
+    "relative_humidity_2m_min",
+    "shortwave_radiation_sum",
+    "water_balance",
+    "temperature_2m_max_anomaly_30d",
+]
+DERIVED_SERIES = {
+    # precipitation_sum - et0_fao_evapotranspiration (mm)
+    "water_balance": ("precipitation_sum", "et0_fao_evapotranspiration"),
+    # temperature_2m_max minus the mean temperature_2m_max of the 30 days before (°C)
+    "temperature_2m_max_anomaly_30d": ("temperature_2m_max",),
+}
+# Cell attributes in the woodland grid (cells.parquet) and ones v1 does not have.
+StaticAttribute = Literal[
+    "elevation_m",
+    "slope_deg",
+    "aspect_deg",
+    "northness",
+    "soil_ph",
+    "soil_texture",
+    "lithology_calcareous",
+    "stand_age",
+    "canopy_cover",
+    "litter_depth",
+]
+GRID_ATTRIBUTES = {"elevation_m", "slope_deg", "aspect_deg", "northness", "soil_ph"}
+# Aggregates that compare a window with the cell's own climatology, which v1 does not compute.
+CLIMATOLOGY_AGGREGATES = {"percent_of_normal", "percentile_of_normal"}
+
+Trapezoid = tuple[float | None, float | None, float | None, float | None]
+
+
+class RuleConfigError(ValueError):
+    """A rule file the engine refuses to load."""
+
+
+def check_trapezoid(t: Trapezoid) -> Trapezoid:
+    """``[zero_below, full_from, full_to, zero_above]``: nulls only in pairs, numbers in order."""
+    a, b, c, d = t
+    if (a is None) != (b is None) or (c is None) != (d is None):
+        raise ValueError(f"trapezoid {list(t)}: a null edge must come as a (zero, full) pair")
+    known = [v for v in t if v is not None]
+    if known != sorted(known):
+        raise ValueError(f"trapezoid {list(t)}: edges out of order")
+    return t
+
+
+def ddmm_day_of_year(ddmm: str) -> int:
+    """``DD-MM`` as a day of a non-leap year (1-365)."""
+    day, month = (int(part) for part in ddmm.split("-"))
+    return date(2001, month, day).timetuple().tm_yday
+
+
+class _Strict(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class _Factor(_Strict):
+    id: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*$")]
+    role: Role
+    i18n_key: Annotated[str, Field(pattern=r"^factor\.[a-z0-9_.]+$")]
+    weight: Annotated[float, Field(gt=0)] | None = None
+    floor: Annotated[float, Field(ge=0, le=1)] | None = None
+    confidence: Confidence
+    source: Annotated[list[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")]], Field(min_length=1)]
+    derived: bool = False
+    data: Literal["available", "derived", "missing"]
+    enabled: bool = True
+    notes: str | None = None
+
+    @model_validator(mode="after")
+    def _common_rules(self) -> "_Factor":
+        if self.role == "driver" and self.weight is None:
+            raise ValueError(f"driver {self.id!r} needs a weight")
+        if self.role != "driver" and self.weight is not None:
+            raise ValueError(f"{self.role} {self.id!r} must not have a weight (drivers only)")
+        if self.data == "missing" and self.enabled:
+            raise ValueError(f"{self.id!r} uses missing data and must be enabled: false")
+        if self.derived and not self.notes:
+            raise ValueError(f"{self.id!r} is derived: its notes must say how")
+        if not self.enabled and self.data != "missing" and not self.notes:
+            raise ValueError(f"{self.id!r} is disabled: its notes must say why")
+        return self
+
+    @property
+    def uses(self) -> str | None:
+        """The weather variable or cell attribute the factor reads, if any."""
+        return getattr(self.input, "variable", None) or getattr(self.input, "attribute", None)
+
+
+class _TrapezoidResponse(_Strict):
+    trapezoid: Trapezoid
+
+    _check = field_validator("trapezoid")(check_trapezoid)
+
+
+class AltitudeShift(_Strict):
+    reference_m: float
+    days_per_100m: float
+
+
+class SeasonWindow(_Strict):
+    label: str
+    dates: tuple[str, str, str, str]
+    altitude_shift: AltitudeShift | None = None
+    elevation_weight: Trapezoid | None = None
+
+    @field_validator("dates")
+    @classmethod
+    def _real_dates(cls, dates: tuple[str, str, str, str]) -> tuple[str, str, str, str]:
+        for ddmm in dates:
+            try:
+                day, month = ddmm.split("-")
+                if len(day) != 2 or len(month) != 2:
+                    raise ValueError
+                ddmm_day_of_year(ddmm)
+            except ValueError:
+                raise ValueError(f"{ddmm!r} is not a DD-MM date") from None
+        return dates
+
+    @field_validator("elevation_weight")
+    @classmethod
+    def _ordered(cls, t: Trapezoid | None) -> Trapezoid | None:
+        return None if t is None else check_trapezoid(t)
+
+
+class SeasonInput(_Strict):
+    windows: Annotated[list[SeasonWindow], Field(min_length=1)]
+
+
+class SeasonWindowFactor(_Factor):
+    """Max over windows of (day-of-year trapezoid x elevation weight)."""
+
+    kind: Literal["season_window"]
+    input: SeasonInput
+
+
+class HabitatInput(_Strict):
+    affinity: dict[str, Annotated[float, Field(ge=0, le=1)]]
+    default: Annotated[float, Field(ge=0, le=1)] = 0.0
+
+
+class HabitatFactor(_Factor):
+    """Sum over the cell's habitat fractions of fraction x affinity."""
+
+    kind: Literal["habitat"]
+    input: HabitatInput
+
+
+class StaticBandInput(_Strict):
+    attribute: StaticAttribute
+
+
+class StaticBandFactor(_Factor):
+    """Trapezoid of a cell attribute."""
+
+    kind: Literal["static_band"]
+    input: StaticBandInput
+    response: _TrapezoidResponse
+
+
+class RainEventInput(_Strict):
+    variable: Literal["precipitation_sum", "rain_sum"]
+    accumulation_days: Annotated[int, Field(ge=1, le=10)]
+
+
+class RainEventResponse(_Strict):
+    amount_mm: Trapezoid
+    lag_days: Trapezoid
+
+    _check = field_validator("amount_mm", "lag_days")(check_trapezoid)
+
+    @field_validator("lag_days")
+    @classmethod
+    def _bounded_lag(cls, t: Trapezoid) -> Trapezoid:
+        if t[0] is None or t[3] is None or t[0] < 0:
+            raise ValueError(f"lag_days {list(t)} must be a closed window of days >= 0")
+        return t
+
+
+class RainEventFactor(_Factor):
+    """Max over lags d of amount(rain over the accumulation days ending d days ago) x lag(d)."""
+
+    kind: Literal["rain_event"]
+    input: RainEventInput
+    response: RainEventResponse
+
+
+class WindowAggregateInput(_Strict):
+    variable: DailyVariable
+    aggregate: Literal["sum", "mean", "min", "max", "percent_of_normal", "percentile_of_normal"]
+    window_days: Annotated[int, Field(ge=1, le=180)]
+    offset_days: Annotated[int, Field(ge=0)] = 0
+
+
+class WindowAggregateFactor(_Factor):
+    """Trapezoid of an aggregate over the window ending ``offset_days`` before the day."""
+
+    kind: Literal["window_aggregate"]
+    input: WindowAggregateInput
+    response: _TrapezoidResponse
+
+
+Op = Literal["lt", "lte", "gt", "gte"]
+
+
+class CountDaysInput(_Strict):
+    variable: DailyVariable
+    op: Op
+    threshold: float
+    window_days: Annotated[int, Field(ge=1, le=60)]
+    offset_days: Annotated[int, Field(ge=0)] = 0
+
+
+class CountDaysFactor(_Factor):
+    """Trapezoid of the number of days in the window where ``variable op threshold``."""
+
+    kind: Literal["count_days"]
+    input: CountDaysInput
+    response: _TrapezoidResponse
+
+
+class DaysSinceInput(_Strict):
+    variable: DailyVariable
+    op: Op
+    threshold: float
+    max_lookback_days: Annotated[int, Field(ge=1, le=180)]
+
+
+class DaysSinceFactor(_Factor):
+    """Trapezoid of the days since the latest day where ``variable op threshold``."""
+
+    kind: Literal["days_since"]
+    input: DaysSinceInput
+    response: _TrapezoidResponse
+
+
+Factor = Annotated[
+    SeasonWindowFactor
+    | HabitatFactor
+    | StaticBandFactor
+    | RainEventFactor
+    | WindowAggregateFactor
+    | CountDaysFactor
+    | DaysSinceFactor,
+    Field(discriminator="kind"),
+]
+
+
+class Records(_Strict):
+    gbif_taxon_keys: Annotated[list[int], Field(min_length=1)]
+    inat_taxon_ids: Annotated[list[int], Field(min_length=1)]
+    exclude_basis_of_record: list[
+        Literal[
+            "MATERIAL_SAMPLE",
+            "PRESERVED_SPECIMEN",
+            "FOSSIL_SPECIMEN",
+            "LIVING_SPECIMEN",
+            "MACHINE_OBSERVATION",
+        ]
+    ] = []
+    exclude_gbif_taxon_keys: list[int] = []
+    exclude_inat_taxon_ids: list[int] = []
+    notes: str | None = None
+
+
+class KnownGap(_Strict):
+    id: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*$")]
+    description: str
+    needs: Annotated[list[str], Field(min_length=1)]
+    confidence: Confidence
+    source: Annotated[list[str], Field(min_length=1)]
+
+
+class SpeciesRules(_Strict):
+    schema_version: Literal[1]
+    key: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*$")]
+    group: Group
+    taxon: str
+    synonyms: list[str] = []
+    status: Literal["draft", "reviewed", "tuned"]
+    i18n_key: Annotated[str, Field(pattern=r"^species\.[a-z0-9_]+$")]
+    records: Records
+    notes: str | None = None
+    factors: Annotated[list[Factor], Field(min_length=1)]
+    known_gaps: list[KnownGap] = []
+
+    @model_validator(mode="after")
+    def _factor_set(self) -> "SpeciesRules":
+        ids = [f.id for f in self.factors]
+        duplicates = sorted({i for i in ids if ids.count(i) > 1})
+        if duplicates:
+            raise ValueError(f"duplicate factor ids: {duplicates}")
+        if not any(f.enabled and f.role == "driver" for f in self.factors):
+            raise ValueError("no enabled driver factor: nothing would move the score day to day")
+        return self
+
+    @property
+    def enabled_factors(self) -> list[Factor]:
+        """Enabled factors in scoring and breakdown order: gates, drivers, stoppers, each in
+        file order."""
+        enabled = [f for f in self.factors if f.enabled]
+        return sorted(enabled, key=lambda f: ROLE_ORDER.index(f.role))
+
+
+class Reference(_Strict):
+    citation: Annotated[str, Field(min_length=10)]
+    doi: Annotated[str, Field(pattern=r"^10\.\S+/\S+$")] | None = None
+    url: str | None = None
+    kind: Literal[
+        "peer_reviewed",
+        "preprint",
+        "thesis",
+        "institutional",
+        "society",
+        "monograph",
+        "dataset",
+        "analysis",
+        "web",
+    ]
+    region: str | None = None
+    verified: Literal["verified", "snippet-only"]
+    supports: str
+    cited_as: list[str] = []
+
+    @model_validator(mode="after")
+    def _locatable(self) -> "Reference":
+        if not self.doi and not self.url:
+            raise ValueError("a reference needs a doi or a url")
+        return self
+
+
+class _References(_Strict):
+    schema_version: Literal[1]
+    references: dict[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")], Reference]
+
+
+@dataclass(frozen=True)
+class RuleSet:
+    species: dict[str, SpeciesRules]  # by key, in group order
+    groups: dict[str, list[str]]  # group -> keys, in tie-break order
+    references: dict[str, Reference]
+
+    def group_of(self, key: str) -> str:
+        return self.species[key].group
+
+
+def _read_yaml(path: Path) -> dict:
+    try:
+        return yaml.safe_load(path.read_text())
+    except (OSError, yaml.YAMLError) as error:
+        raise RuleConfigError(f"{path.name}: {error}") from error
+
+
+def _validate(model: type[BaseModel], doc: dict, name: str) -> BaseModel:
+    try:
+        return model.model_validate(doc)
+    except ValidationError as error:
+        raise RuleConfigError(f"{name}: {error}") from error
+
+
+def _check_species(
+    rules: SpeciesRules,
+    stem: str,
+    references: dict[str, Reference],
+    habitats: set[str],
+    ingested: set[str],
+) -> list[str]:
+    errors = []
+    if rules.key != stem:
+        errors.append(f"key {rules.key!r} does not match the file name")
+    for factor in rules.factors:
+        where = f"factor {factor.id!r}"
+        unknown = [s for s in factor.source if s not in references]
+        if unknown:
+            errors.append(f"{where}: unknown source ids {unknown} (not in {REFERENCES_FILE})")
+        if factor.kind == "habitat":
+            strangers = sorted(set(factor.input.affinity) - habitats)
+            if strangers:
+                errors.append(f"{where}: unknown habitats {strangers}")
+        if not factor.enabled:
+            continue
+        uses = factor.uses
+        if factor.kind == "static_band" and uses not in GRID_ATTRIBUTES:
+            errors.append(f"{where}: enabled but the grid has no {uses!r}")
+        elif factor.kind != "static_band" and uses is not None:
+            inputs = DERIVED_SERIES.get(uses, (uses,))
+            missing = [v for v in inputs if v not in ingested]
+            if missing:
+                errors.append(f"{where}: enabled but the weather ingest lacks {missing}")
+        if getattr(factor.input, "aggregate", None) in CLIMATOLOGY_AGGREGATES:
+            errors.append(
+                f"{where}: {factor.input.aggregate} needs a per-cell climatology, which the v1 "
+                "engine does not compute"
+            )
+    return errors
+
+
+def load_rules(species_dir: Path = SPECIES_DIR, model_file: Path = MODEL_FILE) -> RuleSet:
+    """Load and validate every species file in ``species_dir``; raise :class:`RuleConfigError`
+    naming the file and the rule on the first file that fails."""
+    refs = _validate(_References, _read_yaml(species_dir / REFERENCES_FILE), REFERENCES_FILE)
+    groups: dict[str, list[str]] = {
+        str(group): [str(key) for key in keys]
+        for group, keys in (_read_yaml(model_file)["groups"] or {}).items()
+    }
+    habitats = set(load_vocabulary().habitats)
+    ingested = set(load_weather_config().variables)
+
+    loaded: dict[str, SpeciesRules] = {}
+    for path in sorted(species_dir.glob("*.yaml")):
+        if path.name == REFERENCES_FILE:
+            continue
+        rules = _validate(SpeciesRules, _read_yaml(path), path.stem)
+        errors = _check_species(rules, path.stem, refs.references, habitats, ingested)
+        listed = [group for group, keys in groups.items() if rules.key in keys]
+        if listed != [rules.group]:
+            errors.append(
+                f"group {rules.group!r} does not match model.yaml, which lists it under {listed}"
+            )
+        if errors:
+            raise RuleConfigError(f"{path.stem}: " + "; ".join(errors))
+        loaded[rules.key] = rules
+
+    unfiled = [key for keys in groups.values() for key in keys if key not in loaded]
+    if unfiled:
+        raise RuleConfigError(f"model.yaml lists species keys with no rule file: {unfiled}")
+    ordered = {key: loaded[key] for keys in groups.values() for key in keys}
+    return RuleSet(species=ordered, groups=groups, references=refs.references)

@@ -6,7 +6,7 @@ import yaml
 from api.grid.sources import load_sources
 from api.weather.config import load_weather_config
 
-SPECIES_RULES = Path(__file__).resolve().parents[3] / ".gavin-root/docs/species-rules"
+SPECIES_RULES = Path(__file__).resolve().parents[2] / "src/api/config/species"
 DERIVED_SERIES = {"water_balance", "temperature_2m_max_anomaly_30d"}
 
 
@@ -39,7 +39,6 @@ def test_temperatures_are_lapse_rate_corrected_and_the_rest_is_not() -> None:
     assert {v.downscale for v in variables.values()} <= {"bilinear", "nearest"}
 
 
-@pytest.mark.skipif(not SPECIES_RULES.exists(), reason="species rules not in the repo")
 def test_every_weather_variable_the_species_rules_use_is_ingested() -> None:
     used = set()
     for path in SPECIES_RULES.glob("*_*.yaml"):

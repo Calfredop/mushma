@@ -1,0 +1,11 @@
+# Model v1: how the per-species rule files in species/ roll up into the scores the app shows.
+# See species/README.md for how one species key is scored, and .gavin-root/docs/species-ecology.md
+# for the evidence.
+
+# UI species ("groups") and the rule files (species keys) behind each, in tie-break order: a group
+# scores the max over its keys and its breakdown is the winning key's; on a tie the key listed
+# first wins. The group order is the tie-break for the combined score.
+groups:
+  porcini: [porcini_edulis, porcini_reticulatus, porcini_aereus, porcini_pinophilus]
+  ovoli: [ovoli_caesarea]
+  gallinacci: [gallinacci_cibarius]
