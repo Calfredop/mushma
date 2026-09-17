@@ -1,0 +1,194 @@
+{
+  "app": {
+    "name": "mushma",
+    "documentTitle": "mushma · condizioni per porcini, ovoli e gallinacci in Toscana",
+    "region": "Toscana"
+  },
+  "language": {
+    "label": "Lingua",
+    "it": "Italiano",
+    "en": "English"
+  },
+  "nav": {
+    "credits": "Dati e crediti",
+    "disclaimer": "Avvertenze",
+    "backToMap": "Torna alla mappa"
+  },
+  "species": {
+    "label": "Specie",
+    "porcini": {
+      "name": "Porcini",
+      "latin": "Boletus edulis e affini"
+    },
+    "ovoli": {
+      "name": "Ovoli",
+      "latin": "Amanita caesarea"
+    },
+    "gallinacci": {
+      "name": "Gallinacci",
+      "latin": "Cantharellus cibarius"
+    },
+    "combined": {
+      "name": "Tutte",
+      "latin": "La specie più favorita in ogni cella"
+    }
+  },
+  "score": {
+    "name": "Indice delle condizioni",
+    "short": "Indice",
+    "valueLabel": "Indice delle condizioni {{value}} su 1",
+    "low": "Sfavorevoli",
+    "high": "Favorevoli",
+    "note": "Un indice da 0 a 1 di quanto sono favorevoli meteo e bosco. Non è una probabilità."
+  },
+  "legend": {
+    "title": "Indice delle condizioni",
+    "forecast": "Previsione",
+    "observed": "Dati osservati",
+    "sightings": "Avvistamenti per cella"
+  },
+  "date": {
+    "label": "Giorno",
+    "today": "Oggi",
+    "forecast": "Previsione",
+    "forecastDay": "{{date}}, previsione",
+    "observedDay": "{{date}}, dati osservati",
+    "previous": "Giorni precedenti",
+    "next": "Giorni successivi"
+  },
+  "map": {
+    "label": "Mappa dell'indice delle condizioni in Toscana",
+    "hint": "Tocca un bosco per vedere la previsione del punto",
+    "loading": "Carico l'indice delle condizioni…",
+    "loadError": "Non riesco a caricare l'indice delle condizioni. Controlla la connessione e riprova.",
+    "retry": "Riprova",
+    "zoomIn": "Ingrandisci",
+    "zoomOut": "Riduci",
+    "noData": "Nessun dato per questo giorno. Scegli un altro giorno.",
+    "canvas": "Mappa",
+    "toggleAttribution": "Mostra o nascondi i crediti della mappa",
+    "feedback": "Segnala un errore nella mappa",
+    "marker": "Segnaposto"
+  },
+  "search": {
+    "open": "Cerca un luogo",
+    "label": "Cerca un luogo in Toscana",
+    "placeholder": "Paese, monte, località…",
+    "noResults": "Nessun luogo trovato in Toscana",
+    "error": "La ricerca non risponde. Riprova tra poco.",
+    "clear": "Cancella la ricerca",
+    "attribution": "Ricerca: Photon, dati © OpenStreetMap"
+  },
+  "locate": {
+    "button": "Usa la mia posizione",
+    "locating": "Cerco la tua posizione…",
+    "denied": "La posizione è disattivata. Consentila nelle impostazioni del browser oppure cerca un luogo.",
+    "unavailable": "Non riesco a trovare la tua posizione. Riprova oppure cerca un luogo.",
+    "outside": "Sei fuori dalla Toscana: per ora mushma copre solo la Toscana."
+  },
+  "spot": {
+    "title": "Previsione del punto",
+    "comune": "Comune di {{comune}}",
+    "nearestCell": "Cella boschiva più vicina a {{distance}} km",
+    "outlook": "Oggi e prossimi 7 giorni",
+    "loading": "Carico la previsione…",
+    "loadError": "Non riesco a caricare la previsione per questo punto.",
+    "close": "Chiudi la previsione",
+    "pastDateNote": "La previsione del punto parte da oggi: per i giorni passati guarda la mappa.",
+    "selectDay": "{{species}}, {{date}}: indice {{value}}",
+    "notFound": "Nessuna previsione per questo punto. Chiudi e scegli un altro punto."
+  },
+  "why": {
+    "title": "Perché questo indice",
+    "subtitle": "{{species}} · {{date}}",
+    "favourable": "Quanto è favorevole",
+    "holdsBack": "Quanto frena l'indice",
+    "holdsBackValue": "frena del {{percent}}%",
+    "blocked": "Bloccato da: {{factors}}",
+    "nothingHolding": "Nessun fattore frena l'indice in questo giorno.",
+    "forecastNote": "Questo giorno è una previsione: più è lontano, più l'indice dipende dalle previsioni meteo. Pesa di più la pioggia già caduta.",
+    "explain": "Ogni fattore va da 0 (sfavorevole) a 1 (ideale). La barra a destra mostra quanta parte di ciò che tiene basso l'indice dipende da quel fattore.",
+    "unknownFactor": "Altro fattore ({{key}})"
+  },
+  "factor": {
+    "season": "Stagione",
+    "habitat": "Tipo di bosco",
+    "altitude": "Quota",
+    "rain_trigger": "Pioggia di innesco",
+    "rain_30d": "Pioggia degli ultimi 30 giorni",
+    "rain_frequency": "Frequenza delle piogge",
+    "early_season_wetness": "Umidità a inizio stagione",
+    "water_balance": "Bilancio idrico",
+    "soil_moisture": "Umidità del suolo",
+    "air_temperature": "Temperatura dell'aria",
+    "soil_temperature": "Temperatura del suolo",
+    "cold_nights": "Notti fredde",
+    "frost": "Gelate",
+    "snow": "Neve",
+    "heat": "Caldo",
+    "heat_spike": "Picco di calore",
+    "drying": "Vento e aria secca",
+    "drought": "Siccità",
+    "waterlogging": "Ristagno d'acqua",
+    "lithology": "Tipo di roccia",
+    "soil_ph": "pH del suolo"
+  },
+  "hotspots": {
+    "title": "Zone migliori",
+    "subtitle": "{{species}} · {{date}}",
+    "loading": "Carico le zone migliori…",
+    "loadError": "Non riesco a caricare le zone migliori.",
+    "empty": "Nessuna zona con condizioni favorevoli in questo giorno. Prova un altro giorno o un'altra specie.",
+    "rank": "{{rank}}°",
+    "show": "Mostra sulla mappa: {{place}}",
+    "cells_one": "{{count}} cella",
+    "cells_other": "{{count}} celle",
+    "sightings_one": "{{count}} avvistamento recente",
+    "sightings_other": "{{count}} avvistamenti recenti"
+  },
+  "sightings": {
+    "toggle": "Avvistamenti pubblici",
+    "window": "Ultimi {{days}} giorni",
+    "note": "Conteggi per cella di 1 km da iNaturalist e GBIF, mai posizioni esatte.",
+    "count_one": "{{count}} avvistamento",
+    "count_other": "{{count}} avvistamenti",
+    "loadError": "Non riesco a caricare gli avvistamenti."
+  },
+  "sheet": {
+    "expand": "Espandi il pannello",
+    "collapse": "Riduci il pannello"
+  },
+  "disclaimer": {
+    "title": "Solo condizioni, mai commestibilità",
+    "body1": "mushma stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare.",
+    "body2": "L'indice delle condizioni va da 0 a 1 e non è una probabilità. Oltre qualche giorno è una tendenza, non una certezza.",
+    "body3": "Prima di consumare qualsiasi fungo raccolto, fallo controllare gratuitamente all'ispettorato micologico della tua ASL.",
+    "accept": "Ho capito",
+    "short": "Solo condizioni: mushma non riconosce funghi e non ne valuta la commestibilità."
+  },
+  "credits": {
+    "title": "Dati e crediti",
+    "intro": "mushma usa solo dati pubblici e software libero. Grazie a chi li rende disponibili.",
+    "dataTitle": "Dati",
+    "softwareTitle": "Mappa e software",
+    "license": "Licenza: {{license}}",
+    "fixtureNote": "Finché la pipeline dei dati non è attiva, la mappa mostra dati di esempio.",
+    "use": {
+      "weather": "Pioggia, temperature, umidità del suolo e vento: storico e previsioni",
+      "sightings": "Avvistamenti pubblici, mostrati solo come conteggi per cella",
+      "inaturalist": "Avvistamenti più recenti, mostrati solo come conteggi per cella",
+      "landcover": "Tipo di bosco per ogni cella",
+      "elevation": "Quota, pendenza ed esposizione",
+      "boundaries": "Confini della regione e dei comuni",
+      "basemapData": "Dati della mappa di base",
+      "basemapTiles": "Stile e tessere della mappa di base",
+      "geocoding": "Ricerca dei luoghi",
+      "mapLibrary": "Visualizzazione della mappa",
+      "fonts": "Caratteri tipografici"
+    }
+  },
+  "errors": {
+    "generic": "Qualcosa non ha funzionato. Ricarica la pagina.",
+    "offline": "Sei offline: i dati potrebbero non essere aggiornati."
+  }
+}

@@ -1,0 +1,125 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--felce);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  margin: -6px -8px 0 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--humus);
+}
+
+.close:hover {
+  background: rgb(28 33 29 / 6%);
+}
+
+.outlook {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.outlookTitle {
+  margin: 0;
+  color: var(--felce);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.species {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.speciesName {
+  display: grid;
+}
+
+.common {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  line-height: 1.2;
+}
+
+.latin {
+  color: var(--felce);
+  font-size: var(--text-caption);
+  font-style: italic;
+}
+
+.bars {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.bar {
+  display: grid;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: transparent;
+}
+
+.bar:hover {
+  border-color: var(--rule);
+}
+
+.bar[aria-pressed='true'] {
+  border-color: var(--lago);
+  box-shadow: inset 0 0 0 1px var(--lago);
+}
+
+.barTrack {
+  position: relative;
+  display: block;
+  height: 2.75rem;
+  border-radius: 2px;
+  background: rgb(28 33 29 / 6%);
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  inset: auto 0 0;
+  box-shadow: inset 0 1px 0 rgb(28 33 29 / 25%);
+}
+
+/* The signature hatch: forecast bars rest on the weather forecast. */
+.bar[data-forecast='true'] .barFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--hatch);
+  opacity: 0.6;
+}
+
+.barDay {
+  color: var(--felce);
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+  text-align: center;
+  text-transform: uppercase;
+}

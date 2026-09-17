@@ -1,0 +1,194 @@
+{
+  "app": {
+    "name": "mushma",
+    "documentTitle": "mushma · porcini, ovoli and gallinacci conditions in Tuscany",
+    "region": "Tuscany"
+  },
+  "language": {
+    "label": "Language",
+    "it": "Italiano",
+    "en": "English"
+  },
+  "nav": {
+    "credits": "Data and credits",
+    "disclaimer": "Disclaimer",
+    "backToMap": "Back to the map"
+  },
+  "species": {
+    "label": "Species",
+    "porcini": {
+      "name": "Porcini",
+      "latin": "Boletus edulis group"
+    },
+    "ovoli": {
+      "name": "Ovoli",
+      "latin": "Amanita caesarea"
+    },
+    "gallinacci": {
+      "name": "Gallinacci",
+      "latin": "Cantharellus cibarius"
+    },
+    "combined": {
+      "name": "All",
+      "latin": "The best-favoured species in each cell"
+    }
+  },
+  "score": {
+    "name": "Conditions score",
+    "short": "Score",
+    "valueLabel": "Conditions score {{value}} out of 1",
+    "low": "Unfavourable",
+    "high": "Favourable",
+    "note": "A 0 to 1 index of how favourable the weather and woodland are. It is not a probability."
+  },
+  "legend": {
+    "title": "Conditions score",
+    "forecast": "Forecast",
+    "observed": "Observed data",
+    "sightings": "Sightings per cell"
+  },
+  "date": {
+    "label": "Day",
+    "today": "Today",
+    "forecast": "Forecast",
+    "forecastDay": "{{date}}, forecast",
+    "observedDay": "{{date}}, observed data",
+    "previous": "Earlier days",
+    "next": "Later days"
+  },
+  "map": {
+    "label": "Map of conditions scores across Tuscany",
+    "hint": "Tap a wood to see its spot forecast",
+    "loading": "Loading conditions scores…",
+    "loadError": "Couldn't load conditions scores. Check your connection and try again.",
+    "retry": "Try again",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "noData": "No data for this day. Pick another day.",
+    "canvas": "Map",
+    "toggleAttribution": "Show or hide map credits",
+    "feedback": "Report a map error",
+    "marker": "Map marker"
+  },
+  "search": {
+    "open": "Search a place",
+    "label": "Search a place in Tuscany",
+    "placeholder": "Village, mountain, locality…",
+    "noResults": "No places found in Tuscany",
+    "error": "Search isn't responding. Try again shortly.",
+    "clear": "Clear search",
+    "attribution": "Search: Photon, data © OpenStreetMap"
+  },
+  "locate": {
+    "button": "Use my location",
+    "locating": "Finding your location…",
+    "denied": "Location access is off. Allow it in your browser settings, or search a place instead.",
+    "unavailable": "Couldn't find your location. Try again, or search a place.",
+    "outside": "You're outside Tuscany: mushma only covers Tuscany for now."
+  },
+  "spot": {
+    "title": "Spot forecast",
+    "comune": "Comune of {{comune}}",
+    "nearestCell": "Nearest woodland cell is {{distance}} km away",
+    "outlook": "Today and the next 7 days",
+    "loading": "Loading the forecast…",
+    "loadError": "Couldn't load the forecast for this spot.",
+    "close": "Close the forecast",
+    "pastDateNote": "The spot forecast starts today: use the map for past days.",
+    "selectDay": "{{species}}, {{date}}: score {{value}}",
+    "notFound": "There's no forecast for this spot. Close it and pick another one."
+  },
+  "why": {
+    "title": "Why this score",
+    "subtitle": "{{species}} · {{date}}",
+    "favourable": "How favourable",
+    "holdsBack": "How much it holds the score back",
+    "holdsBackValue": "holds back {{percent}}%",
+    "blocked": "Blocked by: {{factors}}",
+    "nothingHolding": "Nothing is holding the score back on this day.",
+    "forecastNote": "This day is a forecast: the further ahead, the more the score rests on the weather forecast. Rain that has already fallen weighs the most.",
+    "explain": "Each factor runs from 0 (unfavourable) to 1 (ideal). The bar on the right shows how much of what keeps the score down comes from that factor.",
+    "unknownFactor": "Other factor ({{key}})"
+  },
+  "factor": {
+    "season": "Season",
+    "habitat": "Woodland type",
+    "altitude": "Altitude",
+    "rain_trigger": "Trigger rain",
+    "rain_30d": "Rain over the last 30 days",
+    "rain_frequency": "Rain frequency",
+    "early_season_wetness": "Early-season wetness",
+    "water_balance": "Water balance",
+    "soil_moisture": "Soil moisture",
+    "air_temperature": "Air temperature",
+    "soil_temperature": "Soil temperature",
+    "cold_nights": "Cold nights",
+    "frost": "Frost",
+    "snow": "Snow",
+    "heat": "Heat",
+    "heat_spike": "Heat spike",
+    "drying": "Wind and dry air",
+    "drought": "Drought",
+    "waterlogging": "Waterlogging",
+    "lithology": "Bedrock type",
+    "soil_ph": "Soil pH"
+  },
+  "hotspots": {
+    "title": "Hot places",
+    "subtitle": "{{species}} · {{date}}",
+    "loading": "Loading hot places…",
+    "loadError": "Couldn't load hot places.",
+    "empty": "No areas with favourable conditions on this day. Try another day or species.",
+    "rank": "#{{rank}}",
+    "show": "Show on the map: {{place}}",
+    "cells_one": "{{count}} cell",
+    "cells_other": "{{count}} cells",
+    "sightings_one": "{{count}} recent sighting",
+    "sightings_other": "{{count}} recent sightings"
+  },
+  "sightings": {
+    "toggle": "Public sightings",
+    "window": "Last {{days}} days",
+    "note": "Counts per 1 km cell from iNaturalist and GBIF, never exact locations.",
+    "count_one": "{{count}} sighting",
+    "count_other": "{{count}} sightings",
+    "loadError": "Couldn't load sightings."
+  },
+  "sheet": {
+    "expand": "Expand the panel",
+    "collapse": "Collapse the panel"
+  },
+  "disclaimer": {
+    "title": "Conditions only, never edibility",
+    "body1": "mushma estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat.",
+    "body2": "The conditions score runs from 0 to 1 and is not a probability. More than a few days ahead it is a trend, not a certainty.",
+    "body3": "Before eating any mushroom you pick, have it checked for free by your local ASL mycological inspectorate.",
+    "accept": "Got it",
+    "short": "Conditions only: mushma doesn't identify mushrooms or judge whether they are edible."
+  },
+  "credits": {
+    "title": "Data and credits",
+    "intro": "mushma uses only public data and open-source software. Thanks to everyone who makes them available.",
+    "dataTitle": "Data",
+    "softwareTitle": "Map and software",
+    "license": "License: {{license}}",
+    "fixtureNote": "Until the data pipeline is live, the map shows sample data.",
+    "use": {
+      "weather": "Rain, temperature, soil moisture and wind: history and forecast",
+      "sightings": "Public sightings, shown only as counts per cell",
+      "inaturalist": "The most recent sightings, shown only as counts per cell",
+      "landcover": "Woodland type for each cell",
+      "elevation": "Elevation, slope and aspect",
+      "boundaries": "Region and comune boundaries",
+      "basemapData": "Basemap data",
+      "basemapTiles": "Basemap style and tiles",
+      "geocoding": "Place search",
+      "mapLibrary": "Map rendering",
+      "fonts": "Typefaces"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Reload the page.",
+    "offline": "You're offline: the data may be out of date."
+  }
+}

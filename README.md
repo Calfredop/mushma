@@ -27,15 +27,32 @@ over weather, habitat and terrain, validated against public sightings. See
 ```sh
 cd web
 pnpm install
-pnpm dev            # dev server, http://localhost:5173
-pnpm test           # Vitest
-pnpm run lint        # ESLint
+cp .env.example .env
+pnpm dev             # dev server, http://localhost:5173
+pnpm test            # Vitest (unit + components, includes the i18n missing-key check)
+pnpm run lint        # ESLint (also rejects hardcoded UI strings)
 pnpm run format:check
 pnpm run build       # type-check + production build
 ```
 
-Copy `web/.env.example` to `web/.env` and set `VITE_API_BASE_URL` to point at
-a running `api/` (defaults to `http://localhost:8000`).
+`.env` points `VITE_API_BASE_URL` at `/api`, which the dev server proxies to
+`API_PROXY_TARGET` (default `http://localhost:8000`). Run the API in fixture
+mode alongside it (see api/ below).
+
+**Basemap.** The map uses a self-hosted Protomaps extract plus Mapterhorn
+hillshade (PRD → Architecture → Basemap). Fetch them once with the
+[pmtiles CLI](https://docs.protomaps.com/pmtiles/cli) (`brew install pmtiles`):
+
+```sh
+cd web && scripts/extract-basemap.sh   # ~210 MB into the gitignored web/data/basemap/
+```
+
+The dev server serves them at `/basemap/`. Without them, leave
+`VITE_BASEMAP_URL` and `VITE_TERRAIN_URL` empty and the map draws a plain land
+fill.
+
+`.gavin-root/docs/visual-direction.md` has the palette, the score colour scale
+and the type choices.
 
 `web/src/api/schema.ts` is a TypeScript client generated from `api/openapi.json`
 (the API's contract). After changing any `api/` route or response model, run
@@ -76,8 +93,12 @@ GitHub Actions (`.github/workflows/ci.yml`) lints and tests both `web/` and
 ## Deploying
 
 - **web/** → Vercel. Import the repo, set the project's Root Directory to
-  `web`, and set `VITE_API_BASE_URL` to the deployed `api/` URL in the
-  project's environment variables.
+  `web`, and set these environment variables:
+  - `VITE_API_BASE_URL`: the deployed `api/` URL (the API needs CORS for the
+    Vercel domain; M4).
+  - `VITE_BASEMAP_URL` and `VITE_TERRAIN_URL`: the basemap files uploaded to
+    object storage (a `.pmtiles` URL served with range requests, or a TileJSON
+    URL from the Protomaps Cloudflare Worker).
 - **api/** → Fly.io. From `api/`: `fly launch --no-deploy` to attach an app
   (the included `fly.toml` is a starting point), `fly volumes create
   mushma_data --size 1` for the DuckDB/Parquet data directory, then

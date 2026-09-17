@@ -26,6 +26,7 @@ api/.venv/
 
 # local data caches (reproducible, never committed)
 api/data/
+web/data/
 
 # editors
 .vscode/

@@ -1,0 +1,73 @@
+.page {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow-y: auto;
+  background: var(--lichene);
+}
+
+.inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap);
+  margin-left: -6px;
+  color: var(--humus);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.title {
+  margin: var(--space-4) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-wordmark);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.intro {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lead);
+}
+
+.note {
+  margin: 0;
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.heading {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--text-lead);
+  font-weight: 700;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.item {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.name {
+  font-weight: 650;
+}
+
+.license {
+  color: var(--felce);
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+}
