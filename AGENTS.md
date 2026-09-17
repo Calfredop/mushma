@@ -23,8 +23,9 @@ This file is the single source of project instructions: `CLAUDE.md` and
   with react-i18next; strings in `web/src/i18n/locales/`), PWA. Deployed to
   Vercel.
   - `cd web && pnpm install` then `pnpm dev` (dev server), `pnpm test`
-    (Vitest), `pnpm run lint` (ESLint), `pnpm run format:check` (Prettier),
-    `pnpm run build` (type-check + production build).
+    (Vitest), `pnpm run test:e2e` (Playwright smoke test), `pnpm run lint`
+    (ESLint), `pnpm run format:check` (Prettier), `pnpm run build` (type-check
+    + production build).
 - `api/` — Python + FastAPI service and the scheduled data pipeline
   (ingest → grid scoring → store). Storage is DuckDB reading Parquet files on
   a Fly Volume (not Postgres/PostGIS — see PRD → Architecture). Deployed to

@@ -2,3 +2,5 @@ pnpm-lock.yaml
 dist
 dev-dist
 data
+test-results
+playwright-report

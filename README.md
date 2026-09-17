@@ -30,6 +30,7 @@ pnpm install
 cp .env.example .env
 pnpm dev             # dev server, http://localhost:5173
 pnpm test            # Vitest (unit + components, includes the i18n missing-key check)
+pnpm run test:e2e    # Playwright smoke test: map → spot → why (starts the fixture API itself)
 pnpm run lint        # ESLint (also rejects hardcoded UI strings)
 pnpm run format:check
 pnpm run build       # type-check + production build
@@ -49,7 +50,7 @@ cd web && scripts/extract-basemap.sh   # ~210 MB into the gitignored web/data/ba
 
 The dev server serves them at `/basemap/`. Without them, leave
 `VITE_BASEMAP_URL` and `VITE_TERRAIN_URL` empty and the map draws a plain land
-fill.
+fill. `pnpm run test:e2e` always runs that way.
 
 `.gavin-root/docs/visual-direction.md` has the palette, the score colour scale
 and the type choices.
