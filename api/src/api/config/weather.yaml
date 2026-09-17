@@ -1,0 +1,83 @@
+# Weather ingest: which Open-Meteo sources feed the model, which daily variables, and how they are
+# downscaled from the weather points to the 1 km cells. See .gavin-root/docs/weather-ingest.md.
+#
+# Every request asks for daily values in the region's timezone (Europe/Rome), so a day's rain is a
+# local day, and passes elevation=nan and cell_selection=nearest: Open-Meteo then returns the raw
+# model grid cell and its mean height, and all elevation correction happens here, in one place.
+
+points:
+  # ERA5-Land grid (0.1°). Stride 2 keeps every other node: a 0.2° lattice, about a third of the
+  # API calls of the full grid. Predicting the skipped 0.1° nodes from it (Jan, Jul, Oct 2024, 248
+  # nodes) gave RMSE 0.26 °C for mean and 0.41 °C for minimum temperature, 0.37 °C for soil
+  # temperature, 0.026 m³/m³ for topsoil moisture and 3.2 mm for wet 3-day rain totals (r 0.99).
+  # See .gavin-root/docs/weather-ingest.md.
+  native_spacing_deg: 0.1
+  stride: 2
+  # A cell never borrows weather from a node farther than this (islands, coast).
+  max_distance_km: 30
+  # One cheap request finds the land nodes: ERA5-Land has no values over the sea.
+  land_probe:
+    model: era5_land
+    date: "2024-01-15"
+    variables: [temperature_2m_mean, soil_moisture_0_to_7cm_mean]
+
+# Reanalysis: ERA5-Land at 0.1°, with the variables ERA5-Land lacks in Open-Meteo (precipitation,
+# snowfall, wind, and the radiation behind ET0) taken from ERA5. About 5 days behind real time.
+history:
+  endpoint: https://archive-api.open-meteo.com/v1/archive
+  model: era5_seamless
+  start_date: "2016-01-01"
+  # The daily update re-fetches at least this many past days, to pick up newly published days.
+  recent_days: 14
+
+# Forecast: one model for every lead time, with the same soil layers as ERA5-Land. past_days
+# bridges the reanalysis delay.
+forecast:
+  endpoint: https://api.open-meteo.com/v1/forecast
+  model: ecmwf_ifs
+  past_days: 14
+  forecast_days: 8
+
+# Open-Meteo counts a request as locations x max(1, variables/10 x days/14) calls. The free API
+# allows 600 per minute, 5,000 per hour and 10,000 per day per IP, in fixed UTC windows; stay under
+# them with headroom.
+requests:
+  max_weight: 500
+  budget: {per_minute: 500, per_hour: 4500, per_day: 9000}
+
+# Daily variables, in Open-Meteo's names and default units (requests pin the units).
+#   downscale            bilinear (4 surrounding nodes) or nearest (1 node)
+#   lapse_rate_c_per_km  cooling per km of height, applied between the node's model height and the
+#                        cell's DEM height. Only temperatures are corrected (see lapse_rates).
+variables:
+  precipitation_sum: {unit: mm, downscale: bilinear}
+  snowfall_sum: {unit: cm, downscale: bilinear}
+  temperature_2m_min: {unit: °C, downscale: bilinear, lapse_rate_c_per_km: 4.2}
+  temperature_2m_max: {unit: °C, downscale: bilinear, lapse_rate_c_per_km: 4.5}
+  temperature_2m_mean: {unit: °C, downscale: bilinear, lapse_rate_c_per_km: 4.5}
+  soil_temperature_0_to_7cm_mean: {unit: °C, downscale: bilinear, lapse_rate_c_per_km: 3.7}
+  soil_moisture_0_to_7cm_mean: {unit: m³/m³, downscale: bilinear}
+  soil_moisture_7_to_28cm_mean: {unit: m³/m³, downscale: bilinear}
+  et0_fao_evapotranspiration: {unit: mm, downscale: bilinear}
+  vapour_pressure_deficit_max: {unit: kPa, downscale: bilinear}
+  wind_speed_10m_max: {unit: km/h, downscale: bilinear}
+
+lapse_rates:
+  source:
+    - >-
+      Dutra, E., Muñoz-Sabater, J., Boussetta, S., Komori, T., Hirahara, S., Balsamo, G. (2020).
+      Environmental lapse rate for high-resolution land surface downscaling: an application to ERA5.
+      Earth and Space Science 7, e2019EA000984. https://doi.org/10.1029/2019EA000984
+    - mushma regression across the 333 ERA5-Land land nodes of Tuscany, 2024 (weather-ingest.md)
+  confidence: plausible
+  notes: >-
+    Station observations give about 4.5 °C/km in complex terrain, flatter than the textbook 6.5,
+    and ERA5's own profiles agree (Dutra et al. 2020). ERA5-Land applies ERA5's daily
+    environmental lapse rate to reach its 0.1° grid, so its nodes carry that gradient: regressing
+    each day's node values on height (with latitude and longitude) gives medians of 4.2 (Tmin),
+    4.5 (Tmax), 4.5 (Tmean) and 3.7 °C/km (0-7 cm soil) across Jan, Jul and Oct 2024. Tmin drops to
+    about 3.2 in October as valley inversions set in; one rate per variable is kept for
+    transparency. In the leave-out test these rates beat 6.5 °C/km on every temperature variable.
+
+# Source ids (sources.yaml) the app must credit wherever this weather is shown.
+credits: [open_meteo, copernicus_era5_land, ecmwf_open_data]

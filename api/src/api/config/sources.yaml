@@ -1,5 +1,5 @@
-# Data sources used to build the grid. `attribution` is the credit the app shows; `download` holds
-# what the build needs to fetch the data (see api/grid/build.py).
+# Data sources used by the grid and the weather ingest. `attribution` is the credit the app shows;
+# `download`, where present, holds what the grid build needs to fetch the data (api/grid/build.py).
 
 istat_boundaries:
   name: ISTAT — Confini delle unità amministrative a fini statistici (generalizzati), 1 gennaio 2025
@@ -55,3 +55,32 @@ istat_localities:
   attribution: "Località © ISTAT, CC BY 4.0"
   download:
     url: https://www.istat.it/storage/cartografia/basi_territoriali/2021/LocalitaPuntuali_21.zip
+
+open_meteo:
+  name: Open-Meteo — Historical Weather API and Forecast API
+  homepage: https://open-meteo.com/
+  license: CC BY 4.0
+  attribution: "Weather data by Open-Meteo.com, CC BY 4.0"
+  notes: >-
+    The licence asks for a link to https://open-meteo.com/ next to any place the data is shown. The
+    free API is for non-commercial use (no subscriptions or ads) and allows 600 calls per minute,
+    5,000 per hour, 10,000 per day and 300,000 per month. Cite: Zippenfenig, P. (2023). Open-Meteo.com
+    Weather API. Zenodo. https://doi.org/10.5281/zenodo.7970649
+
+copernicus_era5_land:
+  name: Copernicus Climate Change Service — ERA5-Land and ERA5 reanalysis
+  homepage: https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land
+  license: CC BY 4.0
+  attribution: "Contains modified Copernicus Climate Change Service information, CC BY 4.0"
+  notes: >-
+    Served through Open-Meteo (model era5_seamless). Every Climate Data Store dataset moved to CC BY
+    4.0 on 2 July 2025. Cite: Muñoz Sabater, J. (2019). ERA5-Land hourly data from 1950 to present.
+    C3S Climate Data Store. https://doi.org/10.24381/cds.e2161bac; Hersbach, H. et al. (2023). ERA5
+    hourly data on single levels from 1940 to present. https://doi.org/10.24381/cds.adbb2d47
+
+ecmwf_open_data:
+  name: ECMWF — IFS HRES open data forecasts (9 km)
+  homepage: https://www.ecmwf.int/en/forecasts/datasets/open-data
+  license: CC BY 4.0
+  attribution: "Forecasts © European Centre for Medium-Range Weather Forecasts (ECMWF), CC BY 4.0"
+  notes: Served through Open-Meteo (model ecmwf_ifs). Use is also subject to the ECMWF Terms of Use.
