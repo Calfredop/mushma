@@ -8,7 +8,11 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "duckdb>=1.5.5",
     "fastapi[standard]>=0.141.1",
+    "numpy>=2.5.3",
+    "pyarrow>=25.0.1",
+    "pyyaml>=6.0.3",
 ]
 
 [build-system]
@@ -21,6 +25,17 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.8",
 ]
+grid = [
+    "geopandas>=1.1.4",
+    "py7zr>=1.1.3",
+    "pyogrio>=0.13.0",
+    "pyproj>=3.8.0",
+    "rasterio>=1.5.1",
+    "shapely>=2.1.2",
+]
+
+[tool.uv]
+default-groups = ["dev", "grid"]
 
 [tool.ruff]
 target-version = "py313"
@@ -31,3 +46,7 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = [
+    # rasterio 1.5 still multiplies Affine transforms with `*`.
+    "ignore:Use `@` matmul:PendingDeprecationWarning:rasterio",
+]

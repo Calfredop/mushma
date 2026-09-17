@@ -1,0 +1,62 @@
+# Habitat vocabulary for the species rules. The woodland grid owns this list; the `habitat` enum
+# in the species rule schema must match it (tests/grid/test_habitats.py checks).
+#
+# A cell's woodland is first split into broad groups by the land-cover map (see the region config),
+# then broad groups with several habitats are split by the forest-type map.
+#
+# groups:
+#   woodland  counts towards the "mostly woodland" mask
+#   fallback  habitat used when the forest-type map has no type of this group within reach
+# habitats (order is the tie-break for the dominant habitat):
+#   group     the broad group the habitat belongs to
+
+groups:
+  broadleaf: {woodland: true, fallback: mixed_broadleaf}
+  conifer: {woodland: true, fallback: other_conifer}
+  mixed: {woodland: true, fallback: mixed_broadleaf_conifer}
+  macchia: {woodland: false, fallback: macchia}
+  transitional: {woodland: false, fallback: transitional_woodland_shrub}
+
+habitats:
+  beech:
+    group: broadleaf
+    description: Beech woods (faggete)
+  chestnut:
+    group: broadleaf
+    description: Chestnut coppice and orchards (castagneti)
+  deciduous_oak:
+    group: broadleaf
+    description: Turkey oak and downy oak woods (cerrete, querceti di roverella)
+  evergreen_oak:
+    group: broadleaf
+    description: Holm oak and cork oak woods (leccete, sugherete)
+  mixed_broadleaf:
+    group: broadleaf
+    description: Other native broadleaf woods (ostrieti, carpineti, acero-frassineti)
+  riparian:
+    group: broadleaf
+    description: Riparian and wetland woods (pioppeti, saliceti, ontanete)
+  exotic_broadleaf:
+    group: broadleaf
+    description: Exotic broadleaf woods and plantations (robinieti, eucalitteti)
+  mediterranean_pine:
+    group: conifer
+    description: Mediterranean pines and cypress (pino marittimo, pino domestico)
+  mountain_pine:
+    group: conifer
+    description: Montane pines (pino nero, pino silvestre)
+  fir_spruce:
+    group: conifer
+    description: Fir and spruce woods (abetine)
+  other_conifer:
+    group: conifer
+    description: Larch, stone pine and exotic conifers (douglasiete)
+  mixed_broadleaf_conifer:
+    group: mixed
+    description: Mixed broadleaf and conifer woods (e.g. beech with silver fir)
+  macchia:
+    group: macchia
+    description: Mediterranean scrub (macchia alta and bassa, garighe)
+  transitional_woodland_shrub:
+    group: transitional
+    description: Woodland and scrub regrowth (e.g. abandoned chestnut and oak)
