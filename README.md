@@ -34,6 +34,7 @@ pnpm run test:e2e    # Playwright smoke test: map → spot → why (starts the f
 pnpm run lint        # ESLint (also rejects hardcoded UI strings)
 pnpm run format:check
 pnpm run build       # type-check + production build
+pnpm run perf        # first-map-paint check on a throttled phone profile (local only)
 ```
 
 `.env` points `VITE_API_BASE_URL` at `/api`, which the dev server proxies to
@@ -53,7 +54,8 @@ The dev server serves them at `/basemap/`. Without them, leave
 fill. `pnpm run test:e2e` always runs that way.
 
 `.gavin-root/docs/visual-direction.md` has the palette, the score colour scale
-and the type choices.
+and the type choices. `.gavin-root/docs/perf-first-map-paint.md` has the
+performance method and results.
 
 `web/src/api/schema.ts` is a TypeScript client generated from `api/openapi.json`
 (the API's contract). After changing any `api/` route or response model, run
