@@ -86,6 +86,10 @@ All seven milestones below are v1; there is no smaller cut.
 - **Known data traps.** Sightings are presence-only and biased toward trails,
   towns and popular areas. iNaturalist hides the exact location of some records
   (geoprivacy), so check coordinate uncertainty. Sparse species-days are noisy.
+  Reanalysis rain is too dry in the hills: against 133 SIR Toscana gauges in
+  woodland (2025) it holds about 70 % of the measured rain (79 % below 400 m,
+  63 % above 800 m). Rain thresholds taken from gauge-based studies must be
+  tuned on it or the rain rescaled (see `.gavin-root/docs/weather-ingest.md`).
 - **Known gaps (v1).** Soil chemistry (gallinacci prefer acidic soils) is not
   modelled; SoilGrids (ISRIC) or the Regione Toscana pedological map are
   candidates if the backtest shows it matters. Aspect is attached to cells but
@@ -125,6 +129,30 @@ All seven milestones below are v1; there is no smaller cut.
   weather on a coarser point set and downscale to cells. Adjust temperature by
   elevation (lapse rate); rain can be taken from the nearest or interpolated
   point. Request daily data in `Europe/Rome` so a day's rain is a local day.
+  Decided in M2 (details in `.gavin-root/docs/weather-ingest.md`):
+  - **Sources.** History is Open-Meteo's ERA5-Land archive (`era5_seamless`:
+    ERA5-Land, with rain, snow and wind from ERA5), about 6 days behind real
+    time. The recent days and the +7-day forecast come from ECMWF IFS 9 km
+    (`ecmwf_ifs`), which uses the same land model and soil layers. Reanalysis
+    wins over forecast for any day both have, and each downscaled value records
+    which one it used.
+  - **Points.** Every other ERA5-Land node, a 0.2° lattice (103 land nodes).
+    Compared with the full 0.1° grid it needs about a third of the API calls.
+    It loses about 0.3 °C on temperatures and 3 mm on wet 3-day rain totals
+    (leave-out test, 2024).
+  - **Downscaling.** Bilinear from the four surrounding nodes, sea nodes left
+    out. Temperatures move to the cell's height at 4.2–4.5 °C/km (air) and
+    3.7 °C/km (0–7 cm soil): the gradients ERA5-Land carries across Tuscany,
+    in line with observed rates. The textbook 6.5 °C/km did worse.
+  - **History depth.** Backfill from **2016-01-01**, newest year first. The
+    seasons from 2019 hold 90 % of the dated Tuscan GBIF records for the three
+    species, and ten years give the percent- and percentile-of-normal factors a
+    first baseline. On the free API a year of history costs about 3,000 of the
+    10,000 daily calls, so the backfill runs in the background for about four
+    days. Going deeper, e.g. the 1991–2020 normal for the seasonal outlook
+    (M6), is a config change and a re-run. At about 75,000 calls that is only
+    worth it if M6 needs cell-level normals; area-level normals can come
+    cheaper from ERA5 at 0.25°.
 
 ### Candidate data sources
 
@@ -194,4 +222,3 @@ BY 4.0, per-dataset GBIF licenses, Copernicus). Show credits in the app.
 
 - How to deliver the grid to the map: vector tiles, a compact binary/JSON grid, or raster PNGs?
 - Basemap tile provider (MapTiler, self-hosted Protomaps PMTiles, OSM-based).
-- How far back to backfill history (bounded by the ERA5-Land archive and API rate limits).

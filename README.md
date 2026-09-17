@@ -65,6 +65,24 @@ uv run python -m api.grid.build --region tuscany
 Set `DATA_DIR` to build somewhere else (it is `/data` on Fly). Outputs, sources and the woodland
 rule are described in `.gavin-root/docs/woodland-grid.md`.
 
+### Weather
+
+Daily weather comes from Open-Meteo: ERA5-Land history and the ECMWF IFS forecast, fetched on a
+0.2° lattice of model nodes and downscaled to the woodland cells. Build the point set once the grid
+exists, then backfill and update:
+
+```sh
+cd api
+uv run python -m api.weather.ingest points            # land nodes and cell weights (~130 API calls)
+uv run python -m api.weather.ingest backfill --wait   # history from 2016, newest first; ~4 days
+uv run python -m api.weather.ingest update            # daily: new reanalysis days + 7-day forecast
+uv run python -m api.weather.ingest downscale --start 2026-09-10 --end 2026-09-24
+```
+
+The backfill stays under the free API limits (it keeps a shared tally in
+`api/data/raw/open_meteo/usage.json`), resumes where it stopped, and skips anything already stored.
+Sources, method, checks and the backfill-depth decision are in `.gavin-root/docs/weather-ingest.md`.
+
 To build and run the production container locally:
 
 ```sh
