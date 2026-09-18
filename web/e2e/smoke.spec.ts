@@ -73,3 +73,31 @@ test('map → spot forecast → why this score', async ({ page }) => {
   await expect(forecastBar).toHaveAttribute('aria-pressed', 'true')
   await expect(why.getByText(/Questo giorno è una previsione/)).toBeVisible()
 })
+
+test('seasons on the map, a replayed day, and the outlook', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+
+  // Past seasons: pick one and it goes on the map as good days per cell.
+  await page.getByRole('tab', { name: 'Stagioni' }).click()
+  await expect(page.getByRole('heading', { name: 'Stagioni', level: 2 })).toBeVisible()
+  const lastYear = String(new Date().getFullYear() - 1)
+  await page.getByRole('button', { name: new RegExp(`^${lastYear}:`) }).click()
+  await expect(page).toHaveURL(new RegExp(`season=${lastYear}`))
+  await expect(page.getByRole('main').getByText(`Stagione ${lastYear}`)).toBeVisible()
+  await expect(
+    page.getByRole('main').getByText(`Giorni favorevoli nel ${lastYear}`),
+  ).toBeAttached()
+
+  // Replay its best day: the date bar turns into a past day.
+  await page.getByRole('button', { name: 'Rivedilo sulla mappa' }).click()
+  await expect(page.getByText('Giorno passato')).toBeVisible()
+  await expect(page).toHaveURL(/date=\d{4}-\d{2}-\d{2}/)
+  await page.getByRole('button', { name: 'Oggi', exact: true }).click()
+  await expect(page.getByRole('radiogroup', { name: 'Giorno' })).toBeVisible()
+
+  // The outlook: an outlook, never a forecast.
+  await page.getByRole('tab', { name: 'Prospettive' }).click()
+  await expect(page.getByText('Prospettiva, non previsione')).toBeVisible()
+  await expect(page.getByText('La stagione finora')).toBeVisible()
+})

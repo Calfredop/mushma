@@ -14,10 +14,20 @@ export const DEFAULT_SPECIES: SpeciesOrCombined = 'porcini'
 export type Spot =
   { kind: 'cell'; cellId: string } | { kind: 'point'; lat: number; lon: number }
 
+/** What the sheet shows: hot places now, past seasons, or the seasonal outlook. */
+export const VIEWS = ['now', 'seasons', 'outlook'] as const
+export type View = (typeof VIEWS)[number]
+
 export interface UrlState {
   species: SpeciesOrCombined
+  /** Any day from the start of the history to the end of the forecast. */
   date: IsoDate
   spot: Spot | null
+  view: View
+  /** ISTAT code of the comune the seasons and outlook views look at; null is all of Tuscany. */
+  comune: string | null
+  /** A past season shown on the map (seasons view only). */
+  season: number | null
 }
 
 export interface DateWindowSize {
@@ -26,6 +36,7 @@ export interface DateWindowSize {
 }
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+const COMUNE_CODE = /^[\w-]{1,32}$/
 const POINT_DECIMALS = 5 // ~1 m, far finer than a 1 km cell
 
 function isSpeciesOrCombined(value: string | null): value is SpeciesOrCombined {
@@ -39,33 +50,64 @@ function isCalendarDate(value: string): boolean {
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
 }
 
-function inWindow(date: IsoDate, today: IsoDate, window: DateWindowSize): boolean {
+/**
+ * A servable day: inside the date strip's window, or, with a history, any day from its first
+ * day on (a replay) up to the end of the forecast.
+ */
+function inWindow(
+  date: IsoDate,
+  today: IsoDate,
+  window: DateWindowSize,
+  historyStart?: IsoDate,
+): boolean {
   const offset = daysBetween(today, date)
-  return offset >= -window.pastDays && offset <= window.forecastDays
+  if (offset > window.forecastDays) return false
+  if (historyStart !== undefined) return date >= historyStart
+  return offset >= -window.pastDays
 }
 
 function parseDate(
   value: string | null,
   today: IsoDate,
   window: DateWindowSize,
+  historyStart?: IsoDate,
 ): IsoDate {
   if (!value || !isCalendarDate(value)) return today
-  return inWindow(value, today, window) ? value : today
+  return inWindow(value, today, window, historyStart) ? value : today
 }
 
 /**
  * After midnight in Rome: a date that meant "today" follows the new today, and
- * one that has fallen out of the served window returns to it.
+ * one that is no longer servable returns to it. A replayed past day stays put.
  */
 export function rollToday(
   date: IsoDate,
   previousToday: IsoDate,
   today: IsoDate,
   window?: DateWindowSize,
+  historyStart?: IsoDate,
 ): IsoDate {
   if (date === previousToday) return today
-  if (window && !inWindow(date, today, window)) return today
+  if (window && !inWindow(date, today, window, historyStart)) return today
   return date
+}
+
+function parseView(value: string | null): View {
+  return VIEWS.includes(value as View) ? (value as View) : 'now'
+}
+
+function parseSeason(
+  value: string | null,
+  view: View,
+  today: IsoDate,
+  historyStart?: IsoDate,
+): number | null {
+  if (view !== 'seasons' || !value || !/^\d{4}$/.test(value)) return null
+  const year = Number(value)
+  const first = historyStart
+    ? Number(historyStart.slice(0, 4))
+    : Number(today.slice(0, 4))
+  return year >= first && year <= Number(today.slice(0, 4)) ? year : null
 }
 
 function parseSpot(params: URLSearchParams, region?: Bounds): Spot | null {
@@ -92,13 +134,19 @@ export function parseUrlState(
   today: IsoDate,
   window: DateWindowSize,
   region?: Bounds,
+  historyStart?: IsoDate,
 ): UrlState {
   const params = new URLSearchParams(search)
   const species = params.get('species')
+  const view = parseView(params.get('view'))
+  const comune = params.get('comune')
   return {
     species: isSpeciesOrCombined(species) ? species : DEFAULT_SPECIES,
-    date: parseDate(params.get('date'), today, window),
+    date: parseDate(params.get('date'), today, window, historyStart),
     spot: parseSpot(params, region),
+    view,
+    comune: comune && COMUNE_CODE.test(comune) ? comune : null,
+    season: parseSeason(params.get('season'), view, today, historyStart),
   }
 }
 
@@ -114,6 +162,9 @@ export function serializeUrlState(state: UrlState, today: IsoDate): string {
   if (state.spot?.kind === 'point') {
     params.set('at', `${round(state.spot.lat)},${round(state.spot.lon)}`)
   }
+  if (state.view !== 'now') params.set('view', state.view)
+  if (state.comune) params.set('comune', state.comune)
+  if (state.season !== null) params.set('season', String(state.season))
   const search = params.toString()
   return search ? `?${search}` : ''
 }

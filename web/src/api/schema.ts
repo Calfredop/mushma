@@ -21,6 +21,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/comuni': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Comuni with woodland, for the season and outlook views */
+    get: operations['get_comuni_comuni_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/health': {
     parameters: {
       query?: never
@@ -38,6 +55,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/history/season/{year}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** One season on the map: good days per woodland cell, comuni ranked by them */
+    get: operations['get_season_map_history_season__year__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/history/seasons': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Every stored season for Tuscany or a comune: good days, weather vs normal, sightings */
+    get: operations['get_seasons_history_seasons_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/hotspots': {
     parameters: {
       query?: never
@@ -47,6 +98,23 @@ export interface paths {
     }
     /** Ranked clusters of high-scoring cells, with nearby recent sightings */
     get: operations['get_hotspots_hotspots_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/outlook': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** The season so far and an outlook (not a forecast) for the weeks and months ahead */
+    get: operations['get_outlook_outlook_get']
     put?: never
     post?: never
     delete?: never
@@ -110,6 +178,34 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** Area */
+    Area: {
+      /**
+       * Code
+       * @description ISTAT comune code; null for the whole region
+       */
+      code: string | null
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: 'region' | 'comune'
+      /** Name */
+      name: string
+    }
+    /** Baseline */
+    Baseline: {
+      /**
+       * Score Years
+       * @description seasons behind the typical good days
+       */
+      score_years: number[]
+      /**
+       * Weather Years
+       * @description years behind the weather normals
+       */
+      weather_years: number[]
+    }
     /**
      * CellDetailResponse
      * @description Shared shape for `GET /spot` and `GET /cells/{id}`: today plus a
@@ -125,6 +221,55 @@ export interface components {
       place: components['schemas']['Place']
       /** Species */
       species: components['schemas']['SpeciesForecast'][]
+    }
+    /** CellSeason */
+    CellSeason: {
+      /** Cell Id */
+      cell_id: string
+      /** Good Days */
+      good_days: number
+      /** Lat */
+      lat: number
+      /** Lon */
+      lon: number
+    }
+    /** Comune */
+    Comune: {
+      /**
+       * Cells
+       * @description woodland cells in the comune
+       */
+      cells: number
+      /** Code */
+      code: string
+      /** Lat */
+      lat: number
+      /** Lon */
+      lon: number
+      /** Name */
+      name: string
+      /** Province */
+      province: string
+    }
+    /** ComuneSeason */
+    ComuneSeason: {
+      /** Code */
+      code: string
+      /** Good Days */
+      good_days: number
+      /** Good Days Typical */
+      good_days_typical: number | null
+      /** Name */
+      name: string
+      rain: components['schemas']['RainStat'] | null
+      /** Sightings */
+      sightings: number
+      temperature: components['schemas']['TemperatureStat'] | null
+    }
+    /** ComuniResponse */
+    ComuniResponse: {
+      /** Comuni */
+      comuni: components['schemas']['Comune'][]
     }
     /** DayScore */
     DayScore: {
@@ -207,12 +352,119 @@ export interface components {
        */
       species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
     }
+    /** MonthStat */
+    MonthStat: {
+      /**
+       * Good Days
+       * @description a typical woodland cell's good days
+       */
+      good_days: number
+      /** Month */
+      month: number
+      rain: components['schemas']['RainStat'] | null
+      /** Sightings */
+      sightings: number
+      temperature: components['schemas']['TemperatureStat'] | null
+    }
+    /**
+     * OutlookPeriod
+     * @description A week (EC46) or month (SEAS5) after the 7-day forecast. An outlook, not a forecast.
+     */
+    OutlookPeriod: {
+      /**
+       * End
+       * Format: date
+       */
+      end: string
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: 'week' | 'month'
+      /**
+       * Lead Rain Pct
+       * @description rain over the lead window, as a percentage of normal
+       */
+      lead_rain_pct: number | null
+      /**
+       * Outlook
+       * @enum {string}
+       */
+      outlook: 'better' | 'usual' | 'worse' | 'unknown'
+      /**
+       * Past Good Years
+       * @description past seasons in which these days were good
+       */
+      past_good_years: number
+      /**
+       * Past Years
+       * @description past seasons with scores for these days
+       */
+      past_years: number
+      /** @description long-range forecast total and its own normal */
+      rain: components['schemas']['RainStat'] | null
+      /**
+       * Start
+       * Format: date
+       */
+      start: string
+      /** Temperature Anomaly C */
+      temperature_anomaly_c: number | null
+    }
+    /** OutlookResponse */
+    OutlookResponse: {
+      area: components['schemas']['Area']
+      baseline: components['schemas']['Baseline']
+      /** Good Share */
+      good_share: number
+      /**
+       * Issued
+       * @description when the long-range forecast was fetched
+       */
+      issued: string | null
+      /** Periods */
+      periods: components['schemas']['OutlookPeriod'][]
+      rain_lead: components['schemas']['RainLead']
+      rain_tilt: components['schemas']['RainTiltBands']
+      season_to_date: components['schemas']['SeasonToDate'] | null
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci'
+      window: components['schemas']['SeasonWindow']
+    }
     /** Place */
     Place: {
       /** Comune */
       comune: string
       /** Nearest Place */
       nearest_place: string
+    }
+    /** RainLead */
+    RainLead: {
+      /** Max Days */
+      max_days: number
+      /** Min Days */
+      min_days: number
+    }
+    /** RainStat */
+    RainStat: {
+      /** Normal Mm */
+      normal_mm: number
+      /** Total Mm */
+      total_mm: number
+    }
+    /**
+     * RainTiltBands
+     * @description Lead-window rain at or above ``wetter_pct`` of normal tilts a period better; at or below
+     *     ``drier_pct``, worse (``config/history.yaml``).
+     */
+    RainTiltBands: {
+      /** Drier Pct */
+      drier_pct: number
+      /** Wetter Pct */
+      wetter_pct: number
     }
     /** ScoresResponse */
     ScoresResponse: {
@@ -223,6 +475,126 @@ export interface components {
        * Format: date
        */
       date: string
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+    }
+    /**
+     * SeasonMapResponse
+     * @description One season on the map: good days per woodland cell, and the comuni ranked by them.
+     */
+    SeasonMapResponse: {
+      /** Cells */
+      cells: components['schemas']['CellSeason'][]
+      /** Complete */
+      complete: boolean
+      /** Comuni */
+      comuni: components['schemas']['ComuneSeason'][]
+      /** Good Score */
+      good_score: number
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+      /**
+       * Through
+       * Format: date
+       */
+      through: string
+      /** Year */
+      year: number
+    }
+    /** SeasonSummary */
+    SeasonSummary: {
+      /**
+       * Complete
+       * @description every day of the year is scored
+       */
+      complete: boolean
+      /**
+       * Good Days
+       * @description a typical woodland cell's good days
+       */
+      good_days: number
+      /**
+       * Good Days Typical
+       * @description median over the baseline seasons, to the same day of the year
+       */
+      good_days_typical: number | null
+      /** Months */
+      months: components['schemas']['MonthStat'][]
+      /** Peak Date */
+      peak_date: string | null
+      /**
+       * Peak Share
+       * @description share of woodland cells good that day
+       */
+      peak_share: number
+      /** @description over the observed days of the window */
+      rain: components['schemas']['RainStat'] | null
+      /** Sightings */
+      sightings: number
+      temperature: components['schemas']['TemperatureStat'] | null
+      /**
+       * Through
+       * Format: date
+       * @description the last day scored
+       */
+      through: string
+      /**
+       * Weather Through
+       * @description the last observed day behind the weather
+       */
+      weather_through: string | null
+      window: components['schemas']['SeasonWindow']
+      /** Year */
+      year: number
+    }
+    /** SeasonToDate */
+    SeasonToDate: {
+      /** Good Days */
+      good_days: number
+      /** Good Days Typical */
+      good_days_typical: number | null
+      rain: components['schemas']['RainStat'] | null
+      /** Sightings */
+      sightings: number
+      temperature: components['schemas']['TemperatureStat'] | null
+      /**
+       * Through
+       * Format: date
+       */
+      through: string
+      /** Weather Through */
+      weather_through: string | null
+    }
+    /**
+     * SeasonWindow
+     * @description The span of the species' season windows in its rule files, for one year.
+     */
+    SeasonWindow: {
+      /**
+       * End
+       * Format: date
+       */
+      end: string
+      /**
+       * Start
+       * Format: date
+       */
+      start: string
+    }
+    /** SeasonsResponse */
+    SeasonsResponse: {
+      area: components['schemas']['Area']
+      baseline: components['schemas']['Baseline']
+      /** Good Score */
+      good_score: number
+      /** Seasons */
+      seasons: components['schemas']['SeasonSummary'][]
       /**
        * Species
        * @enum {string}
@@ -271,6 +643,13 @@ export interface components {
        * @enum {string}
        */
       species: 'porcini' | 'ovoli' | 'gallinacci'
+    }
+    /** TemperatureStat */
+    TemperatureStat: {
+      /** Mean C */
+      mean_c: number
+      /** Normal C */
+      normal_c: number
     }
     /** ValidationError */
     ValidationError: {
@@ -332,6 +711,33 @@ export interface operations {
       }
     }
   }
+  get_comuni_comuni_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComuniResponse']
+        }
+      }
+      /** @description history not built yet */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   health_health_get: {
     parameters: {
       query?: never
@@ -351,6 +757,100 @@ export interface operations {
             [key: string]: string
           }
         }
+      }
+    }
+  }
+  get_season_map_history_season__year__get: {
+    parameters: {
+      query: {
+        species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+      }
+      header?: never
+      path: {
+        year: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SeasonMapResponse']
+        }
+      }
+      /** @description season not stored */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+      /** @description history not built yet */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
+  get_seasons_history_seasons_get: {
+    parameters: {
+      query?: {
+        /** @description ISTAT comune code (see /comuni); omit for all of Tuscany */
+        comune?: string | null
+        species?: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SeasonsResponse']
+        }
+      }
+      /** @description unknown comune */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+      /** @description history not built yet */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
@@ -392,6 +892,53 @@ export interface operations {
         content: {
           'application/json': components['schemas']['HTTPValidationError']
         }
+      }
+    }
+  }
+  get_outlook_outlook_get: {
+    parameters: {
+      query: {
+        species: 'porcini' | 'ovoli' | 'gallinacci'
+        /** @description ISTAT comune code (see /comuni); omit for all of Tuscany */
+        comune?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OutlookResponse']
+        }
+      }
+      /** @description unknown comune */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+      /** @description history not built yet */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
@@ -441,6 +988,8 @@ export interface operations {
         species: 'porcini' | 'ovoli' | 'gallinacci'
         /** @description defaults to one year ago */
         since?: string | null
+        /** @description last day included; defaults to no limit */
+        until?: string | null
       }
       header?: never
       path?: never

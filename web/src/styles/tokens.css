@@ -27,6 +27,12 @@
     transparent 1.5px 5px
   );
 
+  /* Outlook stipple: the second signature. On a map, a dotted fill marks an indicative area,
+     less certain than a hatched (projected) one; here it marks anything that is an outlook
+     rather than a forecast. Solid = observed, hatch = forecast, stipple = outlook. */
+  --stipple: radial-gradient(circle, rgb(28 33 29 / 45%) 0.9px, transparent 1.25px) 0 0 /
+    5px 5px;
+
   /* Type */
   --font-ui: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
   --font-data: 'Atkinson Hyperlegible Mono Variable', ui-monospace, monospace;

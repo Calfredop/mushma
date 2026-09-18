@@ -75,3 +75,10 @@
   background: transparent;
   box-shadow: inset 0 0 0 2px var(--lago);
 }
+
+/* A season's good days: each tick sits at the left edge of its class. */
+.ticks[data-mode='season'] {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 2px 0 0;
+}

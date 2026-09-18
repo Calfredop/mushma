@@ -8,7 +8,7 @@ import type {
   SourceSpecification,
   StyleSpecification,
 } from 'maplibre-gl'
-import { scoreStepExpression } from '../score/scale'
+import { goodDaysStepExpression, scoreStepExpression } from '../score/scale'
 import { DATA_LAYERS_BEFORE, LABEL_FONT } from './basemap'
 
 const LAGO = '#1F56A0'
@@ -16,6 +16,15 @@ const HUMUS = '#1C211D'
 const CARTA = '#F8FAF6'
 const LICHENE = '#EDF0EA'
 const SCORE = scoreStepExpression(['get', 'score']) as ExpressionSpecification
+
+/** What the cells' `score` property holds: a day's conditions score, or a season's good days. */
+export type CellScale = 'score' | 'goodDays'
+
+export function cellColor(scale: CellScale): ExpressionSpecification {
+  return scale === 'score'
+    ? SCORE
+    : (goodDaysStepExpression(['get', 'score']) as ExpressionSpecification)
+}
 
 export const EMPTY_COLLECTION = { type: 'FeatureCollection' as const, features: [] }
 

@@ -1,0 +1,223 @@
+/* The outlook wears the stipple: dotted, like an indicative area on a survey map. */
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.badge {
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-s);
+  background: var(--stipple), var(--carta);
+  box-shadow: inset 0 0 0 1px rgb(28 33 29 / 30%);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-shadow:
+    0 0 3px var(--carta),
+    0 0 3px var(--carta);
+}
+
+.pick {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.pickButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pickButton {
+  min-height: var(--tap);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--humus);
+  border-radius: 999px;
+  background: var(--carta);
+  color: var(--humus);
+  font-weight: 600;
+}
+
+.pickButton:hover {
+  background: var(--humus);
+  color: var(--carta);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-m);
+  background: var(--carta);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.cardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.cardTitle,
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 400;
+}
+
+.sectionTitle {
+  margin-top: var(--space-2);
+}
+
+.verdict {
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--humus);
+  font-size: var(--text-caption);
+  font-weight: 650;
+}
+
+.verdict[data-verdict='better'] {
+  background: var(--humus);
+  color: var(--carta);
+}
+
+.verdict[data-verdict='worse'] {
+  box-shadow: inset 0 0 0 1px var(--felce);
+  color: var(--felce);
+}
+
+.facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.facts dt {
+  color: var(--felce);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.aside {
+  color: var(--felce);
+}
+
+.periods {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.period {
+  display: grid;
+  gap: 4px;
+  padding: var(--space-2) var(--space-1);
+  border-bottom: 1px solid var(--rule);
+}
+
+.periodHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.periodLabel {
+  font-weight: 650;
+}
+
+/* The tilt chip: stippled, never a solid swatch, so it can't be read as a score. */
+.tilt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px var(--space-2);
+  border-radius: 999px;
+  background: var(--stipple), var(--carta);
+  box-shadow: inset 0 0 0 1px rgb(28 33 29 / 30%);
+  font-size: var(--text-caption);
+  font-weight: 650;
+  text-shadow:
+    0 0 3px var(--carta),
+    0 0 3px var(--carta);
+}
+
+.tilt[data-outlook='better'] {
+  box-shadow: inset 0 0 0 2px var(--humus);
+}
+
+.tilt[data-outlook='worse'],
+.tilt[data-outlook='unknown'] {
+  color: var(--felce);
+  box-shadow: inset 0 0 0 1px rgb(91 103 94 / 50%);
+}
+
+.periodBody {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.tally {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  max-width: 9rem;
+}
+
+.dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--humus);
+}
+
+.dot[data-good='true'] {
+  background: var(--humus);
+}
+
+.lead {
+  margin: 0;
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.how {
+  font-size: var(--text-caption);
+}
+
+.how summary {
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  color: var(--lago);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.how p {
+  margin: 0 0 var(--space-2);
+}

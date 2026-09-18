@@ -1,0 +1,51 @@
+/* A ruled index, like the tabs cut into a field notebook: ink underline for the open one. */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 calc(-1 * var(--space-4)) var(--space-3);
+  padding: 0 var(--space-2);
+  border-bottom: 1px solid var(--rule);
+}
+
+.tab {
+  position: relative;
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--felce);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.tab:hover {
+  color: var(--humus);
+}
+
+.tab[aria-selected='true'] {
+  color: var(--humus);
+}
+
+.tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--humus);
+}
+
+/* The outlook tab carries the outlook's stipple under its label. */
+.tab[data-view='outlook'][aria-selected='true']::after {
+  height: 4px;
+  background: radial-gradient(circle, var(--humus) 1px, transparent 1.3px) 0 0 / 4px 4px;
+}
+
+@media (min-width: 900px) {
+  .tabs {
+    margin: 0 calc(-1 * var(--space-5)) var(--space-4);
+    padding: 0 var(--space-3);
+  }
+}

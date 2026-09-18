@@ -152,7 +152,10 @@
     "note": "Counts per 1 km cell from iNaturalist and GBIF, never exact locations.",
     "count_one": "{{count}} sighting",
     "count_other": "{{count}} sightings",
-    "loadError": "Couldn't load sightings."
+    "loadError": "Couldn't load sightings.",
+    "seasonWindow": "{{year}} season",
+    "pickSeason": "Pick a season to see its sightings",
+    "replayWindow": "From {{start}} to {{end}}"
   },
   "sheet": {
     "expand": "Expand the panel",
@@ -184,11 +187,132 @@
       "basemapTiles": "Basemap style and tiles",
       "geocoding": "Place search",
       "mapLibrary": "Map rendering",
-      "fonts": "Typefaces"
+      "fonts": "Typefaces",
+      "seasonal": "Long-range tendencies for the seasonal outlook"
     }
   },
   "errors": {
     "generic": "Something went wrong. Reload the page.",
     "offline": "You're offline: the data may be out of date."
+  },
+  "views": {
+    "label": "What to show",
+    "now": "Now",
+    "seasons": "Seasons",
+    "outlook": "Outlook"
+  },
+  "replay": {
+    "open": "Replay a past day",
+    "pickLabel": "Day to replay",
+    "lastYear": "Same day, a year earlier",
+    "close": "Close the calendar",
+    "previous": "Previous day",
+    "next": "Next day",
+    "change": "Replaying {{date}}. Pick another day",
+    "eyebrow": "Past day",
+    "back": "Today",
+    "go": "Replay"
+  },
+  "season": {
+    "eyebrow": "Season on the map",
+    "label": "{{year}} season",
+    "previous": "Previous season",
+    "next": "Next season",
+    "close": "Take the season off the map",
+    "legendTitle": "Good days in {{year}}",
+    "few": "Few",
+    "many": "Many",
+    "loading": "Loading the season…",
+    "noData": "No data for this season."
+  },
+  "area": {
+    "label": "Area",
+    "region": "All of Tuscany",
+    "comune": "{{name}} ({{province}})"
+  },
+  "seasons": {
+    "title": "Seasons",
+    "subtitle": "{{species}} · {{area}}",
+    "loading": "Loading seasons…",
+    "loadError": "Couldn't load the seasons.",
+    "empty": "No season has been worked out for this area yet.",
+    "intro": "Good days: the days a typical woodland cell here had a conditions score of at least {{threshold}}.",
+    "columns": {
+      "year": "Year",
+      "goodDays": "Good days",
+      "rain": "Rain",
+      "temperature": "Temp."
+    },
+    "typical": "Typical: the median of the {{years}} seasons",
+    "pickHint": "Tap a season to see it on the map.",
+    "rowLabel": "{{year}}: {{days}} good days",
+    "rowLabelSoFar": "{{year}}: {{days}} good days so far",
+    "rowTypical": "typical {{typical}}",
+    "rainLabel": "rain at {{percent}} of normal",
+    "tempLabel": "temperature {{delta}} °C against normal",
+    "soFar": "so far",
+    "detailTitle": "{{year}} · {{area}}",
+    "partial": "Season under way: data up to {{date}}.",
+    "goodDays": "Good days",
+    "typicalValue": "(typical {{typical}})",
+    "bestDay": "Best day",
+    "peak": "{{date}}, good for {{percent}} of the woodland",
+    "replayPeak": "Replay it on the map",
+    "noPeak": "No good days.",
+    "rain": "Rain",
+    "rainValue": "{{mm}} mm, {{percent}} of normal",
+    "temperature": "Temperature",
+    "temperatureValue": "{{delta}} °C against normal",
+    "sightings": "Sightings",
+    "sightingsValue_one": "{{count}} public sighting",
+    "sightingsValue_other": "{{count}} public sightings",
+    "weatherNote": "Rain and temperature from {{start}} to {{end}}, against the {{years}} average.",
+    "months": "Month by month",
+    "monthLabel": "{{month}}: {{days}} good days, rain at {{rain}} of normal, temperature {{delta}} °C against normal",
+    "monthKey": "Bars: good days. Below: rain against normal and the temperature difference.",
+    "bestComuni": "Comuni with the most good days",
+    "showComune": "See the seasons of {{name}}",
+    "comuneDays": "{{days}} days"
+  },
+  "verdict": {
+    "better": "Better than usual",
+    "usual": "About usual",
+    "worse": "Worse than usual"
+  },
+  "outlook": {
+    "title": "Outlook",
+    "badge": "An outlook, not a forecast",
+    "subtitle": "{{species}} · {{area}}",
+    "pickSpecies": "The outlook covers one species at a time. Pick one:",
+    "loading": "Loading the outlook…",
+    "loadError": "Couldn't load the outlook.",
+    "window": "from {{start}} to {{end}}",
+    "soFarTitle": "The season so far",
+    "goodDays": "Good days",
+    "typicalToDate": "(usually {{typical}} by now)",
+    "rain": "Rain",
+    "rainValue": "{{mm}} mm, {{percent}} of normal",
+    "temperature": "Temperature",
+    "temperatureValue": "{{delta}} °C against normal",
+    "soFarNote": "From {{start}} to {{end}}; observed weather up to {{weather}}.",
+    "soFarNoteScores": "From {{start}} to {{end}}.",
+    "periodsTitle": "The weeks ahead",
+    "outOfSeason": "Nothing to look ahead to: the {{species}} season runs {{window}}.",
+    "howTitle": "How to read the outlook",
+    "how1": "For each period we count in how many past seasons ({{years}}) at least {{share}} of the area's woodland had good days on the same dates. It is a count, not a probability.",
+    "how2": "The mark follows the rain before the period: {{species}} respond to rain {{min}}–{{max}} days earlier. From {{wetter}} of normal up the period reads better than usual, from {{drier}} down worse.",
+    "how3": "For past days and the next 7 we use observed and forecast weather; beyond that, ECMWF's long-range tendencies, which only say whether an area will be wetter or drier than normal.",
+    "issued": "Long-range tendencies updated {{date}} (ECMWF, via Open-Meteo).",
+    "monthPeriod": "{{month}}",
+    "weekPeriod": "{{start}} – {{end}}",
+    "pastSeasons": "good in {{good}} of {{years}} past seasons",
+    "noPast": "no past seasons with data",
+    "tilt": {
+      "better": "better than usual",
+      "usual": "as usual",
+      "worse": "worse than usual",
+      "unknown": "no tendency available"
+    },
+    "leadRain": "Rain in the days before: {{percent}} of normal"
   }
 }

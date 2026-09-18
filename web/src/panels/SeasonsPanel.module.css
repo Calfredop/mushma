@@ -1,0 +1,324 @@
+/* Seasons read like a field ledger: one ruled line per year, the bar drawn in the map's
+   "good" colour, the typical season as an ink tick every line shares. */
+
+.comparison {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.head,
+.row {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) 3rem 3rem;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.head {
+  padding: 0 var(--space-1);
+  color: var(--felce);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.num {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.head .num {
+  font-family: var(--font-ui);
+}
+
+.rows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.rows li {
+  border-bottom: 1px solid var(--rule);
+}
+
+.row {
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--space-1);
+  border: 0;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--humus);
+  text-align: left;
+}
+
+.row:hover {
+  background: rgb(28 33 29 / 4%);
+}
+
+.row[aria-pressed='true'] {
+  background: var(--carta);
+  box-shadow: inset 0 0 0 2px var(--lago);
+}
+
+.year {
+  font-family: var(--font-data);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.barCell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.track {
+  position: relative;
+  height: 0.875rem;
+}
+
+.bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 0 4px 4px 0;
+  background: var(--score-4);
+}
+
+/* A season still under way: an open bar, filled lighter, so it never reads as a whole year. */
+.row[data-complete='false'] .bar {
+  background: color-mix(in srgb, var(--score-4) 35%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--score-4);
+}
+
+.tick {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--humus);
+}
+
+.days {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  min-width: 2.5rem;
+  font-family: var(--font-data);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.soFar {
+  color: var(--felce);
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.keyTick {
+  flex: none;
+  width: 2px;
+  height: 0.875rem;
+  border-radius: 1px;
+  background: var(--humus);
+}
+
+.detail {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-m);
+  background: var(--carta);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.detailHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.detailTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 400;
+}
+
+.verdict {
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--humus);
+  font-size: var(--text-caption);
+  font-weight: 650;
+}
+
+.verdict[data-verdict='better'] {
+  background: var(--humus);
+  color: var(--carta);
+}
+
+.verdict[data-verdict='worse'] {
+  box-shadow: inset 0 0 0 1px var(--felce);
+  color: var(--felce);
+}
+
+.facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.facts dt {
+  color: var(--felce);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.aside {
+  color: var(--felce);
+}
+
+.subhead {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--felce);
+}
+
+.months {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.month {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.monthTrack {
+  position: relative;
+  width: 100%;
+  max-width: 2rem;
+  height: 4.5rem;
+  border-bottom: 1px solid var(--humus);
+}
+
+.monthBar {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--score-4);
+}
+
+.monthDays {
+  font-weight: 650;
+  font-size: 0.75rem;
+}
+
+.monthName {
+  font-family: var(--font-ui);
+  font-weight: 650;
+  text-transform: lowercase;
+}
+
+.monthWeather {
+  color: var(--felce);
+}
+
+.monthKey {
+  margin: 0;
+  color: var(--felce);
+  font-size: 0.75rem;
+}
+
+.comuni {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comune {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0 var(--space-1);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--humus);
+  font-weight: 600;
+  text-align: left;
+}
+
+.comune:hover {
+  background: rgb(28 33 29 / 4%);
+}
+
+.comuneDays {
+  color: var(--felce);
+  font-family: var(--font-data);
+  font-weight: 400;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+  cursor: pointer;
+}
+
+.toggle > span {
+  display: grid;
+}
+
+.toggleLabel {
+  font-weight: 600;
+}

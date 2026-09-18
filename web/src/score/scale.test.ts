@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
+  GOOD_DAYS_CLASSES,
+  goodDaysClass,
+  goodDaysStepExpression,
   SCORE_CLASSES,
   scoreClass,
   scoreColor,
@@ -62,6 +65,42 @@ describe('score scale', () => {
       0.6,
       '#B34F2A',
       0.8,
+      '#652D1F',
+    ])
+  })
+})
+
+describe('good-days scale (a season on the map)', () => {
+  it('uses the same five colours with day breaks', () => {
+    expect(GOOD_DAYS_CLASSES.map((c) => c.color)).toEqual(
+      SCORE_CLASSES.map((c) => c.color),
+    )
+    expect(GOOD_DAYS_CLASSES.map((c) => c.min)).toEqual([0, 10, 30, 60, 90])
+  })
+
+  it.each([
+    [0, 0],
+    [9, 0],
+    [10, 1],
+    [59, 2],
+    [60, 3],
+    [120, 4],
+  ])('%d good days is class %d', (days, expected) => {
+    expect(goodDaysClass(days)).toBe(expected)
+  })
+
+  it('builds a MapLibre step expression with the same breaks', () => {
+    expect(goodDaysStepExpression(['get', 'score'])).toEqual([
+      'step',
+      ['get', 'score'],
+      '#F7F0C6',
+      10,
+      '#F0C967',
+      30,
+      '#E68C2C',
+      60,
+      '#B34F2A',
+      90,
       '#652D1F',
     ])
   })

@@ -1,0 +1,179 @@
+.stack {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.row > :last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.calendar,
+.bar,
+.picker {
+  border-radius: var(--radius-l);
+  background: rgb(248 250 246 / 94%);
+  box-shadow: var(--shadow-float);
+  backdrop-filter: blur(6px);
+}
+
+.calendar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  border: 0;
+  color: var(--humus);
+}
+
+.calendar[aria-expanded='true'] {
+  background: var(--humus);
+  color: var(--carta);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 3.75rem;
+  padding: 4px;
+}
+
+/* A replayed day and a season are not "now": an ink rule down the left edge says so. */
+.bar[data-mode] {
+  box-shadow:
+    inset 4px 0 0 var(--humus),
+    var(--shadow-float);
+  padding-left: 8px;
+}
+
+.label {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+  margin: 0;
+  padding: 2px var(--space-2);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--humus);
+  text-align: left;
+}
+
+button.label:hover {
+  background: rgb(28 33 29 / 6%);
+}
+
+.eyebrow {
+  color: var(--felce);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.value {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.iconButton,
+.back {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--humus);
+}
+
+.iconButton:hover,
+.back:hover {
+  background: rgb(28 33 29 / 6%);
+}
+
+.iconButton:disabled {
+  color: rgb(28 33 29 / 25%);
+  background: transparent;
+}
+
+.back {
+  padding: 0 var(--space-3);
+  background: var(--humus);
+  color: var(--carta);
+  font-weight: 650;
+}
+
+.back:hover {
+  background: #313a33;
+}
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+}
+
+.pickerLabel {
+  display: grid;
+  gap: 2px;
+  color: var(--felce);
+  font-size: var(--text-caption);
+  font-weight: 600;
+}
+
+.input {
+  min-height: 2.5rem;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-m);
+  background: var(--carta);
+  color: var(--humus);
+  font: inherit;
+  font-family: var(--font-data);
+}
+
+.textButton {
+  min-height: 2.5rem;
+  padding: 0 var(--space-2);
+  border: 0;
+  background: none;
+  color: var(--lago);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.picker .iconButton {
+  margin-left: auto;
+}
+
+.go {
+  min-height: 2.5rem;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--humus);
+  color: var(--carta);
+  font-weight: 650;
+}
+
+.go:disabled {
+  background: rgb(28 33 29 / 25%);
+}

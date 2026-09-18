@@ -31,11 +31,20 @@ export const REGION = {
   maxZoom: 15,
 }
 
-/** Past days → today → +7, matching what the API serves. */
+/** Past days → today → +7 on the date strip: the scored window with its factor breakdown. */
 export const DATE_WINDOW: DateWindowSize = { pastDays: 6, forecastDays: 7 }
+
+/**
+ * The first day a past date can be replayed from: the weather history starts in 2016
+ * (.gavin-root/docs/weather-ingest.md). A day the API has no scores for says so on the map.
+ */
+export const HISTORY_START = '2016-01-01'
 
 /** "Recent" sightings on the map overlay. */
 export const SIGHTINGS_WINDOW_DAYS = 90
+
+/** A replayed day shows the sightings of this many days either side of it. */
+export const REPLAY_SIGHTINGS_DAYS = 14
 
 export const HOTSPOT_LIMIT = 10
 

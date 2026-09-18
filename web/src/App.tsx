@@ -1,37 +1,61 @@
 import { onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   ApiError,
+  type DateRange,
   type Hotspot,
   isClientError,
+  useComuni,
   useHotspots,
+  useOutlook,
   useScores,
+  useSeasonMap,
+  useSeasons,
   useSightingTotals,
   useSpotForecast,
 } from './api/queries'
 import styles from './App.module.css'
-import { DateStrip } from './components/DateStrip'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
 import { ChevronIcon, InfoIcon, LocateIcon, SearchIcon } from './components/icons'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
+import { PanelBoundary } from './components/PanelBoundary'
 import { Legend } from './components/Legend'
 import { PlaceSearch } from './components/PlaceSearch'
 import { SpeciesSwitcher } from './components/SpeciesSwitcher'
-import { DATE_WINDOW, HOTSPOT_LIMIT, REGION } from './config'
+import { TimeBar } from './components/TimeBar'
+import { ViewTabs } from './components/ViewTabs'
+import {
+  DATE_WINDOW,
+  HISTORY_START,
+  HOTSPOT_LIMIT,
+  REGION,
+  REPLAY_SIGHTINGS_DAYS,
+  SIGHTINGS_WINDOW_DAYS,
+} from './config'
 import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
 import { type LocateError, useLocate } from './hooks/useLocate'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { usePath } from './hooks/usePath'
-import type { Language } from './i18n'
+import { intlLocale, type Language } from './i18n'
 import './i18n'
 import { ConditionsMap } from './map/ConditionsMap'
 import { CreditsPage } from './pages/CreditsPage'
 import { HotPlaces } from './panels/HotPlaces'
+import { OutlookPanel } from './panels/OutlookPanel'
+import { SeasonsPanel } from './panels/SeasonsPanel'
 import { SpotPanel } from './panels/SpotPanel'
 import { AppStateProvider } from './state/AppState'
 import { useAppState } from './state/useAppState'
+import { addDays, daysBetween, formatDayMonth } from './time/days'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +70,7 @@ const queryClient = new QueryClient({
 
 const SPOT_ZOOM = 12
 const HOTSPOT_ZOOM = 9.5
+const COMUNE_ZOOM = 10.5
 
 function useOnline(): boolean {
   return useSyncExternalStore(
@@ -68,12 +93,65 @@ function MapScreen() {
   const [locateError, setLocateError] = useState<LocateError | null>(null)
   const online = useOnline()
 
-  const scores = useScores(app.species, app.date, app.today)
-  const hotspots = useHotspots(app.species, app.date, app.today, HOTSPOT_LIMIT)
+  // What the map shows: a day (the date strip or a replayed past day), or a whole season.
+  const seasonMode = app.season !== null
+  const inStrip = daysBetween(app.today, app.date) >= -DATE_WINDOW.pastDays
+  const scores = useScores(app.species, app.date, app.today, !seasonMode)
+  const seasonMap = useSeasonMap(app.season, app.species)
+  const hotspots = useHotspots(
+    app.species,
+    app.date,
+    app.today,
+    HOTSPOT_LIMIT,
+    !seasonMode && app.view === 'now',
+  )
   const spotForecast = useSpotForecast(app.spot, app.today)
-  const sightings = useSightingTotals(app.species, app.today, app.sightingsVisible)
+  const comuni = useComuni(app.view !== 'now')
+  const seasons = useSeasons(
+    app.species,
+    app.comune,
+    app.view === 'seasons' || seasonMode,
+  )
+  const outlook = useOutlook(
+    app.view === 'outlook' && app.species !== 'combined' ? app.species : null,
+    app.comune,
+  )
 
-  const { selectSpot } = app
+  // Sightings from the time on the map: the last months, the weeks around a replayed day, or
+  // the whole of a season.
+  const sightingsRange: DateRange = seasonMode
+    ? { since: `${app.season}-01-01`, until: `${app.season}-12-31` }
+    : inStrip
+      ? { since: addDays(app.today, -SIGHTINGS_WINDOW_DAYS) }
+      : {
+          since: addDays(app.date, -REPLAY_SIGHTINGS_DAYS),
+          until: addDays(app.date, REPLAY_SIGHTINGS_DAYS),
+        }
+  const sightings = useSightingTotals(app.species, sightingsRange, app.sightingsVisible)
+  const replayWindow =
+    !seasonMode && !inStrip && sightingsRange.until
+      ? t('sightings.replayWindow', {
+          start: formatDayMonth(sightingsRange.since, intlLocale(language)),
+          end: formatDayMonth(sightingsRange.until, intlLocale(language)),
+        })
+      : undefined
+  // Once per response: the map rebuilds ~11k features whenever this array changes.
+  const seasonCells = useMemo(
+    () => seasonMap.data?.cells.map((c) => ({ ...c, score: c.good_days })),
+    [seasonMap.data],
+  )
+  const mapCells = seasonMode ? seasonCells : scores.data?.cells
+  const seasonYears = seasons.data?.seasons.map((s) => s.year) ?? []
+
+  const { selectSpot, flyTo, setComune } = app
+  const chooseComune = useCallback(
+    (code: string | null) => {
+      setComune(code)
+      const comune = code ? comuni.data?.comuni.find((c) => c.code === code) : undefined
+      if (comune) flyTo({ lat: comune.lat, lon: comune.lon, zoom: COMUNE_ZOOM })
+    },
+    [setComune, flyTo, comuni.data],
+  )
   const openSpot = useCallback(
     (...args: Parameters<typeof selectSpot>) => {
       selectSpot(...args)
@@ -133,15 +211,18 @@ function MapScreen() {
     />
   )
 
-  const scoresUnavailable = scores.isError && isClientError(scores.error)
+  const layer = seasonMode ? seasonMap : scores
+  const scoresUnavailable = layer.isError && isClientError(layer.error)
   const status = locating
     ? t('locate.locating')
     : !online
       ? t('errors.offline')
-      : scores.isError
-        ? t(scoresUnavailable ? 'map.noData' : 'map.loadError')
-        : scores.isPending || scores.isPlaceholderData
-          ? t('map.loading')
+      : layer.isError
+        ? seasonMode
+          ? t(scoresUnavailable ? 'season.noData' : 'map.loadError')
+          : t(scoresUnavailable ? 'map.noData' : 'map.loadError')
+        : layer.isPending || layer.isPlaceholderData
+          ? t(seasonMode ? 'season.loading' : 'map.loading')
           : locateError && t(`locate.${locateError}`)
 
   return (
@@ -184,10 +265,13 @@ function MapScreen() {
 
       <main className={styles.mapArea}>
         <ConditionsMap
-          cells={scores.data?.cells}
+          cells={mapCells}
+          scale={seasonMode ? 'goodDays' : 'score'}
           selectedCellId={selectedCellId}
           sightings={app.sightingsVisible ? sightings.totals : undefined}
-          hotspots={hotspots.data?.hotspots}
+          hotspots={
+            !seasonMode && app.view === 'now' ? hotspots.data?.hotspots : undefined
+          }
           camera={app.camera}
           spotPoint={
             app.spot?.kind === 'point'
@@ -217,8 +301,8 @@ function MapScreen() {
         {status && (
           <p className={styles.status} role="status">
             {status}
-            {scores.isError && !scoresUnavailable && online && (
-              <button type="button" onClick={() => void scores.refetch()}>
+            {layer.isError && !scoresUnavailable && online && (
+              <button type="button" onClick={() => void layer.refetch()}>
                 {t('map.retry')}
               </button>
             )}
@@ -226,14 +310,18 @@ function MapScreen() {
         )}
         <div className={styles.bottom}>
           <div className={styles.legend}>
-            <Legend showSightings={app.sightingsVisible} />
+            <Legend showSightings={app.sightingsVisible} season={app.season} />
           </div>
           <div className={styles.dates}>
-            <DateStrip
+            <TimeBar
               today={app.today}
-              value={app.date}
+              date={app.date}
               window={DATE_WINDOW}
-              onChange={app.setDate}
+              historyStart={HISTORY_START}
+              season={app.season}
+              seasons={seasonYears}
+              onDate={app.setDate}
+              onSeason={app.setSeason}
             />
           </div>
         </div>
@@ -241,7 +329,7 @@ function MapScreen() {
 
       <aside
         className={styles.sheet}
-        aria-label={t(app.spot ? 'spot.title' : 'hotspots.title')}
+        aria-label={t(app.spot ? 'spot.title' : `views.${app.view}`)}
       >
         {!desktop && (
           <button
@@ -272,18 +360,70 @@ function MapScreen() {
               today={app.today}
             />
           ) : (
-            <HotPlaces
-              species={app.species}
-              date={app.date}
-              hotspots={hotspots.data?.hotspots}
-              isLoading={hotspots.isPending}
-              isError={hotspots.isError}
-              onRetry={() => void hotspots.refetch()}
-              onSelect={onHotspot}
-              sightingsVisible={app.sightingsVisible}
-              onSightingsVisibleChange={app.setSightingsVisible}
-              sightingsError={sightings.isError}
-            />
+            <>
+              <ViewTabs
+                value={app.view}
+                panelId="sheet-view"
+                onChange={(view) => {
+                  app.setView(view)
+                  setSheetOpen(true)
+                }}
+              />
+              <div
+                id="sheet-view"
+                role="tabpanel"
+                aria-labelledby={`view-tab-${app.view}`}
+              >
+                <PanelBoundary resetKey={`${app.view}|${app.species}|${app.comune}`}>
+                  {app.view === 'now' && (
+                    <HotPlaces
+                      species={app.species}
+                      date={app.date}
+                      hotspots={hotspots.data?.hotspots}
+                      isLoading={hotspots.isPending}
+                      isError={hotspots.isError}
+                      onRetry={() => void hotspots.refetch()}
+                      onSelect={onHotspot}
+                      sightingsVisible={app.sightingsVisible}
+                      onSightingsVisibleChange={app.setSightingsVisible}
+                      sightingsError={sightings.isError}
+                      sightingsWindow={replayWindow}
+                    />
+                  )}
+                  {app.view === 'seasons' && (
+                    <SeasonsPanel
+                      species={app.species}
+                      comuni={comuni.data?.comuni}
+                      comune={app.comune}
+                      onComune={chooseComune}
+                      seasons={seasons.data}
+                      isLoading={seasons.isPending}
+                      isError={seasons.isError}
+                      onRetry={() => void seasons.refetch()}
+                      selected={app.season}
+                      onSelect={app.setSeason}
+                      seasonMap={seasonMap.data}
+                      onReplayDay={app.setDate}
+                      sightingsVisible={app.sightingsVisible}
+                      onSightingsVisibleChange={app.setSightingsVisible}
+                    />
+                  )}
+                  {app.view === 'outlook' && (
+                    <OutlookPanel
+                      species={app.species}
+                      onSpecies={app.setSpecies}
+                      comuni={comuni.data?.comuni}
+                      comune={app.comune}
+                      onComune={chooseComune}
+                      outlook={outlook.data}
+                      isLoading={outlook.isPending && outlook.fetchStatus !== 'idle'}
+                      isError={outlook.isError}
+                      onRetry={() => void outlook.refetch()}
+                    />
+                  )}
+                </PanelBoundary>
+              </div>
+            </>
           )}
           <footer className={styles.footer}>
             <p>{t('disclaimer.short')}</p>

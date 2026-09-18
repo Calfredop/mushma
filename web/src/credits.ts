@@ -44,6 +44,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   { name: 'ISTAT', url: 'https://www.istat.it', use: 'boundaries', license: 'CC BY 4.0' },
+  {
+    name: 'ECMWF (EC46, SEAS5) via Open-Meteo',
+    url: 'https://open-meteo.com/en/docs/seasonal-forecast-api',
+    use: 'seasonal',
+    license: 'CC BY 4.0',
+  },
 ]
 
 export const SOFTWARE_CREDITS: Credit[] = [

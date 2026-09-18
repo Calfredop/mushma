@@ -4,7 +4,11 @@ import {
   dateWindow,
   daysBetween,
   formatDay,
+  formatDateFull,
   formatDayLong,
+  formatDayMonth,
+  formatMonth,
+  sameDayLastYear,
   todayInRome,
 } from './days'
 
@@ -48,5 +52,30 @@ describe('formatDay', () => {
     expect(formatDay('2026-09-17', 'en-GB')).toEqual({ weekday: 'Thu', day: '17' })
     expect(formatDayLong('2026-09-17', 'it-IT')).toBe('giovedì 17 settembre')
     expect(formatDayLong('2026-09-17', 'en-GB')).toBe('Thursday 17 September')
+  })
+})
+
+describe('time-view formats', () => {
+  it('writes a replayed day in full, with its year', () => {
+    expect(formatDateFull('2024-10-12', 'it-IT')).toBe('sabato 12 ottobre 2024')
+    expect(formatDateFull('2024-10-12', 'en-GB')).toBe('Saturday, 12 October 2024')
+  })
+
+  it('writes a short day and month', () => {
+    expect(formatDayMonth('2026-09-28', 'it-IT')).toBe('28 set')
+    expect(formatDayMonth('2026-09-28', 'en-GB')).toBe('28 Sept')
+  })
+
+  it('names a month, short or long', () => {
+    expect(formatMonth(10, 'it-IT')).toBe('ott')
+    expect(formatMonth(10, 'it-IT', 'long')).toBe('ottobre')
+    expect(formatMonth(5, 'en-GB')).toBe('May')
+  })
+})
+
+describe('sameDayLastYear', () => {
+  it('steps back a year, and 29 February lands on the 28th', () => {
+    expect(sameDayLastYear('2026-09-18')).toBe('2025-09-18')
+    expect(sameDayLastYear('2024-02-29')).toBe('2023-02-28')
   })
 })

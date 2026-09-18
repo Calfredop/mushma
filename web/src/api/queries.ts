@@ -1,7 +1,6 @@
 /** TanStack Query hooks over the typed API client. The frontend only reads. */
 import { type UseQueryResult, useQueries, useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { SIGHTINGS_WINDOW_DAYS } from '../config'
 import { sightingsByCell } from '../map/geojson'
 import {
   SPECIES,
@@ -9,7 +8,8 @@ import {
   type SpeciesOrCombined,
   type Spot,
 } from '../state/urlState'
-import { addDays, type IsoDate } from '../time/days'
+import { DATE_WINDOW } from '../config'
+import { daysBetween, type IsoDate } from '../time/days'
 import { apiClient } from './client'
 import type { components } from './schema'
 
@@ -19,6 +19,16 @@ export type HotspotsResponse = components['schemas']['HotspotsResponse']
 export type Hotspot = components['schemas']['Hotspot']
 export type SpeciesForecast = components['schemas']['SpeciesForecast']
 export type DayScore = components['schemas']['DayScore']
+export type Comune = components['schemas']['Comune']
+export type SeasonsResponse = components['schemas']['SeasonsResponse']
+export type SeasonSummary = components['schemas']['SeasonSummary']
+export type MonthStat = components['schemas']['MonthStat']
+export type SeasonMapResponse = components['schemas']['SeasonMapResponse']
+export type ComuneSeason = components['schemas']['ComuneSeason']
+export type OutlookResponse = components['schemas']['OutlookResponse']
+export type OutlookPeriod = components['schemas']['OutlookPeriod']
+export type RainStat = components['schemas']['RainStat']
+export type TemperatureStat = components['schemas']['TemperatureStat']
 
 export class ApiError extends Error {
   readonly status: number
@@ -39,15 +49,25 @@ function unwrap<T>(path: string) {
 }
 
 const MINUTE = 60_000
+const DAY = 24 * 60 * MINUTE
 
-/** Past days never change once scored; today and the forecast refresh. */
+/**
+ * The daily job re-scores the date strip's days (today -6 to +7) every morning, so they refresh;
+ * an older, replayed day only changes when history is re-scored, so it keeps for a day.
+ */
 function staleTimeFor(date: IsoDate, today: IsoDate): number {
-  return date < today ? Infinity : 10 * MINUTE
+  return daysBetween(today, date) < -DATE_WINDOW.pastDays ? DAY : 10 * MINUTE
 }
 
-export function useScores(species: SpeciesOrCombined, date: IsoDate, today: IsoDate) {
+export function useScores(
+  species: SpeciesOrCombined,
+  date: IsoDate,
+  today: IsoDate,
+  enabled = true,
+) {
   return useQuery({
     queryKey: ['scores', species, date],
+    enabled,
     queryFn: ({ signal }) =>
       apiClient
         .GET('/scores', { params: { query: { species, date } }, signal })
@@ -62,9 +82,11 @@ export function useHotspots(
   date: IsoDate,
   today: IsoDate,
   limit: number,
+  enabled = true,
 ) {
   return useQuery({
     queryKey: ['hotspots', species, date, limit],
+    enabled,
     queryFn: ({ signal }) =>
       apiClient
         .GET('/hotspots', { params: { query: { species, date, limit } }, signal })
@@ -100,13 +122,18 @@ export function useSpotForecast(spot: Spot | null, today: IsoDate) {
   })
 }
 
+/** A span of days for the sightings overlay; `until` omitted means up to now. */
+export interface DateRange {
+  since: IsoDate
+  until?: IsoDate
+}
+
 /** Sighting totals per cell for one species, or summed over all of them. */
 export function useSightingTotals(
   species: SpeciesOrCombined,
-  today: IsoDate,
+  range: DateRange,
   enabled: boolean,
 ) {
-  const since = addDays(today, -SIGHTINGS_WINDOW_DAYS)
   const speciesList: readonly Species[] = species === 'combined' ? SPECIES : [species]
   const combine = useCallback(
     (results: UseQueryResult<components['schemas']['SightingsResponse']>[]) => ({
@@ -117,17 +144,90 @@ export function useSightingTotals(
     }),
     [enabled],
   )
+  const { since, until } = range
   return useQueries({
     queries: speciesList.map((sp) => ({
-      queryKey: ['sightings', sp, since],
+      queryKey: ['sightings', sp, since, until ?? null],
       enabled,
       queryFn: ({ signal }: { signal: AbortSignal }) =>
         apiClient
-          .GET('/sightings', { params: { query: { species: sp, since } }, signal })
+          .GET('/sightings', {
+            params: { query: { species: sp, since, ...(until ? { until } : {}) } },
+            signal,
+          })
           .then(unwrap<components['schemas']['SightingsResponse']>('/sightings')),
       staleTime: 60 * MINUTE,
     })),
     // Stable, so totals (a Map) are only rebuilt when the results change.
     combine,
+  })
+}
+
+// --- Time views (M6) ----------------------------------------------------------------------------
+
+/** Comuni with woodland, for the area picker. Changes only when the grid is rebuilt. */
+export function useComuni(enabled: boolean) {
+  return useQuery({
+    queryKey: ['comuni'],
+    enabled,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/comuni', { signal })
+        .then(unwrap<components['schemas']['ComuniResponse']>('/comuni')),
+    staleTime: 24 * 60 * MINUTE,
+  })
+}
+
+/** Every stored season for Tuscany (`comune` null) or one comune. */
+export function useSeasons(
+  species: SpeciesOrCombined,
+  comune: string | null,
+  enabled: boolean,
+) {
+  return useQuery({
+    queryKey: ['seasons', species, comune],
+    enabled,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/history/seasons', {
+          params: { query: { species, ...(comune ? { comune } : {}) } },
+          signal,
+        })
+        .then(unwrap<SeasonsResponse>('/history/seasons')),
+    staleTime: 60 * MINUTE,
+    placeholderData: (previous) => previous,
+  })
+}
+
+/** One season on the map: good days per woodland cell, and the comuni ranked by them. */
+export function useSeasonMap(year: number | null, species: SpeciesOrCombined) {
+  return useQuery({
+    queryKey: ['season-map', year, species],
+    enabled: year !== null,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/history/season/{year}', {
+          params: { path: { year: year! }, query: { species } },
+          signal,
+        })
+        .then(unwrap<SeasonMapResponse>('/history/season')),
+    staleTime: 60 * MINUTE,
+    placeholderData: (previous) => previous,
+  })
+}
+
+/** The season so far and the outlook after the 7-day forecast, for one species. */
+export function useOutlook(species: Species | null, comune: string | null) {
+  return useQuery({
+    queryKey: ['outlook', species, comune],
+    enabled: species !== null,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/outlook', {
+          params: { query: { species: species!, ...(comune ? { comune } : {}) } },
+          signal,
+        })
+        .then(unwrap<OutlookResponse>('/outlook')),
+    staleTime: 60 * MINUTE,
   })
 }

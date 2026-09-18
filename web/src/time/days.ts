@@ -72,3 +72,47 @@ export function formatDayLong(date: IsoDate, locale: string): string {
     timeZone: 'UTC',
   }).format(toUtc(date))
 }
+
+/** A day in full with its year, for a replayed past day: "sabato 12 ottobre 2024". */
+export function formatDateFull(date: IsoDate, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(toUtc(date))
+}
+
+/** Day and short month, for period labels: "28 set". */
+export function formatDayMonth(date: IsoDate, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  })
+    .format(toUtc(date))
+    .replace('.', '')
+}
+
+/** A month (1–12) by name: "ott", or "ottobre" with `long`. */
+export function formatMonth(
+  month: number,
+  locale: string,
+  width: 'short' | 'long' = 'short',
+): string {
+  const date = `2001-${String(month).padStart(2, '0')}-01`
+  return new Intl.DateTimeFormat(locale, { month: width, timeZone: 'UTC' })
+    .format(toUtc(date))
+    .replace('.', '')
+}
+
+/** The same calendar day a year earlier; 29 February becomes the 28th. */
+export function sameDayLastYear(date: IsoDate): IsoDate {
+  const [year, month, day] = date.split('-').map(Number)
+  const candidate = `${year - 1}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+  const parsed = new Date(`${candidate}T00:00:00Z`)
+  return parsed.toISOString().slice(0, 10) === candidate
+    ? candidate
+    : `${year - 1}-${String(month).padStart(2, '0')}-28`
+}

@@ -4,7 +4,7 @@ import { ScoreChip } from '../components/ScoreChip'
 import { SIGHTINGS_WINDOW_DAYS } from '../config'
 import { intlLocale, type Language } from '../i18n'
 import type { SpeciesOrCombined } from '../state/urlState'
-import { formatDayLong, type IsoDate } from '../time/days'
+import { formatDateFull, formatDayLong, type IsoDate, todayInRome } from '../time/days'
 import styles from './HotPlaces.module.css'
 import panel from './panel.module.css'
 
@@ -19,6 +19,8 @@ interface Props {
   sightingsVisible: boolean
   onSightingsVisibleChange: (visible: boolean) => void
   sightingsError: boolean
+  /** What span the sightings overlay covers, when not the last few months (a replayed day). */
+  sightingsWindow?: string
 }
 
 export function HotPlaces({
@@ -32,6 +34,7 @@ export function HotPlaces({
   sightingsVisible,
   onSightingsVisibleChange,
   sightingsError,
+  sightingsWindow,
 }: Props) {
   const { t, i18n } = useTranslation()
   const locale = intlLocale(i18n.resolvedLanguage as Language)
@@ -45,7 +48,11 @@ export function HotPlaces({
         <p className={panel.subtitle}>
           {t('hotspots.subtitle', {
             species: t(`species.${species}.name`),
-            date: formatDayLong(date, locale),
+            // A replayed day from another year says which year.
+            date:
+              date.slice(0, 4) === todayInRome().slice(0, 4)
+                ? formatDayLong(date, locale)
+                : formatDateFull(date, locale),
           })}
         </p>
       </header>
@@ -104,7 +111,7 @@ export function HotPlaces({
           <span className={styles.toggleText}>
             <span className={styles.toggleLabel}>{t('sightings.toggle')}</span>
             <span className={styles.meta}>
-              {t('sightings.window', { days: SIGHTINGS_WINDOW_DAYS })}
+              {sightingsWindow ?? t('sightings.window', { days: SIGHTINGS_WINDOW_DAYS })}
             </span>
           </span>
         </label>

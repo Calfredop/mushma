@@ -10,13 +10,16 @@ describe('parseUrlState', () => {
       species: 'porcini',
       date: today,
       spot: null,
+      view: 'now',
+      comune: null,
+      season: null,
     })
   })
 
   it('reads species, a date inside the window and a cell', () => {
     expect(
       parseUrlState('?species=ovoli&date=2026-09-20&cell=1kmN2438E4372', today, window),
-    ).toEqual({
+    ).toMatchObject({
       species: 'ovoli',
       date: '2026-09-20',
       spot: { kind: 'cell', cellId: '1kmN2438E4372' },
@@ -34,7 +37,7 @@ describe('parseUrlState', () => {
   it('falls back to defaults for unknown species, dates outside the window and bad points', () => {
     expect(
       parseUrlState('?species=tartufi&date=2026-10-30&at=abc,1', today, window),
-    ).toEqual({
+    ).toMatchObject({
       species: 'porcini',
       date: today,
       spot: null,
@@ -47,7 +50,17 @@ describe('parseUrlState', () => {
 describe('serializeUrlState', () => {
   it('omits defaults', () => {
     expect(
-      serializeUrlState({ species: 'porcini', date: today, spot: null }, today),
+      serializeUrlState(
+        {
+          species: 'porcini',
+          date: today,
+          spot: null,
+          view: 'now',
+          comune: null,
+          season: null,
+        },
+        today,
+      ),
     ).toBe('')
   })
 
@@ -56,6 +69,9 @@ describe('serializeUrlState', () => {
       species: 'combined' as const,
       date: '2026-09-12',
       spot: { kind: 'point' as const, lat: 43.123456789, lon: 11.5 },
+      view: 'now' as const,
+      comune: null,
+      season: null,
     }
     const search = serializeUrlState(state, today)
     expect(search).toBe('?species=combined&date=2026-09-12&at=43.12346%2C11.5')
@@ -99,5 +115,97 @@ describe('rollToday', () => {
 
   it('pulls a date that fell out of the window back to today', () => {
     expect(rollToday('2026-09-11', '2026-09-17', '2026-09-18', window)).toBe('2026-09-18')
+  })
+})
+
+describe('time views in the URL', () => {
+  const historyStart = '2016-01-01'
+
+  it('defaults to the "now" view with no comune and no season', () => {
+    const state = parseUrlState('', today, window, undefined, historyStart)
+    expect(state.view).toBe('now')
+    expect(state.comune).toBeNull()
+    expect(state.season).toBeNull()
+  })
+
+  it('replays any past day back to the start of the history', () => {
+    expect(
+      parseUrlState('?date=2024-10-12', today, window, undefined, historyStart).date,
+    ).toBe('2024-10-12')
+    expect(
+      parseUrlState('?date=2015-12-31', today, window, undefined, historyStart).date,
+    ).toBe(today)
+    // The future still stops at the end of the forecast.
+    expect(
+      parseUrlState('?date=2026-09-25', today, window, undefined, historyStart).date,
+    ).toBe(today)
+  })
+
+  it('reads the seasons view with a comune and a season on the map', () => {
+    const state = parseUrlState(
+      '?view=seasons&comune=046007&season=2024',
+      today,
+      window,
+      undefined,
+      historyStart,
+    )
+    expect(state).toMatchObject({ view: 'seasons', comune: '046007', season: 2024 })
+  })
+
+  it('keeps a season on the map only in the seasons view, and only a stored year', () => {
+    expect(
+      parseUrlState('?view=outlook&season=2024', today, window, undefined, historyStart)
+        .season,
+    ).toBeNull()
+    expect(
+      parseUrlState('?view=seasons&season=2015', today, window, undefined, historyStart)
+        .season,
+    ).toBeNull()
+    expect(
+      parseUrlState('?view=seasons&season=twenty', today, window, undefined, historyStart)
+        .season,
+    ).toBeNull()
+    expect(
+      parseUrlState('?view=almanac', today, window, undefined, historyStart).view,
+    ).toBe('now')
+    expect(
+      parseUrlState('?comune=<script>', today, window, undefined, historyStart).comune,
+    ).toBeNull()
+  })
+
+  it('round-trips the time views and omits their defaults', () => {
+    const state = {
+      species: 'porcini' as const,
+      date: '2024-10-12',
+      spot: null,
+      view: 'seasons' as const,
+      comune: '046007',
+      season: 2024,
+    }
+    const search = serializeUrlState(state, today)
+    expect(search).toBe('?date=2024-10-12&view=seasons&comune=046007&season=2024')
+    expect(parseUrlState(search, today, window, undefined, historyStart)).toEqual(state)
+    expect(
+      serializeUrlState(
+        {
+          species: 'porcini',
+          date: today,
+          spot: null,
+          view: 'now',
+          comune: null,
+          season: null,
+        },
+        today,
+      ),
+    ).toBe('')
+  })
+
+  it('keeps a replayed day at midnight instead of pulling it back to today', () => {
+    expect(
+      rollToday('2024-10-12', '2026-09-17', '2026-09-18', window, historyStart),
+    ).toBe('2024-10-12')
+    expect(
+      rollToday('2026-09-11', '2026-09-17', '2026-09-18', window, historyStart),
+    ).toBe('2026-09-11')
   })
 })

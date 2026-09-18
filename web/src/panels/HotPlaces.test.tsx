@@ -45,3 +45,18 @@ describe('HotPlaces', () => {
     expect(onChange).toHaveBeenCalledWith(true)
   })
 })
+
+describe('HotPlaces on a replayed day', () => {
+  it('names the year of a day from another season, and the sightings span', () => {
+    render(
+      <HotPlaces
+        {...props}
+        date="2024-10-12"
+        hotspots={HOTSPOTS}
+        sightingsWindow="Dal 28 set al 26 ott"
+      />,
+    )
+    expect(screen.getByText(/sabato 12 ottobre 2024/)).toBeInTheDocument()
+    expect(screen.getByText('Dal 28 set al 26 ott')).toBeInTheDocument()
+  })
+})

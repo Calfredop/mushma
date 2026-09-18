@@ -152,7 +152,10 @@
     "note": "Conteggi per cella di 1 km da iNaturalist e GBIF, mai posizioni esatte.",
     "count_one": "{{count}} avvistamento",
     "count_other": "{{count}} avvistamenti",
-    "loadError": "Non riesco a caricare gli avvistamenti."
+    "loadError": "Non riesco a caricare gli avvistamenti.",
+    "seasonWindow": "Stagione {{year}}",
+    "pickSeason": "Scegli una stagione per vederne gli avvistamenti",
+    "replayWindow": "Dal {{start}} al {{end}}"
   },
   "sheet": {
     "expand": "Espandi il pannello",
@@ -184,11 +187,132 @@
       "basemapTiles": "Stile e tessere della mappa di base",
       "geocoding": "Ricerca dei luoghi",
       "mapLibrary": "Visualizzazione della mappa",
-      "fonts": "Caratteri tipografici"
+      "fonts": "Caratteri tipografici",
+      "seasonal": "Tendenze a lungo termine per le prospettive stagionali"
     }
   },
   "errors": {
     "generic": "Qualcosa non ha funzionato. Ricarica la pagina.",
     "offline": "Sei offline: i dati potrebbero non essere aggiornati."
+  },
+  "views": {
+    "label": "Cosa mostrare",
+    "now": "Oggi",
+    "seasons": "Stagioni",
+    "outlook": "Prospettive"
+  },
+  "replay": {
+    "open": "Rivedi un giorno passato",
+    "pickLabel": "Giorno da rivedere",
+    "lastYear": "Stesso giorno, un anno prima",
+    "close": "Chiudi il calendario",
+    "previous": "Giorno prima",
+    "next": "Giorno dopo",
+    "change": "Giorno rivisto: {{date}}. Scegline un altro",
+    "eyebrow": "Giorno passato",
+    "back": "Oggi",
+    "go": "Rivedi"
+  },
+  "season": {
+    "eyebrow": "Stagione sulla mappa",
+    "label": "Stagione {{year}}",
+    "previous": "Stagione precedente",
+    "next": "Stagione successiva",
+    "close": "Togli la stagione dalla mappa",
+    "legendTitle": "Giorni favorevoli nel {{year}}",
+    "few": "Pochi",
+    "many": "Molti",
+    "loading": "Carico la stagione…",
+    "noData": "Nessun dato per questa stagione."
+  },
+  "area": {
+    "label": "Zona",
+    "region": "Tutta la Toscana",
+    "comune": "{{name}} ({{province}})"
+  },
+  "seasons": {
+    "title": "Stagioni",
+    "subtitle": "{{species}} · {{area}}",
+    "loading": "Carico le stagioni…",
+    "loadError": "Non riesco a caricare le stagioni.",
+    "empty": "Per questa zona non c'è ancora nessuna stagione calcolata.",
+    "intro": "Giorni favorevoli: i giorni in cui una cella di bosco tipica della zona ha avuto un indice delle condizioni di almeno {{threshold}}.",
+    "columns": {
+      "year": "Anno",
+      "goodDays": "Giorni favorevoli",
+      "rain": "Pioggia",
+      "temperature": "Temp."
+    },
+    "typical": "Tipico: la mediana delle stagioni {{years}}",
+    "pickHint": "Tocca una stagione per vederla sulla mappa.",
+    "rowLabel": "{{year}}: {{days}} giorni favorevoli",
+    "rowLabelSoFar": "{{year}}: {{days}} giorni favorevoli finora",
+    "rowTypical": "tipico {{typical}}",
+    "rainLabel": "pioggia al {{percent}} del normale",
+    "tempLabel": "temperatura {{delta}} °C rispetto al normale",
+    "soFar": "finora",
+    "detailTitle": "{{year}} · {{area}}",
+    "partial": "Stagione in corso: dati fino a {{date}}.",
+    "goodDays": "Giorni favorevoli",
+    "typicalValue": "(tipico {{typical}})",
+    "bestDay": "Giorno migliore",
+    "peak": "{{date}}, favorevole il {{percent}} del bosco",
+    "replayPeak": "Rivedilo sulla mappa",
+    "noPeak": "Nessun giorno favorevole.",
+    "rain": "Pioggia",
+    "rainValue": "{{mm}} mm, il {{percent}} del normale",
+    "temperature": "Temperatura",
+    "temperatureValue": "{{delta}} °C rispetto al normale",
+    "sightings": "Avvistamenti",
+    "sightingsValue_one": "{{count}} avvistamento pubblico",
+    "sightingsValue_other": "{{count}} avvistamenti pubblici",
+    "weatherNote": "Pioggia e temperatura dal {{start}} al {{end}}, rispetto alla media {{years}}.",
+    "months": "Mese per mese",
+    "monthLabel": "{{month}}: {{days}} giorni favorevoli, pioggia al {{rain}} del normale, temperatura {{delta}} °C rispetto al normale",
+    "monthKey": "Barre: giorni favorevoli. Sotto: pioggia rispetto al normale e scarto di temperatura.",
+    "bestComuni": "Comuni con più giorni favorevoli",
+    "showComune": "Guarda le stagioni di {{name}}",
+    "comuneDays": "{{days}} giorni"
+  },
+  "verdict": {
+    "better": "Meglio del solito",
+    "usual": "Nella norma",
+    "worse": "Peggio del solito"
+  },
+  "outlook": {
+    "title": "Prospettive",
+    "badge": "Prospettiva, non previsione",
+    "subtitle": "{{species}} · {{area}}",
+    "pickSpecies": "Le prospettive sono per una specie alla volta. Scegline una:",
+    "loading": "Carico le prospettive…",
+    "loadError": "Non riesco a caricare le prospettive.",
+    "window": "dal {{start}} al {{end}}",
+    "soFarTitle": "La stagione finora",
+    "goodDays": "Giorni favorevoli",
+    "typicalToDate": "(di solito {{typical}} a questa data)",
+    "rain": "Pioggia",
+    "rainValue": "{{mm}} mm, il {{percent}} del normale",
+    "temperature": "Temperatura",
+    "temperatureValue": "{{delta}} °C rispetto al normale",
+    "soFarNote": "Dal {{start}} al {{end}}; meteo osservato fino al {{weather}}.",
+    "soFarNoteScores": "Dal {{start}} al {{end}}.",
+    "periodsTitle": "Le prossime settimane",
+    "outOfSeason": "Niente da guardare avanti: per i {{species}} la stagione va {{window}}.",
+    "howTitle": "Come leggere le prospettive",
+    "how1": "Per ogni periodo contiamo in quante stagioni passate ({{years}}) almeno il {{share}} del bosco della zona ha avuto giorni favorevoli negli stessi giorni. È un conteggio, non una probabilità.",
+    "how2": "Il segno guarda la pioggia che precede il periodo: i {{species}} rispondono alla pioggia di {{min}}–{{max}} giorni prima. Dal {{wetter}} del normale in su il periodo è più favorevole del solito, dal {{drier}} in giù meno.",
+    "how3": "Per i giorni passati e i prossimi 7 usiamo il meteo osservato e previsto; oltre, le tendenze a lungo termine di ECMWF, che dicono solo se un'area sarà più piovosa o più secca del normale.",
+    "issued": "Tendenze a lungo termine aggiornate il {{date}} (ECMWF, via Open-Meteo).",
+    "monthPeriod": "{{month}}",
+    "weekPeriod": "{{start}} – {{end}}",
+    "pastSeasons": "favorevole in {{good}} stagioni su {{years}}",
+    "noPast": "nessuna stagione passata con dati",
+    "tilt": {
+      "better": "più favorevole del solito",
+      "usual": "come al solito",
+      "worse": "meno favorevole del solito",
+      "unknown": "tendenza non disponibile"
+    },
+    "leadRain": "Pioggia nei giorni prima: il {{percent}} del normale"
   }
 }

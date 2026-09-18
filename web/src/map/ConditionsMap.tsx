@@ -20,7 +20,13 @@ import type { CameraRequest } from '../state/AppState'
 import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
 import styles from './ConditionsMap.module.css'
-import { CELL_LAYERS, EMPTY_COLLECTION as EMPTY, withDataLayers } from './dataLayers'
+import {
+  CELL_LAYERS,
+  type CellScale,
+  cellColor,
+  EMPTY_COLLECTION as EMPTY,
+  withDataLayers,
+} from './dataLayers'
 import { cellsToPoints, cellsToSquares, sightingsToPoints } from './geojson'
 
 type GridCellScore = components['schemas']['GridCellScore']
@@ -147,6 +153,8 @@ function createMap(
 
 interface Props {
   cells: GridCellScore[] | undefined
+  /** What `cells[].score` holds: a day's conditions score (default) or a season's good days. */
+  scale?: CellScale
   selectedCellId: string | null
   /** Sighting totals per cell, or undefined to hide the overlay. */
   sightings: Map<string, number> | undefined
@@ -172,6 +180,7 @@ function mapLocale(t: TFunction): Record<string, string> {
 
 export function ConditionsMap({
   cells,
+  scale = 'score',
   selectedCellId,
   sightings,
   hotspots,
@@ -247,6 +256,14 @@ export function ConditionsMap({
       })
     }
   }, [cells, ready])
+
+  // Colour scale: a day's score, or a season's good days.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready) return
+    map.setPaintProperty('cells-dot', 'circle-color', cellColor(scale))
+    map.setPaintProperty('cells-fill', 'fill-color', cellColor(scale))
+  }, [scale, ready])
 
   // Selection.
   useEffect(() => {

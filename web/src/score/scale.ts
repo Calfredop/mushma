@@ -45,3 +45,25 @@ export function scoreStepExpression(input: unknown[]): unknown[] {
   const [first, ...rest] = SCORE_CLASSES
   return ['step', input, first.color, ...rest.flatMap((c) => [c.min, c.color])]
 }
+
+/**
+ * A season on the map: a woodland cell's good days (score ≥ the history's good-day threshold),
+ * on the same five colours so darker still means better. Breaks from the scored seasons: in 2025
+ * a porcini cell had a median of 59 good days (quartiles 41 and 72).
+ */
+export const GOOD_DAYS_CLASSES: readonly ScoreClass[] = SCORE_CLASSES.map((c, i) => ({
+  ...c,
+  min: [0, 10, 30, 60, 90][i],
+}))
+
+export function goodDaysClass(days: number): number {
+  for (let i = GOOD_DAYS_CLASSES.length - 1; i > 0; i--) {
+    if (days >= GOOD_DAYS_CLASSES[i].min) return i
+  }
+  return 0
+}
+
+export function goodDaysStepExpression(input: unknown[]): unknown[] {
+  const [first, ...rest] = GOOD_DAYS_CLASSES
+  return ['step', input, first.color, ...rest.flatMap((c) => [c.min, c.color])]
+}
