@@ -9,11 +9,12 @@ Layout under ``$DATA_DIR/sightings/<region>/``:
 - No row ever carries coordinates: :func:`assign_cells` is the one place raw lat/lon are read, and
   it replaces them with the woodland cell id they fall in. This is what PRD → Sightings privacy
   means by "never re-sharpen a record the source obscured" — the store cannot leak more precision
-  than a 1 km cell even if asked to. :meth:`SightingsStore.counts_by_cell` is the one query this
-  module offers back out; the API and any future consumer should read counts through it rather
-  than the raw records.
+  than a 1 km cell even if asked to. :meth:`SightingsStore.counts_by_cell` and
+  :meth:`SightingsStore.counts_since` are the only queries this module hands back out; the API and
+  any future consumer should read counts through them rather than the raw records.
 """
 
+from datetime import date
 from pathlib import Path
 
 import duckdb
@@ -158,4 +159,25 @@ class SightingsStore:
             GROUP BY species, cell_id
             ORDER BY species, cell_id
             """
+        )
+
+    def counts_since(
+        self, con: duckdb.DuckDBPyConnection, species: str, since: date
+    ) -> duckdb.DuckDBPyRelation:
+        """One species' sighting counts per cell, source and license, for records on or after
+        ``since`` -- what ``GET /sightings`` serves (never coordinates or individual records)."""
+        if not self.record_files():
+            return con.sql(
+                "SELECT NULL::VARCHAR AS cell_id, NULL::VARCHAR AS source, "
+                "NULL::VARCHAR AS license, NULL::BIGINT AS count WHERE false"
+            )
+        return con.sql(
+            f"""
+            SELECT cell_id, source, license, count(*) AS count
+            FROM read_parquet('{self.records_glob}', hive_partitioning=false)
+            WHERE species = $species AND date >= $since
+            GROUP BY cell_id, source, license
+            ORDER BY cell_id, source
+            """,
+            params={"species": species, "since": since},
         )

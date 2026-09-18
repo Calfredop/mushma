@@ -1,33 +1,46 @@
-"""Contract tests every endpoint must pass (M4 plan, item 5). These parse
-responses with the same Pydantic models the API declares, so pointing
-MUSHMA_CONTRACT_BASE_URL at a deployed api/ runs the identical assertions
-against real storage once M4-api.md lands."""
+"""Contract tests every endpoint must pass (M4 plan, item 5). These parse responses with the same
+Pydantic models the API declares, and don't assume any particular storage's cell set -- they
+discover it from the responses themselves. So pointing MUSHMA_CONTRACT_BASE_URL at a deployed
+api/ runs the identical assertions against real production data (M4-api.md item 9: verify a
+deployment by running this suite against it)."""
 
 import math
 
 import httpx
 import pytest
 
-from api.fixtures.cells import CELLS
-from api.models import (
-    CellDetailResponse,
-    HotspotsResponse,
-    ScoresResponse,
-    SightingsResponse,
-)
+from api.models import CellDetailResponse, HotspotsResponse, ScoresResponse, SightingsResponse
 
-A_KNOWN_CELL_ID = CELLS[0].id
-A_TUSCAN_POINT = {"lat": CELLS[0].lat, "lon": CELLS[0].lon}
+
+@pytest.fixture
+def servable_cell_ids(client: httpx.Client) -> set[str]:
+    response = client.get("/scores", params={"species": "combined"})
+    assert response.status_code == 200
+    return {cell["cell_id"] for cell in response.json()["cells"]}
+
+
+@pytest.fixture
+def a_known_cell(client: httpx.Client) -> tuple[str, dict[str, float]]:
+    """A real cell id and point, taken from a live ``/scores`` response rather than assumed in
+    advance -- this suite doesn't know or care which storage is behind ``client``."""
+    response = client.get("/scores", params={"species": "combined"})
+    assert response.status_code == 200
+    cells = response.json()["cells"]
+    assert cells, "no scored cells -- is the served window empty?"
+    first = cells[0]
+    return first["cell_id"], {"lat": first["lat"], "lon": first["lon"]}
 
 
 class TestScores:
     @pytest.mark.parametrize("species", ["porcini", "ovoli", "gallinacci", "combined"])
-    def test_returns_every_fixture_cell(self, client: httpx.Client, species: str) -> None:
+    def test_every_species_scores_the_same_set_of_cells(
+        self, client: httpx.Client, species: str, servable_cell_ids: set[str]
+    ) -> None:
         response = client.get("/scores", params={"species": species})
         assert response.status_code == 200
         body = ScoresResponse.model_validate(response.json())
         assert body.species == species
-        assert {cell.cell_id for cell in body.cells} == {cell.id for cell in CELLS}
+        assert {cell.cell_id for cell in body.cells} == servable_cell_ids
         for cell in body.cells:
             assert 0.0 <= cell.score <= 1.0
 
@@ -41,16 +54,19 @@ class TestScores:
 
 
 class TestSpotAndCells:
-    def test_spot_and_cell_detail_share_a_shape(self, client: httpx.Client) -> None:
-        spot_response = client.get("/spot", params=A_TUSCAN_POINT)
-        cell_response = client.get(f"/cells/{A_KNOWN_CELL_ID}")
+    def test_spot_and_cell_detail_share_a_shape(
+        self, client: httpx.Client, a_known_cell: tuple[str, dict[str, float]]
+    ) -> None:
+        cell_id, point = a_known_cell
+        spot_response = client.get("/spot", params=point)
+        cell_response = client.get(f"/cells/{cell_id}")
         assert spot_response.status_code == 200
         assert cell_response.status_code == 200
 
         spot = CellDetailResponse.model_validate(spot_response.json())
         cell = CellDetailResponse.model_validate(cell_response.json())
-        assert spot.cell_id == A_KNOWN_CELL_ID
-        assert cell.cell_id == A_KNOWN_CELL_ID
+        assert spot.cell_id == cell_id
+        assert cell.cell_id == cell_id
 
         for detail in (spot, cell):
             assert {forecast.species for forecast in detail.species} == {
@@ -74,7 +90,9 @@ class TestSpotAndCells:
 
 
 class TestHotspots:
-    def test_ranked_and_bounded_by_limit(self, client: httpx.Client) -> None:
+    def test_ranked_and_bounded_by_limit(
+        self, client: httpx.Client, servable_cell_ids: set[str]
+    ) -> None:
         response = client.get("/hotspots", params={"species": "combined", "limit": 3})
         assert response.status_code == 200
         body = HotspotsResponse.model_validate(response.json())
@@ -82,7 +100,7 @@ class TestHotspots:
         scores = [h.score for h in body.hotspots]
         assert scores == sorted(scores, reverse=True)
         for hotspot in body.hotspots:
-            assert set(hotspot.cell_ids) <= {cell.id for cell in CELLS}
+            assert set(hotspot.cell_ids) <= servable_cell_ids
             assert hotspot.recent_sightings >= 0
 
     def test_404s_outside_the_served_window(self, client: httpx.Client) -> None:
@@ -91,7 +109,9 @@ class TestHotspots:
 
 
 class TestSightings:
-    def test_never_exposes_coordinates(self, client: httpx.Client) -> None:
+    def test_never_exposes_coordinates(
+        self, client: httpx.Client, servable_cell_ids: set[str]
+    ) -> None:
         response = client.get("/sightings", params={"species": "porcini"})
         assert response.status_code == 200
         raw = response.json()
@@ -100,7 +120,7 @@ class TestSightings:
 
         body = SightingsResponse.model_validate(raw)
         for count in body.counts:
-            assert count.cell_id in {cell.id for cell in CELLS}
+            assert count.cell_id in servable_cell_ids
             assert count.count >= 1
 
     def test_a_narrower_since_never_returns_more_than_a_wider_one(

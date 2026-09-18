@@ -136,6 +136,25 @@ docker build -t mushma-api .
 docker run -p 8000:8000 mushma-api
 ```
 
+### Scheduled job
+
+`api/src/api/jobs/daily.py` is the one command the Fly-scheduled machine runs: weather update →
+sightings fetch → score today -6 to +7 (the served window, with factors) → store. (No separate
+"downscale to cells" step: scoring downscales on the fly from the point-level weather store, so
+running the ingest CLI's `downscale` export here would just be unused disk churn.) It runs each
+step as its own process in that order and stops at the first failure rather than risk scoring on
+top of a half-updated weather store; every step logs one JSON line on start and finish.
+Set `ALERT_WEBHOOK_URL` (a Slack/Discord/etc. incoming webhook) to get a one-line POST on failure;
+unset, it's a no-op and only Fly's own machine-exit alerting fires.
+
+```sh
+cd api
+uv run python -m api.jobs.daily
+```
+
+Must finish well before 07:00 Europe/Rome (PRD → Constraints → Freshness) — see Deploying below for
+how it's scheduled, and check the actual run time after the first few days land.
+
 ## CI
 
 GitHub Actions (`.github/workflows/ci.yml`) lints and tests both `web/` and
@@ -149,4 +168,17 @@ GitHub Actions (`.github/workflows/ci.yml`) lints and tests both `web/` and
 - **api/** → Fly.io. From `api/`: `fly launch --no-deploy` to attach an app
   (the included `fly.toml` is a starting point), `fly volumes create
   mushma_data --size 1` for the DuckDB/Parquet data directory, then
-  `fly deploy`.
+  `fly deploy`. That starts the `web` process group behind `http_service`;
+  the scheduled job is a separate machine you create once from the `job`
+  process group in `fly.toml`:
+
+  ```sh
+  fly machine run . --app mushma-api --process-group job --schedule daily \
+    --vm-memory 1024
+  ```
+
+  (check `fly machine run --help` for the exact flags on your flyctl version —
+  they've moved before). After the first couple of runs, check `fly machine
+  status`/`fly logs` for the actual trigger time and nudge the schedule if
+  needed so it lands before 07:00 Europe/Rome. Set `ALERT_WEBHOOK_URL` with
+  `fly secrets set` if you want failure notifications.

@@ -182,3 +182,59 @@ def test_counts_by_cell_aggregates_without_exposing_individual_records(tmp_path:
 
     assert counts.columns.tolist() == ["species", "cell_id", "count"]
     assert counts.set_index(["species", "cell_id"]).loc[("porcini", "1kmE4300N2400"), "count"] == 2
+
+
+def test_counts_since_groups_by_cell_source_and_license_for_one_species(tmp_path: Path) -> None:
+    store = SightingsStore(tmp_path)
+    store.upsert(
+        pd.DataFrame(
+            [
+                _stored_row(record_id="1", species="porcini", source="gbif", license="CC0"),
+                _stored_row(record_id="2", species="porcini", source="gbif", license="CC0"),
+                _stored_row(
+                    record_id="3",
+                    species="porcini",
+                    source="inaturalist",
+                    license="CC-BY-4.0",
+                    cell_id="1kmE4301N2400",
+                ),
+                _stored_row(record_id="4", species="ovoli", source="gbif", license="CC0"),
+            ]
+        )
+    )
+
+    con = duckdb.connect()
+    counts = store.counts_since(con, "porcini", date(2020, 1, 1)).df()
+
+    assert counts.columns.tolist() == ["cell_id", "source", "license", "count"]
+    rows = {(r.cell_id, r.source): (r.license, r.count) for r in counts.itertuples()}
+    assert rows[("1kmE4300N2400", "gbif")] == ("CC0", 2)
+    assert rows[("1kmE4301N2400", "inaturalist")] == ("CC-BY-4.0", 1)
+    assert ("1kmE4300N2400", "gbif") in rows and "ovoli" not in counts["cell_id"].tolist()
+
+
+def test_counts_since_excludes_records_before_the_cutoff(tmp_path: Path) -> None:
+    store = SightingsStore(tmp_path)
+    store.upsert(
+        pd.DataFrame(
+            [
+                _stored_row(record_id="1", date=date(2026, 1, 1)),
+                _stored_row(record_id="2", date=date(2026, 9, 1)),
+            ]
+        )
+    )
+
+    con = duckdb.connect()
+    counts = store.counts_since(con, "porcini", date(2026, 6, 1)).df()
+
+    assert counts["count"].sum() == 1
+
+
+def test_counts_since_with_no_records_returns_an_empty_relation(tmp_path: Path) -> None:
+    store = SightingsStore(tmp_path)
+    con = duckdb.connect()
+
+    counts = store.counts_since(con, "porcini", date(2020, 1, 1)).df()
+
+    assert counts.columns.tolist() == ["cell_id", "source", "license", "count"]
+    assert len(counts) == 0

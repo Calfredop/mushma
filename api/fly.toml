@@ -12,6 +12,14 @@ primary_region = "cdg"
 [[mounts]]
   source = "mushma_data"
   destination = "/data"
+  processes = ["web", "job"]
+
+# The `web` group serves the API behind http_service, below. `job` is the scheduled daily
+# pipeline run (README.md -> Scheduled job): it isn't started by fly deploy or by traffic, only by
+# the schedule set on its own machine with `fly machine run --schedule daily`.
+[processes]
+  web = "uvicorn api.main:app --host 0.0.0.0 --port 8000"
+  job = "python -m api.jobs.daily"
 
 [http_service]
   internal_port = 8000
@@ -19,6 +27,7 @@ primary_region = "cdg"
   auto_stop_machines = "stop"
   auto_start_machines = true
   min_machines_running = 0
+  processes = ["web"]
 
 [[http_service.checks]]
   grace_period = "10s"

@@ -1,6 +1,6 @@
-"""The seam routes.py depends on. `FixtureRepository` (fixtures/repository.py)
-is the only implementation today; M4-api.md replaces it with real storage
-behind this same interface."""
+"""The seam routes.py depends on. `FixtureRepository` (fixtures/repository.py) serves
+`MUSHMA_FIXTURES=1`; `LiveRepository` (live/repository.py) serves everything else, reading the
+real M2/M3 Parquet stores under `$DATA_DIR`."""
 
 from datetime import date
 from typing import Protocol
