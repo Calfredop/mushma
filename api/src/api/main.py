@@ -2,6 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 from api.routes import router
 
@@ -33,6 +34,12 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
+
+
+# The grids (/scores, /history/season/{year}) are ~11k cells of JSON: about 0.8 MB raw and a
+# sixth of that gzipped (PRD -> Architecture -> Grid delivery). Nothing in front of the API on
+# Fly compresses, so the API does.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 
 @app.get("/health")
