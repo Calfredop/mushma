@@ -85,6 +85,18 @@ ecmwf_open_data:
   attribution: "Forecasts © European Centre for Medium-Range Weather Forecasts (ECMWF), CC BY 4.0"
   notes: Served through Open-Meteo (model ecmwf_ifs). Use is also subject to the ECMWF Terms of Use.
 
+ecmwf_seasonal:
+  name: ECMWF — EC46 extended-range and SEAS5 seasonal forecasts
+  homepage: https://open-meteo.com/en/docs/seasonal-forecast-api
+  license: CC BY 4.0
+  attribution: "Long-range forecasts © European Centre for Medium-Range Weather Forecasts (ECMWF), CC BY 4.0, via Open-Meteo.com"
+  notes: >-
+    Served through Open-Meteo's Seasonal Forecast API (ECMWF seasonal seamless: EC46 for 46 days,
+    then SEAS5). Weekly and monthly ensemble means and anomalies against the model's hindcast
+    climate; not bias-adjusted. ECMWF opened its whole real-time catalogue under CC BY 4.0 in
+    October 2025 (https://www.ecmwf.int/en/about/media-centre/news/2025/ecmwf-makes-its-entire-real-time-catalogue-open-all).
+    Use is also subject to the ECMWF Terms of Use.
+
 gbif:
   name: GBIF — Global Biodiversity Information Facility occurrence records
   homepage: https://www.gbif.org/

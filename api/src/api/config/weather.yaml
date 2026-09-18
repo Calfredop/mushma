@@ -38,6 +38,21 @@ forecast:
   past_days: 14
   forecast_days: 8
 
+# Long-range forecast for the seasonal outlook (M6, .gavin-root/docs/time-views.md): Open-Meteo's
+# seamless ECMWF seasonal forecast, EC46 for the first 46 days (weekly values) and SEAS5 after
+# (monthly values), about 36 km. It is raw model output, so only its ensemble means and their
+# anomalies against the model's own hindcast climate are kept, mapped onto the variables above.
+# forecast_days bounds each request: 46 days is the EC46 range, 150 covers this month and four more.
+seasonal:
+  endpoint: https://seasonal-api.open-meteo.com/v1/seasonal
+  source: ecmwf_seasonal
+  forecast_days: {weekly: 46, monthly: 150}
+  variables:
+    precipitation_sum: {mean: precipitation_mean, anomaly: precipitation_anomaly, unit: mm, anomaly_unit: mm}
+    temperature_2m_mean:
+      {mean: temperature_2m_mean, anomaly: temperature_2m_anomaly, unit: °C, anomaly_unit: K}
+  credits: [open_meteo, ecmwf_seasonal]
+
 # Open-Meteo counts a request as locations x max(1, variables/10 x days/14) calls. The free API
 # allows 600 per minute, 5,000 per hour and 10,000 per day per IP, in fixed UTC windows; stay under
 # them with headroom.

@@ -62,6 +62,26 @@ class Variable:
 
 
 @dataclass(frozen=True)
+class SeasonalVariable:
+    """How one weather-store variable is read from the long-range forecast: its ensemble mean and
+    its anomaly against the model's own climate, with the units each must come back in."""
+
+    mean: str
+    anomaly: str
+    unit: str
+    anomaly_unit: str
+
+
+@dataclass(frozen=True)
+class SeasonalSpec:
+    endpoint: str
+    source: str
+    forecast_days: dict[str, int]  # granularity (weekly, monthly) -> horizon asked for
+    variables: dict[str, SeasonalVariable]
+    credits: list[str]
+
+
+@dataclass(frozen=True)
 class WeatherConfig:
     points: PointsSpec
     history: HistorySpec
@@ -70,6 +90,7 @@ class WeatherConfig:
     budget: Budget
     variables: dict[str, Variable]
     credits: list[str]
+    seasonal: SeasonalSpec | None = None
 
     @property
     def source_order(self) -> list[str]:
@@ -119,5 +140,25 @@ def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
         max_request_weight=float(raw["requests"]["max_weight"]),
         budget=Budget(**raw["requests"]["budget"]),
         variables=variables,
+        credits=list(raw.get("credits") or []),
+        seasonal=_seasonal(raw.get("seasonal"), variables),
+    )
+
+
+def _seasonal(raw: dict | None, variables: dict[str, Variable]) -> SeasonalSpec | None:
+    if raw is None:
+        return None
+    mapped = {name: SeasonalVariable(**spec) for name, spec in raw["variables"].items()}
+    unknown = sorted(set(mapped) - set(variables))
+    if unknown:
+        raise ValueError(f"seasonal maps variables the weather store does not have: {unknown}")
+    granularities = {str(k): int(v) for k, v in raw["forecast_days"].items()}
+    if not set(granularities) <= {"weekly", "monthly"}:
+        raise ValueError(f"seasonal.forecast_days: unknown granularity in {sorted(granularities)}")
+    return SeasonalSpec(
+        endpoint=str(raw["endpoint"]),
+        source=str(raw["source"]),
+        forecast_days=granularities,
+        variables=mapped,
         credits=list(raw.get("credits") or []),
     )

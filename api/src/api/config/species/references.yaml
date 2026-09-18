@@ -679,6 +679,16 @@ references:
       preference per taxon; Tuscan specimens (Siena province); low host specificity.
     cited_as:
     - gallinacci.md R1
+  open_meteo_seasonal_api:
+    citation: 'Open-Meteo Seasonal Forecast API documentation: ECMWF EC46 (51 members, 46 days, daily runs) and SEAS5
+      (51 members, 7 months, monthly runs) at 36 km, with weekly and monthly means and anomalies against each
+      model''s hindcast climate; not bias-adjusted, to be read as area forecasts of warmer, colder, wetter or drier
+      than average. Accessed 2026-09-18'
+    url: https://open-meteo.com/en/docs/seasonal-forecast-api
+    kind: institutional
+    verified: verified
+    supports: reading the long-range forecast as anomalies against its own climate and as an area tendency, not local
+      weather (time-views outlook).
   openmeteo_climatology_ovoli:
     citation: 'Open-Meteo Historical Weather API (ERA5/ERA5-Land "best match"), daily 2016–2025, timezone=Europe/Rome,
       points 43.28N 11.20E; 43.02N 11.10E; 44.08N 10.45E; 43.47N 10.42E (grid elevations 463, 499, 209, 259 m),
