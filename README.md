@@ -75,10 +75,11 @@ uv run ruff format --check .
 
 `GET /health` returns `{"status": "ok"}`.
 
-The routes don't read the data pipeline's stores (below) yet (M4), so the API only runs in
-fixture mode: set `MUSHMA_FIXTURES=1` (see `api/.env.example`) to serve the real routes
-(`/scores`, `/spot`, `/cells/{id}`, `/hotspots`, `/sightings`) from a hand-shaped fixture
-dataset. Without it those routes return 503.
+The routes read the data pipeline's stores under `DATA_DIR` (below): `/scores`, `/spot`,
+`/cells/{id}`, `/hotspots`, `/sightings`, and the time views `/comuni`, `/history/seasons`,
+`/history/season/{year}` and `/outlook` (503 until `api.history.build` has run). Set
+`MUSHMA_FIXTURES=1` (see `api/.env.example`) to serve every route from a hand-shaped fixture
+dataset instead, with no data at all.
 
 ### Woodland grid
 
@@ -156,10 +157,34 @@ docker build -t mushma-api .
 docker run -p 8000:8000 mushma-api
 ```
 
+### Time views (history and outlook)
+
+Past seasons, a replayed day or season on the map, and the seasonal outlook (M6) read per-area
+tables built from the stores above: weather normals per point, then per comune and for all of
+Tuscany the daily good days (score ≥ 0.6), rain and temperature against normal, and sightings
+counts. The outlook adds ECMWF's long-range tendencies (EC46 weeks, SEAS5 months) from Open-Meteo's
+Seasonal Forecast API.
+
+```sh
+cd api
+# Once the backfill has reached a year, score it (history needs no factors), then build:
+uv run python -m api.model.pipeline score --start 2016-01-01 --end 2025-12-31 --no-factors
+uv run python -m api.history.build update --years 2016-2026   # normals + per-area tables
+uv run python -m api.weather.seasonal fetch                   # long-range tendencies (~450 calls)
+uv run python -m api.history.build outlook                    # ...averaged over the areas
+```
+
+Tables land in `api/data/climatology/`, `api/data/history/` and `api/data/outlook/`. `update`
+takes about 5 seconds per year and rebuilds the normals every time, so they follow the backfill.
+Definitions (good day, typical season, normals, the outlook's rain tilt) and the design are in
+`.gavin-root/docs/time-views.md`; the thresholds are in `api/src/api/config/history.yaml`.
+
 ### Scheduled job
 
 `api/src/api/jobs/daily.py` is the one command the Fly-scheduled machine runs: weather update →
-sightings fetch → score today -6 to +7 (the served window, with factors) → store. (No separate
+sightings fetch → score today -6 to +7 (the served window, with factors) → this season's history
+tables → long-range tendencies → their per-area averages. The long-range fetch comes after the
+day's scores, so an outage of the seasonal API never holds back today's map. (No separate
 "downscale to cells" step: scoring downscales on the fly from the point-level weather store, so
 running the ingest CLI's `downscale` export here would just be unused disk churn.) It runs each
 step as its own process in that order and stops at the first failure rather than risk scoring on
