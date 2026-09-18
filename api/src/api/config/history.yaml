@@ -1,0 +1,43 @@
+# Time views (M6): how past seasons are summarised and how the seasonal outlook reads them.
+# See .gavin-root/docs/time-views.md.
+
+# A good day is a cell-day scoring at least this: the two darkest classes of the map scale. It is an
+# aggregation threshold, not a species rule. The hotspot threshold (0.5) marked 80-90 % of Tuscany's
+# woodland good every week from September to mid-October 2025 for porcini, so seasons would all look
+# alike; at 0.6 September 2025 (80 % of cell-days) still stands apart from October (39 %).
+good_score: 0.6
+
+# Normals and "typical" seasons use the complete years inside this span (reanalysis years for the
+# weather normals, fully scored seasons for the scores). The backfill starts in 2016
+# (weather-ingest.md); 2026 is still in season.
+baseline:
+  start_year: 2016
+  end_year: 2025
+
+# Daily weather normals per weather point: the mean of each calendar day over the baseline years,
+# smoothed with a centred window of this many days (odd). Ten years of single days are too noisy
+# for rain; a month-wide window keeps the seasonal shape.
+normals:
+  window_days: 31
+  variables: [precipitation_sum, temperature_2m_mean]
+
+outlook:
+  # A calendar period counts as good in a past season when at least this share of the area's
+  # woodland cell-days were good days. Aggregation, not a species rule: a quarter of the woodland
+  # is what a forager would call "they were out" in an area.
+  good_share: 0.25
+  # Weeks (EC46) come first, then months (SEAS5) up to this many ahead, never past the end of the
+  # species' season window.
+  months_ahead: 3
+  # The outlook tilts a period by the rain over its lead window: the period shifted back by the
+  # plateau of the species' rain_event lag (derived from the rule files, which cite their sources).
+  # Wetter or drier than these shares of normal moves it; in between it reads as usual.
+  rain:
+    wetter_pct: 125
+    drier_pct: 75
+    confidence: plausible
+    source: [salerni2023_amiata, open_meteo_seasonal_api]
+    notes: >-
+      Rain 10-15 days before drives porcini flushes (Salerni 2023, the rule files' rain_event lags);
+      the long-range forecast is only meaningful as an area tendency against its own climate
+      (Open-Meteo). The 125 % / 75 % bands are a judgement and are not backtested.

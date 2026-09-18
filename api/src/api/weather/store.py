@@ -84,16 +84,23 @@ class WeatherStore:
         return f"read_parquet('{self.daily_glob}', hive_partitioning=false)"
 
     def best_daily(
-        self, con: duckdb.DuckDBPyConnection, start: date, end: date, source_order: list[str]
+        self,
+        con: duckdb.DuckDBPyConnection,
+        start: date,
+        end: date,
+        source_order: list[str],
+        variables: list[str] | None = None,
     ) -> duckdb.DuckDBPyRelation:
-        """One row per point, day and variable, taken from the first source in ``source_order``."""
+        """One row per point, day and variable, taken from the first source in ``source_order``;
+        only ``variables`` when given."""
         order = repr(list(source_order))
+        only = f"AND list_contains({list(variables)!r}, variable)" if variables else ""
         return con.sql(
             f"""
             SELECT point_id, date, variable, value, source
             FROM {self._daily_sql()}
             WHERE date BETWEEN DATE '{start}' AND DATE '{end}'
-              AND list_contains({order}, source)
+              AND list_contains({order}, source) {only}
             QUALIFY row_number() OVER (
                 PARTITION BY point_id, date, variable ORDER BY list_position({order}, source)
             ) = 1
