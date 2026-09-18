@@ -1,0 +1,65 @@
+/* Design tokens. Source of truth: .gavin-root/docs/visual-direction.md.
+   Score class colours are duplicated in src/score/scale.ts for MapLibre. */
+
+:root {
+  color-scheme: light;
+
+  /* Palette */
+  --lichene: #edf0ea;
+  --carta: #f8faf6;
+  --humus: #1c211d;
+  --felce: #5b675e;
+  --lago: #1f56a0;
+  --basemap-land: #e4e8e2;
+  --rule: rgb(28 33 29 / 14%);
+
+  /* Porcino score scale */
+  --score-1: #f7f0c6;
+  --score-2: #f0c967;
+  --score-3: #e68c2c;
+  --score-4: #b34f2a;
+  --score-5: #652d1f;
+
+  /* Forecast hatch: the signature. Ink at low alpha over whatever is below. */
+  --hatch: repeating-linear-gradient(
+    -45deg,
+    rgb(28 33 29 / 38%) 0 1.5px,
+    transparent 1.5px 5px
+  );
+
+  /* Type */
+  --font-ui: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+  --font-data: 'Atkinson Hyperlegible Mono Variable', ui-monospace, monospace;
+  --font-display: 'Young Serif', Georgia, serif;
+  --text-caption: 0.8125rem;
+  --text-body: 0.9375rem;
+  --text-lead: 1.0625rem;
+  --text-species: 1.375rem;
+  --text-wordmark: 1.75rem;
+
+  /* Space and shape */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 14px;
+  --shadow-sheet: 0 -1px 0 var(--rule), 0 -8px 24px rgb(28 33 29 / 10%);
+  --shadow-float: 0 1px 2px rgb(28 33 29 / 18%), 0 4px 14px rgb(28 33 29 / 10%);
+  --focus-ring: 0 0 0 2px var(--carta), 0 0 0 4px var(--lago);
+
+  --panel-width: 400px;
+  --tap: 44px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (min-width: 900px) {
+  :root {
+    --text-body: 1rem;
+    --text-species: 1.5rem;
+    --text-wordmark: 2rem;
+  }
+}

@@ -1,0 +1,45 @@
+.section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.header {
+  display: grid;
+  gap: 2px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-species);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.status {
+  margin: 0;
+  color: var(--felce);
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--lago);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.note {
+  margin: 0;
+  color: var(--felce);
+  font-size: var(--text-caption);
+}

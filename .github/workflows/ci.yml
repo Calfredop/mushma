@@ -33,6 +33,43 @@ jobs:
       - run: pnpm run test
       - run: pnpm run build
 
+  web-e2e:
+    name: web (end-to-end smoke test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          working-directory: api
+          enable-cache: true
+
+      - run: uv sync --locked
+        working-directory: api
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: web/test-results/
+          retention-days: 7
+
   api:
     name: api (lint + test)
     runs-on: ubuntu-latest

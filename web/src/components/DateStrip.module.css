@@ -1,0 +1,87 @@
+.strip {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  border-radius: var(--radius-l);
+  background: rgb(248 250 246 / 94%);
+  box-shadow: var(--shadow-float);
+  backdrop-filter: blur(6px);
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
+}
+
+.day {
+  position: relative;
+  flex: none;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  width: 3rem;
+  min-height: 3.25rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--humus);
+  scroll-snap-align: center;
+  isolation: isolate;
+}
+
+.day:hover {
+  border-color: var(--rule);
+}
+
+/* The signature: forecast days are hatched, like a projected area on a map. */
+.day[data-kind='forecast']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--hatch);
+  opacity: 0.55;
+}
+
+.day[data-kind='today'] {
+  border-color: var(--humus);
+}
+
+.day[aria-checked='true'] {
+  background: var(--humus);
+  border-color: var(--humus);
+  color: var(--carta);
+}
+
+.day[aria-checked='true'][data-kind='forecast']::before {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgb(248 250 246 / 42%) 0 1.5px,
+    transparent 1.5px 5px
+  );
+  opacity: 1;
+}
+
+.weekday {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: lowercase;
+  line-height: 1.2;
+}
+
+.day[data-kind='today'] .weekday {
+  text-transform: none;
+}
+
+.number {
+  font-family: var(--font-data);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}

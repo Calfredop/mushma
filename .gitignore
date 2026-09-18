@@ -26,7 +26,12 @@ api/.venv/
 
 # local data caches (reproducible, never committed)
 api/data/
+web/data/
 
 # editors
 .vscode/
 .idea/
+
+# playwright
+web/playwright-report/
+web/test-results/

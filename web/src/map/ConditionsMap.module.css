@@ -1,0 +1,98 @@
+.wrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  background: var(--basemap-land);
+}
+
+.zoom {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  display: none;
+  flex-direction: column;
+  transform: translateY(-50%);
+  border-radius: var(--radius-m);
+  background: rgb(248 250 246 / 94%);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+}
+
+.zoom button {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  background: transparent;
+  color: var(--humus);
+}
+
+.zoom button + button {
+  border-top: 1px solid var(--rule);
+}
+
+.zoom button:hover {
+  background: rgb(28 33 29 / 6%);
+}
+
+@media (min-width: 900px) and (hover: hover) {
+  .zoom {
+    display: flex;
+  }
+}
+
+.hotspot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 1.625rem;
+  height: 1.625rem;
+  margin-bottom: 7px; /* the pointer below marks the spot */
+  padding: 0 0.25rem;
+  border: 2px solid var(--carta);
+  border-radius: 999px;
+  background: var(--humus);
+  color: var(--carta);
+  font-family: var(--font-data);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+}
+
+.hotspot::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top: 6px solid var(--humus);
+  transform: translateX(-50%);
+}
+
+.hotspot:hover {
+  background: var(--lago);
+}
+
+.hotspot:hover::after {
+  border-top-color: var(--lago);
+}
+
+/* MapLibre's attribution, in the app's voice. */
+.wrapper :global(.maplibregl-ctrl-attrib) {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  background: rgb(248 250 246 / 90%);
+}
+
+.wrapper :global(.maplibregl-ctrl-attrib a) {
+  color: var(--humus);
+}
