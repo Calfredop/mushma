@@ -6,10 +6,26 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
-from api.cache import SHORT_LIVED, cache_control_for_date
+from api.cache import DAILY, SHORT_LIVED, cache_control_for_date
 from api.grid.sources import data_dir
-from api.models import CellDetailResponse, HotspotsResponse, ScoresResponse, SightingsResponse
-from api.repository import CellNotFound, DateOutOfRange, ScoresRepository
+from api.models import (
+    CellDetailResponse,
+    ComuniResponse,
+    HotspotsResponse,
+    OutlookResponse,
+    ScoresResponse,
+    SeasonMapResponse,
+    SeasonsResponse,
+    SightingsResponse,
+)
+from api.repository import (
+    AreaNotFound,
+    CellNotFound,
+    DateOutOfRange,
+    HistoryUnavailable,
+    ScoresRepository,
+    SeasonNotFound,
+)
 from api.species import Species, SpeciesOrCombined
 from api.timeutil import today_rome
 
@@ -122,8 +138,103 @@ def get_sightings(
     response: Response,
     species: Annotated[Species, Query()],
     since: Annotated[Date | None, Query(description="defaults to one year ago")] = None,
+    until: Annotated[
+        Date | None, Query(description="last day included; defaults to no limit")
+    ] = None,
 ) -> SightingsResponse:
     since_date = since or (today_rome() - timedelta(days=SIGHTINGS_DEFAULT_LOOKBACK_DAYS))
-    result = repository.get_sightings(species, since_date)
+    result = repository.get_sightings(species, since_date, until)
     response.headers["Cache-Control"] = SHORT_LIVED  # counts grow as new sightings are ingested
+    return result
+
+
+# --- Time views (M6) ---------------------------------------------------------------------------
+# Tables built by api.history.build; until they exist the routes answer 503.
+
+Comune = Annotated[
+    str | None, Query(description="ISTAT comune code (see /comuni); omit for all of Tuscany")
+]
+_HISTORY_ERRORS = {503: {"description": "history not built yet"}}
+
+
+@router.get(
+    "/comuni",
+    response_model=ComuniResponse,
+    summary="Comuni with woodland, for the season and outlook views",
+    responses=_HISTORY_ERRORS,
+)
+def get_comuni(repository: Repository, response: Response) -> ComuniResponse:
+    try:
+        result = repository.get_comuni()
+    except HistoryUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    response.headers["Cache-Control"] = DAILY
+    return result
+
+
+@router.get(
+    "/history/seasons",
+    response_model=SeasonsResponse,
+    summary="Every stored season for Tuscany or a comune: good days, weather vs normal, sightings",
+    responses={404: {"description": "unknown comune"}, **_HISTORY_ERRORS},
+)
+def get_seasons(
+    repository: Repository,
+    response: Response,
+    comune: Comune = None,
+    species: Annotated[SpeciesOrCombined, Query()] = "combined",
+) -> SeasonsResponse:
+    try:
+        result = repository.get_seasons(species, comune)
+    except AreaNotFound as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except HistoryUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    response.headers["Cache-Control"] = SHORT_LIVED  # this season grows every day
+    return result
+
+
+@router.get(
+    "/history/season/{year}",
+    response_model=SeasonMapResponse,
+    summary="One season on the map: good days per woodland cell, comuni ranked by them",
+    responses={404: {"description": "season not stored"}, **_HISTORY_ERRORS},
+)
+def get_season_map(
+    repository: Repository,
+    response: Response,
+    year: int,
+    species: Annotated[SpeciesOrCombined, Query()],
+) -> SeasonMapResponse:
+    try:
+        result = repository.get_season_map(year, species)
+    except SeasonNotFound as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except HistoryUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    # A past season only changes when history is re-scored, which is rare but real (a finished
+    # backfill, new rules): a day, not forever.
+    response.headers["Cache-Control"] = DAILY if year < today_rome().year else SHORT_LIVED
+    return result
+
+
+@router.get(
+    "/outlook",
+    response_model=OutlookResponse,
+    summary="The season so far and an outlook (not a forecast) for the weeks and months ahead",
+    responses={404: {"description": "unknown comune"}, **_HISTORY_ERRORS},
+)
+def get_outlook(
+    repository: Repository,
+    response: Response,
+    species: Annotated[Species, Query()],
+    comune: Comune = None,
+) -> OutlookResponse:
+    try:
+        result = repository.get_outlook(species, comune)
+    except AreaNotFound as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except HistoryUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    response.headers["Cache-Control"] = SHORT_LIVED
     return result

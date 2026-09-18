@@ -14,16 +14,21 @@ import pandas as pd
 
 from api.live.breakdown import reconstruct_breakdown
 from api.live.hotspots import cluster_hotspots
+from api.live.timeviews import TimeViews
 from api.model.rules import RuleSet, load_rules
 from api.model.store import ScoreStore
 from api.models import (
     CellDetailResponse,
+    ComuniResponse,
     DayScore,
     GridCellScore,
     Hotspot,
     HotspotsResponse,
+    OutlookResponse,
     Place,
     ScoresResponse,
+    SeasonMapResponse,
+    SeasonsResponse,
     SightingCount,
     SightingsResponse,
     SpeciesForecast,
@@ -46,6 +51,7 @@ class LiveRepository:
         self.sightings = SightingsStore(root / "sightings" / REGION)
         self.rules = rules or load_rules()
         self._cells: pd.DataFrame | None = None
+        self._time_views: TimeViews | None = None
 
     @property
     def cells(self) -> pd.DataFrame:
@@ -164,7 +170,9 @@ class LiveRepository:
         species_list = SPECIES if species == "combined" else (species,)
         sightings_by_cell: dict[str, int] = {}
         for sp in species_list:
-            for r in self.sightings.counts_since(con, sp, since).df().itertuples():
+            # Up to the day shown: a replayed past day must not count what was found after it.
+            counts = self.sightings.counts_since(con, sp, since, until=target_date)
+            for r in counts.df().itertuples():
                 sightings_by_cell[r.cell_id] = sightings_by_cell.get(r.cell_id, 0) + r.count
 
         hotspots = [
@@ -181,11 +189,33 @@ class LiveRepository:
         ]
         return HotspotsResponse(species=species, date=target_date, hotspots=hotspots)
 
-    def get_sightings(self, species: Species, since: date) -> SightingsResponse:
+    def get_sightings(
+        self, species: Species, since: date, until: date | None = None
+    ) -> SightingsResponse:
         con = duckdb.connect()
-        counts = self.sightings.counts_since(con, species, since).df()
+        counts = self.sightings.counts_since(con, species, since, until).df()
         rows = [
             SightingCount(cell_id=r.cell_id, source=r.source, license=r.license, count=int(r.count))
             for r in counts.itertuples()
         ]
         return SightingsResponse(species=species, since=since, counts=rows)
+
+    # --- Time views (M6), from the tables api.history.build writes ------------------------------
+
+    @property
+    def time_views(self) -> TimeViews:
+        if self._time_views is None:
+            self._time_views = TimeViews(self.root, REGION, self.cells)
+        return self._time_views
+
+    def get_comuni(self) -> ComuniResponse:
+        return self.time_views.get_comuni()
+
+    def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
+        return self.time_views.get_seasons(species, comune)
+
+    def get_season_map(self, year: int, species: SpeciesOrCombined) -> SeasonMapResponse:
+        return self.time_views.get_season_map(year, species)
+
+    def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
+        return self.time_views.get_outlook(species, comune)

@@ -44,9 +44,16 @@ def sighting_events(cell: CellSpec, species: Species) -> list[SightingEvent]:
 
 def counts_since(cell: CellSpec, species: Species, since_days_ago: int) -> dict[str, int]:
     """source -> count of events at least as recent as `since_days_ago` days back."""
+    return counts_between(cell, species, since_days_ago, 0)
+
+
+def counts_between(
+    cell: CellSpec, species: Species, since_days_ago: int, until_days_ago: int
+) -> dict[str, int]:
+    """source -> count of events from `since_days_ago` to `until_days_ago` days back."""
     counts: dict[str, int] = {}
     for event in sighting_events(cell, species):
-        if event.days_ago <= since_days_ago:
+        if until_days_ago <= event.days_ago <= since_days_ago:
             counts[event.source] = counts.get(event.source, 0) + 1
     return counts
 

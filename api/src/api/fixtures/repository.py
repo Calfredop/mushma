@@ -4,16 +4,21 @@ from api.fixtures.cells import CELLS, CellSpec
 from api.fixtures.generator import WINDOW_OFFSETS, combined_score, score_and_factors
 from api.fixtures.hotspots import build_hotspots
 from api.fixtures.scoring import FactorResult
-from api.fixtures.sightings import LICENSES, counts_since, recent_sightings_total
+from api.fixtures.sightings import LICENSES, counts_between, recent_sightings_total
+from api.fixtures.timeviews import FixtureTimeViews
 from api.models import (
     CellDetailResponse,
+    ComuniResponse,
     DayScore,
     FactorBreakdown,
     GridCellScore,
     Hotspot,
     HotspotsResponse,
+    OutlookResponse,
     Place,
     ScoresResponse,
+    SeasonMapResponse,
+    SeasonsResponse,
     SightingCount,
     SightingsResponse,
     SpeciesForecast,
@@ -125,11 +130,32 @@ class FixtureRepository:
         ]
         return HotspotsResponse(species=species, date=target_date, hotspots=hotspots)
 
-    def get_sightings(self, species: Species, since: date) -> SightingsResponse:
-        since_days_ago = max((today_rome() - since).days, 0)
+    def get_sightings(
+        self, species: Species, since: date, until: date | None = None
+    ) -> SightingsResponse:
+        today = today_rome()
+        since_days_ago = max((today - since).days, 0)
+        until_days_ago = max((today - until).days, 0) if until is not None else 0
         counts = [
             SightingCount(cell_id=cell.id, source=source, license=LICENSES[source], count=count)
             for cell in CELLS
-            for source, count in counts_since(cell, species, since_days_ago).items()
+            for source, count in counts_between(
+                cell, species, since_days_ago, until_days_ago
+            ).items()
         ]
         return SightingsResponse(species=species, since=since, counts=counts)
+
+    # Time views (M6): hashed stand-ins shaped like api.history's tables.
+    _time_views = FixtureTimeViews()
+
+    def get_comuni(self) -> ComuniResponse:
+        return self._time_views.get_comuni()
+
+    def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
+        return self._time_views.get_seasons(species, comune)
+
+    def get_season_map(self, year: int, species: SpeciesOrCombined) -> SeasonMapResponse:
+        return self._time_views.get_season_map(year, species)
+
+    def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
+        return self._time_views.get_outlook(species, comune)

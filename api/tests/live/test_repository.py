@@ -116,3 +116,19 @@ class TestGetCellDetailAndSpot:
     def test_spot_resolves_to_the_nearest_woodland_cell(self, repo: LiveRepository) -> None:
         spot = repo.get_spot(lat=CELL_A["lat"] + 0.0001, lon=CELL_A["lon"] + 0.0001)
         assert spot.cell_id == CELL_A["cell_id"]
+
+
+def test_a_replayed_days_hotspots_count_only_sightings_up_to_that_day(tmp_path: Path) -> None:
+    from tests.live.helpers import sighting_record, write_sightings
+
+    rules = build_dataset(tmp_path)
+    write_sightings(
+        tmp_path,
+        [sighting_record("later", "porcini", CELL_A["cell_id"], SCORES_DATE + timedelta(days=5))],
+    )
+    repo = LiveRepository(tmp_path, rules=rules)
+
+    response = repo.get_hotspots("porcini", SCORES_DATE, 10)
+
+    by_cells = {frozenset(h.cell_ids): h for h in response.hotspots}
+    assert by_cells[frozenset({CELL_A["cell_id"], CELL_B["cell_id"]})].recent_sightings == 2

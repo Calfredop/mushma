@@ -5,7 +5,16 @@ real M2/M3 Parquet stores under `$DATA_DIR`."""
 from datetime import date
 from typing import Protocol
 
-from api.models import CellDetailResponse, HotspotsResponse, ScoresResponse, SightingsResponse
+from api.models import (
+    CellDetailResponse,
+    ComuniResponse,
+    HotspotsResponse,
+    OutlookResponse,
+    ScoresResponse,
+    SeasonMapResponse,
+    SeasonsResponse,
+    SightingsResponse,
+)
 from api.species import Species, SpeciesOrCombined
 
 
@@ -25,6 +34,23 @@ class CellNotFound(Exception):
         super().__init__(f"cell {cell_id!r} not found")
 
 
+class AreaNotFound(Exception):
+    def __init__(self, code: str) -> None:
+        self.code = code
+        super().__init__(f"no comune {code!r} with woodland")
+
+
+class SeasonNotFound(Exception):
+    def __init__(self, year: int, available: list[int]) -> None:
+        self.year = year
+        self.available = available
+        super().__init__(f"no season {year}; available seasons are {available}")
+
+
+class HistoryUnavailable(Exception):
+    """The time views' tables have not been built yet (``api.history.build``)."""
+
+
 class ScoresRepository(Protocol):
     def get_scores(self, species: SpeciesOrCombined, target_date: date) -> ScoresResponse:
         """Raises DateOutOfRange if target_date isn't in the served window."""
@@ -40,5 +66,19 @@ class ScoresRepository(Protocol):
     ) -> HotspotsResponse:
         """Raises DateOutOfRange if target_date isn't in the served window."""
 
-    def get_sightings(self, species: Species, since: date) -> SightingsResponse:
+    def get_sightings(
+        self, species: Species, since: date, until: date | None = None
+    ) -> SightingsResponse:
         """Never returns coordinates -- counts per cell only."""
+
+    def get_comuni(self) -> ComuniResponse:
+        """Comuni with woodland, by name."""
+
+    def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
+        """Every stored season for Tuscany (``comune`` None) or one comune. Raises AreaNotFound."""
+
+    def get_season_map(self, year: int, species: SpeciesOrCombined) -> SeasonMapResponse:
+        """Good days per woodland cell and per comune for one season. Raises SeasonNotFound."""
+
+    def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
+        """The season so far and the periods after the 7-day forecast. Raises AreaNotFound."""

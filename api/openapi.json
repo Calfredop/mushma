@@ -1,6 +1,67 @@
 {
   "components": {
     "schemas": {
+      "Area": {
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISTAT comune code; null for the whole region",
+            "title": "Code"
+          },
+          "kind": {
+            "enum": [
+              "region",
+              "comune"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "kind"
+        ],
+        "title": "Area",
+        "type": "object"
+      },
+      "Baseline": {
+        "properties": {
+          "score_years": {
+            "description": "seasons behind the typical good days",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Score Years",
+            "type": "array"
+          },
+          "weather_years": {
+            "description": "years behind the weather normals",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Weather Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weather_years",
+          "score_years"
+        ],
+        "title": "Baseline",
+        "type": "object"
+      },
       "CellDetailResponse": {
         "description": "Shared shape for `GET /spot` and `GET /cells/{id}`: today plus a\n7-day outlook, per species, with the full factor breakdown.",
         "properties": {
@@ -35,6 +96,155 @@
           "species"
         ],
         "title": "CellDetailResponse",
+        "type": "object"
+      },
+      "CellSeason": {
+        "properties": {
+          "cell_id": {
+            "title": "Cell Id",
+            "type": "string"
+          },
+          "good_days": {
+            "minimum": 0.0,
+            "title": "Good Days",
+            "type": "integer"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "cell_id",
+          "lon",
+          "lat",
+          "good_days"
+        ],
+        "title": "CellSeason",
+        "type": "object"
+      },
+      "Comune": {
+        "properties": {
+          "cells": {
+            "description": "woodland cells in the comune",
+            "minimum": 1.0,
+            "title": "Cells",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "province": {
+            "title": "Province",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "province",
+          "lon",
+          "lat",
+          "cells"
+        ],
+        "title": "Comune",
+        "type": "object"
+      },
+      "ComuneSeason": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "good_days": {
+            "minimum": 0.0,
+            "title": "Good Days",
+            "type": "number"
+          },
+          "good_days_typical": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Good Days Typical"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "rain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RainStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sightings": {
+            "minimum": 0.0,
+            "title": "Sightings",
+            "type": "integer"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TemperatureStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "good_days",
+          "good_days_typical",
+          "rain",
+          "temperature",
+          "sightings"
+        ],
+        "title": "ComuneSeason",
+        "type": "object"
+      },
+      "ComuniResponse": {
+        "properties": {
+          "comuni": {
+            "items": {
+              "$ref": "#/components/schemas/Comune"
+            },
+            "title": "Comuni",
+            "type": "array"
+          }
+        },
+        "required": [
+          "comuni"
+        ],
+        "title": "ComuniResponse",
         "type": "object"
       },
       "DayScore": {
@@ -224,6 +434,227 @@
         "title": "HotspotsResponse",
         "type": "object"
       },
+      "MonthStat": {
+        "properties": {
+          "good_days": {
+            "description": "a typical woodland cell's good days",
+            "minimum": 0.0,
+            "title": "Good Days",
+            "type": "number"
+          },
+          "month": {
+            "maximum": 12.0,
+            "minimum": 1.0,
+            "title": "Month",
+            "type": "integer"
+          },
+          "rain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RainStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sightings": {
+            "minimum": 0.0,
+            "title": "Sightings",
+            "type": "integer"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TemperatureStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "month",
+          "good_days",
+          "rain",
+          "temperature",
+          "sightings"
+        ],
+        "title": "MonthStat",
+        "type": "object"
+      },
+      "OutlookPeriod": {
+        "description": "A week (EC46) or month (SEAS5) after the 7-day forecast. An outlook, not a forecast.",
+        "properties": {
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "week",
+              "month"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "lead_rain_pct": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "rain over the lead window, as a percentage of normal",
+            "title": "Lead Rain Pct"
+          },
+          "outlook": {
+            "enum": [
+              "better",
+              "usual",
+              "worse",
+              "unknown"
+            ],
+            "title": "Outlook",
+            "type": "string"
+          },
+          "past_good_years": {
+            "description": "past seasons in which these days were good",
+            "minimum": 0.0,
+            "title": "Past Good Years",
+            "type": "integer"
+          },
+          "past_years": {
+            "description": "past seasons with scores for these days",
+            "minimum": 0.0,
+            "title": "Past Years",
+            "type": "integer"
+          },
+          "rain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RainStat"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "long-range forecast total and its own normal"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          },
+          "temperature_anomaly_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Anomaly C"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "kind",
+          "past_good_years",
+          "past_years",
+          "rain",
+          "temperature_anomaly_c",
+          "lead_rain_pct",
+          "outlook"
+        ],
+        "title": "OutlookPeriod",
+        "type": "object"
+      },
+      "OutlookResponse": {
+        "properties": {
+          "area": {
+            "$ref": "#/components/schemas/Area"
+          },
+          "baseline": {
+            "$ref": "#/components/schemas/Baseline"
+          },
+          "good_share": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Good Share",
+            "type": "number"
+          },
+          "issued": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "when the long-range forecast was fetched",
+            "title": "Issued"
+          },
+          "periods": {
+            "items": {
+              "$ref": "#/components/schemas/OutlookPeriod"
+            },
+            "title": "Periods",
+            "type": "array"
+          },
+          "rain_lead": {
+            "$ref": "#/components/schemas/RainLead"
+          },
+          "rain_tilt": {
+            "$ref": "#/components/schemas/RainTiltBands"
+          },
+          "season_to_date": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SeasonToDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci"
+            ],
+            "title": "Species",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/SeasonWindow"
+          }
+        },
+        "required": [
+          "species",
+          "area",
+          "issued",
+          "good_share",
+          "rain_lead",
+          "rain_tilt",
+          "baseline",
+          "window",
+          "season_to_date",
+          "periods"
+        ],
+        "title": "OutlookResponse",
+        "type": "object"
+      },
       "Place": {
         "properties": {
           "comune": {
@@ -240,6 +671,68 @@
           "nearest_place"
         ],
         "title": "Place",
+        "type": "object"
+      },
+      "RainLead": {
+        "properties": {
+          "max_days": {
+            "minimum": 0.0,
+            "title": "Max Days",
+            "type": "integer"
+          },
+          "min_days": {
+            "minimum": 0.0,
+            "title": "Min Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "min_days",
+          "max_days"
+        ],
+        "title": "RainLead",
+        "type": "object"
+      },
+      "RainStat": {
+        "properties": {
+          "normal_mm": {
+            "minimum": 0.0,
+            "title": "Normal Mm",
+            "type": "number"
+          },
+          "total_mm": {
+            "minimum": 0.0,
+            "title": "Total Mm",
+            "type": "number"
+          }
+        },
+        "required": [
+          "total_mm",
+          "normal_mm"
+        ],
+        "title": "RainStat",
+        "type": "object"
+      },
+      "RainTiltBands": {
+        "description": "Lead-window rain at or above ``wetter_pct`` of normal tilts a period better; at or below\n``drier_pct``, worse (``config/history.yaml``).",
+        "properties": {
+          "drier_pct": {
+            "exclusiveMaximum": 100.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Drier Pct",
+            "type": "number"
+          },
+          "wetter_pct": {
+            "exclusiveMinimum": 100.0,
+            "title": "Wetter Pct",
+            "type": "number"
+          }
+        },
+        "required": [
+          "wetter_pct",
+          "drier_pct"
+        ],
+        "title": "RainTiltBands",
         "type": "object"
       },
       "ScoresResponse": {
@@ -273,6 +766,323 @@
           "cells"
         ],
         "title": "ScoresResponse",
+        "type": "object"
+      },
+      "SeasonMapResponse": {
+        "description": "One season on the map: good days per woodland cell, and the comuni ranked by them.",
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/CellSeason"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "comuni": {
+            "items": {
+              "$ref": "#/components/schemas/ComuneSeason"
+            },
+            "title": "Comuni",
+            "type": "array"
+          },
+          "good_score": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Good Score",
+            "type": "number"
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci",
+              "combined"
+            ],
+            "title": "Species",
+            "type": "string"
+          },
+          "through": {
+            "format": "date",
+            "title": "Through",
+            "type": "string"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "year",
+          "species",
+          "complete",
+          "through",
+          "good_score",
+          "cells",
+          "comuni"
+        ],
+        "title": "SeasonMapResponse",
+        "type": "object"
+      },
+      "SeasonSummary": {
+        "properties": {
+          "complete": {
+            "description": "every day of the year is scored",
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "good_days": {
+            "description": "a typical woodland cell's good days",
+            "minimum": 0.0,
+            "title": "Good Days",
+            "type": "number"
+          },
+          "good_days_typical": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "median over the baseline seasons, to the same day of the year",
+            "title": "Good Days Typical"
+          },
+          "months": {
+            "items": {
+              "$ref": "#/components/schemas/MonthStat"
+            },
+            "title": "Months",
+            "type": "array"
+          },
+          "peak_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Date"
+          },
+          "peak_share": {
+            "description": "share of woodland cells good that day",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Peak Share",
+            "type": "number"
+          },
+          "rain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RainStat"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "over the observed days of the window"
+          },
+          "sightings": {
+            "minimum": 0.0,
+            "title": "Sightings",
+            "type": "integer"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TemperatureStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "through": {
+            "description": "the last day scored",
+            "format": "date",
+            "title": "Through",
+            "type": "string"
+          },
+          "weather_through": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "the last observed day behind the weather",
+            "title": "Weather Through"
+          },
+          "window": {
+            "$ref": "#/components/schemas/SeasonWindow"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "year",
+          "complete",
+          "through",
+          "good_days",
+          "good_days_typical",
+          "peak_date",
+          "peak_share",
+          "window",
+          "rain",
+          "temperature",
+          "weather_through",
+          "sightings",
+          "months"
+        ],
+        "title": "SeasonSummary",
+        "type": "object"
+      },
+      "SeasonToDate": {
+        "properties": {
+          "good_days": {
+            "minimum": 0.0,
+            "title": "Good Days",
+            "type": "number"
+          },
+          "good_days_typical": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Good Days Typical"
+          },
+          "rain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RainStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sightings": {
+            "minimum": 0.0,
+            "title": "Sightings",
+            "type": "integer"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TemperatureStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "through": {
+            "format": "date",
+            "title": "Through",
+            "type": "string"
+          },
+          "weather_through": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weather Through"
+          }
+        },
+        "required": [
+          "through",
+          "good_days",
+          "good_days_typical",
+          "rain",
+          "temperature",
+          "weather_through",
+          "sightings"
+        ],
+        "title": "SeasonToDate",
+        "type": "object"
+      },
+      "SeasonWindow": {
+        "description": "The span of the species' season windows in its rule files, for one year.",
+        "properties": {
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "SeasonWindow",
+        "type": "object"
+      },
+      "SeasonsResponse": {
+        "properties": {
+          "area": {
+            "$ref": "#/components/schemas/Area"
+          },
+          "baseline": {
+            "$ref": "#/components/schemas/Baseline"
+          },
+          "good_score": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Good Score",
+            "type": "number"
+          },
+          "seasons": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonSummary"
+            },
+            "title": "Seasons",
+            "type": "array"
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci",
+              "combined"
+            ],
+            "title": "Species",
+            "type": "string"
+          }
+        },
+        "required": [
+          "species",
+          "area",
+          "good_score",
+          "baseline",
+          "seasons"
+        ],
+        "title": "SeasonsResponse",
         "type": "object"
       },
       "SightingCount": {
@@ -367,6 +1177,24 @@
         "title": "SpeciesForecast",
         "type": "object"
       },
+      "TemperatureStat": {
+        "properties": {
+          "mean_c": {
+            "title": "Mean C",
+            "type": "number"
+          },
+          "normal_c": {
+            "title": "Normal C",
+            "type": "number"
+          }
+        },
+        "required": [
+          "mean_c",
+          "normal_c"
+        ],
+        "title": "TemperatureStat",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -458,6 +1286,27 @@
         "summary": "Score, 7-day outlook and factor breakdown for every species in one cell"
       }
     },
+    "/comuni": {
+      "get": {
+        "operationId": "get_comuni_comuni_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComuniResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "description": "history not built yet"
+          }
+        },
+        "summary": "Comuni with woodland, for the season and outlook views"
+      }
+    },
     "/health": {
       "get": {
         "operationId": "health_health_get",
@@ -478,6 +1327,136 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/history/season/{year}": {
+      "get": {
+        "operationId": "get_season_map_history_season__year__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "title": "Year",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "species",
+            "required": true,
+            "schema": {
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci",
+                "combined"
+              ],
+              "title": "Species",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonMapResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "season not stored"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "history not built yet"
+          }
+        },
+        "summary": "One season on the map: good days per woodland cell, comuni ranked by them"
+      }
+    },
+    "/history/seasons": {
+      "get": {
+        "operationId": "get_seasons_history_seasons_get",
+        "parameters": [
+          {
+            "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+            "in": "query",
+            "name": "comune",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+              "title": "Comune"
+            }
+          },
+          {
+            "in": "query",
+            "name": "species",
+            "required": false,
+            "schema": {
+              "default": "combined",
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci",
+                "combined"
+              ],
+              "title": "Species",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "unknown comune"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "history not built yet"
+          }
+        },
+        "summary": "Every stored season for Tuscany or a comune: good days, weather vs normal, sightings"
       }
     },
     "/hotspots": {
@@ -557,6 +1536,74 @@
           }
         },
         "summary": "Ranked clusters of high-scoring cells, with nearby recent sightings"
+      }
+    },
+    "/outlook": {
+      "get": {
+        "operationId": "get_outlook_outlook_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "species",
+            "required": true,
+            "schema": {
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci"
+              ],
+              "title": "Species",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+            "in": "query",
+            "name": "comune",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+              "title": "Comune"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutlookResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "unknown comune"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "history not built yet"
+          }
+        },
+        "summary": "The season so far and an outlook (not a forecast) for the weeks and months ahead"
       }
     },
     "/scores": {
@@ -661,6 +1708,25 @@
               ],
               "description": "defaults to one year ago",
               "title": "Since"
+            }
+          },
+          {
+            "description": "last day included; defaults to no limit",
+            "in": "query",
+            "name": "until",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "last day included; defaults to no limit",
+              "title": "Until"
             }
           }
         ],

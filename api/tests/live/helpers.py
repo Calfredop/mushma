@@ -258,6 +258,8 @@ def build_dataset(root: Path) -> RuleSet:
         ],
     )
 
+    write_history(root)
+
     return dataset_ruleset()
 
 
@@ -283,3 +285,168 @@ def sighting_record(
         "obscured": False,
         "fetched_at": fetched_at or datetime(2026, 1, 1, tzinfo=UTC),
     }
+
+
+# --- Time views (M6): history tables shaped like api.history.build's -----------------------------
+
+HISTORY_AREAS = [
+    # area_code, kind, name, province, cells (lon/lat from the cells below)
+    ("tuscany", "region", "Toscana", None, [CELL_A, CELL_B, CELL_C]),
+    ("045001", "comune", "Alpha", "MS", [CELL_A]),
+    ("045002", "comune", "Beta", "MS", [CELL_B]),
+    ("045003", "comune", "Gamma", "SI", [CELL_C]),
+]
+HISTORY_WINDOWS = {
+    "porcini": (121, 354),
+    "ovoli": (152, 334),
+    "gallinacci": (105, 365),
+    "combined": (105, 365),
+}
+HISTORY_RAIN_LEAD = {"porcini": [10, 16], "ovoli": [10, 20], "gallinacci": [10, 30]}
+
+
+def _history_days(first: date, last: date) -> list[date]:
+    return [first + timedelta(days=i) for i in range((last - first).days + 1)]
+
+
+def write_history(root: Path) -> None:
+    """Two complete past seasons and this one to yesterday, for every area and species; weather
+    with normals through today + 6 (the last days forecast); a long-range forecast of weeks from
+    this Monday and five months; good days per cell for every season."""
+    from api.history.seasons import assemble_seasons
+    from api.history.store import HistoryStore
+
+    store = HistoryStore(root / "history" / REGION)
+    today = today_rome()
+    years = [today.year - 2, today.year - 1, today.year]
+    store.write(
+        store.areas_path,
+        pd.DataFrame(
+            [
+                {
+                    "area_code": code,
+                    "kind": kind,
+                    "name": name,
+                    "province": province,
+                    "cells": len(cells),
+                    "lon": sum(c["lon"] for c in cells) / len(cells),
+                    "lat": sum(c["lat"] for c in cells) / len(cells),
+                }
+                for code, kind, name, province, cells in HISTORY_AREAS
+            ]
+        ),
+    )
+
+    all_days, all_weather = [], []
+    for year in years:
+        last = date(year, 12, 31) if year < today.year else today - timedelta(days=1)
+        days = _history_days(date(year, 1, 1), last)
+        rows = []
+        for code, _, _, _, cells in HISTORY_AREAS:
+            for species in ("porcini", "ovoli", "gallinacci", "combined"):
+                for day in days:
+                    autumn = 9 <= day.month <= 10
+                    good = len(cells) if autumn and (day.day + year) % 3 == 0 else 0
+                    rows.append(
+                        {
+                            "area_code": code,
+                            "species": species,
+                            "date": day,
+                            "cells": len(cells),
+                            "good_cells": good,
+                            "mean_score": 0.3 + 0.5 * bool(good),
+                        }
+                    )
+        frame = pd.DataFrame(rows)
+        store.write_partition("area_days", year, frame)
+        all_days.append(frame)
+
+        weather_last = min(date(year, 12, 31), today + timedelta(days=6))
+        weather = pd.DataFrame(
+            [
+                {
+                    "area_code": code,
+                    "date": day,
+                    "precipitation_sum": 2.0 + (day.day % 5),
+                    "temperature_2m_mean": 15.0,
+                    "precipitation_normal": 3.5,
+                    "temperature_normal": 14.0,
+                    "forecast": day >= today,
+                }
+                for code, *_ in HISTORY_AREAS
+                for day in _history_days(date(year, 1, 1), weather_last)
+            ]
+        )
+        store.write_partition("area_weather", year, weather)
+        all_weather.append(weather)
+
+        store.write_partition(
+            "cell_seasons",
+            year,
+            pd.DataFrame(
+                [
+                    {"species": species, "cell_id": c["cell_id"], "days": 365, "good_days": 20 + i}
+                    for species in ("porcini", "ovoli", "gallinacci", "combined")
+                    for i, c in enumerate([CELL_A, CELL_B, CELL_C])
+                ]
+            ),
+        )
+
+    sightings = pd.DataFrame(
+        [
+            ("045001", "porcini", date(years[1], 10, 2), 2),
+            ("tuscany", "porcini", date(years[1], 10, 2), 2),
+        ],
+        columns=["area_code", "species", "date", "count"],
+    )
+    store.write(store.area_sightings_path, sightings)
+    seasons, months = assemble_seasons(
+        pd.concat(all_days), pd.concat(all_weather), sightings, HISTORY_WINDOWS, years[:2]
+    )
+    store.write(store.seasons_path, seasons)
+    store.write(store.months_path, months)
+
+    monday = today - timedelta(days=today.weekday())
+    month_starts = []
+    first = today.replace(day=1)
+    for _ in range(5):
+        month_starts.append(first)
+        first = (first + timedelta(days=32)).replace(day=1)
+    periods = [
+        ("week", monday + timedelta(weeks=i), monday + timedelta(weeks=i, days=6)) for i in range(7)
+    ]
+    for start in month_starts:
+        end = (start + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        periods.append(("month", start, end))
+    store.write(
+        store.area_seasonal_path,
+        pd.DataFrame(
+            [
+                {
+                    "area_code": code,
+                    "kind": kind,
+                    "start": start,
+                    "end": end,
+                    "variable": variable,
+                    "value": value,
+                    "anomaly": anomaly,
+                    "fetched_at": pd.Timestamp(today, tz="UTC"),
+                }
+                for code, *_ in HISTORY_AREAS
+                for kind, start, end in periods
+                for variable, value, anomaly in (
+                    ("precipitation_sum", 30.0, 5.0),
+                    ("temperature_2m_mean", 14.0, 1.2),
+                )
+            ]
+        ),
+    )
+    store.write_meta(
+        {
+            "good_score": 0.6,
+            "weather_years": years[:2],
+            "score_years": years[:2],
+            "windows": {k: list(v) for k, v in HISTORY_WINDOWS.items()},
+            "rain_lead": HISTORY_RAIN_LEAD,
+        }
+    )

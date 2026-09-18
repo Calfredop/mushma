@@ -94,3 +94,164 @@ class SightingsResponse(BaseModel):
     species: Species
     since: date
     counts: list[SightingCount]
+
+
+# --- Time views (M6): history and seasonal outlook ---------------------------------------------
+# A "good day" is a cell-day whose conditions score reaches `good_score`; area values are a typical
+# woodland cell's (see .gavin-root/docs/time-views.md). Counts of past years, never chances.
+
+
+class Area(BaseModel):
+    code: str | None = Field(description="ISTAT comune code; null for the whole region")
+    name: str
+    kind: Literal["region", "comune"]
+
+
+class Comune(BaseModel):
+    code: str
+    name: str
+    province: str
+    lon: float
+    lat: float
+    cells: int = Field(ge=1, description="woodland cells in the comune")
+
+
+class ComuniResponse(BaseModel):
+    comuni: list[Comune]
+
+
+class RainStat(BaseModel):
+    total_mm: float = Field(ge=0)
+    normal_mm: float = Field(ge=0)
+
+
+class TemperatureStat(BaseModel):
+    mean_c: float
+    normal_c: float
+
+
+class SeasonWindow(BaseModel):
+    """The span of the species' season windows in its rule files, for one year."""
+
+    start: date
+    end: date
+
+
+class Baseline(BaseModel):
+    weather_years: list[int] = Field(description="years behind the weather normals")
+    score_years: list[int] = Field(description="seasons behind the typical good days")
+
+
+class MonthStat(BaseModel):
+    month: int = Field(ge=1, le=12)
+    good_days: float = Field(ge=0, description="a typical woodland cell's good days")
+    rain: RainStat | None
+    temperature: TemperatureStat | None
+    sightings: int = Field(ge=0)
+
+
+class SeasonSummary(BaseModel):
+    year: int
+    complete: bool = Field(description="every day of the year is scored")
+    through: date = Field(description="the last day scored")
+    good_days: float = Field(ge=0, description="a typical woodland cell's good days")
+    good_days_typical: float | None = Field(
+        description="median over the baseline seasons, to the same day of the year"
+    )
+    peak_date: date | None
+    peak_share: float = Field(ge=0, le=1, description="share of woodland cells good that day")
+    window: SeasonWindow
+    rain: RainStat | None = Field(description="over the observed days of the window")
+    temperature: TemperatureStat | None
+    weather_through: date | None = Field(description="the last observed day behind the weather")
+    sightings: int = Field(ge=0)
+    months: list[MonthStat]
+
+
+class SeasonsResponse(BaseModel):
+    species: SpeciesOrCombined
+    area: Area
+    good_score: float = Field(gt=0, le=1)
+    baseline: Baseline
+    seasons: list[SeasonSummary]
+
+
+class CellSeason(BaseModel):
+    cell_id: str
+    lon: float
+    lat: float
+    good_days: int = Field(ge=0)
+
+
+class ComuneSeason(BaseModel):
+    code: str
+    name: str
+    good_days: float = Field(ge=0)
+    good_days_typical: float | None
+    rain: RainStat | None
+    temperature: TemperatureStat | None
+    sightings: int = Field(ge=0)
+
+
+class SeasonMapResponse(BaseModel):
+    """One season on the map: good days per woodland cell, and the comuni ranked by them."""
+
+    year: int
+    species: SpeciesOrCombined
+    complete: bool
+    through: date
+    good_score: float = Field(gt=0, le=1)
+    cells: list[CellSeason]
+    comuni: list[ComuneSeason]
+
+
+class SeasonToDate(BaseModel):
+    through: date
+    good_days: float = Field(ge=0)
+    good_days_typical: float | None
+    rain: RainStat | None
+    temperature: TemperatureStat | None
+    weather_through: date | None
+    sightings: int = Field(ge=0)
+
+
+class OutlookPeriod(BaseModel):
+    """A week (EC46) or month (SEAS5) after the 7-day forecast. An outlook, not a forecast."""
+
+    start: date
+    end: date
+    kind: Literal["week", "month"]
+    past_good_years: int = Field(ge=0, description="past seasons in which these days were good")
+    past_years: int = Field(ge=0, description="past seasons with scores for these days")
+    rain: RainStat | None = Field(description="long-range forecast total and its own normal")
+    temperature_anomaly_c: float | None
+    lead_rain_pct: float | None = Field(
+        ge=0, description="rain over the lead window, as a percentage of normal"
+    )
+    outlook: Literal["better", "usual", "worse", "unknown"]
+
+
+class RainLead(BaseModel):
+    min_days: int = Field(ge=0)
+    max_days: int = Field(ge=0)
+
+
+class RainTiltBands(BaseModel):
+    """Lead-window rain at or above ``wetter_pct`` of normal tilts a period better; at or below
+    ``drier_pct``, worse (``config/history.yaml``)."""
+
+    wetter_pct: float = Field(gt=100)
+    drier_pct: float = Field(gt=0, lt=100)
+
+
+class OutlookResponse(BaseModel):
+    species: Species
+    area: Area
+    issued: date | None = Field(description="when the long-range forecast was fetched")
+    good_share: float = Field(gt=0, le=1)
+    rain_lead: RainLead
+    rain_tilt: RainTiltBands
+    baseline: Baseline
+    window: SeasonWindow
+    season_to_date: SeasonToDate | None
+    periods: list[OutlookPeriod]

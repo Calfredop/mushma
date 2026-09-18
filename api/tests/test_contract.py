@@ -9,7 +9,16 @@ import math
 import httpx
 import pytest
 
-from api.models import CellDetailResponse, HotspotsResponse, ScoresResponse, SightingsResponse
+from api.models import (
+    CellDetailResponse,
+    ComuniResponse,
+    HotspotsResponse,
+    OutlookResponse,
+    ScoresResponse,
+    SeasonMapResponse,
+    SeasonsResponse,
+    SightingsResponse,
+)
 
 
 @pytest.fixture
@@ -132,6 +141,145 @@ class TestSightings:
         wide_total = sum(row["count"] for row in wide.json()["counts"])
         assert narrow_total <= wide_total
 
+    def test_an_until_never_returns_more_than_no_until(self, client: httpx.Client) -> None:
+        params = {"species": "porcini", "since": "2020-01-01"}
+        bounded = client.get("/sightings", params={**params, "until": "2020-01-01"})
+        open_ended = client.get("/sightings", params=params)
+        assert bounded.status_code == 200
+        bounded_total = sum(row["count"] for row in bounded.json()["counts"])
+        open_total = sum(row["count"] for row in open_ended.json()["counts"])
+        assert bounded_total <= open_total
+
+
+@pytest.fixture
+def comuni(client: httpx.Client) -> ComuniResponse:
+    response = client.get("/comuni")
+    assert response.status_code == 200
+    return ComuniResponse.model_validate(response.json())
+
+
+class TestComuni:
+    def test_lists_comuni_with_woodland_by_name(self, comuni: ComuniResponse) -> None:
+        assert comuni.comuni, "no comuni"
+        codes = [c.code for c in comuni.comuni]
+        assert len(codes) == len(set(codes))
+        names = [c.name for c in comuni.comuni]
+        assert names == sorted(names, key=str.casefold)
+
+
+def _check_season(season, year_days: int = 366) -> None:
+    assert season.window.start <= season.window.end
+    assert season.window.start.year == season.year == season.window.end.year
+    assert season.through.year == season.year
+    if season.weather_through is not None:
+        assert season.weather_through <= season.through
+    if season.rain is None:
+        assert season.weather_through is None
+    assert 0 <= season.good_days <= year_days
+    if season.peak_date is not None:
+        assert season.peak_date.year == season.year
+        assert season.peak_share > 0
+    months = [m.month for m in season.months]
+    assert months == sorted(set(months))
+
+
+class TestSeasons:
+    def test_the_region_by_default(self, client: httpx.Client) -> None:
+        response = client.get("/history/seasons")
+        assert response.status_code == 200
+        body = SeasonsResponse.model_validate(response.json())
+        assert body.species == "combined"
+        assert body.area.kind == "region"
+        assert body.area.code is None
+        years = [s.year for s in body.seasons]
+        assert years, "no seasons"
+        assert years == sorted(set(years))
+        for season in body.seasons:
+            _check_season(season)
+
+    @pytest.mark.parametrize("species", ["porcini", "ovoli", "gallinacci", "combined"])
+    def test_one_comune(self, client: httpx.Client, comuni: ComuniResponse, species: str) -> None:
+        comune = comuni.comuni[0]
+        response = client.get(
+            "/history/seasons", params={"species": species, "comune": comune.code}
+        )
+        assert response.status_code == 200
+        body = SeasonsResponse.model_validate(response.json())
+        assert body.species == species
+        assert (body.area.kind, body.area.code, body.area.name) == (
+            "comune",
+            comune.code,
+            comune.name,
+        )
+        for season in body.seasons:
+            _check_season(season)
+
+    def test_an_unknown_comune_404s(self, client: httpx.Client) -> None:
+        response = client.get("/history/seasons", params={"comune": "not-a-comune"})
+        assert response.status_code == 404
+
+    def test_rejects_an_unknown_species(self, client: httpx.Client) -> None:
+        response = client.get("/history/seasons", params={"species": "amanita_phalloides"})
+        assert response.status_code == 422
+
+
+class TestSeasonMap:
+    def test_a_stored_season(self, client: httpx.Client, comuni: ComuniResponse) -> None:
+        seasons = SeasonsResponse.model_validate(client.get("/history/seasons").json()).seasons
+        year = seasons[-1].year
+        response = client.get(f"/history/season/{year}", params={"species": "porcini"})
+        assert response.status_code == 200
+        body = SeasonMapResponse.model_validate(response.json())
+        assert (body.year, body.species) == (year, "porcini")
+        assert body.cells, "no cells"
+        assert len({c.cell_id for c in body.cells}) == len(body.cells)
+        ranked = [c.good_days for c in body.comuni]
+        assert ranked == sorted(ranked, reverse=True)
+        assert {c.code for c in body.comuni} <= {c.code for c in comuni.comuni}
+
+    def test_a_season_not_stored_404s(self, client: httpx.Client) -> None:
+        response = client.get("/history/season/1900", params={"species": "porcini"})
+        assert response.status_code == 404
+
+
+class TestOutlook:
+    @pytest.mark.parametrize("species", ["porcini", "ovoli", "gallinacci"])
+    def test_periods_follow_each_other_inside_the_season(
+        self, client: httpx.Client, species: str
+    ) -> None:
+        response = client.get("/outlook", params={"species": species})
+        assert response.status_code == 200
+        body = OutlookResponse.model_validate(response.json())
+        assert body.species == species
+        assert body.area.kind == "region"
+        assert body.rain_lead.min_days <= body.rain_lead.max_days
+        assert body.rain_tilt.drier_pct < 100 < body.rain_tilt.wetter_pct
+        previous_end = None
+        for period in body.periods:
+            assert period.start <= period.end
+            assert body.window.start <= period.start and period.end <= body.window.end
+            if previous_end is not None:
+                assert period.start > previous_end
+            previous_end = period.end
+            assert period.past_good_years <= period.past_years
+            if period.lead_rain_pct is None:
+                assert period.outlook == "unknown"
+
+    def test_one_comune(self, client: httpx.Client, comuni: ComuniResponse) -> None:
+        comune = comuni.comuni[0]
+        response = client.get("/outlook", params={"species": "porcini", "comune": comune.code})
+        assert response.status_code == 200
+        body = OutlookResponse.model_validate(response.json())
+        assert body.area.code == comune.code
+
+    def test_the_combined_score_has_no_outlook(self, client: httpx.Client) -> None:
+        response = client.get("/outlook", params={"species": "combined"})
+        assert response.status_code == 422
+
+    def test_an_unknown_comune_404s(self, client: httpx.Client) -> None:
+        response = client.get("/outlook", params={"species": "porcini", "comune": "nope"})
+        assert response.status_code == 404
+
 
 class TestOpenAPISurface:
     def test_every_planned_route_is_documented(self, client: httpx.Client) -> None:
@@ -142,4 +290,8 @@ class TestOpenAPISurface:
             "/cells/{cell_id}",
             "/hotspots",
             "/sightings",
+            "/comuni",
+            "/history/seasons",
+            "/history/season/{year}",
+            "/outlook",
         }

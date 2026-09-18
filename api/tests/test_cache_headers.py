@@ -60,3 +60,21 @@ def test_cell_detail_is_short_lived() -> None:
     cell_id = scores["cells"][0]["cell_id"]
     response = client.get(f"/cells/{cell_id}")
     assert response.headers["cache-control"] == SHORT_LIVED
+
+
+class TestTimeViewsCacheHeaders:
+    def test_the_comuni_list_is_kept_for_a_day(self) -> None:
+        assert client.get("/comuni").headers["cache-control"] == DAILY
+
+    def test_seasons_and_the_outlook_are_short_lived(self) -> None:
+        for path, params in (
+            ("/history/seasons", {}),
+            ("/outlook", {"species": "porcini"}),
+            (f"/history/season/{today_rome().year}", {"species": "porcini"}),
+        ):
+            assert client.get(path, params=params).headers["cache-control"] == SHORT_LIVED
+
+    def test_a_past_season_is_kept_for_a_day_not_forever(self) -> None:
+        past = today_rome().year - 1
+        response = client.get(f"/history/season/{past}", params={"species": "porcini"})
+        assert response.headers["cache-control"] == DAILY
