@@ -238,3 +238,54 @@ def test_counts_since_with_no_records_returns_an_empty_relation(tmp_path: Path) 
 
     assert counts.columns.tolist() == ["cell_id", "source", "license", "count"]
     assert len(counts) == 0
+
+
+def test_counts_since_stops_at_until_when_given(tmp_path: Path) -> None:
+    store = SightingsStore(tmp_path)
+    store.upsert(
+        pd.DataFrame(
+            [
+                _stored_row(record_id="1", date=date(2024, 10, 1)),
+                _stored_row(record_id="2", date=date(2024, 10, 20)),
+                _stored_row(record_id="3", date=date(2024, 11, 5)),
+            ]
+        )
+    )
+
+    con = duckdb.connect()
+    counts = store.counts_since(con, "porcini", date(2024, 10, 1), until=date(2024, 10, 20)).df()
+
+    assert counts["count"].sum() == 2
+
+
+def test_daily_counts_by_cell_keep_the_day_and_the_obscured_flag_but_no_record(
+    tmp_path: Path,
+) -> None:
+    store = SightingsStore(tmp_path)
+    store.upsert(
+        pd.DataFrame(
+            [
+                _stored_row(record_id="1", date=date(2024, 10, 1)),
+                _stored_row(record_id="2", date=date(2024, 10, 1)),
+                _stored_row(record_id="3", date=date(2024, 10, 1), obscured=True),
+                _stored_row(record_id="4", date=date(2024, 10, 2), species="ovoli"),
+            ]
+        )
+    )
+
+    counts = store.daily_counts_by_cell(duckdb.connect()).df()
+
+    assert counts.columns.tolist() == ["species", "cell_id", "date", "obscured", "count"]
+    rows = {(r.species, str(r.date)[:10], bool(r.obscured)): r.count for r in counts.itertuples()}
+    assert rows == {
+        ("porcini", "2024-10-01", False): 2,
+        ("porcini", "2024-10-01", True): 1,
+        ("ovoli", "2024-10-02", False): 1,
+    }
+
+
+def test_daily_counts_by_cell_with_no_records_is_empty(tmp_path: Path) -> None:
+    counts = SightingsStore(tmp_path).daily_counts_by_cell(duckdb.connect()).df()
+
+    assert counts.empty
+    assert counts.columns.tolist() == ["species", "cell_id", "date", "obscured", "count"]

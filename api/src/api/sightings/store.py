@@ -9,8 +9,9 @@ Layout under ``$DATA_DIR/sightings/<region>/``:
 - No row ever carries coordinates: :func:`assign_cells` is the one place raw lat/lon are read, and
   it replaces them with the woodland cell id they fall in. This is what PRD → Sightings privacy
   means by "never re-sharpen a record the source obscured" — the store cannot leak more precision
-  than a 1 km cell even if asked to. :meth:`SightingsStore.counts_by_cell` and
-  :meth:`SightingsStore.counts_since` are the only queries this module hands back out; the API and
+  than a 1 km cell even if asked to. :meth:`SightingsStore.counts_by_cell`,
+  :meth:`SightingsStore.counts_since` and :meth:`SightingsStore.daily_counts_by_cell` (for the time
+  views' per-area tallies) are the only queries this module hands back out; the API and
   any future consumer should read counts through them rather than the raw records.
 """
 
@@ -162,22 +163,49 @@ class SightingsStore:
         )
 
     def counts_since(
-        self, con: duckdb.DuckDBPyConnection, species: str, since: date
+        self,
+        con: duckdb.DuckDBPyConnection,
+        species: str,
+        since: date,
+        until: date | None = None,
     ) -> duckdb.DuckDBPyRelation:
         """One species' sighting counts per cell, source and license, for records on or after
-        ``since`` -- what ``GET /sightings`` serves (never coordinates or individual records)."""
+        ``since`` (and on or before ``until`` when given) -- what ``GET /sightings`` serves (never
+        coordinates or individual records)."""
         if not self.record_files():
             return con.sql(
                 "SELECT NULL::VARCHAR AS cell_id, NULL::VARCHAR AS source, "
                 "NULL::VARCHAR AS license, NULL::BIGINT AS count WHERE false"
             )
+        until_filter = "AND date <= $until" if until is not None else ""
+        params: dict[str, object] = {"species": species, "since": since}
+        if until is not None:
+            params["until"] = until
         return con.sql(
             f"""
             SELECT cell_id, source, license, count(*) AS count
             FROM read_parquet('{self.records_glob}', hive_partitioning=false)
-            WHERE species = $species AND date >= $since
+            WHERE species = $species AND date >= $since {until_filter}
             GROUP BY cell_id, source, license
             ORDER BY cell_id, source
             """,
-            params={"species": species, "since": since},
+            params=params,
+        )
+
+    def daily_counts_by_cell(self, con: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
+        """Sighting counts per species, cell, day and obscured flag, for the time views' per-area
+        and per-month tallies. Still counts per cell, never coordinates or records; the flag lets
+        an aggregate leave out town-centroid pins where their cell could mislead."""
+        if not self.record_files():
+            return con.sql(
+                "SELECT NULL::VARCHAR AS species, NULL::VARCHAR AS cell_id, NULL::DATE AS date, "
+                "NULL::BOOLEAN AS obscured, NULL::BIGINT AS count WHERE false"
+            )
+        return con.sql(
+            f"""
+            SELECT species, cell_id, date, obscured, count(*) AS count
+            FROM read_parquet('{self.records_glob}', hive_partitioning=false)
+            GROUP BY species, cell_id, date, obscured
+            ORDER BY species, cell_id, date, obscured
+            """
         )
