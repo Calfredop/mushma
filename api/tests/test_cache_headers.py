@@ -3,7 +3,7 @@ from datetime import timedelta
 import pytest
 from fastapi.testclient import TestClient
 
-from api.cache import IMMUTABLE, SHORT_LIVED
+from api.cache import DAILY, SHORT_LIVED, cache_control_for_date
 from api.main import app
 from api.timeutil import today_rome
 
@@ -11,10 +11,16 @@ client = TestClient(app)
 
 
 class TestScoresCacheHeaders:
-    def test_a_past_date_is_immutable(self) -> None:
+    def test_a_past_day_the_daily_job_still_rescores_is_short_lived(self) -> None:
+        # The job scores today -6 to +7 every morning: yesterday changes as reanalysis arrives.
         past = today_rome() - timedelta(days=1)
         response = client.get("/scores", params={"species": "porcini", "date": str(past)})
-        assert response.headers["cache-control"] == IMMUTABLE
+        assert response.headers["cache-control"] == SHORT_LIVED
+
+    def test_an_older_day_is_kept_for_a_day_as_history_can_be_rescored(self) -> None:
+        assert cache_control_for_date(today_rome() - timedelta(days=30)) == DAILY
+        assert cache_control_for_date(today_rome() - timedelta(days=6)) == SHORT_LIVED
+        assert cache_control_for_date(today_rome() - timedelta(days=7)) == DAILY
 
     def test_today_is_short_lived(self) -> None:
         response = client.get("/scores", params={"species": "porcini"})
@@ -27,10 +33,10 @@ class TestScoresCacheHeaders:
 
 
 class TestHotspotsCacheHeaders:
-    def test_a_past_date_is_immutable(self) -> None:
+    def test_a_past_day_in_the_rescored_window_is_short_lived(self) -> None:
         past = today_rome() - timedelta(days=1)
         response = client.get("/hotspots", params={"species": "combined", "date": str(past)})
-        assert response.headers["cache-control"] == IMMUTABLE
+        assert response.headers["cache-control"] == SHORT_LIVED
 
     def test_today_is_short_lived(self) -> None:
         response = client.get("/hotspots", params={"species": "combined"})
