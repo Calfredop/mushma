@@ -2,12 +2,14 @@
 
 Runs the same commands the README documents for a human to run by hand, in order: top up
 weather (new reanalysis days + the forecast), fetch recent sightings, then score today -6 to +7
-(the window the app serves) with the factor breakdown kept. There's no separate "downscale to
-cells" step: scoring reads the point-level weather store and downscales on the fly
-(``api.model.inputs.load_weather``) -- the ingest CLI's own ``downscale`` command only writes a
-standalone export nothing else reads, so running it here would just be unused disk churn on the
-Fly volume. Fly runs this as the scheduled machine's command (see ``fly.toml``); it must finish
-well before 07:00 Europe/Rome.
+(the window the app serves) with the factor breakdown kept. Then the time views (M6): rebuild this
+season's per-area history, fetch the long-range forecast and average it over the areas.
+
+There's no separate "downscale to cells" step: scoring reads the point-level weather store and
+downscales on the fly (``api.model.inputs.load_weather``) -- the ingest CLI's own ``downscale``
+command only writes a standalone export nothing else reads, so running it here would just be unused
+disk churn on the Fly volume. Fly runs this as the scheduled machine's command (see ``fly.toml``);
+it must finish well before 07:00 Europe/Rome.
 
 Each step is a child process, so one step's crash can't take the others down with a shared
 in-process state; failure still stops the job (a partial pipeline run is safe to resume tomorrow,
@@ -65,6 +67,18 @@ def _steps(today: date) -> list[list[str]]:
             "--end",
             end.isoformat(),
         ],
+        # Time views (M6): this season's per-area stats, then the long-range forecast. The
+        # forecast comes last so an outage of the seasonal API never holds back today's scores.
+        [
+            sys.executable,
+            "-m",
+            "api.history.build",
+            "update",
+            "--years",
+            f"{start.year}-{today.year}",
+        ],
+        [sys.executable, "-m", "api.weather.seasonal", "fetch"],
+        [sys.executable, "-m", "api.history.build", "outlook"],
     ]
 
 

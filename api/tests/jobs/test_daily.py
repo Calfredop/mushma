@@ -14,7 +14,7 @@ class FakeResult:
     returncode: int = 0
 
 
-def test_runs_weather_then_sightings_then_scores_the_served_window() -> None:
+def test_runs_ingest_scoring_then_the_time_views_steps() -> None:
     calls: list[list[str]] = []
 
     def runner(args: list[str]) -> FakeResult:
@@ -36,7 +36,38 @@ def test_runs_weather_then_sightings_then_scores_the_served_window() -> None:
             "--end",
             "2026-09-25",
         ],
+        [daily.sys.executable, "-m", "api.history.build", "update", "--years", "2026-2026"],
+        [daily.sys.executable, "-m", "api.weather.seasonal", "fetch"],
+        [daily.sys.executable, "-m", "api.history.build", "outlook"],
     ]
+
+
+def test_early_january_updates_last_years_history_too() -> None:
+    calls: list[list[str]] = []
+
+    def runner(args: list[str]) -> FakeResult:
+        calls.append(args)
+        return FakeResult()
+
+    daily.main(today=date(2027, 1, 3), runner=runner, alert=lambda message: None)
+
+    history = next(args for args in calls if "api.history.build" in args and "update" in args)
+    assert history[-1] == "2026-2027"
+
+
+def test_a_long_range_forecast_outage_comes_after_the_days_scores() -> None:
+    calls: list[list[str]] = []
+
+    def runner(args: list[str]) -> FakeResult:
+        calls.append(args)
+        return FakeResult(returncode=1 if "api.weather.seasonal" in args else 0)
+
+    with pytest.raises(SystemExit):
+        daily.main(today=date(2026, 9, 18), runner=runner, alert=lambda message: None)
+
+    modules = [args[2] for args in calls]
+    assert modules.index("api.model.pipeline") < modules.index("api.weather.seasonal")
+    assert modules.index("api.history.build") < modules.index("api.weather.seasonal")
 
 
 def test_score_window_is_six_days_back_to_seven_forward() -> None:
@@ -72,8 +103,8 @@ def test_structured_logs_are_one_json_object_per_line(capsys: pytest.CaptureFixt
     events = [json.loads(line)["event"] for line in lines]
     assert events[0] == "job_start"
     assert events[-1] == "job_done"
-    assert events.count("step_start") == 3
-    assert events.count("step_done") == 3
+    assert events.count("step_start") == 6
+    assert events.count("step_done") == 6
 
 
 def test_a_failed_step_is_logged_and_the_job_failure_is_logged_too(
