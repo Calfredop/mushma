@@ -139,4 +139,66 @@ changed with this card. The candidates to test on the train seasons are the trig
 30 mm), the 30-day ramp (to 70 to 80 mm) and how they interact with the rain scale, which raises
 the rain by 28 % at sea level to 77 % at 1.7 km. Filed as `tune-rain-drivers-saturate.md`.
 
+## Growth clock and terrain factors: train-season comparison (2026-09-19)
+
+Card `algo-more-factor` added three things to every species key. Every number in them is a derived
+prior; no threshold was tuned against a sighting:
+
+- **Growth clock.** Each cell-day gets a growth pace: Yan & Hunt's cardinal-temperature curve on
+  0–7 cm soil temperature, 1 at the weather the lag windows were drawn from (15 °C for the autumn
+  taxa, 17–18 °C for the summer ones), times a humidity pace that halves at high daily maximum VPD
+  (2.0 kPa for the autumn taxa, 3.0 kPa for the summer ones). `rain_trigger` counts its lag in growth
+  days, the sum of the paces since the rain ended, instead of calendar days.
+- **Terrain microclimate** (`config/model.yaml`). Each cell's temperatures and ET0 are shifted by its
+  sun ratio, the clear-sky sun on its mean surface over flat ground's (`api.model.terrain`). In
+  mid-October 90 % of woodland cells get 84–114 % of flat ground's sun, so ±0.6 °C of mean air
+  temperature.
+- **`sun_exposure` and `slope` stoppers.** Sun exposure carries the research's aspect preferences
+  (POR-A5, POR-A6, OVO-04, GAL-07), with floors of 0.8–0.9. Slope is ×1 up to 15° and ×0.8 from 35°.
+
+**How it was compared.** The train seasons that hold stored sightings (2019–2023; 2016–2018 hold
+none) were scored before (rules version `1171b4eb48d2`) and after (`9db6ca599f80`) on the backend
+worktree's weather of 2026-09-19. 2018 was still being backfilled, which leaves only the lookback of
+early 2019 incomplete. That gives 55 presences: porcini 23, ovoli 16, gallinacci 16. Three ablations
+separate the parts. The hold-out seasons were not scored.
+
+**Objective** (mean of the pooled `auc_local` and `auc_time_effort`, the tuning objective):
+
+| rules | porcini | ovoli | gallinacci |
+|---|---|---|---|
+| before | 0.535 | 0.504 | 0.614 |
+| growth clock only | 0.545 | 0.514 | 0.613 |
+| sun-exposure and slope lines only | 0.540 | 0.504 | 0.596 |
+| terrain (microclimate and lines, no clock) | 0.542 | 0.495 | 0.602 |
+| all three (shipped) | **0.558** | 0.509 | 0.600 |
+
+**The two metrics, before → after, with 90 % bootstrap intervals:**
+
+| group | `auc_local` | `auc_time_effort` |
+|---|---|---|
+| porcini | 0.509 (0.43–0.59) → 0.498 (0.41–0.59) | 0.561 (0.46–0.66) → 0.617 (0.53–0.70) |
+| ovoli | 0.439 (0.36–0.53) → 0.428 (0.36–0.51) | 0.569 (0.50–0.63) → 0.589 (0.52–0.66) |
+| gallinacci | 0.707 (0.61–0.79) → 0.684 (0.58–0.78) | 0.520 (0.45–0.59) → 0.517 (0.42–0.62) |
+
+The calendar baseline (the gates alone, unchanged by this card) scores `auc_time_effort` 0.522
+(porcini), 0.537 (ovoli) and 0.479 (gallinacci).
+
+**Reading.**
+
+- **The growth clock helps timing.** On its own it moves porcini's effort-weighted timing AUC from
+  0.561 to 0.595, and ovoli's from 0.569 to 0.589. With the microclimate and the new lines on as
+  well, porcini reaches 0.617, the first porcini interval that clears 0.5. Gallinacci's
+  timing does not move: its lag window is already 4 to 50 days wide.
+- **The terrain lines do not help same-day ranking yet.** Sunny and shady slopes sit side by side
+  within 20 km, so `auc_local` is where they should show. Porcini and ovoli stay at chance there, as
+  before. Gallinacci loses 0.02–0.03 of `auc_local` (0.707 → 0.677 with the lines alone). The first
+  suspect is its shade preference below 600 m (GAL-07), which the source limits to June–September
+  and the engine applies all year.
+- **None of the differences is outside the bootstrap intervals.** At 16–23 presences per group this
+  is a direction to follow, not a result. The changes stay on as priors. The tuning card
+  (`tune-rain-drivers-saturate.md`) should test the gallinacci sun line and the clock's
+  temperatures on the train seasons, like every other threshold.
+- **Cost.** Scoring a season takes about three times as long: 40–75 calendar lags per rain event
+  instead of about 18. The daily run scores 14 days, so it adds seconds.
+
 <!-- RESULTS, TUNING, HOLD-OUT, TARGETS AND SANITY CHECK FOLLOW -->

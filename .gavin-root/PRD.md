@@ -68,7 +68,16 @@ All seven milestones below are v1; there is no smaller cut.
 - **Factors.** Each is a rule with a cited source: rain amount and lag windows,
   cumulative rain, soil and air temperature bands, soil moisture, drying (wind,
   ET0 / vapour-pressure deficit), cold nights (Tmin), season window, habitat,
-  altitude band, and optionally aspect.
+  altitude band, slope, and sun exposure (each species' preference for sunny or
+  shady slopes, from the cell's slope, aspect and the day's sun path).
+- **Growth clock and terrain microclimate.** Added after Model v1 (card
+  `algo-more-factor`). Each species has a growth pace per cell-day: a cardinal
+  temperature curve on topsoil temperature, slowed by dry air (VPD). The rain lag
+  is counted in growth days, so a warm, humid spell brings a flush forward and a
+  cold or dry one holds it back. Before scoring, each cell's temperatures and ET0
+  are shifted by how much more or less sun its slope gets than flat ground. Every
+  parameter is a derived prior; the train-season comparison is in
+  `.gavin-root/docs/model-v1-validation.md`.
 - **Score semantics.** A score is a 0–1 *index* of how favourable conditions
   are, not a calibrated probability. The UI calls it a "conditions score" and
   never shows "% chance" unless a backtest calibrates it. Decided in Model v1:
@@ -110,8 +119,9 @@ All seven milestones below are v1; there is no smaller cut.
   compares that with the raw rain.
 - **Known gaps (v1).** Soil chemistry (gallinacci prefer acidic soils) is not
   modelled; SoilGrids (ISRIC) or the Regione Toscana pedological map are
-  candidates if the backtest shows it matters. Aspect is attached to cells but
-  v1 rules may not use it.
+  candidates if the backtest shows it matters. Terrain shade cast by
+  neighbouring ridges and canopy shade are not modelled: sun exposure comes
+  from each cell's own slope and aspect only.
 - **ML is not in v1.** It may come later if the rules plateau.
 
 ## Architecture

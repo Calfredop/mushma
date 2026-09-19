@@ -137,9 +137,8 @@ class LiveRepository:
             days = []
             for row in daily.itertuples():
                 factor_row = factor_frames[row.source_key].loc[row.date].to_dict()
-                breakdown = reconstruct_breakdown(
-                    self.rules.species[row.source_key].enabled_factors, factor_row
-                )
+                rules = self.rules.species[row.source_key]
+                breakdown = reconstruct_breakdown(rules.enabled_factors, factor_row, rules.clock)
                 days.append(DayScore(date=row.date, score=float(row.score), factors=breakdown))
             species_forecasts.append(SpeciesForecast(species=group, days=days))
 

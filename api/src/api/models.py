@@ -14,6 +14,19 @@ class Place(BaseModel):
     nearest_place: str
 
 
+class FactorWhere(BaseModel):
+    """Where a gate or stopper applies: its effect fades out as the cell's `variable` leaves the
+    trapezoid (full effect on the plateau, none outside)."""
+
+    variable: str = Field(description="the cell attribute the condition reads")
+    variable_unit: str = Field(description="the unit of `variable`; '' when unitless")
+    trapezoid: list[float | None] = Field(
+        min_length=4,
+        max_length=4,
+        description="[zero_below, full_from, full_to, zero_above] over `variable`",
+    )
+
+
 class FactorRule(BaseModel):
     """What a rule asked of the measurement (`config/species/*.yaml`), so the copy can say what it
     wanted. Which fields are set follows `kind`: a season window or habitat has none of them.
@@ -62,7 +75,15 @@ class FactorRule(BaseModel):
         default=None,
         min_length=4,
         max_length=4,
-        description="rain events: the same shape over `days_ago`, the lag the rain may have",
+        description="rain events: the same shape over the lag the rain may have, in `lag_unit`",
+    )
+    lag_unit: Literal["days", "growth_days"] | None = Field(
+        default=None,
+        description="rain events: `days` when `lag_days` counts calendar days (`days_ago`), "
+        "`growth_days` when it counts the species' growth since the rain (`growth_days`)",
+    )
+    where: FactorWhere | None = Field(
+        default=None, description="gates and stoppers that apply only in part of the region"
     )
 
     @property
@@ -101,6 +122,11 @@ class FactorBreakdown(BaseModel):
     unit: str | None = Field(default=None, description="the unit of `input`")
     days_ago: int | None = Field(
         default=None, description="rain events: when the rain it scored ended"
+    )
+    growth_days: float | None = Field(
+        default=None,
+        description="rain events on a growth clock: the growth since the rain ended, in days at "
+        "the species' reference pace (warmth speeds it up, cold or dry air slows it down)",
     )
     rule: FactorRule | None = None
 

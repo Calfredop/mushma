@@ -53,7 +53,29 @@ export const OP_SYMBOL = { lt: '<', lte: '≤', gt: '>', gte: '≥' } as const
 
 const RAIN_VARIABLES = new Set(['precipitation_sum', 'rain_sum', 'water_balance'])
 
+/**
+ * What the slope microclimate (api `config/model.yaml`) moves: the day's temperatures and drying
+ * (so the water balance), and the sun ratio itself.
+ */
+const TERRAIN_VARIABLES = new Set([
+  'temperature_2m_mean',
+  'temperature_2m_max',
+  'soil_temperature_0_to_7cm_mean',
+  'et0_fao_evapotranspiration',
+  'water_balance',
+  'sun_exposure_pct',
+])
+
 /** Whether the factor reads rain, directly or through the water balance. */
 export function usesRain(rule: FactorRule | null | undefined): boolean {
   return rule?.variable != null && RAIN_VARIABLES.has(rule.variable)
+}
+
+/**
+ * Whether a factor reads weather adjusted to the cell's slope, or counts its lag on the growth
+ * clock, whose pace reads the adjusted soil temperature.
+ */
+export function usesTerrain(rule: FactorRule | null | undefined): boolean {
+  if (rule?.lag_unit === 'growth_days') return true
+  return rule?.variable != null && TERRAIN_VARIABLES.has(rule.variable)
 }

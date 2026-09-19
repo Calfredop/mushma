@@ -40,6 +40,7 @@ def _data_root(tmp_path: Path, first: date, days: int) -> Path:
             "temperature_2m_mean": 14.0,
             "soil_temperature_0_to_7cm_mean": 15.0,
             "et0_fao_evapotranspiration": 1.5,
+            "vapour_pressure_deficit_max": 0.8,
         }
         rows += [(source, "A", day, name, value) for name, value in daily.items()]
     store = _store(
@@ -110,6 +111,9 @@ def test_the_factor_tier_carries_each_enabled_factor_with_its_input(scored) -> N
     for column in ("season", "habitat", "altitude", "rain_trigger", "rain_trigger__input"):
         assert column in rows, column
     assert "rain_trigger__days_ago" in rows
+    assert "rain_trigger__growth_days" in rows  # the species' growth clock
+    assert rows["rain_trigger__growth_days"].notna().all()
+    assert "sun_exposure__input" in rows and "slope__input" in rows
     assert "soil_temperature" not in rows  # disabled
     assert "porcini" not in _keys(store, "factors")  # groups have no factors of their own
 

@@ -3,7 +3,8 @@ from datetime import date
 import numpy as np
 import pytest
 
-from api.model.factors import evaluate, lookback_days
+from api.model.factors import evaluate, growth_pace, lookback_days
+from api.model.rules import GrowthClock
 
 from .helpers import cells, day_index, factor, weather
 
@@ -185,6 +186,139 @@ def test_rain_event_needs_the_whole_lag_window() -> None:
 
     assert np.isnan(evaluate(_rain_trigger(), cells(), w, slice(24, 26)).value[0, 0])
     assert not np.isnan(evaluate(_rain_trigger(), cells(), w, slice(24, 26)).value[0, 1])
+
+
+# --- the growth clock --------------------------------------------------------------------------
+
+DRY_AIR = {
+    "variable": "vapour_pressure_deficit_max",
+    "trapezoid": [None, None, 1.0, 2.0],
+    "floor": 0.5,
+}
+
+
+def _clock(humidity: dict | None = None, max_lag_days: int = 40) -> GrowthClock:
+    return GrowthClock.model_validate(
+        {
+            "temperature": {
+                "variable": "soil_temperature_0_to_7cm_mean",
+                "cardinal_c": [0, 18, 30],
+                "reference_c": 15,
+            },
+            "humidity": humidity,
+            "max_lag_days": max_lag_days,
+            "confidence": "folklore",
+            "source": ["x"],
+        }
+    )
+
+
+def test_growth_pace_is_one_at_the_reference_fastest_at_the_optimum_and_zero_at_the_limits() -> (
+    None
+):
+    temperatures = [15.0, 18.0, 9.0, 0.0, 30.0, -3.0, 35.0]
+
+    pace = growth_pace(_clock(), weather(soil_temperature_0_to_7cm_mean=temperatures))[0]
+
+    def yan_hunt(t: float) -> float:  # t_min 0, t_opt 18, t_max 30: exponent 18 / 12
+        return ((30 - t) / 12) * (t / 18) ** 1.5
+
+    assert pace.tolist() == pytest.approx(
+        [1, yan_hunt(18) / yan_hunt(15), yan_hunt(9) / yan_hunt(15), 0, 0, 0, 0]
+    )
+    assert pace[1] > 1  # warmer than the reference: faster
+    assert 0.6 < pace[2] < 0.7  # a 9 °C stretch: about two thirds of the pace
+
+
+def test_dry_air_slows_the_pace_down_to_its_floor() -> None:
+    w = weather(
+        soil_temperature_0_to_7cm_mean=[15.0] * 4,
+        vapour_pressure_deficit_max=[0.5, 1.5, 2.0, 3.0],
+    )
+
+    assert growth_pace(_clock(DRY_AIR), w)[0].tolist() == pytest.approx([1, 0.75, 0.5, 0.5])
+
+
+def test_at_the_reference_pace_growth_days_are_calendar_days() -> None:
+    w = weather(
+        precipitation_sum=_rain_on(80, {60: 12.0, 61: 18.0}),
+        soil_temperature_0_to_7cm_mean=[15.0] * 80,
+    )
+
+    plain = evaluate(_rain_trigger(), cells(), w, slice(62, 80))
+    clocked = evaluate(_rain_trigger(), cells(), w, slice(62, 80), growth=_clock())
+
+    assert clocked.value[0].tolist() == pytest.approx(plain.value[0].tolist())
+    assert clocked.days_ago[0].tolist() == plain.days_ago[0].tolist()
+    assert clocked.growth_days[0].tolist() == pytest.approx(plain.days_ago[0].tolist())
+    assert plain.growth_days is None
+
+
+def test_dry_air_after_the_rain_makes_the_flush_come_later() -> None:
+    w = weather(
+        precipitation_sum=_rain_on(90, {58: 10.0, 59: 10.0, 60: 10.0}),  # 30 mm ending day 60
+        soil_temperature_0_to_7cm_mean=[15.0] * 90,
+        vapour_pressure_deficit_max=[0.5] * 61 + [3.0] * 29,  # half pace from day 61
+    )
+
+    clocked = evaluate(_rain_trigger(), cells(), w, slice(70, 90), growth=_clock(DRY_AIR))
+    plain = evaluate(_rain_trigger(), cells(), w, slice(70, 90))
+
+    day_70, day_80 = 0, 10
+    assert clocked.value[0, day_70] == 0  # 10 days on, only 5 growth days: too early
+    assert clocked.value[0, day_80] == 1  # 20 days on, 10 growth days: full credit
+    assert clocked.days_ago[0, day_80] == 20
+    assert clocked.growth_days[0, day_80] == pytest.approx(10)
+    assert plain.value[0, day_70] == 1 and plain.value[0, day_80] == pytest.approx(0.5)
+
+
+def test_when_nothing_has_grown_into_the_window_the_clock_quotes_the_wettest_within_reach() -> None:
+    w = weather(
+        precipitation_sum=_rain_on(60, {45: 10.0, 46: 10.0, 47: 10.0}),  # 30 mm, 12 days ago
+        soil_temperature_0_to_7cm_mean=[0.0] * 60,  # frozen topsoil: no growth at all
+    )
+
+    result = evaluate(_rain_trigger(), cells(), w, slice(59, 60), growth=_clock())
+
+    assert result.value[0, 0] == 0
+    assert result.input[0, 0] == 30
+    assert result.days_ago[0, 0] == 12 and result.growth_days[0, 0] == 0
+
+
+def test_the_clock_needs_its_whole_lookback_and_every_pace_day() -> None:
+    assert lookback_days(_rain_trigger(), growth=_clock()) == 42  # 40 days of lag, over 3 days
+    temperatures = [15.0] * 50
+    w = weather(precipitation_sum=[0.0] * 50, soil_temperature_0_to_7cm_mean=temperatures)
+
+    value = evaluate(_rain_trigger(), cells(), w, slice(41, 43), growth=_clock()).value[0]
+    assert np.isnan(value[0]) and not np.isnan(value[1])
+
+    temperatures[45] = nan
+    w = weather(precipitation_sum=[0.0] * 50, soil_temperature_0_to_7cm_mean=temperatures)
+    assert np.isnan(
+        evaluate(_rain_trigger(), cells(), w, slice(49, 50), growth=_clock()).value[0, 0]
+    )
+
+
+# --- where: a rule that applies only in part of the region -------------------------------------
+
+
+def test_where_fades_a_stopper_out_of_its_altitude_band() -> None:
+    rule = factor(
+        kind="window_aggregate",
+        role="stopper",
+        input={"variable": "sun_exposure_pct", "aggregate": "mean", "window_days": 1},
+        response={"trapezoid": [None, None, 95, 120]},
+        floor=0.8,
+        where={"attribute": "elevation_m", "trapezoid": [None, None, 900, 1100]},
+    )
+    low_mid_high = cells(3, elevation_m=[500, 1000, 1500])
+    sunny = weather(sun_exposure_pct=[[130.0], [130.0], [130.0]])
+
+    result = evaluate(rule, low_mid_high, sunny, slice(0, 1))
+
+    assert result.value[:, 0].tolist() == pytest.approx([0.8, 0.9, 1.0])
+    assert result.input[:, 0].tolist() == [130, 130, 130]
 
 
 # --- daily windows -----------------------------------------------------------------------------

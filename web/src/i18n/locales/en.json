@@ -130,6 +130,7 @@
       "rain_other": "{{amount}} of rain in {{count}} days{{until}}.",
       "window_one": "{{variable}}, {{aggregate}} over {{count}} day{{until}}: {{value}}.",
       "window_other": "{{variable}}, {{aggregate}} over {{count}} days{{until}}: {{value}}.",
+      "windowToday": "{{variable}}, on this day: {{value}}.",
       "count_one": "{{count}} day out of {{window}} with {{variable}} {{op}} {{threshold}}{{until}}.",
       "count_other": "{{count}} days out of {{window}} with {{variable}} {{op}} {{threshold}}{{until}}.",
       "daysSince_one": "{{count}} day since the last day with {{variable}} {{op}} {{threshold}}.",
@@ -144,6 +145,13 @@
       "ruleZero": "The rule gives full credit {{full}}; none {{zero}}.",
       "lagRule": "Distance from the scored day: full credit {{full}}.",
       "lagRuleZero": "Distance from the scored day: full credit {{full}}; none {{zero}}.",
+      "growth": "Warmth and air humidity since then make that {{growth}}, at {{pace}} of the usual pace: warmth speeds growth up, cold or dry air slows it down.",
+      "growthDays_one": "{{count}} day of growth",
+      "growthDays_other": "{{count}} days of growth",
+      "growthLagRule": "Growth since the rain: full credit {{full}}.",
+      "growthLagRuleZero": "Growth since the rain: full credit {{full}}; none {{zero}}.",
+      "where": "It applies at {{variable}} {{full}}.",
+      "whereZero": "It applies at {{variable}} {{full}}; not at all {{zero}}.",
       "full": {
         "between": "from {{from}} to {{to}}",
         "at": "at {{value}}",
@@ -177,9 +185,12 @@
         "water_balance": "water balance (rain minus evaporation)",
         "elevation_m": "altitude",
         "soil_ph": "soil pH",
-        "lithology_calcareous": "calcareous bedrock"
+        "lithology_calcareous": "calcareous bedrock",
+        "sun_exposure_pct": "sun on this slope, compared with flat ground",
+        "slope_deg": "mean slope"
       },
-      "rainNote": "Rain is the weather model's estimate, adjusted upward (more at altitude) to match rain gauges; forecast days have no such adjustment."
+      "rainNote": "Rain is the weather model's estimate, adjusted upward (more at altitude) to match rain gauges; forecast days have no such adjustment.",
+      "terrainNote": "Temperatures and drying are adjusted to this cell's slope: slopes that get more sun than flat ground are warmer and dry out faster, shadier ones are cooler."
     }
   },
   "factor": {
@@ -203,7 +214,9 @@
     "drought": "Drought",
     "waterlogging": "Waterlogging",
     "lithology": "Bedrock type",
-    "soil_ph": "Soil pH"
+    "soil_ph": "Soil pH",
+    "sun_exposure": "Sun exposure",
+    "slope": "Slope"
   },
   "hotspots": {
     "title": "Hot places",

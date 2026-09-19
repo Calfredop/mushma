@@ -25,6 +25,16 @@ references:
       the abstract: none).'
     cited_as:
     - porcini.md R10
+  aguilar2010:
+    citation: 'Aguilar C., Herrero J., Polo M.J. (2010) Topographic effects on solar radiation distribution in mountainous
+      watersheds and their influence on reference evapotranspiration estimates at watershed scale. Hydrology and Earth
+      System Sciences 14: 2479–2494'
+    doi: 10.5194/hess-14-2479-2010
+    kind: peer_reviewed
+    region: Spain (Sierra Nevada)
+    verified: verified
+    supports: correcting the radiation for slope and aspect changes reference ET0 by a mean of 61 mm a year (SD 142),
+      so ET0 on a slope follows its radiation.
   alday2017:
     citation: 'Alday J.G., Martínez de Aragón J., de-Miguel S., Bonet J.A. (2017) Mushroom biomass and diversity
       are driven by different spatio-temporal scales along Mediterranean elevation gradients. Scientific Reports
@@ -36,6 +46,14 @@ references:
     cited_as:
     - porcini.md R16
     - ovoli.md R11
+  allen2006_slopes:
+    citation: 'Allen R.G., Trezza R., Tasumi M. (2006) Analytical integrated functions for daily solar radiation on
+      slopes. Agricultural and Forest Meteorology 139: 55–73'
+    doi: 10.1016/j.agrformet.2006.05.012
+    kind: peer_reviewed
+    verified: verified
+    supports: daily clear-sky direct and diffuse radiation on any slope and aspect by integrating the incidence angle
+      over the day; the geometry of the sun ratio.
   alonso_ponce2011:
     citation: 'Alonso Ponce R. et al. (2011) Rockroses and Boletus edulis ectomycorrhizal association: realized
       niche and climatic suitability in Spain. Fungal Ecology 4: 224–232'
@@ -111,6 +129,15 @@ references:
     cited_as:
     - ovoli.md R9
     - gallinacci.md R35
+  bennie2008:
+    citation: 'Bennie J., Huntley B., Wiltshire A., Hill M.O., Baxter R. (2008) Slope, aspect and climate: spatially
+      explicit and implicit models of topographic microclimate in chalk grassland. Ecological Modelling 216: 47–59'
+    doi: 10.1016/j.ecolmodel.2008.04.010
+    kind: peer_reviewed
+    region: UK
+    verified: verified
+    supports: adjacent south- and north-facing slopes can differ by 2.5–3 °C in annual mean temperature (citing
+      Rorison 1986), about 500 m of altitude; cloud reduces the contrast; south-west slopes are the warmest.
   beugelsdijk2008:
     citation: 'Beugelsdijk D.C.M. et al. (2008) A phylogenetic study of Boletus section Boletus in Europe. Persoonia
       20: 1–7'
@@ -121,6 +148,13 @@ references:
     supports: four species; synonyms within B. edulis; per-species host and soil notes (Netherlands-centred sampling).
     cited_as:
     - porcini.md R23
+  beven_kirkby1979:
+    citation: 'Beven K.J., Kirkby M.J. (1979) A physically based, variable contributing area model of basin hydrology.
+      Hydrological Sciences Bulletin 24: 43–69'
+    doi: 10.1080/02626667909491834
+    kind: peer_reviewed
+    verified: verified
+    supports: the topographic wetness index ln(a / tan slope); steeper ground drains faster and stays drier.
   blog_prevedere_porcini:
     citation: '"Prevedere l''uscita dei porcini" (blog, author "Giancarlo")'
     url: http://prevedereuscitaporcini.blogspot.com/2016/12/ecco-i-giorni-necessari-per-far-sbucare.html
@@ -169,6 +203,16 @@ references:
       temperature effects, season extension.
     cited_as:
     - porcini.md R15
+  bonet2008:
+    citation: 'Bonet J.A., Pukkala T., Fischer C.R., Palahí M., Martínez de Aragón J., Colinas C. (2008) Empirical
+      models for predicting the production of wild mushrooms in Scots pine (Pinus sylvestris L.) forests in the
+      Central Pyrenees. Annals of Forest Science 65: 206'
+    doi: 10.1051/forest:2007089
+    kind: peer_reviewed
+    region: Central Pyrenees
+    verified: verified
+    supports: across 24 Scots pine plots, total, edible and marketed mushroom production rose with elevation and
+      a northern aspect and fell with slope steepness (community and Lactarius, not Boletus).
   bonet2010:
     citation: 'Bonet J.A., Palahí M., Colinas C., Pukkala T., Fischer C.R., Miina J., Martínez de Aragón J. (2010)
       Modelling the production and species richness of wild mushrooms in pine forests of the Central Pyrenees in
@@ -321,6 +365,13 @@ references:
       pH 4.0–5.5 in northern California (citing Bergemann & Largent 2000). Concerns C. formosus.
     cited_as:
     - gallinacci.md R9
+  fao56_allen1998:
+    citation: 'Allen R.G., Pereira L.S., Raes D., Smith M. (1998) Crop evapotranspiration: guidelines for computing crop
+      water requirements. FAO Irrigation and Drainage Paper 56. FAO, Rome'
+    url: https://www.fao.org/4/x0490e/x0490e00.htm
+    kind: institutional
+    verified: verified
+    supports: the Penman-Monteith reference ET0 (eq. 6) and its radiation term, which dominates in humid climates.
   forager_wind_pages:
     citation: 'Forager pages on wind: Funghi Magazine, "Vento e freddo bloccheranno le nascite al Nord?"'
     url: https://funghimagazine.it/vento-e-freddo-al-nord-tanti-porcini-al-centro-sud/
@@ -466,6 +517,16 @@ references:
       community).
     cited_as:
     - porcini.md R7
+  kasparavicius2001:
+    citation: 'Kasparavičius J. (2001) Influence of climatic conditions on the growth of fruit bodies of Boletus
+      edulis. Botanica Lithuanica 7(1): 73–78'
+    url: https://gamtostyrimai.lt/en/leidiniai/botanica-lithuanica-volume-7-number-1/
+    kind: peer_reviewed
+    region: Lithuania
+    verified: verified
+    supports: B. edulis caps grew 8.9 ± 5.1 mm a day (at most 21.3), tracking the minimum air and soil temperature;
+      growth stopped when the day's minimum relative humidity fell below 40 % and was favoured from about 60 %;
+      a sudden cold night or frost ended fruiting (CAB abstract and the journal's contents).
   kauserud2012:
     citation: 'Kauserud H. et al. (2012) Warming-induced shift in European mushroom fruiting phenology. PNAS 109:
       14488–14493'
@@ -538,6 +599,22 @@ references:
     supports: Amiata black pine survey edible species list without porcini (weak).
     cited_as:
     - porcini.md R43
+  lilleskov2009:
+    citation: 'Lilleskov E.A., Bruns T.D., Dawson T.E., Camacho F.J. (2009) Water sources and controls on water-loss
+      rates of epigeous ectomycorrhizal fungal sporocarps during summer drought. New Phytologist 182: 483–494'
+    doi: 10.1111/j.1469-8137.2009.02775.x
+    kind: peer_reviewed
+    region: California
+    verified: verified
+    supports: vapour pressure deficit predicts how fast ectomycorrhizal fruit bodies lose water; Amanita muscaria
+      loses water more than twice as fast as Boletus edulis.
+  liu_jordan1963:
+    citation: 'Liu B.Y.H., Jordan R.C. (1963) The long-term average performance of flat-plate solar-energy collectors.
+      Solar Energy 7: 53–74'
+    doi: 10.1016/0038-092X(63)90006-9
+    kind: peer_reviewed
+    verified: snippet-only
+    supports: the isotropic-sky model, in which a plane tilted by beta sees (1 + cos beta) / 2 of the diffuse sky.
   martinez_de_aragon2007:
     citation: 'Martínez de Aragón J., Bonet J.A., Fischer C.R., Colinas C. (2007) Productivity of ectomycorrhizal
       and selected edible saprotrophic fungi in pine forests of the pre-Pyrenees mountains, Spain: predictive equations
@@ -593,6 +670,25 @@ references:
     supports: mainly autumnal, sporadic late spring; conifers and beech, chestnut, birch.
     cited_as:
     - porcini.md R42
+  moore2008_fruit_bodies:
+    citation: 'Moore D., Gange A.C., Gange E.G., Boddy L. (2008) Fruit bodies: their production and development in
+      relation to environment. In: Boddy L., Frankland J.C., van West P. (eds) Ecology of Saprotrophic
+      Basidiomycetes. British Mycological Society Symposia Series 28: 79–103'
+    doi: 10.1016/S0275-0287(08)80007-0
+    kind: monograph
+    verified: verified
+    supports: fruit bodies form over a narrower temperature range than mycelium grows in, with a lower optimum;
+      high air humidity favours initiation; development speed follows temperature.
+  mumcu_kucuker2019:
+    citation: 'Mumcu Küçüker D. (2019) Influence of some ecological variables on wild mushroom (Boletus edulis)
+      productivity. Artvin Çoruh Üniversitesi Orman Fakültesi Dergisi 20(1): 10–17'
+    doi: 10.17474/artvinofd.449736
+    kind: peer_reviewed
+    region: north-east Turkey
+    verified: verified
+    supports: B. edulis yield was highest below 20 % slope (197 kg/ha, against 33–72 on steeper ground) and lowest on
+      north-facing slopes in a humid forest (one season); supports keeping a north-slope preference to where water
+      limits fruiting.
   muse_censimento_alborufescens:
     citation: 'MUSE – Museo delle Scienze (Trento). Censimento dei macromiceti: Cantharellus alborufescens'
     url: https://www2.muse.it/bresadola/map_det.asp?sp=450082&ar=tv
@@ -636,6 +732,16 @@ references:
     - ovoli.md R15
     - gallinacci.md R25
     - gallinacci.md R26
+  mushma_pvgis_kd_2026:
+    citation: 'mushma diffuse-fraction check: PVGIS 5.3 monthly radiation (MRcalc, SARAH3 satellite record 2005–2023)
+      at seven Tuscan points (Firenze, Siena, Casentino, Garfagnana, Amiata, Lunigiana, Mugello), queried
+      2026-09-19; monthly diffuse-to-global ratio Kd averaged over years and points'
+    url: https://re.jrc.ec.europa.eu/api/v5_3/MRcalc
+    kind: analysis
+    region: Tuscany
+    verified: verified
+    supports: 'Kd by month, January to December: 0.49, 0.46, 0.45, 0.45, 0.44, 0.38, 0.33, 0.35, 0.40, 0.46, 0.53,
+      0.53 (points range 0.26–0.78 in single years).'
   mushma_sir_gauge_check_2026:
     citation: 'mushma rain check: downscaled Open-Meteo era5_seamless daily precipitation against the SIR Toscana
       (Servizio Idrologico Regionale) rain gauges inside woodland cells, 2025 (133 gauges) and 2026-01-01 to 09-06
@@ -748,6 +854,17 @@ references:
     supports: 250 m global pH(H2O) at six depths, with uncertainty.
     cited_as:
     - gallinacci.md R21
+  rita2021:
+    citation: 'Rita A., Bonanomi G., Allevato E., Borghetti M., Cesarano G., Mogavero V., Rossi S., Saulino L.,
+      Zotti M., Saracino A. (2021) Topography modulates near-ground microclimate in the Mediterranean Fagus sylvatica
+      treeline. Scientific Reports 11: 8122'
+    doi: 10.1038/s41598-021-87661-6
+    kind: peer_reviewed
+    region: southern Apennines
+    verified: verified
+    supports: under a beech canopy, May–September, a south-facing plot averaged 13.1 °C air and 15.1 °C soil (10 cm)
+      against 10.4 and 11.1 °C on a north-west plot 200 m higher; after the lapse rate about 1.4 °C (air) and
+      2.8 °C (soil) are due to aspect, for a 0.17 difference in relative radiation.
   rochon2011:
     citation: 'Rochon C., Paré D., Pélardy N., Khasa D.P., Fortin J.A. (2011). Ecology and productivity of Cantharellus
       cibarius var. roseocanus in two eastern Canadian jack pine stands. Botany 89(10): 663–675'
@@ -881,6 +998,13 @@ references:
     supports: productivity vs June–October rain; fruiting time vs July–August temperature (all fungi).
     cited_as:
     - gallinacci.md R5
+  swift1976:
+    citation: 'Swift L.W. (1976) Algorithm for solar radiation on mountain slopes. Water Resources Research 12:
+      108–112'
+    doi: 10.1029/WR012i001p00108
+    kind: peer_reviewed
+    verified: verified
+    supports: daily potential solar radiation on a slope of any gradient and aspect, relative to flat ground.
   tahvanainen2020:
     citation: Tahvanainen V. (2020). The availability and supply of marketed mushrooms in Eastern Finland. Dissertationes
       Forestales 291
@@ -901,3 +1025,11 @@ references:
     supports: late summer and early autumn precipitation drive emergence and yield (B. edulis among the species).
     cited_as:
     - porcini.md R17
+  yan_hunt1999:
+    citation: 'Yan W., Hunt L.A. (1999) An equation for modelling the temperature response of plants using only the
+      cardinal temperatures. Annals of Botany 84: 607–614'
+    doi: 10.1006/anbo.1999.0955
+    kind: peer_reviewed
+    verified: verified
+    supports: 'the development-rate curve r = ((Tmax − T) / (Tmax − Topt)) × ((T − Tmin) / (Topt − Tmin)) ^ ((Topt −
+      Tmin) / (Tmax − Topt)): 0 at Tmin and Tmax, 1 at Topt (eq. 4A); the growth clock''s temperature pace.'

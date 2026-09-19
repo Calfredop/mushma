@@ -29,10 +29,12 @@ or identifying specimens.
 statement ("about two weeks after rain"), from another climate, or from sightings. The config marks
 them `derived: true` and says how in `notes`. They are **priors for the backtest**, not findings.
 
-**References.** 91 sources in [`references.yaml`](../../api/src/api/config/species/references.yaml): 45
-peer-reviewed, 1 preprint, 4 theses, 14 institutional, 7 mycological society, 1 monograph, 2 datasets,
-2 of our own analyses and 15 web pages (the folklore). 73 were opened (`verified`) and 18 are
-`snippet-only`. Every DOI cited was checked to resolve (doi.org handle API, 2026-09-17).
+**References.** 108 sources in [`references.yaml`](../../api/src/api/config/species/references.yaml): 57
+peer-reviewed, 1 preprint, 4 theses, 16 institutional, 7 mycological society, 2 monographs, 2 datasets,
+4 of our own analyses and 15 web pages (the folklore). 89 were opened (`verified`) and 19 are
+`snippet-only`. Every DOI cited was checked to resolve (doi.org handle API, 2026-09-17; the 15 added on
+2026-09-19 for the growth clock, the terrain microclimate and the slope and sun-exposure rules the same
+way).
 
 ## Key findings
 
@@ -98,8 +100,11 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | frost (≥2 nights ≤0 °C in 7 d) | ×0.2 | ×0.1, plus cold nights (≥3 nights ≤5 °C) ×0.5 | ×0.4 | ×0.2 | folklore |
 | snow (≥1 cm in 3 d) | ×0 | ×0 | ×0 | ×0 | plausible / folklore |
 | drying (days with ET0 ≥4, or ≥5 for the summer taxa) | ≥3 days in 7 → ×0.6 | ×0.6 | ×0.6 | ×0.6 | folklore |
+| growth clock (rain lag in growth days; topsoil `[t_min, t_opt, t_max]`, pace 1 at) | 0 / 18 / 30 °C, 15 °C; VPD 1.0 → 2.0 kPa halves the pace; up to 40 days back | 2 / 21 / 32 °C, 17 °C; VPD 1.5 → 3.0 kPa | same as *reticulatus* | same as *edulis* | folklore |
+| sun exposure (day's sun as % of flat ground's) | below 1000 m (fading 900 → 1100 m): ×1 to 95 % → ×0.8 from 120 % | ×0.9 to 80 % → ×1 from 95 % | same as *reticulatus* | same as *edulis* | folklore |
+| slope (cell mean) | ×1 to 15° → ×0.8 from 35° | same | same | same | plausible |
 | disabled alternatives | soil temperature, 30-day water balance, soil-moisture percentile, 60-day % of normal rain, 45-day drought | water balance | water balance | water balance | — |
-| known gaps | aspect, temperature-drop bonus, lag lengthening in cold, 100 m wood-edge buffer, stand age/thinning/litter/soil | aspect, temperature drop, wood edge, orchard age | aspect, wood edge, soil | aspect, wood edge, soil | — |
+| known gaps | temperature-drop bonus, 100 m wood-edge buffer, stand age/thinning/litter/soil | temperature drop, wood edge, orchard age | wood edge, soil | wood edge, soil | — |
 
 ### Ovoli (*Amanita caesarea*)
 
@@ -114,8 +119,11 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | evaporative demand | 7-day mean ET0 4 → 6 mm/day: ×1 → ×0.4 | plausible | yes |
 | cold nights | 7-day mean Tmin 5 → 10 °C, floor 0.3 | plausible | yes |
 | frost | any Tmin ≤0 °C in 7 days → 0 | folklore | yes |
+| growth clock | rain lag in growth days: topsoil 5 / 22 / 34 °C, pace 1 at 18 °C; VPD 1.5 → 3.0 kPa halves the pace; up to 45 days back | folklore | yes |
+| sun exposure | above 500 m (fading in 400 → 600 m): ×0.8 to 80 % of flat ground's sun → ×1 from 100 % | folklore | yes |
+| slope | ×1 to 15° → ×0.8 from 35° | plausible | yes |
 | air temperature · soil moisture 0–7 cm · waterlogging | alternatives | plausible / folklore | no |
-| gaps | south aspect near the upper limit, spring rain (Mar–May % of normal), drying wind (gust + RH), temperature-dependent lag, siliceous substrate, canopy openness and management | — | — |
+| gaps | spring rain (Mar–May % of normal), drying wind (gust + RH), siliceous substrate, canopy openness and management | — | — |
 
 ### Gallinacci (*Cantharellus cibarius* s.l.)
 
@@ -133,9 +141,12 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | heat | 7-day mean Tmax 29 → 33 °C: floor 0.3 | folklore | yes |
 | frost / hard frost / snow | Tmin ≤−2 °C on 2 of 7 nights ×0.3; Tmin ≤−5 °C → 0; ≥5 cm snow in 10 days → 0 | folklore | yes |
 | drying | porcini rule at half effect (floor 0.8) | folklore | yes |
+| growth clock | rain lag in growth days: topsoil 0 / 18 / 30 °C, pace 1 at 15 °C; VPD 1.0 → 2.0 kPa halves the pace; up to 75 days back | folklore | yes |
+| sun exposure | below 600 m (fading 500 → 700 m): ×1 to 90 % of flat ground's sun → ×0.85 from 110 % (the source's June–September limit is not encoded) | folklore | yes |
+| slope | ×1 to 15° → ×0.8 from 35° | plausible | yes |
 | two-flush season · air temperature · soil-moisture percentile · VPD heat | alternatives | — | no |
 | soil pH 3.5 → 4.0 … 6.0 → 7.8 (floor 0.3) · lithology (calcareous share, floor 0.4) | `data: missing` | plausible | no |
-| gaps | north/east aspect in summer below 600 m, growing degree-days since 1 January, acidophilous forest sub-types, nitrogen/stand age/litter/texture | — | — |
+| gaps | growing degree-days since 1 January, acidophilous forest sub-types, nitrogen/stand age/litter/texture | — | — |
 
 ## Season cross-check against sightings
 
@@ -240,15 +251,18 @@ non-null values in both.
 | air temperature band | `temperature_2m_mean` | °C | ✓ | ✓ | porcini (ovoli/gallinacci alternative) |
 | frost, cold nights | `temperature_2m_min` | °C | ✓ | ✓ | all |
 | heat, heat spike | `temperature_2m_max` | °C | ✓ | ✓ | porcini (anomaly), gallinacci |
-| soil temperature band | `soil_temperature_0_to_7cm_mean` (also `7_to_28cm`) | °C | ✓ | ✓ | ovoli, gallinacci (porcini alternative) |
+| soil temperature band, growth clock | `soil_temperature_0_to_7cm_mean` (also `7_to_28cm`) | °C | ✓ | ✓ | growth clock (all), ovoli, gallinacci (porcini alternative) |
 | soil moisture | `soil_moisture_0_to_7cm_mean`, `soil_moisture_7_to_28cm_mean` | m³/m³ | ✓ | ✓ | disabled everywhere in v1 (see flags) |
 | drying, evaporative demand, water balance | `et0_fao_evapotranspiration` | mm | ✓ | ✓ | all |
-| dry air | `vapour_pressure_deficit_max` (daily max only) | kPa | ✓ | ✓ | gallinacci alternative |
+| dry air | `vapour_pressure_deficit_max` (daily max only) | kPa | ✓ | ✓ | growth clock (all), gallinacci alternative |
 | drying wind (gaps only) | `wind_gusts_10m_max`, `wind_speed_10m_max`, `wind_direction_10m_dominant`, `relative_humidity_2m_min` | km/h, °, % | ✓ | ✓ | known gaps (compound wind + humidity rules) |
 
 **Derived series** (computed by the engine from the above): `water_balance = precipitation_sum −
 et0_fao_evapotranspiration`; `temperature_2m_max_anomaly_30d`; and climatology comparisons
-(`percent_of_normal`, `percentile_of_normal`) that need the history backfill.
+(`percent_of_normal`, `percentile_of_normal`) that need the history backfill. From the terrain, not the
+weather: `sun_exposure_pct`, the cell's clear-sky sun that day as a percentage of flat ground's
+(`api.model.terrain`), which also moves the cell's temperatures and ET0 before any rule reads them (the
+terrain microclimate in `config/model.yaml`).
 
 **Flags for the weather ingest (M2) and the engine (M3):**
 
@@ -283,7 +297,7 @@ factors or `known_gaps`):
 | canopy openness, clearings, management | ovoli (open, cleared chestnut), gallinacci | Copernicus tree-cover density (later) |
 | wood-edge buffer (open land within 100 m of woods) | porcini (IGP rule) | M2 grid geometry |
 | climatology (percentiles, % of normal) | soil-moisture percentiles, 60-day % of normal rain, spring rain | M2 history backfill |
-| engine features | aspect conditional on elevation/season; temperature-drop bonus; temperature-dependent lag; compound wind + humidity condition; calendar-anchored windows; growing degree-days since 1 January | schema v2 if the backtest shows value |
+| engine features | aspect conditional on season (gallinacci); temperature-drop bonus; compound wind + humidity condition; calendar-anchored windows; growing degree-days since 1 January. Done since: the temperature- and humidity-dependent lag (growth clock) and rules conditional on altitude (`where`) | schema v2 if the backtest shows value |
 
 ## Habitat vocabulary proposal for the grid
 

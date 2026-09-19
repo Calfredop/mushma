@@ -33,7 +33,7 @@ score = Π gates  ×  Π stoppers  ×  exp( Σ_d w_d · ln f_d  /  Σ_d w_d )
 - **driver** (rain, temperature, moisture): the weather conditions, combined as a **weighted geometric
   mean**. Any driver at 0 zeroes the score, so heat cannot make up for missing rain. Partial values
   still trade off against each other.
-- **stopper** (frost, snow, heat spike, drying): a penalty that multiplies the score, where 1 means no
+- **stopper** (frost, snow, heat spike, drying, sun exposure, slope): a penalty that multiplies the score, where 1 means no
   effect.
 - Factors with `enabled: false` are recorded but not scored. They are alternatives to compare in the
   backtest (air vs soil temperature, rain vs water balance), rules that need a per-cell climatology v1
@@ -48,6 +48,11 @@ includes its edge: `[null, null, 1, 1]` is 1 up to 1 and 0 above.
 A **`floor`** lifts the response linearly so a weakly sourced rule cannot zero a score on its own:
 `value = floor + (1 − floor) × trapezoid`.
 
+A **`where`** condition (gates and stoppers only) keeps a rule to part of the region: with `m` the
+trapezoid of a cell attribute, `value' = 1 − m × (1 − value)`, so the rule has its full effect where
+`m` is 1 and none where it is 0. `where: {attribute: elevation_m, trapezoid: [null, null, 900, 1100]}`
+means "below 1000 m", fading out between 900 and 1100 m.
+
 Weather windows include the day being scored. A window that reaches before the weather's first day, or
 holds a day with no data, makes the factor, and so the score, missing: the engine never scores on
 partial weather.
@@ -59,13 +64,46 @@ partial weather.
 | `season_window` | one or more `DD-MM` trapezoids, optional `elevation_weight` and `altitude_shift` per window | max over windows of date membership × elevation weight; windows may wrap the year end; 29 February counts as the 28th |
 | `habitat` | affinity 0–1 per habitat key | Σ over the cell's habitat fractions of fraction × affinity (`default` for unlisted habitats) |
 | `static_band` | a cell attribute (`elevation_m`, `soil_ph`, …) | trapezoid of the attribute |
-| `rain_event` | daily rain, `accumulation_days` | max over whole-day lags d of amount(rain summed over the days ending d days ago) × lag(d); a tie goes to the longest lag, so "30 mm, 12 days ago" names when the rain ended |
+| `rain_event` | daily rain, `accumulation_days` | max over whole-day lags d of amount(rain summed over the days ending d days ago) × lag(d); a tie goes to the longest lag, so "30 mm, 12 days ago" names when the rain ended. With the species' growth clock, lag(d) reads the growth days since then instead of d (below) |
 | `window_aggregate` | a daily variable, `sum`/`mean`/`min`/`max` over `window_days` ending `offset_days` ago | trapezoid of the aggregate |
 | `count_days` | a daily variable, comparison and threshold | trapezoid of the number of matching days in the window |
 | `days_since` | a daily variable, comparison and threshold | trapezoid of the days since the last matching day, capped at `max_lookback_days` |
 
 Derived daily series: `water_balance` = `precipitation_sum − et0_fao_evapotranspiration`;
-`temperature_2m_max_anomaly_30d` = the day's Tmax minus the mean Tmax of the 30 days before.
+`temperature_2m_max_anomaly_30d` = the day's Tmax minus the mean Tmax of the 30 days before;
+`sun_exposure_pct` = the cell's clear-sky sun that day as a percentage of flat ground's
+(`api.model.terrain`, from its latitude, slope and aspect).
+
+### Growth clock
+
+A species' `growth` block says how fast it develops from a rain to fruit bodies, day by day. Each
+cell-day gets a **pace**:
+
+```
+pace = f(T) / f(T_ref)  ×  (floor + (1 − floor) × trapezoid(VPD))
+f(T) = ((T_max − T) / (T_max − T_opt)) × ((T − T_min) / (T_opt − T_min)) ^ ((T_opt − T_min) / (T_max − T_opt))
+```
+
+`f` is Yan & Hunt's (1999) cardinal-temperature curve on `temperature.variable` (0–7 cm soil
+temperature in every file): 0 at `T_min` and `T_max`, highest at `T_opt`. Dividing by its value at
+`reference_c` makes the pace 1 in the weather the lag window was drawn from, above 1 towards the
+optimum (faster) and below 1 in the cold (slower). The `humidity` part only ever slows it: 1 in humid
+air, down to `floor` in dry air (`vapour_pressure_deficit_max`).
+
+With the clock on, every `rain_event` of the species counts its lag in **growth days**, the sum of
+the paces over the days after the rain ended up to the scored day, and looks back up to
+`max_lag_days` calendar days. A warm, humid spell brings the flush forward; a cold or dry one holds
+it back, or lets the rain go stale before it grows into the window. At a constant pace of 1 the
+growth days are the calendar days and the rule scores exactly as without the clock. A missing
+temperature or VPD day inside the lag makes the factor missing, like missing rain.
+
+### Terrain microclimate
+
+Before any rule reads it, each cell's weather is moved to its own slope (`../model.yaml`,
+`microclimate`): with `sun` the day's sun ratio (1 = flat ground), mean and maximum air temperature
+and 0–7 cm soil temperature gain `k × (sun − 1)` °C and ET0 is scaled by `1 + et0_per_sun × (sun −
+1)`. Minimum temperature, rain, soil moisture and VPD are left alone. The per-species
+`sun_exposure` stoppers add each species' own preference for sunny or shady slopes on top.
 
 ## The breakdown
 
@@ -79,6 +117,7 @@ never re-sorted by size. Each line has:
 | `contribution` | its multiplicative share of the score: `value` for gates and stoppers, `value ** (w / Σ w)` for drivers. **The product of the contributions is the score.** |
 | `input` | what the factor measured, in its own unit (mm of rain, °C, days, metres), when it measures something |
 | `days_ago` | rain events only: when the rain it scored ended |
+| `growth_days` | rain events on a growth clock: the growth since that rain, which the lag is scored on |
 
 `i18n_key` values are shared across species (`factor.rain_trigger`, `factor.frost`, …) so the UI
 translates each factor once. The UI splits the score's shortfall between factors in log space:
@@ -107,6 +146,10 @@ The loader enforces all of these:
   a URL.
 - Trapezoid edges are in order, and a `null` edge comes as a (zero, full) pair.
 - Drivers have a `weight`; gates and stoppers do not. Each species has at least one enabled driver.
+- A `where` condition goes on gates and stoppers only, on a cell attribute the grid has.
+- A `growth` block cites its sources like a factor, reads ingested variables, orders its cardinal
+  temperatures `T_min < T_opt < T_max` with the reference inside, and reaches back at least as far as
+  the end of every enabled rain lag window (`max_lag_days`).
 - `derived: true` means the numbers were turned from qualitative or out-of-region evidence into
   parameters, and `notes` must then say how. A disabled factor's `notes` must say why.
 - `data`: `available` = inputs exist in v1; `derived` = computed from available inputs; `missing` =
@@ -115,6 +158,6 @@ The loader enforces all of these:
   attributes the woodland grid has. Habitat keys must be in `../habitats.yaml`.
 - Factor ids are unique per file; the file name is the species key; the key's `group` matches
   `../model.yaml`, which must list every file.
-- `known_gaps` records effects the sources support but the engine cannot encode (aspect conditional on
-  elevation, change detection, compound conditions, calendar-anchored windows, growing degree-days) or
-  that need missing data, so they stay visible.
+- `known_gaps` records effects the sources support but the engine cannot encode (change detection,
+  compound conditions, calendar-anchored windows, growing degree-days) or that need missing data, so
+  they stay visible.

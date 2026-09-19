@@ -33,6 +33,39 @@ precipitation_scale:
     1.03, 400-800 m 0.66 -> 0.96, above 800 m 0.64 -> 1.01). It scales totals: timing errors and
     missed convective cells stay. The backtest compares scoring with and without it.
 
+# Terrain microclimate. Before scoring, each cell's weather is moved to its own slope: a sunny slope
+# is warmer and dries faster than flat ground, a shady one cooler and slower to dry. The measure is
+# the cell-day's sun ratio (api.model.terrain): clear-sky sun on the cell's mean surface over flat
+# ground's, from its latitude, the day's sun path, its slope and aspect, and the month's diffuse
+# share of radiation. With sun = that ratio (1 = flat), each temperature below gains
+# k x (sun - 1) °C and ET0 is multiplied by 1 + et0_per_sun x (sun - 1). Night-time minimum
+# temperature, rain, soil moisture and VPD are left alone. The same ratio x 100 is the daily series
+# `sun_exposure_pct` the species rules can read. Applied to reanalysis and forecast days alike.
+microclimate:
+  enabled: true
+  # Diffuse share of global radiation, January to December (PVGIS SARAH3 2005-2023, 7 Tuscan points).
+  diffuse_fraction: [0.49, 0.46, 0.45, 0.45, 0.44, 0.38, 0.33, 0.35, 0.40, 0.46, 0.53, 0.53]
+  # °C per unit of (sun - 1): a cell getting 20 % more sun than flat ground is 0.8 °C warmer on
+  # average, 1.2 °C in the afternoon and 1.6 °C in the top 7 cm of soil.
+  temperature_per_sun:
+    temperature_2m_mean: 4.0
+    temperature_2m_max: 6.0
+    soil_temperature_0_to_7cm_mean: 8.0
+  et0_per_sun: 1.0
+  confidence: plausible
+  source: [allen2006_slopes, swift1976, liu_jordan1963, mushma_pvgis_kd_2026, rita2021, bennie2008, fao56_allen1998, aguilar2010]
+  notes: >-
+    The geometry is textbook (Allen et al. 2006, Swift 1976, isotropic diffuse sky of Liu & Jordan
+    1963). The temperature coefficients are derived: under a southern-Apennine beech canopy
+    (May-September) a 0.17 difference in relative radiation went with about 1.4 °C of air and
+    2.8 °C of soil (Rita et al. 2021, after the lapse rate), 8 and 16 °C per unit; open grassland
+    slopes differ by 2.5-3 °C a year (Bennie et al. 2008). Half of the single site's slope is used,
+    because 1 km cells mix aspects and the canopy buffers sunny slopes more. Maximum temperature gets
+    more than the mean, as in Bennie. ET0 follows the radiation about one to one: its radiation term
+    dominates in a humid climate (FAO-56), and correcting the radiation for terrain moves ET0 by tens
+    of mm a year (Aguilar et al. 2010). No ridge shading, no afternoon asymmetry (east and west
+    slopes get the same sun), no effect on VPD. Every coefficient is a prior for the backtest.
+
 # Backtest (api.model.backtest). Fixed before any score was compared with a sighting.
 #
 # Seasons are calendar years. The split is chronological: rules are tuned on the older seasons and

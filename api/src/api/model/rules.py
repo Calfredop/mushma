@@ -53,7 +53,10 @@ DailyVariable = Literal[
     "shortwave_radiation_sum",
     "water_balance",
     "temperature_2m_max_anomaly_30d",
+    "sun_exposure_pct",
 ]
+# The cell-day's sun over flat ground's, x 100 (api.model.terrain), added with the weather.
+SUN_SERIES = "sun_exposure_pct"
 DERIVED_SERIES = {
     # precipitation_sum - et0_fao_evapotranspiration (mm)
     "water_balance": ("precipitation_sum", "et0_fao_evapotranspiration"),
@@ -83,7 +86,11 @@ ATTRIBUTE_UNITS = {
     "northness": "",
     "soil_ph": "",
 }
-DERIVED_UNITS = {"water_balance": "mm", "temperature_2m_max_anomaly_30d": "°C"}
+DERIVED_UNITS = {
+    "water_balance": "mm",
+    "temperature_2m_max_anomaly_30d": "°C",
+    SUN_SERIES: "%",
+}
 # Aggregates that compare a window with the cell's own climatology, which v1 does not compute.
 CLIMATOLOGY_AGGREGATES = {"percent_of_normal", "percentile_of_normal"}
 
@@ -115,6 +122,19 @@ class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
+class Where(_Strict):
+    """Where a gate or stopper applies: its effect fades out as the cell attribute leaves the
+    trapezoid, ``value' = 1 - m x (1 - value)`` with ``m`` the trapezoid of the attribute."""
+
+    attribute: StaticAttribute
+    trapezoid: Trapezoid
+
+    @field_validator("trapezoid")
+    @classmethod
+    def _ordered(cls, t: Trapezoid) -> Trapezoid:
+        return check_trapezoid(t)
+
+
 class _Factor(_Strict):
     id: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*$")]
     role: Role
@@ -127,9 +147,14 @@ class _Factor(_Strict):
     data: Literal["available", "derived", "missing"]
     enabled: bool = True
     notes: str | None = None
+    where: Where | None = None
 
     @model_validator(mode="after")
     def _common_rules(self) -> "_Factor":
+        if self.role == "driver" and self.where is not None:
+            raise ValueError(
+                f"driver {self.id!r} must not have a where condition (gates, stoppers)"
+            )
         if self.role == "driver" and self.weight is None:
             raise ValueError(f"driver {self.id!r} needs a weight")
         if self.role != "driver" and self.weight is not None:
@@ -307,6 +332,63 @@ Factor = Annotated[
 ]
 
 
+class GrowthTemperature(_Strict):
+    """Temperature pace: Yan & Hunt's cardinal curve over ``[t_min, t_opt, t_max]``, divided by
+    its value at ``reference_c``, so the pace is 1 at the reference and highest at ``t_opt``."""
+
+    variable: DailyVariable
+    cardinal_c: tuple[float, float, float]
+    reference_c: float
+
+    @model_validator(mode="after")
+    def _ordered(self) -> "GrowthTemperature":
+        low, optimum, high = self.cardinal_c
+        if not low < optimum < high:
+            raise ValueError(f"cardinal_c {list(self.cardinal_c)}: need t_min < t_opt < t_max")
+        if not low < self.reference_c < high:
+            raise ValueError(
+                f"reference_c {self.reference_c} must lie inside cardinal_c {list(self.cardinal_c)}"
+            )
+        return self
+
+
+class GrowthHumidity(_Strict):
+    """Humidity pace: ``floor + (1 - floor) x trapezoid(variable)``; it only ever slows growth."""
+
+    variable: DailyVariable
+    trapezoid: Trapezoid
+    floor: Annotated[float, Field(ge=0, le=1)] = 0.0
+
+    _check = field_validator("trapezoid")(check_trapezoid)
+
+
+class GrowthClock(_Strict):
+    """How fast the species develops from a rain to fruit bodies, day by day: pace = temperature
+    pace x humidity pace. With it, a ``rain_event`` counts its lag in growth days (the sum of the
+    paces since the rain ended) instead of calendar days, looking back at most ``max_lag_days``."""
+
+    enabled: bool = True
+    temperature: GrowthTemperature
+    humidity: GrowthHumidity | None = None
+    max_lag_days: Annotated[int, Field(ge=1, le=120)]
+    confidence: Confidence
+    source: Annotated[list[Annotated[str, Field(pattern=r"^[a-z0-9_]+$")]], Field(min_length=1)]
+    derived: bool = False
+    notes: str | None = None
+
+    @model_validator(mode="after")
+    def _explained(self) -> "GrowthClock":
+        if self.derived and not self.notes:
+            raise ValueError("growth is derived: its notes must say how")
+        return self
+
+    @property
+    def variables(self) -> list[str]:
+        """The weather variables the pace reads."""
+        found = [self.temperature.variable]
+        return found + ([self.humidity.variable] if self.humidity else [])
+
+
 class Records(_Strict):
     gbif_taxon_keys: Annotated[list[int], Field(min_length=1)]
     inat_taxon_ids: Annotated[list[int], Field(min_length=1)]
@@ -342,8 +424,14 @@ class SpeciesRules(_Strict):
     i18n_key: Annotated[str, Field(pattern=r"^species\.[a-z0-9_]+$")]
     records: Records
     notes: str | None = None
+    growth: GrowthClock | None = None
     factors: Annotated[list[Factor], Field(min_length=1)]
     known_gaps: list[KnownGap] = []
+
+    @property
+    def clock(self) -> GrowthClock | None:
+        """The growth clock the rain events count in, if one is on."""
+        return self.growth if self.growth is not None and self.growth.enabled else None
 
     @model_validator(mode="after")
     def _factor_set(self) -> "SpeciesRules":
@@ -353,6 +441,15 @@ class SpeciesRules(_Strict):
             raise ValueError(f"duplicate factor ids: {duplicates}")
         if not any(f.enabled and f.role == "driver" for f in self.factors):
             raise ValueError("no enabled driver factor: nothing would move the score day to day")
+        if self.clock is not None:
+            for f in self.factors:
+                if f.enabled and f.kind == "rain_event":
+                    window_end = f.response.lag_days[3]
+                    if self.clock.max_lag_days < window_end:
+                        raise ValueError(
+                            f"growth max_lag_days {self.clock.max_lag_days} is shorter than "
+                            f"{f.id!r}'s lag window, which ends at {window_end} days"
+                        )
         return self
 
     @property
@@ -429,6 +526,14 @@ def _check_species(
     errors = []
     if rules.key != stem:
         errors.append(f"key {rules.key!r} does not match the file name")
+    if rules.growth is not None:
+        unknown = [s for s in rules.growth.source if s not in references]
+        if unknown:
+            errors.append(f"growth: unknown source ids {unknown} (not in {REFERENCES_FILE})")
+        if rules.growth.enabled:
+            lacking = [v for v in rules.growth.variables if v not in ingested]
+            if lacking:
+                errors.append(f"growth: enabled but the weather ingest lacks {lacking}")
     for factor in rules.factors:
         where = f"factor {factor.id!r}"
         unknown = [s for s in factor.source if s not in references]
@@ -440,10 +545,12 @@ def _check_species(
                 errors.append(f"{where}: unknown habitats {strangers}")
         if not factor.enabled:
             continue
+        if factor.where is not None and factor.where.attribute not in GRID_ATTRIBUTES:
+            errors.append(f"{where}: enabled but the grid has no {factor.where.attribute!r}")
         uses = factor.uses
         if factor.kind == "static_band" and uses not in GRID_ATTRIBUTES:
             errors.append(f"{where}: enabled but the grid has no {uses!r}")
-        elif factor.kind != "static_band" and uses is not None:
+        elif factor.kind != "static_band" and uses is not None and uses != SUN_SERIES:
             inputs = DERIVED_SERIES.get(uses, (uses,))
             missing = [v for v in inputs if v not in ingested]
             if missing:
@@ -471,6 +578,11 @@ def load_rules(species_dir: Path = SPECIES_DIR, model_file: Path = MODEL_FILE) -
     groups = model.groups
     habitats = set(load_vocabulary().habitats)
     ingested = set(load_weather_config().variables)
+    unknown = [v for v in model.microclimate.variables if v not in ingested]
+    if unknown:
+        raise RuleConfigError(
+            f"{model_file.name}: microclimate adjusts {unknown}, which the weather ingest lacks"
+        )
 
     loaded: dict[str, SpeciesRules] = {}
     for path in sorted(species_dir.glob("*.yaml")):

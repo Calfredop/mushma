@@ -5,7 +5,7 @@ import { ChevronIcon } from '../components/icons'
 import { ScoreChip } from '../components/ScoreChip'
 import { usePersistentFlag } from '../hooks/usePersistentFlag'
 import { intlLocale, type Language } from '../i18n'
-import { usesRain } from '../score/detail'
+import { usesRain, usesTerrain } from '../score/detail'
 import { explainScore, type FactorBreakdown } from '../score/impact'
 import type { Species } from '../state/urlState'
 import { formatDayLong } from '../time/days'
@@ -50,6 +50,9 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
   }
   const rainDetailOpen = explanation.factors.some(
     (f) => isOpen(f.key) && usesRain(f.rule),
+  )
+  const terrainDetailOpen = explanation.factors.some(
+    (f) => isOpen(f.key) && usesTerrain(f.rule),
   )
 
   const blockedLabels = new Intl.ListFormat(locale, { type: 'conjunction' }).format(
@@ -156,6 +159,7 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
       </ul>
 
       {rainDetailOpen && <p className={panel.note}>{t('why.detail.rainNote')}</p>}
+      {terrainDetailOpen && <p className={panel.note}>{t('why.detail.terrainNote')}</p>}
       <p className={panel.note}>{t('why.explain')}</p>
       {isForecast && (
         <p className={styles.forecast}>

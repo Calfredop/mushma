@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { describeBand, usesRain } from './detail'
+import { describeBand, usesRain, usesTerrain } from './detail'
 
 describe('describeBand', () => {
   it('reads a full trapezoid as a plateau with a zero edge on each side', () => {
@@ -60,5 +60,42 @@ describe('usesRain', () => {
     expect(usesRain({ kind: 'season_window' })).toBe(false)
     expect(usesRain(null)).toBe(false)
     expect(usesRain(undefined)).toBe(false)
+  })
+})
+
+describe('usesTerrain', () => {
+  it('is true for what the slope microclimate adjusts, and for a lag on the growth clock', () => {
+    for (const variable of [
+      'temperature_2m_mean',
+      'temperature_2m_max',
+      'soil_temperature_0_to_7cm_mean',
+      'et0_fao_evapotranspiration',
+      'water_balance',
+      'sun_exposure_pct',
+    ]) {
+      expect(usesTerrain({ kind: 'window_aggregate', variable })).toBe(true)
+    }
+    expect(
+      usesTerrain({
+        kind: 'rain_event',
+        variable: 'precipitation_sum',
+        lag_unit: 'growth_days',
+      }),
+    ).toBe(true)
+  })
+
+  it('is false for what it leaves alone', () => {
+    expect(
+      usesTerrain({ kind: 'window_aggregate', variable: 'temperature_2m_min' }),
+    ).toBe(false)
+    expect(
+      usesTerrain({
+        kind: 'rain_event',
+        variable: 'precipitation_sum',
+        lag_unit: 'days',
+      }),
+    ).toBe(false)
+    expect(usesTerrain({ kind: 'static_band', variable: 'elevation_m' })).toBe(false)
+    expect(usesTerrain(null)).toBe(false)
   })
 })

@@ -11,6 +11,7 @@ from api.model.engine import (
     required_lookback,
     score_species,
 )
+from api.model.factors import lookback_days
 from api.model.rules import SpeciesRules, load_rules
 
 from .helpers import cells, weather
@@ -166,7 +167,7 @@ def test_scores_cover_the_requested_days_and_cells() -> None:
 # --- the real rules on made-up weather ---------------------------------------------------------
 
 
-def _autumn(rain_days_ago: int | None, tmean: float = 13.0, tmin: float = 8.0):
+def _autumn(rain_days_ago: int | None, tmean: float = 13.0, tmin: float = 8.0, vpd: float = 0.6):
     days = 90
     rain = [2.0] * days
     if rain_days_ago is not None:
@@ -181,6 +182,8 @@ def _autumn(rain_days_ago: int | None, tmean: float = 13.0, tmin: float = 8.0):
         soil_temperature_0_to_7cm_mean=[tmean] * days,
         snowfall_sum=[0.0] * days,
         et0_fao_evapotranspiration=[1.5] * days,
+        vapour_pressure_deficit_max=[vpd] * days,
+        sun_exposure_pct=[100.0] * days,
     )
 
 
@@ -196,6 +199,39 @@ def test_porcini_score_high_twelve_days_after_a_good_rain_in_a_beech_wood() -> N
     assert wet > 0.9
     assert no_trigger == 0
     assert frosty == pytest.approx(0.2 * wet)
+
+
+def test_a_cold_or_dry_spell_after_the_rain_holds_the_porcini_flush_back() -> None:
+    edulis = load_rules().species["porcini_edulis"]
+    beech = cells(elevation_m=[1100], habitats={"beech": [1.0]})
+    last_day = date(2024, 10, 29)
+
+    def trigger(weather) -> tuple[float, float]:
+        """The rain line's value, and its pace: growth days per calendar day since the rain."""
+        line = score_species(edulis, beech, weather, last_day).factor("rain_trigger")
+        return line.value[0, 0], line.growth_days[0, 0] / line.days_ago[0, 0]
+
+    mild = trigger(_autumn(rain_days_ago=10, tmean=15.0))
+    cold = trigger(_autumn(rain_days_ago=10, tmean=6.0))
+    dry = trigger(_autumn(rain_days_ago=10, tmean=15.0, vpd=2.5))
+
+    assert mild == (1.0, pytest.approx(1.0))  # the reference pace: growth days = days
+    assert cold[1] < 0.5 and dry[1] == pytest.approx(0.5)  # ten days are under six growth days
+    assert cold[0] == dry[0] == 0  # so the same rain has not fruited yet
+
+
+def test_the_breakdown_reports_growth_days_on_the_rain_line() -> None:
+    edulis = load_rules().species["porcini_edulis"]
+    beech = cells(elevation_m=[1100], habitats={"beech": [1.0]})
+
+    result = score_species(edulis, beech, _autumn(rain_days_ago=12, tmean=15.0), date(2024, 10, 29))
+
+    lines = {line.key: line for line in result.breakdown(0, 0)}
+    assert lines["rain_trigger"].days_ago in (12, 13)  # a tie goes to the longest lag
+    assert lines["rain_trigger"].growth_days == pytest.approx(lines["rain_trigger"].days_ago)
+    assert lines["rain_30d"].growth_days is None
+    trigger = next(f for f in edulis.enabled_factors if f.id == "rain_trigger")
+    assert lookback_days(trigger, edulis.clock) == 42  # 40 calendar days of lag, over 3 of rain
 
 
 # --- groups and the combined score -------------------------------------------------------------

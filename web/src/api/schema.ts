@@ -341,6 +341,11 @@ export interface components {
        * @description rain events: when the rain it scored ended
        */
       days_ago?: number | null
+      /**
+       * Growth Days
+       * @description rain events on a growth clock: the growth since the rain ended, in days at the species' reference pace (warmth speeds it up, cold or dry air slows it down)
+       */
+      growth_days?: number | null
       /** I18N Key */
       i18n_key: string
       /**
@@ -391,9 +396,14 @@ export interface components {
         | 'days_since'
       /**
        * Lag Days
-       * @description rain events: the same shape over `days_ago`, the lag the rain may have
+       * @description rain events: the same shape over the lag the rain may have, in `lag_unit`
        */
       lag_days?: (number | null)[] | null
+      /**
+       * Lag Unit
+       * @description rain events: `days` when `lag_days` counts calendar days (`days_ago`), `growth_days` when it counts the species' growth since the rain (`growth_days`)
+       */
+      lag_unit?: ('days' | 'growth_days') | null
       /**
        * Offset Days
        * @description the window ends this many days before the scored day
@@ -421,11 +431,35 @@ export interface components {
        * @description the unit of `variable` (and of `threshold`); '' when unitless
        */
       variable_unit?: string | null
+      /** @description gates and stoppers that apply only in part of the region */
+      where?: components['schemas']['FactorWhere'] | null
       /**
        * Window Days
        * @description days of rain a rain event adds up, the days an aggregate or count spans, or how far back days_since looks
        */
       window_days?: number | null
+    }
+    /**
+     * FactorWhere
+     * @description Where a gate or stopper applies: its effect fades out as the cell's `variable` leaves the
+     *     trapezoid (full effect on the plateau, none outside).
+     */
+    FactorWhere: {
+      /**
+       * Trapezoid
+       * @description [zero_below, full_from, full_to, zero_above] over `variable`
+       */
+      trapezoid: (number | null)[]
+      /**
+       * Variable
+       * @description the cell attribute the condition reads
+       */
+      variable: string
+      /**
+       * Variable Unit
+       * @description the unit of `variable`; '' when unitless
+       */
+      variable_unit: string
     }
     /** GridCellScore */
     GridCellScore: {

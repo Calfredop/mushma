@@ -2,11 +2,13 @@
 
 Each kind returns its 0-1 ``value`` (after the ``floor``), and where the factor reads a
 measurable input, that ``input`` (the aggregate, the count of days, the attribute) so the "why this
-score" copy can quote it. A rain event also returns ``days_ago``: when the rain it scored fell.
+score" copy can quote it. A rain event also returns ``days_ago``: when the rain it scored fell,
+and with the species' growth clock on, ``growth_days``: the growth since then, which its lag is
+scored on. A factor with a ``where`` condition fades towards 1 outside the cells it applies to.
 """
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -16,6 +18,7 @@ from api.model.rules import (
     CountDaysFactor,
     DaysSinceFactor,
     Factor,
+    GrowthClock,
     HabitatFactor,
     RainEventFactor,
     SeasonWindowFactor,
@@ -32,10 +35,43 @@ class Evaluated:
     value: np.ndarray  # (cells, targets) 0-1, NaN when the inputs are missing
     input: np.ndarray | None = None  # (cells, targets) the measured input, in its own unit
     days_ago: np.ndarray | None = None  # (cells, targets) rain events: lag of the scored rain
+    growth_days: np.ndarray | None = None  # (cells, targets) rain events on a growth clock
 
 
-def _lags(factor: RainEventFactor) -> list[int]:
-    """Whole-day lags the lag response gives any weight to."""
+def cardinal_rate(temperature: np.ndarray, cardinal: tuple[float, float, float]) -> np.ndarray:
+    """Yan & Hunt's (1999, eq. 4A) development rate: 0 at ``t_min`` and ``t_max``, 1 at ``t_opt``,
+    ``((t_max - T) / (t_max - t_opt)) x ((T - t_min) / (t_opt - t_min)) ^ ((t_opt - t_min) /
+    (t_max - t_opt))`` in between."""
+    low, optimum, high = cardinal
+    t = np.asarray(temperature, dtype=float)
+    exponent = (optimum - low) / (high - optimum)
+    with np.errstate(invalid="ignore"):
+        rise = np.clip((t - low) / (optimum - low), 0.0, None) ** exponent
+        rate = np.where((t > low) & (t < high), (high - t) / (high - optimum) * rise, 0.0)
+    rate[np.isnan(t)] = np.nan
+    return rate
+
+
+def growth_pace(growth: GrowthClock, weather: Weather) -> np.ndarray:
+    """The species' daily development pace, ``(cells, days)``: 1 at the reference temperature in
+    humid air, above 1 towards the optimum, slower in the cold or in dry air. NaN where an input is
+    missing."""
+    temperature = growth.temperature
+    pace = cardinal_rate(weather.series(temperature.variable), temperature.cardinal_c) / float(
+        cardinal_rate(np.array([temperature.reference_c]), temperature.cardinal_c)[0]
+    )
+    humidity = growth.humidity
+    if humidity is not None:
+        dryness = series.trapezoid(weather.series(humidity.variable), humidity.trapezoid)
+        pace = pace * series.with_floor(dryness, humidity.floor)
+    return pace
+
+
+def _lags(factor: RainEventFactor, growth: GrowthClock | None = None) -> list[int]:
+    """Whole-day lags that can score: those the lag response gives any weight to, or on a growth
+    clock every calendar day up to its ``max_lag_days``."""
+    if growth is not None:
+        return list(range(growth.max_lag_days + 1))
     a, _, _, d = factor.response.lag_days
     candidates = np.arange(max(0, math.floor(a)), math.ceil(d) + 1, dtype=float)
     weights = series.trapezoid(candidates, factor.response.lag_days)
@@ -46,11 +82,11 @@ def _variable_lookback(variable: str) -> int:
     return ANOMALY_WINDOW_DAYS if variable == "temperature_2m_max_anomaly_30d" else 0
 
 
-def lookback_days(factor: Factor) -> int:
-    """How many days before a target day the factor reads."""
+def lookback_days(factor: Factor, growth: GrowthClock | None = None) -> int:
+    """How many days before a target day the factor reads (``growth``: the species' clock)."""
     match factor:
         case RainEventFactor():
-            return max(_lags(factor)) + factor.input.accumulation_days - 1
+            return max(_lags(factor, growth)) + factor.input.accumulation_days - 1
         case WindowAggregateFactor() | CountDaysFactor():
             inp = factor.input
             return inp.window_days + inp.offset_days - 1 + _variable_lookback(inp.variable)
@@ -108,39 +144,86 @@ def _static_band(factor: StaticBandFactor, cells: Cells, weather: Weather, targe
     )
 
 
-def _rain_event(factor: RainEventFactor, cells: Cells, weather: Weather, targets: slice):
+def _cumulative(values: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Running totals of ``values`` and of its missing days, each with a leading 0 column, so the
+    days ``(a, b]`` sum to ``total[:, b + 1] - total[:, a + 1]``."""
+    zero = np.zeros((values.shape[0], 1))
+    missing = np.isnan(values)
+    total = np.concatenate([zero, np.cumsum(np.where(missing, 0.0, values), axis=1)], axis=1)
+    gaps = np.concatenate([zero, np.cumsum(missing, axis=1, dtype=float)], axis=1)
+    return total, gaps
+
+
+def _rain_event(
+    factor: RainEventFactor,
+    cells: Cells,
+    weather: Weather,
+    targets: slice,
+    growth: GrowthClock | None = None,
+):
     rain = weather.series(factor.input.variable)
     totals = series.rolling(rain, factor.input.accumulation_days, "sum")
     n, days = rain.shape
     index = np.arange(days)[targets]
-    best = np.full((n, len(index)), -1.0)
-    best_amount = np.full((n, len(index)), -1.0)
-    best_lag = np.zeros((n, len(index)))
-    wettest = np.full((n, len(index)), -1.0)
-    wettest_lag = np.zeros((n, len(index)))
-    missing = np.zeros((n, len(index)), dtype=bool)
+    shape = (n, len(index))
+    if growth is not None:
+        grown_total, grown_gaps = _cumulative(growth_pace(growth, weather))
+    best = np.full(shape, -1.0)
+    best_amount = np.full(shape, -1.0)
+    best_lag = np.zeros(shape)
+    best_grown = np.full(shape, np.nan)
+    # The rain to quote when nothing scores: the wettest inside the lag window, else (on a growth
+    # clock, when no rain has grown into the window yet) the wettest within reach.
+    wettest = {window: np.full(shape, -1.0) for window in (True, False)}
+    wettest_lag = {window: np.zeros(shape) for window in (True, False)}
+    wettest_grown = {window: np.full(shape, np.nan) for window in (True, False)}
+    missing = np.zeros(shape, dtype=bool)
     # Longest lag first, so a tie goes to the window that ends where the rain ended.
-    for lag in sorted(_lags(factor), reverse=True):
+    for lag in sorted(_lags(factor, growth), reverse=True):
         source = index - lag
-        amount = np.full((n, len(index)), np.nan)
+        amount = np.full(shape, np.nan)
         reachable = source >= 0
         amount[:, reachable] = totals[:, source[reachable]]
         missing |= np.isnan(amount)
-        lag_weight = series.trapezoid(np.array([float(lag)]), factor.response.lag_days)[0]
+        if growth is None:
+            grown = np.full(shape, float(lag))
+        else:
+            # Growth over the days after the rain ended, up to the scored day: (source, index].
+            end, start = index[reachable] + 1, source[reachable] + 1
+            grown = np.full(shape, np.nan)
+            grown[:, reachable] = grown_total[:, end] - grown_total[:, start]
+            gap = np.zeros(shape, dtype=bool)
+            gap[:, reachable] = grown_gaps[:, end] - grown_gaps[:, start] > 0
+            grown[gap] = np.nan
+            missing |= np.isnan(grown)
+        lag_weight = series.trapezoid(grown, factor.response.lag_days)
         candidate = series.trapezoid(amount, factor.response.amount_mm) * lag_weight
         better = np.nan_to_num(candidate, nan=-1.0) > best
         best = np.where(better, candidate, best)
         best_amount = np.where(better, amount, best_amount)
         best_lag = np.where(better, lag, best_lag)
-        wetter = np.nan_to_num(amount, nan=-1.0) > wettest
-        wettest = np.where(wetter, amount, wettest)
-        wettest_lag = np.where(wetter, lag, wettest_lag)
+        best_grown = np.where(better, grown, best_grown)
+        in_window = np.nan_to_num(lag_weight) > 0
+        for window in (True, False):
+            wetter = np.nan_to_num(amount, nan=-1.0) > wettest[window]
+            if window:
+                wetter &= in_window
+            wettest[window] = np.where(wetter, amount, wettest[window])
+            wettest_lag[window] = np.where(wetter, lag, wettest_lag[window])
+            wettest_grown[window] = np.where(wetter, grown, wettest_grown[window])
+    inside = wettest[True] >= 0
+    quoted, quoted_lag, quoted_grown = (
+        np.where(inside, pick[True], pick[False]) for pick in (wettest, wettest_lag, wettest_grown)
+    )
     dry = best <= 0
     value = series.with_floor(np.maximum(best, 0.0), factor.floor)
-    reported = np.where(dry, wettest, best_amount)
-    lag = np.where(dry, wettest_lag, best_lag)
-    value[missing], reported[missing], lag[missing] = np.nan, np.nan, np.nan
-    return Evaluated(value=value, input=reported, days_ago=lag)
+    reported = np.where(dry, quoted, best_amount)
+    lag = np.where(dry, quoted_lag, best_lag)
+    grown = np.where(dry, quoted_grown, best_grown)
+    value[missing], reported[missing], lag[missing], grown[missing] = (np.nan,) * 4
+    return Evaluated(
+        value=value, input=reported, days_ago=lag, growth_days=None if growth is None else grown
+    )
 
 
 def _window_aggregate(factor: WindowAggregateFactor, cells: Cells, weather: Weather, targets):
@@ -181,8 +264,28 @@ _KINDS = {
 }
 
 
-def evaluate(factor: Factor, cells: Cells, weather: Weather, targets: slice) -> Evaluated:
-    """The factor for every cell on the target days ``weather.dates[targets]``."""
+def _applied_where(factor: Factor, cells: Cells, result: Evaluated) -> Evaluated:
+    """Fade the value towards 1 outside the cells the factor's ``where`` condition covers."""
+    if factor.where is None:
+        return result
+    share = series.trapezoid(cells.attributes[factor.where.attribute], factor.where.trapezoid)
+    value = 1.0 - share[:, np.newaxis] * (1.0 - result.value)
+    return replace(result, value=value)
+
+
+def evaluate(
+    factor: Factor,
+    cells: Cells,
+    weather: Weather,
+    targets: slice,
+    growth: GrowthClock | None = None,
+) -> Evaluated:
+    """The factor for every cell on the target days ``weather.dates[targets]``; ``growth`` is the
+    species' clock, which rain events count their lag in."""
     if getattr(factor.input, "aggregate", None) in ("percent_of_normal", "percentile_of_normal"):
         raise NotImplementedError(f"{factor.id}: {factor.input.aggregate} needs a climatology")
-    return _KINDS[factor.kind](factor, cells, weather, targets)
+    if factor.kind == "rain_event":
+        result = _rain_event(factor, cells, weather, targets, growth)
+    else:
+        result = _KINDS[factor.kind](factor, cells, weather, targets)
+    return _applied_where(factor, cells, result)

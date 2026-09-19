@@ -90,6 +90,10 @@ def species_frames(scores: SpeciesScores, version: str) -> tuple[pd.DataFrame, p
             columns[f"{name}__input"] = np.round(factor.input, 2).astype(np.float32).ravel()
         if factor.days_ago is not None:
             columns[f"{name}__days_ago"] = pd.array(factor.days_ago.ravel(), dtype="Int16")
+        if factor.growth_days is not None:
+            columns[f"{name}__growth_days"] = (
+                np.round(factor.growth_days, 1).astype(np.float32).ravel()
+            )
     factors = pd.DataFrame(columns)
     return daily[keep].reset_index(drop=True), factors[keep].reset_index(drop=True)
 

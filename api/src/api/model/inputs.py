@@ -11,15 +11,21 @@ import pandas as pd
 from api.grid.habitats import load_vocabulary
 from api.model.arrays import Cells, Weather
 from api.model.config import ModelConfig
-from api.model.rules import GRID_ATTRIBUTES
+from api.model.rules import GRID_ATTRIBUTES, SUN_SERIES
+from api.model.terrain import sun_ratio
 from api.weather.config import WeatherConfig
 from api.weather.downscale import cell_weather_arrays
 from api.weather.store import WeatherStore
 
+# Carried with the rule attributes for the sun ratio, but not a rule input itself.
+LATITUDE = "lat"
+
 
 def load_cells(grid_dir: Path) -> Cells:
-    """Woodland cells, ordered by cell id, with their attributes and habitat fractions."""
-    columns = ["cell_id", "woodland", *sorted(GRID_ATTRIBUTES)]
+    """Woodland cells, ordered by cell id, with their attributes (and latitude) and habitat
+    fractions."""
+    attributes = [*sorted(GRID_ATTRIBUTES), LATITUDE]
+    columns = ["cell_id", "woodland", *attributes]
     cells = pd.read_parquet(grid_dir / "cells.parquet", columns=columns)
     cells = cells[cells["woodland"]].sort_values("cell_id").reset_index(drop=True)
     habitats = load_vocabulary().habitats
@@ -34,10 +40,18 @@ def load_cells(grid_dir: Path) -> Cells:
         ids=cells["cell_id"].to_numpy(dtype=object),
         attributes={
             name: pd.to_numeric(cells[name], errors="coerce").to_numpy(dtype=float)
-            for name in sorted(GRID_ATTRIBUTES)
+            for name in attributes
         },
         habitat_names=habitats,
         habitat_fractions=fractions.to_numpy(dtype=float),
+    )
+
+
+def cell_sun_ratio(cells: Cells, dates: np.ndarray, diffuse_fraction: list[float]) -> np.ndarray:
+    """Each cell's daily sun over flat ground's, ``(cells, days)`` (``api.model.terrain``)."""
+    a = cells.attributes
+    return sun_ratio(
+        a[LATITUDE], a["slope_deg"], a["aspect_deg"], a["northness"], dates, diffuse_fraction
     )
 
 
@@ -52,7 +66,9 @@ def load_weather(
     model_config: ModelConfig,
 ) -> Weather:
     """Downscaled weather for ``cells`` from ``start`` to ``end``, with reanalysis rain scaled by
-    cell height and each cell-day flagged when any variable came from the forecast."""
+    cell height, every day moved to the cell's own slope (``model_config.microclimate``), the
+    cell-day's sun ratio as ``sun_exposure_pct``, and each cell-day flagged when any variable came
+    from the forecast."""
     order = weather_config.source_order
     arrays = cell_weather_arrays(
         con,
@@ -75,6 +91,9 @@ def load_weather(
             values["precipitation_sum"] * factor,
             values["precipitation_sum"],
         )
+    sun = cell_sun_ratio(cells, arrays.dates, model_config.microclimate.diffuse_fraction)
+    values = model_config.microclimate.apply(values, sun)
+    values[SUN_SERIES] = 100.0 * sun
     forecast_rank = order.index(weather_config.forecast.model)
     forecast = np.zeros((len(cells), len(arrays.dates)), dtype=bool)
     for rank in arrays.source_rank.values():

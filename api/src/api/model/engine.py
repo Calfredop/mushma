@@ -37,6 +37,7 @@ class FactorContribution:
     weight: float | None = None
     input: float | None = None
     days_ago: int | None = None
+    growth_days: float | None = None
 
 
 @dataclass(frozen=True)
@@ -46,6 +47,7 @@ class FactorScores:
     contribution: np.ndarray  # (cells, days)
     input: np.ndarray | None = None
     days_ago: np.ndarray | None = None
+    growth_days: np.ndarray | None = None
 
     def at(self, i: int, j: int) -> FactorContribution:
         def scalar(array: np.ndarray | None) -> float | None:
@@ -63,6 +65,7 @@ class FactorScores:
             weight=self.factor.weight,
             input=scalar(self.input),
             days_ago=None if days_ago is None else int(days_ago),
+            growth_days=scalar(self.growth_days),
         )
 
 
@@ -86,7 +89,7 @@ class SpeciesScores:
 
 def required_lookback(rules: SpeciesRules) -> int:
     """Days of weather needed before the first target day."""
-    return max(lookback_days(f) for f in rules.enabled_factors)
+    return max(lookback_days(f, rules.clock) for f in rules.enabled_factors)
 
 
 def score_species(
@@ -110,7 +113,7 @@ def score_species(
     in_season = np.ones(shape, dtype=bool)
     factors = []
     for factor in enabled:
-        result = evaluate(factor, cells, weather, targets)
+        result = evaluate(factor, cells, weather, targets, rules.clock)
         value = result.value
         if factor.role == "driver":
             contribution = np.power(value, factor.weight / total_weight)
@@ -119,7 +122,11 @@ def score_species(
         score = score * contribution
         if factor.kind == "season_window":
             in_season &= np.nan_to_num(value) > 0
-        factors.append(FactorScores(factor, value, contribution, result.input, result.days_ago))
+        factors.append(
+            FactorScores(
+                factor, value, contribution, result.input, result.days_ago, result.growth_days
+            )
+        )
 
     return SpeciesScores(
         key=rules.key,

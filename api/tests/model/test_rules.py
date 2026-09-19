@@ -53,6 +53,32 @@ def test_enabled_factors_are_listed_gates_then_drivers_then_stoppers() -> None:
     assert "soil_temperature" not in {f.id for f in species.enabled_factors}
 
 
+def test_every_species_has_a_cited_growth_clock_long_enough_for_its_rain_lags() -> None:
+    rules = load_rules()
+
+    for species in rules.species.values():
+        clock = species.clock
+        assert clock is not None, species.key
+        assert set(clock.source) <= set(rules.references), species.key
+        assert clock.temperature.variable == "soil_temperature_0_to_7cm_mean"
+        low, optimum, high = clock.temperature.cardinal_c
+        assert low < clock.temperature.reference_c <= optimum < high, species.key
+        for factor in species.enabled_factors:
+            if factor.kind == "rain_event":
+                assert clock.max_lag_days >= factor.response.lag_days[3], species.key
+
+
+def test_every_species_scores_sun_exposure_and_slope_as_soft_stoppers() -> None:
+    for species in load_rules().species.values():
+        by_id = {f.id: f for f in species.enabled_factors}
+        sun, slope = by_id["sun_exposure"], by_id["slope"]
+        assert sun.role == slope.role == "stopper"
+        assert sun.input.variable == "sun_exposure_pct"
+        assert slope.input.attribute == "slope_deg"
+        assert sun.floor >= 0.8 and slope.floor >= 0.8, species.key
+        assert "aspect" not in {gap.id for gap in species.known_gaps}, species.key
+
+
 def test_habitat_affinities_use_the_grid_vocabulary() -> None:
     habitats = set(load_vocabulary().habitats)
 
@@ -85,6 +111,14 @@ def _set(factor_id: str, **fields) -> Callable[[dict], None]:
 
 def _drop(factor_id: str, field: str) -> Callable[[dict], None]:
     return lambda doc: _factor(doc, factor_id).pop(field)
+
+
+def _growth(**fields) -> Callable[[dict], None]:
+    return lambda doc: doc["growth"].update(fields)
+
+
+def _growth_temperature(**fields) -> Callable[[dict], None]:
+    return lambda doc: doc["growth"]["temperature"].update(fields)
 
 
 BROKEN = {
@@ -141,6 +175,36 @@ BROKEN = {
     "unknown factor kind": (_set("frost", kind="moon_phase"), "moon_phase"),
     "unexpected field": (_set("frost", treshold=3), "treshold"),
     "group not matching the model config": (lambda doc: doc.update(group="ovoli"), "group"),
+    "growth without a source": (_growth(source=[]), "source"),
+    "growth citing an unknown source": (_growth(source=["nobody2031"]), "nobody2031"),
+    "growth derived without notes": (lambda doc: doc["growth"].pop("notes"), "notes"),
+    "growth cardinal temperatures out of order": (
+        _growth_temperature(cardinal_c=[18, 0, 30]),
+        "cardinal_c",
+    ),
+    "growth reference outside the cardinal range": (
+        _growth_temperature(reference_c=35),
+        "reference_c",
+    ),
+    "growth on a variable the weather ingest lacks": (
+        _growth_temperature(variable="soil_temperature_7_to_28cm_mean"),
+        "soil_temperature_7_to_28cm_mean",
+    ),
+    "growth lookback shorter than the rain lag window": (_growth(max_lag_days=20), "max_lag_days"),
+    "where on a driver": (
+        _set("rain_30d", where={"attribute": "elevation_m", "trapezoid": [None, None, 900, 1100]}),
+        "where",
+    ),
+    "where on an attribute the grid lacks": (
+        _set("sun_exposure", where={"attribute": "stand_age", "trapezoid": [None, None, 10, 20]}),
+        "stand_age",
+    ),
+    "unordered where trapezoid": (
+        _set(
+            "sun_exposure", where={"attribute": "elevation_m", "trapezoid": [None, None, 900, 100]}
+        ),
+        "order",
+    ),
 }
 
 

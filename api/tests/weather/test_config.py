@@ -8,6 +8,7 @@ from api.weather.config import load_weather_config
 
 SPECIES_RULES = Path(__file__).resolve().parents[2] / "src/api/config/species"
 DERIVED_SERIES = {"water_balance", "temperature_2m_max_anomaly_30d"}
+SUN_SERIES = "sun_exposure_pct"  # api.model.rules.SUN_SERIES
 
 
 def test_history_comes_from_era5_and_the_forecast_from_ecmwf_ifs() -> None:
@@ -42,12 +43,18 @@ def test_temperatures_are_lapse_rate_corrected_and_the_rest_is_not() -> None:
 def test_every_weather_variable_the_species_rules_use_is_ingested() -> None:
     used = set()
     for path in SPECIES_RULES.glob("*_*.yaml"):
-        for factor in yaml.safe_load(path.read_text()).get("factors", []):
+        doc = yaml.safe_load(path.read_text())
+        for factor in doc.get("factors", []):
             variable = (factor.get("input") or {}).get("variable")
             if variable:
                 used.add(variable)
+        growth = doc.get("growth") or {}
+        for part in ("temperature", "humidity"):
+            if growth.get(part):
+                used.add(growth[part]["variable"])
 
-    assert used - DERIVED_SERIES <= set(load_weather_config().variables)
+    # The sun series comes from the terrain (api.model.terrain), not the ingest.
+    assert used - DERIVED_SERIES - {SUN_SERIES} <= set(load_weather_config().variables)
 
 
 def test_every_credited_source_is_in_the_catalog() -> None:

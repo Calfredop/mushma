@@ -21,6 +21,35 @@ notes: >-
   Hosts, altitude and season are well supported; the weather rules come from Tuscan community-level
   studies, Open-Meteo climatology over the observed season, and forager lore.
 
+# Growth clock (README, "Growth clock"): how fast fruit bodies develop after the rain, day by day.
+# The rain_event lag below is counted in growth days, the sum of these daily paces.
+growth:
+  temperature:
+    variable: soil_temperature_0_to_7cm_mean
+    cardinal_c: [5, 22, 34]
+    reference_c: 18
+  humidity:
+    variable: vapour_pressure_deficit_max
+    trapezoid: [null, null, 1.5, 3.0]
+    floor: 0.5
+  max_lag_days: 45
+  confidence: folklore
+  source: [yan_hunt1999, moore2008_fruit_bodies, bmeteo_funghi_luglio, casadelassetas_caesarea, daza2006, lilleskov2009]
+  derived: true
+  notes: >-
+    OVO-06 refinement (was the lag_temperature gap). The pace is 1 at 18 °C of topsoil, the
+    weather the lag window was drawn from. Fruit bodies develop at a lower optimum than mycelium
+    grows in culture (A. caesarea 24-28 °C, Daza 2006; Moore et al. 2008), hence t_opt 22 °C.
+    The lore has the lag 3-4 days later after cool nights (lag-window Tmin under 11 °C, about 14
+    °C of topsoil, which runs at about 75 % pace here) and 8-11 days in warm weather against
+    18-22 days in Spain. Caps stop growing when the day's minimum humidity falls under 40 % and
+    grow well from about 60 % (Kasparavičius 2001, B. edulis): open-air daily maximum VPD of 1.5
+    kPa keeps full pace and 3.0 kPa halves it; the floor stands for the moister air under the
+    canopy. No peer-reviewed days-per-°C figure exists for these species: every number is a
+    prior. Amanita fruit bodies lose water twice as fast as B. edulis (Lilleskov et al. 2009),
+    but the species fruits in summer, when open-air VPD is 2 kPa on a median July day, so its
+    ramp sits higher than the autumn porcini's.
+
 factors:
   - id: season
     role: gate
@@ -224,12 +253,47 @@ factors:
     enabled: false
     notes: OVO-16. Well-drained soils preferred; >=0.40 m³/m³ -> x0.8. Low priority.
 
-known_gaps:
-  - id: aspect
-    description: OVO-04. South-facing slopes favoured near the upper limit (N-facing x0.8 above 500 m on slopes >10°); the only Tuscan plot record faces NE.
-    needs: [engine support for an aspect multiplier conditional on elevation and slope]
+  - id: sun_exposure
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.sun_exposure
+    input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
+    response: {trapezoid: [80, 100, null, null]}
+    floor: 0.8
+    where: {attribute: elevation_m, trapezoid: [400, 600, null, null]}
     confidence: folklore
     source: [innatura_ovolo, casadelassetas_caesarea, cano_cajigas2015, myboletus_ovoli]
+    derived: true
+    data: derived
+    notes: >-
+      OVO-04. Heliophilous: sunny, south-facing clearings, and shaded aspects delay it, mainly
+      near the upper altitude limit (N-facing x0.8 above 500 m): x0.8 at 80 % of flat ground's
+      sun or less, x1 from 100 %, fading in between 400 and 600 m. The only Tuscan plot record
+      faces NE on a 30° slope, hence folklore. Read on the day's sun ratio, the cell's sun as
+      a percentage of flat ground's (api.model.terrain), so it bites hardest in autumn, when
+      the sun is low. The terrain microclimate already makes sunny slopes warmer and drier for
+      every rule; this line is the species' own preference on top of that, kept soft.
+
+  - id: slope
+    role: stopper
+    kind: static_band
+    i18n_key: factor.slope
+    input: {attribute: slope_deg}
+    response: {trapezoid: [null, null, 15, 35]}
+    floor: 0.8
+    confidence: plausible
+    source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
+    derived: true
+    data: available
+    notes: >-
+      Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
+      1979). Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B.
+      edulis yield was highest under about 11° in north-east Turkey (Mumcu Küçüker 2019); two
+      Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016), hence a soft rule
+      on the cell's mean slope: x1 up to 15°, x0.8 from 35°. It acts on the score only, never
+      on the rain, so the same water is not counted twice.
+
+known_gaps:
   - id: spring_rain
     description: OVO-09. Wet springs precede richer autumn fruiting (community-level); Mar-May rain as % of normal, x0.8 at <=60 %, x1 at >=100 %.
     needs: [a calendar-anchored window aggregate, backfill climatology]
@@ -238,11 +302,6 @@ known_gaps:
   - id: drying_wind
     description: OVO-15. Within 5 days of the storm, >=2 days with gusts >=40 km/h and min RH <=35 % halve the trigger.
     needs: [a compound multi-variable condition in count_days]
-    confidence: folklore
-    source: [bmeteo_funghi_luglio]
-  - id: lag_temperature
-    description: OVO-06 refinement. Shift the lag 3-4 days earlier when lag-window Tmin mean >=16 °C, later when <=11 °C.
-    needs: [a temperature-dependent lag in rain_event]
     confidence: folklore
     source: [bmeteo_funghi_luglio]
   - id: substrate

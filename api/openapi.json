@@ -298,6 +298,18 @@
             "description": "rain events: when the rain it scored ended",
             "title": "Days Ago"
           },
+          "growth_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "rain events on a growth clock: the growth since the rain ended, in days at the species' reference pace (warmth speeds it up, cold or dry air slows it down)",
+            "title": "Growth Days"
+          },
           "i18n_key": {
             "title": "I18N Key",
             "type": "string"
@@ -439,8 +451,24 @@
                 "type": "null"
               }
             ],
-            "description": "rain events: the same shape over `days_ago`, the lag the rain may have",
+            "description": "rain events: the same shape over the lag the rain may have, in `lag_unit`",
             "title": "Lag Days"
+          },
+          "lag_unit": {
+            "anyOf": [
+              {
+                "enum": [
+                  "days",
+                  "growth_days"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "rain events: `days` when `lag_days` counts calendar days (`days_ago`), `growth_days` when it counts the species' growth since the rain (`growth_days`)",
+            "title": "Lag Unit"
           },
           "offset_days": {
             "anyOf": [
@@ -531,6 +559,17 @@
             "description": "the unit of `variable` (and of `threshold`); '' when unitless",
             "title": "Variable Unit"
           },
+          "where": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FactorWhere"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "gates and stoppers that apply only in part of the region"
+          },
           "window_days": {
             "anyOf": [
               {
@@ -548,6 +587,45 @@
           "kind"
         ],
         "title": "FactorRule",
+        "type": "object"
+      },
+      "FactorWhere": {
+        "description": "Where a gate or stopper applies: its effect fades out as the cell's `variable` leaves the\ntrapezoid (full effect on the plateau, none outside).",
+        "properties": {
+          "trapezoid": {
+            "description": "[zero_below, full_from, full_to, zero_above] over `variable`",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Trapezoid",
+            "type": "array"
+          },
+          "variable": {
+            "description": "the cell attribute the condition reads",
+            "title": "Variable",
+            "type": "string"
+          },
+          "variable_unit": {
+            "description": "the unit of `variable`; '' when unitless",
+            "title": "Variable Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "variable",
+          "variable_unit",
+          "trapezoid"
+        ],
+        "title": "FactorWhere",
         "type": "object"
       },
       "GridCellScore": {

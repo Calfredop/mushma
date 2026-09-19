@@ -26,11 +26,15 @@ def cells(
     n: int = 1,
     elevation_m: list[float] | None = None,
     habitats: dict[str, list[float]] | None = None,
+    slope_deg: list[float] | None = None,
 ) -> Cells:
     habitats = habitats or {"beech": [1.0] * n}
     return Cells(
         ids=np.array([f"c{i}" for i in range(n)]),
-        attributes={"elevation_m": np.array(elevation_m or [800.0] * n, dtype=float)},
+        attributes={
+            "elevation_m": np.array(elevation_m or [800.0] * n, dtype=float),
+            "slope_deg": np.array(slope_deg or [10.0] * n, dtype=float),
+        },
         habitat_names=list(habitats),
         habitat_fractions=np.array(list(habitats.values()), dtype=float).T,
     )

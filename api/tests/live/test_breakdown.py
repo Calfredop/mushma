@@ -7,7 +7,14 @@ import pytest
 from pydantic import TypeAdapter
 
 from api.live.breakdown import reconstruct_breakdown
-from api.model.rules import DERIVED_SERIES, GRID_ATTRIBUTES, Factor, load_rules
+from api.model.rules import (
+    DERIVED_SERIES,
+    GRID_ATTRIBUTES,
+    SUN_SERIES,
+    Factor,
+    GrowthClock,
+    load_rules,
+)
 
 _FACTOR = TypeAdapter(Factor)
 COMMON = {
@@ -127,6 +134,46 @@ class TestFactorMeasurements:
         assert b.rule.trapezoid == [10, 30, None, None]
         assert b.rule.lag_days == [6, 10, 16, 24]
 
+    def test_a_rain_event_on_a_growth_clock_reports_growth_days(self) -> None:
+        clock = GrowthClock.model_validate(
+            {
+                "temperature": {
+                    "variable": "soil_temperature_0_to_7cm_mean",
+                    "cardinal_c": [0, 18, 30],
+                    "reference_c": 15,
+                },
+                "max_lag_days": 40,
+                "confidence": "folklore",
+                "source": ["x"],
+            }
+        )
+        row = {
+            "rain_trigger": 0.7,
+            "rain_trigger__input": 42.0,
+            "rain_trigger__days_ago": 14,
+            "rain_trigger__growth_days": np.float32(9.3),
+        }
+
+        (clocked,) = reconstruct_breakdown([rain_event()], row, growth=clock)
+        (plain,) = reconstruct_breakdown([rain_event()], row)
+
+        assert (clocked.days_ago, clocked.growth_days) == (14, 9.3)
+        assert clocked.rule is not None and clocked.rule.lag_unit == "growth_days"
+        assert plain.rule is not None and plain.rule.lag_unit == "days"
+
+    def test_a_where_condition_is_described_with_its_unit(self) -> None:
+        conditional = stopper(
+            where={"attribute": "elevation_m", "trapezoid": [None, None, 900, 1100]}
+        )
+
+        (b,) = reconstruct_breakdown([conditional], {"drying_wind": 0.9})
+
+        assert b.rule is not None and b.rule.where is not None
+        assert (b.rule.where.variable, b.rule.where.variable_unit) == ("elevation_m", "m")
+        assert b.rule.where.trapezoid == [None, None, 900, 1100]
+        (plain,) = reconstruct_breakdown([stopper()], {"drying_wind": 0.9})
+        assert plain.rule is not None and plain.rule.where is None
+
     def test_a_window_aggregate_takes_its_unit_from_the_weather_config(self) -> None:
         factors = [window_aggregate("air_temperature", "temperature_2m_mean")]
         row = {"air_temperature": 0.8, "air_temperature__input": 14.2}
@@ -209,7 +256,7 @@ class TestFactorMeasurements:
         from api.model.rules import ATTRIBUTE_UNITS, DERIVED_UNITS
 
         assert GRID_ATTRIBUTES <= set(ATTRIBUTE_UNITS)
-        assert set(DERIVED_SERIES) == set(DERIVED_UNITS)
+        assert set(DERIVED_SERIES) | {SUN_SERIES} == set(DERIVED_UNITS)
 
     def test_every_shipped_factor_describes_itself(self) -> None:
         """A new rule on an unknown variable would fail here, not in front of a forager."""

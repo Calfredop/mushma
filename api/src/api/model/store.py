@@ -9,8 +9,9 @@ Layout under ``$DATA_DIR/scores/<region>/``:
   stored. About 60 MB per year for every key.
 - ``factors/species=<key>/year=<yyyy>/data.parquet``: the "why this score" columns of each species
   key: every enabled factor's value, its measured ``<factor>__input`` and, for rain events,
-  ``<factor>__days_ago``. About 40 MB per key and year, so history is usually scored without it and
-  the daily run keeps it for the days the app shows.
+  ``<factor>__days_ago`` and, on a growth clock, ``<factor>__growth_days``. About 40 MB per key
+  and year, so history is usually scored without it and the daily run keeps it for the days the
+  app shows.
 - ``meta.json``: the last scoring run (rules version, groups, period, credits).
 
 Upserts replace the rows of the cell-days they carry and keep the rest, so re-scoring a period

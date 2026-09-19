@@ -70,3 +70,61 @@ def test_a_season_in_two_roles_is_refused(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="2023"):
         load_model_config(path)
+
+
+# --- terrain microclimate ------------------------------------------------------------------------
+
+
+def test_the_microclimate_cites_known_references_and_has_a_diffuse_share_per_month() -> None:
+    micro = load_model_config().microclimate
+
+    assert micro.enabled
+    assert micro.source and set(micro.source) <= set(load_rules().references)
+    assert len(micro.diffuse_fraction) == 12
+    assert all(0 < kd < 1 for kd in micro.diffuse_fraction)
+
+
+def test_the_microclimate_warms_sunny_cells_cools_shady_ones_and_scales_drying() -> None:
+    micro = load_model_config().microclimate
+    k = micro.temperature_per_sun["temperature_2m_mean"]
+    values = {
+        "temperature_2m_mean": np.array([[10.0, 10.0], [10.0, 10.0]]),
+        "temperature_2m_min": np.array([[2.0, 2.0], [2.0, 2.0]]),
+        "et0_fao_evapotranspiration": np.array([[2.0, 2.0], [2.0, 2.0]]),
+        "precipitation_sum": np.array([[5.0, 5.0], [5.0, 5.0]]),
+    }
+    sun = np.array([[1.2, 1.0], [0.7, np.nan]])
+
+    adjusted = micro.apply(values, sun)
+
+    assert adjusted["temperature_2m_mean"][0].tolist() == pytest.approx([10 + 0.2 * k, 10.0])
+    assert adjusted["temperature_2m_mean"][1, 0] == pytest.approx(10 - 0.3 * k)
+    assert np.isnan(adjusted["temperature_2m_mean"][1, 1])  # no sun ratio, no weather
+    assert adjusted["et0_fao_evapotranspiration"][0].tolist() == pytest.approx(
+        [2.0 * (1 + 0.2 * micro.et0_per_sun), 2.0]
+    )
+    assert adjusted["temperature_2m_min"] is values["temperature_2m_min"]  # nights: no sun
+    assert adjusted["precipitation_sum"] is values["precipitation_sum"]
+    assert values["temperature_2m_mean"][0, 0] == 10.0  # the input is left alone
+
+
+def test_a_disabled_microclimate_leaves_the_weather_alone(tmp_path: Path) -> None:
+    raw = yaml.safe_load(MODEL_FILE.read_text())
+    raw["microclimate"]["enabled"] = False
+    path = tmp_path / "model.yaml"
+    path.write_text(yaml.safe_dump(raw))
+    values = {"temperature_2m_mean": np.array([[10.0]])}
+
+    adjusted = load_model_config(path).microclimate.apply(values, np.array([[1.5]]))
+
+    assert adjusted["temperature_2m_mean"].tolist() == [[10.0]]
+
+
+def test_a_microclimate_on_a_variable_the_ingest_lacks_is_refused(tmp_path: Path) -> None:
+    raw = yaml.safe_load(MODEL_FILE.read_text())
+    raw["microclimate"]["temperature_per_sun"]["dew_point_2m_mean"] = 1.0
+    path = tmp_path / "model.yaml"
+    path.write_text(yaml.safe_dump(raw))
+
+    with pytest.raises(RuleConfigError, match="dew_point_2m_mean"):
+        load_rules(model_file=path)

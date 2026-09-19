@@ -130,6 +130,7 @@
       "rain_other": "{{amount}} di pioggia in {{count}} giorni{{until}}.",
       "window_one": "{{variable}}, {{aggregate}} su {{count}} giorno{{until}}: {{value}}.",
       "window_other": "{{variable}}, {{aggregate}} su {{count}} giorni{{until}}: {{value}}.",
+      "windowToday": "{{variable}}, in questo giorno: {{value}}.",
       "count_one": "{{count}} giorno su {{window}} con {{variable}} {{op}} {{threshold}}{{until}}.",
       "count_other": "{{count}} giorni su {{window}} con {{variable}} {{op}} {{threshold}}{{until}}.",
       "daysSince_one": "{{count}} giorno dall'ultimo giorno con {{variable}} {{op}} {{threshold}}.",
@@ -144,6 +145,13 @@
       "ruleZero": "La regola dà credito pieno {{full}}; nullo {{zero}}.",
       "lagRule": "Distanza dal giorno valutato: credito pieno {{full}}.",
       "lagRuleZero": "Distanza dal giorno valutato: credito pieno {{full}}; nullo {{zero}}.",
+      "growth": "Il caldo e l'umidità dell'aria da allora ne fanno {{growth}}, al {{pace}} del ritmo normale: il caldo accelera la crescita, il freddo o l'aria secca la rallentano.",
+      "growthDays_one": "{{count}} giorno di crescita",
+      "growthDays_other": "{{count}} giorni di crescita",
+      "growthLagRule": "Crescita dalla pioggia: credito pieno {{full}}.",
+      "growthLagRuleZero": "Crescita dalla pioggia: credito pieno {{full}}; nullo {{zero}}.",
+      "where": "Vale a {{variable}} {{full}}.",
+      "whereZero": "Vale a {{variable}} {{full}}; per niente {{zero}}.",
       "full": {
         "between": "da {{from}} a {{to}}",
         "at": "a {{value}}",
@@ -177,9 +185,12 @@
         "water_balance": "bilancio idrico (pioggia meno evaporazione)",
         "elevation_m": "quota",
         "soil_ph": "pH del suolo",
-        "lithology_calcareous": "roccia calcarea"
+        "lithology_calcareous": "roccia calcarea",
+        "sun_exposure_pct": "sole su questo versante, rispetto al terreno piano",
+        "slope_deg": "pendenza media"
       },
-      "rainNote": "La pioggia è la stima del modello meteo, corretta al rialzo (di più in quota) per avvicinarla a quella dei pluviometri; i giorni di previsione non hanno questa correzione."
+      "rainNote": "La pioggia è la stima del modello meteo, corretta al rialzo (di più in quota) per avvicinarla a quella dei pluviometri; i giorni di previsione non hanno questa correzione.",
+      "terrainNote": "Temperature ed evaporazione sono corrette per il versante di questa cella: i versanti più soleggiati del terreno piano sono più caldi e si asciugano prima, quelli più in ombra sono più freschi."
     }
   },
   "factor": {
@@ -203,7 +214,9 @@
     "drought": "Siccità",
     "waterlogging": "Ristagno d'acqua",
     "lithology": "Tipo di roccia",
-    "soil_ph": "pH del suolo"
+    "soil_ph": "pH del suolo",
+    "sun_exposure": "Esposizione al sole",
+    "slope": "Pendenza"
   },
   "hotspots": {
     "title": "Zone migliori",

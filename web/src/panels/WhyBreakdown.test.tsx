@@ -214,6 +214,49 @@ const habitat: FactorInput = {
   rule: { kind: 'habitat' },
 }
 
+const clockedRain: FactorInput = {
+  ...rainTrigger,
+  days_ago: 12,
+  growth_days: 8.4,
+  rule: { ...rainTrigger.rule!, lag_unit: 'growth_days' },
+}
+const sunExposure: FactorInput = {
+  key: 'sun_exposure',
+  value: 0.84,
+  contribution: 0.84,
+  role: 'stopper',
+  input: 114,
+  unit: '%',
+  rule: {
+    kind: 'window_aggregate',
+    variable: 'sun_exposure_pct',
+    variable_unit: '%',
+    aggregate: 'mean',
+    window_days: 1,
+    offset_days: 0,
+    trapezoid: [null, null, 95, 120],
+    where: {
+      variable: 'elevation_m',
+      variable_unit: 'm',
+      trapezoid: [null, null, 900, 1100],
+    },
+  },
+}
+const slope: FactorInput = {
+  key: 'slope',
+  value: 0.95,
+  contribution: 0.95,
+  role: 'stopper',
+  input: 20,
+  unit: '°',
+  rule: {
+    kind: 'static_band',
+    variable: 'slope_deg',
+    variable_unit: '°',
+    trapezoid: [null, null, 15, 35],
+  },
+}
+
 const rowOf = (name: string) =>
   screen.getByRole('button', { name }).closest('li') as HTMLElement
 
@@ -263,6 +306,49 @@ describe('WhyBreakdown details', () => {
     expect(row).toHaveTextContent(
       'Distanza dal giorno valutato: credito pieno da 10 a 16 giorni; nullo fino a 6 giorni e da 24 giorni in su.',
     )
+  })
+
+  it('counts the lag of a rain on the growth clock in growth days, and gives the pace', async () => {
+    render(
+      <WhyBreakdown species="porcini" isForecast={false} day={day([clockedRain], 0.7)} />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Pioggia di innesco' }))
+    const row = rowOf('Pioggia di innesco')
+    expect(row).toHaveTextContent(
+      '42 mm di pioggia in 3 giorni fino a domenica 6 settembre (12 giorni prima).',
+    )
+    expect(row).toHaveTextContent(
+      "Il caldo e l'umidità dell'aria da allora ne fanno 8 giorni di crescita, al 70% del ritmo normale: il caldo accelera la crescita, il freddo o l'aria secca la rallentano.",
+    )
+    expect(row).toHaveTextContent(
+      'Crescita dalla pioggia: credito pieno da 10 a 16 giorni di crescita; nullo fino a 6 giorni di crescita e da 24 giorni di crescita in su.',
+    )
+    expect(row).not.toHaveTextContent('Distanza dal giorno valutato')
+    expect(screen.getByText(/corrette per il versante/)).toBeInTheDocument()
+  })
+
+  it('shows the sun on the slope on the day, and where the rule applies', async () => {
+    render(
+      <WhyBreakdown
+        species="porcini"
+        isForecast={false}
+        day={day([sunExposure, slope], 0.8)}
+      />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Esposizione al sole' }))
+    await user.click(screen.getByRole('button', { name: 'Pendenza' }))
+    const sun = rowOf('Esposizione al sole')
+    expect(sun).toHaveTextContent(
+      'Sole su questo versante, rispetto al terreno piano, in questo giorno: 114%.',
+    )
+    expect(sun).toHaveTextContent(
+      'La regola dà credito pieno fino a 95%; nullo da 120% in su.',
+    )
+    expect(sun).toHaveTextContent(
+      'Vale a quota fino a 900 m; per niente da 1100 m in su.',
+    )
+    expect(rowOf('Pendenza')).toHaveTextContent('Per questa cella: 20°.')
+    expect(rowOf('Pendenza')).not.toHaveTextContent('Vale a')
   })
 
   it("shows a gate's attribute and its band", async () => {

@@ -13,6 +13,8 @@ interface Props {
 }
 
 const NO_BREAK_SPACE = '\u00A0'
+/** Units written straight after the number: 114%, 20°. */
+const TIGHT_UNITS = new Set(['%', '°'])
 
 /**
  * What a factor measured on the scored day and what its rule wanted of it, in
@@ -28,9 +30,16 @@ export function FactorDetail({ factor, date, id }: Props) {
 
   const quantity = (value: number, unit?: string | null, bare = false) => {
     if (unit === 'days' && !bare) return t('why.detail.days', { count: value })
+    if (unit === 'growth_days' && !bare)
+      return t('why.detail.growthDays', { count: value })
     if (bare || !unit) return number.format(value)
-    return `${number.format(value)}${NO_BREAK_SPACE}${unit}`
+    const gap = TIGHT_UNITS.has(unit) ? '' : NO_BREAK_SPACE
+    return `${number.format(value)}${gap}${unit}`
   }
+  const percent = new Intl.NumberFormat(locale, {
+    style: 'percent',
+    maximumFractionDigits: 0,
+  })
 
   const variableLabel = (name: string) => {
     const key = `why.detail.variable.${name}`
@@ -48,7 +57,20 @@ export function FactorDetail({ factor, date, id }: Props) {
           : t('why.detail.daysBefore', { count: daysBefore }),
     })
 
-  const band = (trapezoid: Trapezoid, unit: string | null | undefined, lag: boolean) => {
+  type Phrasing = 'rule' | 'lag' | 'growthLag' | 'where'
+  const KEYS = {
+    rule: ['why.detail.rule', 'why.detail.ruleZero'],
+    lag: ['why.detail.lagRule', 'why.detail.lagRuleZero'],
+    growthLag: ['why.detail.growthLagRule', 'why.detail.growthLagRuleZero'],
+    where: ['why.detail.where', 'why.detail.whereZero'],
+  } as const
+
+  const band = (
+    trapezoid: Trapezoid,
+    unit: string | null | undefined,
+    phrasing: Phrasing,
+    variable = '',
+  ) => {
     const { full, zero } = describeBand(trapezoid)
     if (!full) return null
     const fullText = (() => {
@@ -66,9 +88,8 @@ export function FactorDetail({ factor, date, id }: Props) {
           return t('why.detail.full.upTo', { value: quantity(full.to, unit) })
       }
     })()
-    if (zero.length === 0) {
-      return t(lag ? 'why.detail.lagRule' : 'why.detail.rule', { full: fullText })
-    }
+    const [withoutZero, withZero] = KEYS[phrasing]
+    if (zero.length === 0) return t(withoutZero, { full: fullText, variable })
     const zeroText = list.format(
       zero.map((edge) =>
         t(`why.detail.zero.${edge.kind}` as 'why.detail.zero.below', {
@@ -76,10 +97,7 @@ export function FactorDetail({ factor, date, id }: Props) {
         }),
       ),
     )
-    return t(lag ? 'why.detail.lagRuleZero' : 'why.detail.ruleZero', {
-      full: fullText,
-      zero: zeroText,
-    })
+    return t(withZero, { full: fullText, zero: zeroText, variable })
   }
 
   const measurement = (): string => {
@@ -101,6 +119,12 @@ export function FactorDetail({ factor, date, id }: Props) {
           until: factor.days_ago == null ? '' : until(factor.days_ago),
         })
       case 'window_aggregate':
+        if ((rule.window_days ?? 0) === 1 && offset === 0) {
+          return t('why.detail.windowToday', {
+            variable: capitalize(variable),
+            value: quantity(factor.input, factor.unit),
+          })
+        }
         return t('why.detail.window', {
           count: rule.window_days ?? 0,
           variable: capitalize(variable),
@@ -127,14 +151,40 @@ export function FactorDetail({ factor, date, id }: Props) {
     }
   }
 
-  const ruleText = rule?.trapezoid ? band(rule.trapezoid, factor.unit, false) : null
-  const lagText = rule?.lag_days ? band(rule.lag_days, 'days', true) : null
+  /** How warmth and air humidity sped up or slowed down the growth since the rain. */
+  const growth = (): string | null => {
+    if (factor.input == null || factor.growth_days == null || !factor.days_ago)
+      return null
+    return t('why.detail.growth', {
+      growth: quantity(Math.round(factor.growth_days), 'growth_days'),
+      pace: percent.format(factor.growth_days / factor.days_ago),
+    })
+  }
+
+  const onClock = rule?.lag_unit === 'growth_days'
+  const ruleText = rule?.trapezoid ? band(rule.trapezoid, factor.unit, 'rule') : null
+  const lagText = rule?.lag_days
+    ? onClock
+      ? band(rule.lag_days, 'growth_days', 'growthLag')
+      : band(rule.lag_days, 'days', 'lag')
+    : null
+  const whereText = rule?.where
+    ? band(
+        rule.where.trapezoid,
+        rule.where.variable_unit,
+        'where',
+        variableLabel(rule.where.variable),
+      )
+    : null
+  const growthText = growth()
 
   return (
     <div id={id} className={styles.detail} data-testid="factor-detail">
       <p>{measurement()}</p>
+      {growthText && <p>{growthText}</p>}
       {ruleText && <p>{ruleText}</p>}
       {lagText && <p>{lagText}</p>}
+      {whereText && <p>{whereText}</p>}
     </div>
   )
 }

@@ -7,8 +7,9 @@ value; a driver's is ``value ** (weight / total_driver_weight)``. The product of
 contributions is the row's stored ``score``.
 
 The row also keeps, per factor, the measurement behind the value (``<factor>__input``, and for rain
-events ``<factor>__days_ago``). Those columns are absent for days scored without them, so they read
-as ``None`` rather than raising. What the rule wanted of the measurement comes from the rule config.
+events ``<factor>__days_ago`` and, on a growth clock, ``<factor>__growth_days``). Those columns are
+absent for days scored without them, so they read as ``None`` rather than raising. What the rule
+wanted of the measurement comes from the rule config.
 """
 
 from collections.abc import Mapping
@@ -22,11 +23,12 @@ from api.model.rules import (
     CountDaysFactor,
     DaysSinceFactor,
     Factor,
+    GrowthClock,
     RainEventFactor,
     StaticBandFactor,
     WindowAggregateFactor,
 )
-from api.models import FactorBreakdown, FactorRule
+from api.models import FactorBreakdown, FactorRule, FactorWhere
 from api.weather.config import load_weather_config
 
 
@@ -43,8 +45,20 @@ def _variable_unit(variable: str) -> str:
     return _weather_units()[variable]
 
 
-def _describe(factor: Factor) -> FactorRule:
-    """What the rule wants of the measurement it reads."""
+def _describe(factor: Factor, growth: GrowthClock | None = None) -> FactorRule:
+    """What the rule wants of the measurement it reads, and where it applies."""
+    rule = _describe_measurement(factor, growth)
+    if factor.where is None:
+        return rule
+    where = FactorWhere(
+        variable=factor.where.attribute,
+        variable_unit=_variable_unit(factor.where.attribute),
+        trapezoid=list(factor.where.trapezoid),
+    )
+    return rule.model_copy(update={"where": where})
+
+
+def _describe_measurement(factor: Factor, growth: GrowthClock | None) -> FactorRule:
     match factor:
         case StaticBandFactor():
             return FactorRule(
@@ -61,6 +75,7 @@ def _describe(factor: Factor) -> FactorRule:
                 window_days=factor.input.accumulation_days,
                 trapezoid=factor.response.amount_mm,
                 lag_days=factor.response.lag_days,
+                lag_unit="days" if growth is None else "growth_days",
             )
         case WindowAggregateFactor():
             return FactorRule(
@@ -103,20 +118,24 @@ def _measured(row: Mapping[str, object], column: str) -> float | None:
 
 
 def reconstruct_breakdown(
-    enabled_factors: list[Factor], row: Mapping[str, object]
+    enabled_factors: list[Factor],
+    row: Mapping[str, object],
+    growth: GrowthClock | None = None,
 ) -> list[FactorBreakdown]:
     """``enabled_factors`` in breakdown order (``SpeciesRules.enabled_factors``: gates, drivers,
     stoppers, file order). ``row`` maps each factor's ``id`` to its stored value, and may carry the
-    ``<id>__input`` and ``<id>__days_ago`` measurements; raises ``KeyError`` if a factor's value
-    wasn't stored."""
+    ``<id>__input``, ``<id>__days_ago`` and ``<id>__growth_days`` measurements; ``growth`` is the
+    species' clock (``SpeciesRules.clock``). Raises ``KeyError`` if a factor's value wasn't
+    stored."""
     total_weight = sum(f.weight for f in enabled_factors if f.role == "driver")
     breakdown = []
     for f in enabled_factors:
         value = float(row[f.id])
         contribution = value ** (f.weight / total_weight) if f.role == "driver" else value
-        rule = _describe(f)
+        rule = _describe(f, growth)
         measured = _measured(row, f"{f.id}__input")
         days_ago = _measured(row, f"{f.id}__days_ago")
+        grown = _measured(row, f"{f.id}__growth_days")
         breakdown.append(
             FactorBreakdown(
                 key=f.id,
@@ -129,6 +148,7 @@ def reconstruct_breakdown(
                 input=None if measured is None else round(measured, 2),
                 unit=rule.input_unit,
                 days_ago=None if days_ago is None else int(days_ago),
+                growth_days=None if grown is None else round(grown, 1),
                 rule=rule,
             )
         )

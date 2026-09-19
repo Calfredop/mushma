@@ -35,6 +35,45 @@ class PrecipitationScale(_Strict):
         return self.intercept + self.per_km * np.minimum(elevation, self.max_elevation_m) / 1000
 
 
+class Microclimate(_Strict):
+    """Shift each cell's weather by how much sun its slope gets (``api.model.terrain``).
+
+    With ``sun`` the cell-day's sun ratio (1 = flat ground), each variable in
+    ``temperature_per_sun`` gains ``k x (sun - 1)`` °C and ET0 is multiplied by
+    ``1 + et0_per_sun x (sun - 1)``. Everything else, night-time minimum temperature included, is
+    left as the weather model gave it.
+    """
+
+    enabled: bool
+    diffuse_fraction: Annotated[
+        list[Annotated[float, Field(ge=0, le=1)]], Field(min_length=12, max_length=12)
+    ]
+    temperature_per_sun: dict[str, float]
+    et0_per_sun: Annotated[float, Field(ge=0)]
+    confidence: str
+    source: Annotated[list[str], Field(min_length=1)]
+    notes: str
+
+    @property
+    def variables(self) -> list[str]:
+        """The weather variables it adjusts."""
+        return [*self.temperature_per_sun, "et0_fao_evapotranspiration"]
+
+    def apply(self, values: dict[str, np.ndarray], sun: np.ndarray) -> dict[str, np.ndarray]:
+        """``values`` with the adjusted variables replaced (new arrays; the input is left alone)."""
+        if not self.enabled:
+            return values
+        excess = sun - 1.0
+        adjusted = dict(values)
+        for variable, per_sun in self.temperature_per_sun.items():
+            if variable in adjusted:
+                adjusted[variable] = adjusted[variable] + per_sun * excess
+        et0 = "et0_fao_evapotranspiration"
+        if et0 in adjusted:
+            adjusted[et0] = np.maximum(adjusted[et0] * (1.0 + self.et0_per_sun * excess), 0.0)
+        return adjusted
+
+
 SeasonRole = Literal["train", "holdout", "live"]
 
 
@@ -68,12 +107,16 @@ class BacktestSplit(_Strict):
 class ModelConfig(_Strict):
     groups: dict[str, list[str]]
     precipitation_scale: PrecipitationScale
+    microclimate: Microclimate
     backtest: BacktestSplit
 
     @property
     def cited(self) -> dict[str, list[str]]:
         """Reference ids cited by each model-level rule."""
-        return {"precipitation_scale": self.precipitation_scale.source}
+        return {
+            "precipitation_scale": self.precipitation_scale.source,
+            "microclimate": self.microclimate.source,
+        }
 
 
 def load_model_config(path: Path = MODEL_FILE) -> ModelConfig:

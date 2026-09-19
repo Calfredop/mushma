@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from api.grid.habitats import load_vocabulary
-from api.model.config import load_model_config
+from api.model.config import ModelConfig, load_model_config
 from api.model.inputs import load_cells, load_weather
 from api.weather.config import load_weather_config
 
@@ -55,6 +55,14 @@ def test_load_cells_keeps_woodland_cells_with_attributes_and_habitat_fractions(
     assert cells.habitat_fractions[0, beech] == 0.75
     assert cells.habitat_fractions[0, chestnut] == 0.25
     assert cells.habitat_fractions.sum(axis=1).tolist() == [1.0, 1.0]
+    assert cells.attributes["lat"].tolist() == [43.5, 43.5]  # for the sun ratio
+
+
+def _without_microclimate() -> ModelConfig:
+    config = load_model_config()
+    return config.model_copy(
+        update={"microclimate": config.microclimate.model_copy(update={"enabled": False})}
+    )
 
 
 def _weights() -> pd.DataFrame:
@@ -88,7 +96,7 @@ def test_load_weather_scales_reanalysis_rain_by_cell_height_and_flags_forecast_d
         DAY,
         tomorrow,
         load_weather_config(),
-        load_model_config(),
+        _without_microclimate(),
     )
 
     rain = weather.values["precipitation_sum"]
@@ -97,3 +105,43 @@ def test_load_weather_scales_reanalysis_rain_by_cell_height_and_flags_forecast_d
     assert weather.values["temperature_2m_mean"][1, 0] == pytest.approx(12.0 + 0.0045 * 500)
     assert weather.forecast.tolist() == [[False, True], [False, True]]
     assert [d.item() for d in weather.dates] == [DAY, tomorrow]
+
+
+def test_load_weather_moves_each_cell_to_its_own_slope(tmp_path: Path) -> None:
+    cells = load_cells(write_grid(tmp_path / "grid"))  # a 20° north-facing cell and a flat one
+    rows = [
+        ("era5_seamless", "A", DAY, variable, value)
+        for variable, value in [
+            ("temperature_2m_mean", 12.0),
+            ("temperature_2m_min", 6.0),
+            ("et0_fao_evapotranspiration", 3.0),
+        ]
+    ]
+    store = _store(tmp_path / "weather", rows, {("era5_seamless", "A"): 500.0})
+
+    def load(model_config: ModelConfig):
+        return load_weather(
+            duckdb.connect(),
+            store,
+            cells,
+            _weights(),
+            DAY,
+            DAY,
+            load_weather_config(),
+            model_config,
+        )
+
+    flat, sloped = load(_without_microclimate()), load(load_model_config())
+
+    sun = sloped.values["sun_exposure_pct"][:, 0]
+    assert sun[0] < 90  # the north-facing cell in September
+    assert sun[1] == pytest.approx(100, abs=0.1)  # 2°, no dominant facing
+    assert flat.values["sun_exposure_pct"].tolist() == sloped.values["sun_exposure_pct"].tolist()
+    k = load_model_config().microclimate.temperature_per_sun["temperature_2m_mean"]
+    shift = sloped.values["temperature_2m_mean"] - flat.values["temperature_2m_mean"]
+    assert shift[0, 0] == pytest.approx(k * (sun[0] / 100 - 1))
+    et0 = sloped.values["et0_fao_evapotranspiration"] / flat.values["et0_fao_evapotranspiration"]
+    assert et0[0, 0] == pytest.approx(sun[0] / 100)
+    assert (
+        sloped.values["temperature_2m_min"].tolist() == flat.values["temperature_2m_min"].tolist()
+    )
