@@ -1,7 +1,7 @@
 """API response contract. See PRD -> Principles (Honest uncertainty, Sightings
 privacy) and AGENTS.md -> Conventions (Score wording, Rules are data)."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -51,6 +51,18 @@ class ScoresResponse(BaseModel):
     species: SpeciesOrCombined
     date: date
     cells: list[GridCellScore]
+
+
+class StatusResponse(BaseModel):
+    """Data freshness, for the frontend's "last updated" and stale-data warning (M7)."""
+
+    scored_through: date = Field(description="the latest day the pipeline has scored")
+    updated_at: datetime | None = Field(
+        description="when the scores were last (re)generated; null before the first pipeline run"
+    )
+    rules_version: str | None = Field(
+        description="the species rule config's version stamp; null before the first pipeline run"
+    )
 
 
 class CellDetailResponse(BaseModel):

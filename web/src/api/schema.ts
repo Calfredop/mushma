@@ -174,6 +174,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/status': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Data freshness: the latest scored day, when it was generated, and the rules version */
+    get: operations['get_status_status_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -644,6 +661,28 @@ export interface components {
        */
       species: 'porcini' | 'ovoli' | 'gallinacci'
     }
+    /**
+     * StatusResponse
+     * @description Data freshness, for the frontend's "last updated" and stale-data warning (M7).
+     */
+    StatusResponse: {
+      /**
+       * Rules Version
+       * @description the species rule config's version stamp; null before the first pipeline run
+       */
+      rules_version: string | null
+      /**
+       * Scored Through
+       * Format: date
+       * @description the latest day the pipeline has scored
+       */
+      scored_through: string
+      /**
+       * Updated At
+       * @description when the scores were last (re)generated; null before the first pipeline run
+       */
+      updated_at: string | null
+    }
     /** TemperatureStat */
     TemperatureStat: {
       /** Mean C */
@@ -1046,6 +1085,33 @@ export interface operations {
         content: {
           'application/json': components['schemas']['HTTPValidationError']
         }
+      }
+    }
+  }
+  get_status_status_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['StatusResponse']
+        }
+      }
+      /** @description the pipeline has never scored anything yet */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }

@@ -14,6 +14,7 @@ from api.models import (
     SeasonMapResponse,
     SeasonsResponse,
     SightingsResponse,
+    StatusResponse,
 )
 from api.species import Species, SpeciesOrCombined
 
@@ -51,6 +52,10 @@ class HistoryUnavailable(Exception):
     """The time views' tables have not been built yet (``api.history.build``)."""
 
 
+class ScoresUnavailable(Exception):
+    """No scores have been generated yet (``api.jobs.daily`` / ``api.model.pipeline``)."""
+
+
 class ScoresRepository(Protocol):
     def get_scores(self, species: SpeciesOrCombined, target_date: date) -> ScoresResponse:
         """Raises DateOutOfRange if target_date isn't in the served window."""
@@ -82,3 +87,6 @@ class ScoresRepository(Protocol):
 
     def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
         """The season so far and the periods after the 7-day forecast. Raises AreaNotFound."""
+
+    def get_status(self) -> StatusResponse:
+        """Data freshness. Raises ScoresUnavailable if the pipeline has never scored anything."""

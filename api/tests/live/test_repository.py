@@ -2,13 +2,14 @@
 Parquet tree from tests/live/helpers.py (shaped exactly like the real M2/M3/M4 stores)."""
 
 import math
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 
 from api.live.repository import LiveRepository
-from api.repository import CellNotFound, DateOutOfRange
+from api.repository import CellNotFound, DateOutOfRange, ScoresUnavailable
+from api.timeutil import today_rome
 from tests.live.helpers import CELL_A, CELL_B, CELL_C, SCORES_DATE, build_dataset
 
 
@@ -116,6 +117,36 @@ class TestGetCellDetailAndSpot:
     def test_spot_resolves_to_the_nearest_woodland_cell(self, repo: LiveRepository) -> None:
         spot = repo.get_spot(lat=CELL_A["lat"] + 0.0001, lon=CELL_A["lon"] + 0.0001)
         assert spot.cell_id == CELL_A["cell_id"]
+
+
+class TestGetStatus:
+    def test_scored_through_is_the_latest_stored_combined_day(self, repo: LiveRepository) -> None:
+        status = repo.get_status()
+        assert status.scored_through >= today_rome() + timedelta(days=7)
+
+    def test_no_meta_json_means_no_updated_at_or_rules_version(self, repo: LiveRepository) -> None:
+        # tests/live/helpers.py writes score parquet files directly, the way the real pipeline's
+        # rows look, without running api.model.pipeline.write_meta -- so there's no meta.json here.
+        status = repo.get_status()
+        assert status.updated_at is None
+        assert status.rules_version is None
+
+    def test_reads_meta_json_when_the_pipeline_has_written_one(self, tmp_path: Path) -> None:
+        rules = build_dataset(tmp_path)
+        repo = LiveRepository(tmp_path, rules=rules)
+        repo.scores.meta_path.write_text(
+            '{"written_at": "2026-09-18T05:30:00+00:00", "rules_version": "abc123"}'
+        )
+        status = repo.get_status()
+        assert status.updated_at == datetime(2026, 9, 18, 5, 30, tzinfo=UTC)
+        assert status.rules_version == "abc123"
+
+    def test_raises_when_nothing_has_ever_been_scored(self, tmp_path: Path) -> None:
+        from api.model.rules import RuleSet
+
+        repo = LiveRepository(tmp_path, rules=RuleSet(groups={}, species={}, references={}))
+        with pytest.raises(ScoresUnavailable):
+            repo.get_status()
 
 
 def test_a_replayed_days_hotspots_count_only_sightings_up_to_that_day(tmp_path: Path) -> None:

@@ -17,6 +17,7 @@ from api.models import (
     SeasonMapResponse,
     SeasonsResponse,
     SightingsResponse,
+    StatusResponse,
 )
 from api.repository import (
     AreaNotFound,
@@ -24,6 +25,7 @@ from api.repository import (
     DateOutOfRange,
     HistoryUnavailable,
     ScoresRepository,
+    ScoresUnavailable,
     SeasonNotFound,
 )
 from api.species import Species, SpeciesOrCombined
@@ -145,6 +147,21 @@ def get_sightings(
     since_date = since or (today_rome() - timedelta(days=SIGHTINGS_DEFAULT_LOOKBACK_DAYS))
     result = repository.get_sightings(species, since_date, until)
     response.headers["Cache-Control"] = SHORT_LIVED  # counts grow as new sightings are ingested
+    return result
+
+
+@router.get(
+    "/status",
+    response_model=StatusResponse,
+    summary="Data freshness: the latest scored day, when it was generated, and the rules version",
+    responses={503: {"description": "the pipeline has never scored anything yet"}},
+)
+def get_status(repository: Repository, response: Response) -> StatusResponse:
+    try:
+        result = repository.get_status()
+    except ScoresUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    response.headers["Cache-Control"] = SHORT_LIVED
     return result
 
 

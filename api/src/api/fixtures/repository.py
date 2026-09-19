@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 from api.fixtures.cells import CELLS, CellSpec
 from api.fixtures.generator import WINDOW_OFFSETS, combined_score, score_and_factors
@@ -22,6 +22,7 @@ from api.models import (
     SightingCount,
     SightingsResponse,
     SpeciesForecast,
+    StatusResponse,
 )
 from api.repository import CellNotFound, DateOutOfRange
 from api.species import SPECIES, Species, SpeciesOrCombined
@@ -144,6 +145,14 @@ class FixtureRepository:
             ).items()
         ]
         return SightingsResponse(species=species, since=since, counts=counts)
+
+    def get_status(self) -> StatusResponse:
+        # Fixtures are computed on the fly (api.fixtures.generator), so they're always "fresh".
+        return StatusResponse(
+            scored_through=today_rome() + timedelta(days=WINDOW_END),
+            updated_at=datetime.now(UTC),
+            rules_version="fixtures",
+        )
 
     # Time views (M6): hashed stand-ins shaped like api.history's tables.
     _time_views = FixtureTimeViews()

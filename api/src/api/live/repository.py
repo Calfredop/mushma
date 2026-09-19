@@ -6,7 +6,8 @@ Tuscany is the only region in v1 (PRD -> Current focus), so it's hardcoded rathe
 through as a parameter nothing yet varies.
 """
 
-from datetime import date, timedelta
+import json
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import duckdb
@@ -32,8 +33,9 @@ from api.models import (
     SightingCount,
     SightingsResponse,
     SpeciesForecast,
+    StatusResponse,
 )
-from api.repository import CellNotFound, DateOutOfRange
+from api.repository import CellNotFound, DateOutOfRange, ScoresUnavailable
 from api.sightings.store import SightingsStore
 from api.species import SPECIES, Species, SpeciesOrCombined
 from api.timeutil import today_rome
@@ -199,6 +201,25 @@ class LiveRepository:
             for r in counts.itertuples()
         ]
         return SightingsResponse(species=species, since=since, counts=rows)
+
+    def get_status(self) -> StatusResponse:
+        con = duckdb.connect()
+        bounds = self._date_bounds(con, "combined")
+        if bounds is None:
+            raise ScoresUnavailable("no scores stored yet -- has api.jobs.daily ever run?")
+        _, scored_through = bounds
+
+        updated_at: datetime | None = None
+        rules_version: str | None = None
+        if self.scores.meta_path.exists():
+            meta = json.loads(self.scores.meta_path.read_text())
+            written_at = meta.get("written_at")
+            updated_at = datetime.fromisoformat(written_at) if written_at else None
+            rules_version = meta.get("rules_version")
+
+        return StatusResponse(
+            scored_through=scored_through, updated_at=updated_at, rules_version=rules_version
+        )
 
     # --- Time views (M6), from the tables api.history.build writes ------------------------------
 

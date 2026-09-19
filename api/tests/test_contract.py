@@ -18,7 +18,9 @@ from api.models import (
     SeasonMapResponse,
     SeasonsResponse,
     SightingsResponse,
+    StatusResponse,
 )
+from api.timeutil import today_rome
 
 
 @pytest.fixture
@@ -281,6 +283,14 @@ class TestOutlook:
         assert response.status_code == 404
 
 
+class TestStatus:
+    def test_scored_through_covers_at_least_today(self, client: httpx.Client) -> None:
+        response = client.get("/status")
+        assert response.status_code == 200
+        body = StatusResponse.model_validate(response.json())
+        assert body.scored_through >= today_rome()
+
+
 class TestOpenAPISurface:
     def test_every_planned_route_is_documented(self, client: httpx.Client) -> None:
         schema = client.get("/openapi.json").json()
@@ -290,6 +300,7 @@ class TestOpenAPISurface:
             "/cells/{cell_id}",
             "/hotspots",
             "/sightings",
+            "/status",
             "/comuni",
             "/history/seasons",
             "/history/season/{year}",
