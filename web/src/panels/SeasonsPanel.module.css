@@ -287,7 +287,7 @@
   justify-content: space-between;
   gap: var(--space-2);
   width: 100%;
-  min-height: 2.5rem;
+  min-height: var(--tap);
   padding: 0 var(--space-1);
   border: 0;
   border-bottom: 1px solid var(--rule);

@@ -139,7 +139,7 @@ button.label:hover {
 }
 
 .input {
-  min-height: 2.5rem;
+  min-height: var(--tap);
   padding: 0 var(--space-2);
   border: 1px solid var(--rule);
   border-radius: var(--radius-m);
@@ -150,7 +150,7 @@ button.label:hover {
 }
 
 .textButton {
-  min-height: 2.5rem;
+  min-height: var(--tap);
   padding: 0 var(--space-2);
   border: 0;
   background: none;
@@ -165,7 +165,7 @@ button.label:hover {
 }
 
 .go {
-  min-height: 2.5rem;
+  min-height: var(--tap);
   padding: 0 var(--space-4);
   border: 0;
   border-radius: var(--radius-m);
