@@ -673,6 +673,42 @@
         "title": "Place",
         "type": "object"
       },
+      "PlausibleSpeciesResponse": {
+        "description": "Which species an area's woodland plausibly holds, from habitat and altitude alone (weather\nand season aside), and how each species and taxon fared in every stored season.",
+        "properties": {
+          "area": {
+            "$ref": "#/components/schemas/Area"
+          },
+          "good_score": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Good Score",
+            "type": "number"
+          },
+          "plausible_fit": {
+            "description": "the habitat x altitude fit a cell needs for a taxon to count",
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Plausible Fit",
+            "type": "number"
+          },
+          "species": {
+            "items": {
+              "$ref": "#/components/schemas/SpeciesProfile"
+            },
+            "title": "Species",
+            "type": "array"
+          }
+        },
+        "required": [
+          "area",
+          "plausible_fit",
+          "good_score",
+          "species"
+        ],
+        "title": "PlausibleSpeciesResponse",
+        "type": "object"
+      },
       "RainLead": {
         "properties": {
           "max_days": {
@@ -1177,6 +1213,69 @@
         "title": "SpeciesForecast",
         "type": "object"
       },
+      "SpeciesProfile": {
+        "properties": {
+          "fit_share": {
+            "description": "share of the area's woodland plausible for any of its taxa",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Fit Share",
+            "type": "number"
+          },
+          "seasons": {
+            "description": "good days per season, oldest first",
+            "items": {
+              "$ref": "#/components/schemas/SpeciesSeason"
+            },
+            "title": "Seasons",
+            "type": "array"
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci"
+            ],
+            "title": "Species",
+            "type": "string"
+          },
+          "taxa": {
+            "items": {
+              "$ref": "#/components/schemas/TaxonProfile"
+            },
+            "title": "Taxa",
+            "type": "array"
+          }
+        },
+        "required": [
+          "species",
+          "fit_share",
+          "seasons",
+          "taxa"
+        ],
+        "title": "SpeciesProfile",
+        "type": "object"
+      },
+      "SpeciesSeason": {
+        "properties": {
+          "good_days": {
+            "description": "a typical woodland cell's good days",
+            "minimum": 0.0,
+            "title": "Good Days",
+            "type": "number"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "year",
+          "good_days"
+        ],
+        "title": "SpeciesSeason",
+        "type": "object"
+      },
       "StatusResponse": {
         "description": "Data freshness, for the frontend's \"last updated\" and stale-data warning (M7).",
         "properties": {
@@ -1218,6 +1317,48 @@
           "rules_version"
         ],
         "title": "StatusResponse",
+        "type": "object"
+      },
+      "TaxonProfile": {
+        "properties": {
+          "fit_share": {
+            "description": "share of the area's woodland whose habitat and altitude plausibly suit it",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Fit Share",
+            "type": "number"
+          },
+          "i18n_key": {
+            "title": "I18N Key",
+            "type": "string"
+          },
+          "key": {
+            "description": "the taxon's rule set, e.g. porcini_edulis",
+            "title": "Key",
+            "type": "string"
+          },
+          "seasons": {
+            "description": "its own good days per season, oldest first",
+            "items": {
+              "$ref": "#/components/schemas/SpeciesSeason"
+            },
+            "title": "Seasons",
+            "type": "array"
+          },
+          "taxon": {
+            "description": "scientific name, as the rule set gives it",
+            "title": "Taxon",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "taxon",
+          "i18n_key",
+          "fit_share",
+          "seasons"
+        ],
+        "title": "TaxonProfile",
         "type": "object"
       },
       "TemperatureStat": {
@@ -1796,6 +1937,60 @@
           }
         },
         "summary": "Public sighting counts per cell (never coordinates)"
+      }
+    },
+    "/species": {
+      "get": {
+        "operationId": "get_species_species_get",
+        "parameters": [
+          {
+            "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+            "in": "query",
+            "name": "comune",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+              "title": "Comune"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlausibleSpeciesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "unknown comune"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "history not built yet"
+          }
+        },
+        "summary": "Plausible species for Tuscany or a comune: habitat fit and good days per season, per species and taxon"
       }
     },
     "/spot": {

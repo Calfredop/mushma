@@ -16,19 +16,41 @@ HISTORY_SOURCE = "era5_seamless"
 FORECAST_SOURCE = "ecmwf_ifs"
 FETCHED = datetime(2026, 1, 5, tzinfo=UTC)
 
-# Two comuni: Alpha (two cells at 500 and 700 m) and Beta (one cell at 300 m); a fourth cell is
-# not woodland.
+# Two comuni: Alpha (beech at 500 m, chestnut at 700 m) and Beta (Turkey oak at 300 m); a fourth
+# cell is not woodland.
 CELLS = [
-    {"x": 0, "y": 0, "comune": ("048001", "Alpha", "FI"), "elevation": 500.0, "woodland": True},
-    {"x": 1000, "y": 0, "comune": ("048001", "Alpha", "FI"), "elevation": 700.0, "woodland": True},
+    {
+        "x": 0,
+        "y": 0,
+        "comune": ("048001", "Alpha", "FI"),
+        "elevation": 500.0,
+        "woodland": True,
+        "habitat": "beech",
+    },
+    {
+        "x": 1000,
+        "y": 0,
+        "comune": ("048001", "Alpha", "FI"),
+        "elevation": 700.0,
+        "woodland": True,
+        "habitat": "chestnut",
+    },
     {
         "x": 9000,
         "y": 9000,
         "comune": ("053002", "Beta", "GR"),
         "elevation": 300.0,
         "woodland": True,
+        "habitat": "deciduous_oak",
     },
-    {"x": 0, "y": 9000, "comune": ("053002", "Beta", "GR"), "elevation": 10.0, "woodland": False},
+    {
+        "x": 0,
+        "y": 9000,
+        "comune": ("053002", "Beta", "GR"),
+        "elevation": 10.0,
+        "woodland": False,
+        "habitat": "macchia",
+    },
 ]
 CELL_IDS = [make_cell_id(c["x"], c["y"], 1000) for c in CELLS]
 A1, A2, B1, B_TOWN = CELL_IDS
@@ -48,6 +70,10 @@ def write_grid(root: Path) -> None:
                 "lat": 43.0 + spec["y"] / 100_000,
                 "woodland": spec["woodland"],
                 "elevation_m": spec["elevation"],
+                "slope_deg": 10.0,
+                "aspect_deg": 180.0,
+                "northness": -1.0,
+                "soil_ph": 6.0,
                 "comune_code": code,
                 "comune_name": name,
                 "province": province,
@@ -57,6 +83,13 @@ def write_grid(root: Path) -> None:
     path = root / "grid" / REGION / "cells.parquet"
     path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_parquet(path, index=False)
+    pd.DataFrame(
+        {
+            "cell_id": CELL_IDS,
+            "habitat": [c["habitat"] for c in CELLS],
+            "fraction": 1.0,
+        }
+    ).to_parquet(path.with_name("cell_habitats.parquet"), index=False)
 
 
 def weather_store(root: Path) -> WeatherStore:

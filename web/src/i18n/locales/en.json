@@ -242,6 +242,15 @@
     "region": "All of Tuscany",
     "comune": "{{name}} ({{province}})"
   },
+  "plausible": {
+    "title": "Plausible species",
+    "note": "How much of the area's woodland has the forest type and altitude each species needs, weather aside. A group counts woodland that suits any of its taxa, so the lines beneath it don't add up.",
+    "loading": "Loading the plausible species…",
+    "loadError": "Couldn't load the plausible species.",
+    "none": "None of the three species finds suitable woodland here.",
+    "seasonTitle": "Good days by species",
+    "seasonNote": "A group counts the days that were good for any of its taxa, so the lines beneath it don't add up."
+  },
   "seasons": {
     "title": "Seasons",
     "subtitle": "{{species}} · {{area}}",

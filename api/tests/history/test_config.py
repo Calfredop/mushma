@@ -11,6 +11,7 @@ def test_the_shipped_config_loads_and_cites_known_references() -> None:
     config = load_history_config()
 
     assert 0 < config.good_score <= 1
+    assert 0 < config.plausible_fit <= 1
     assert config.baseline.start_year <= config.baseline.end_year
     assert config.outlook.rain.drier_pct < 100 < config.outlook.rain.wetter_pct
     assert config.normals.window_days % 2 == 1

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { OUTLOOK } from '../test/fixtures'
+import { OUTLOOK, PLAUSIBLE } from '../test/fixtures'
 import { OutlookPanel } from './OutlookPanel'
 
 const props = {
@@ -85,5 +85,38 @@ describe('OutlookPanel periods', () => {
     )
     expect(screen.getByText('Porcini · Tuscany')).toBeInTheDocument()
     await i18n.changeLanguage('it')
+  })
+
+  it("shows which species the chosen zone's woodland suits", () => {
+    render(
+      <OutlookPanel
+        {...props}
+        plausible={{
+          data: { ...PLAUSIBLE, area: OUTLOOK.area },
+          isLoading: false,
+          isError: false,
+          onRetry: () => {},
+        }}
+      />,
+    )
+    expect(screen.getByRole('list', { name: 'Specie plausibili' })).toBeInTheDocument()
+  })
+
+  it("never shows the zone picked before as this one's species", () => {
+    render(
+      <OutlookPanel
+        {...props}
+        plausible={{
+          data: PLAUSIBLE,
+          isLoading: true,
+          isError: false,
+          onRetry: () => {},
+        }}
+      />,
+    )
+    expect(
+      screen.queryByRole('list', { name: 'Specie plausibili' }),
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Carico le specie plausibili…')).toBeInTheDocument()
   })
 })

@@ -10,6 +10,7 @@ import pytest
 from api.history.build import build_normals, build_outlook_areas, update_history
 from api.history.store import ClimatologyStore, HistoryStore
 from api.model.config import load_model_config
+from api.model.rules import load_rules
 from api.weather.config import load_weather_config
 from tests.history.helpers import (
     A1,
@@ -131,6 +132,40 @@ def test_update_keeps_good_days_per_cell_for_the_season_map(root: Path) -> None:
     cells = HistoryStore(root / "history" / REGION).read_cell_seasons(2025, "porcini")
 
     assert cells.set_index("cell_id")["good_days"].to_dict() == {A1: 10, A2: 0, B1: 5}
+
+
+def test_update_writes_each_areas_plausible_species(root: Path) -> None:
+    build_normals(REGION, root)
+    update_history(REGION, [2025], root)
+
+    fit = HistoryStore(root / "history" / REGION).read_area_fit()
+
+    rules = load_rules()
+    assert set(fit["species"]) == {*rules.species, *rules.groups}
+    assert set(fit["area_code"]) == {REGION, "048001", "053002"}
+    assert fit["fit_share"].between(0, 1).all()
+    table = fit.set_index(["area_code", "species"])
+    # Beta is Turkey oak at 300 m: the ovolo's lead host, in its altitude band.
+    assert table.loc[("053002", "ovoli"), "fit_share"] == pytest.approx(1.0)
+    assert table.loc[("053002", "ovoli_caesarea"), "fit_share"] == pytest.approx(1.0)
+    assert table.loc[(REGION, "ovoli"), "cells"] == 3
+
+
+def test_update_keeps_each_taxons_season_good_days(root: Path) -> None:
+    write_scores(root, "porcini_edulis", date(2025, 1, 1), date(2025, 12, 31), _porcini)
+    build_normals(REGION, root)
+    update_history(REGION, [2025], root)
+
+    store = HistoryStore(root / "history" / REGION)
+    taxa = store.read_taxon_seasons("048001")
+
+    assert taxa[["species", "year"]].values.tolist() == [["porcini_edulis", 2025]]
+    assert taxa.iloc[0]["good_days"] == pytest.approx(5.0)  # 10 days on 1 of 2 cells
+    assert taxa.iloc[0]["through"] == date(2025, 12, 31)
+    meta = store.read_meta()
+    assert meta["plausible_fit"] == pytest.approx(0.5)
+    assert meta["groups"]["porcini"][0] in meta["taxa"]
+    assert meta["taxa"]["porcini_edulis"]["taxon"] == "Boletus edulis"
 
 
 def test_update_records_which_years_the_baselines_used(root: Path) -> None:

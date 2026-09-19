@@ -7,6 +7,13 @@
 # alike; at 0.6 September 2025 (80 % of cell-days) still stands apart from October (39 %).
 good_score: 0.6
 
+# A taxon is plausible in a woodland cell when its static gates (habitat affinity x altitude band,
+# weather and season aside) reach at least this: a moderate host, as the rule files rank hosts
+# (0.5), inside the altitude band. An area's plausible species are the share of its woodland that
+# does (api.history.plausible). Aggregation, not a species rule. Gallinacci on pure deciduous oak
+# sit exactly here (affinity 0.5), so they count.
+plausible_fit: 0.5
+
 # Normals and "typical" seasons use the complete years inside this span (reanalysis years for the
 # weather normals, fully scored seasons for the scores). The backfill starts in 2016
 # (weather-ingest.md); 2026 is still in season.

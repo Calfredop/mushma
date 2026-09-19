@@ -2,6 +2,7 @@ import type {
   CellDetailResponse,
   Hotspot,
   OutlookResponse,
+  PlausibleSpeciesResponse,
   SeasonMapResponse,
   SeasonsResponse,
 } from '../api/queries'
@@ -182,6 +183,51 @@ export const OUTLOOK: OutlookResponse = {
       temperature_anomaly_c: 1,
       lead_rain_pct: 130,
       outlook: 'better',
+    },
+  ],
+}
+
+const seasons = (d2025: number, d2026: number) => [
+  { year: 2025, good_days: d2025 },
+  { year: 2026, good_days: d2026 },
+]
+
+const taxon = (key: string, taxon: string, fit: number, d2025: number) => ({
+  key,
+  taxon,
+  i18n_key: `species.${key}`,
+  fit_share: fit,
+  seasons: seasons(d2025, 1),
+})
+
+/** Careggine: porcini country above all, ovoli barely. */
+export const PLAUSIBLE: PlausibleSpeciesResponse = {
+  area: { code: '046009', name: 'Careggine', kind: 'comune' },
+  plausible_fit: 0.5,
+  good_score: 0.6,
+  species: [
+    {
+      species: 'porcini',
+      fit_share: 0.92,
+      seasons: seasons(62, 4),
+      taxa: [
+        taxon('porcini_edulis', 'Boletus edulis', 0.61, 40),
+        taxon('porcini_reticulatus', 'Boletus reticulatus', 0.85, 21),
+        taxon('porcini_aereus', 'Boletus aereus', 0.07, 3),
+        taxon('porcini_pinophilus', 'Boletus pinophilus', 0.3, 12),
+      ],
+    },
+    {
+      species: 'ovoli',
+      fit_share: 0.04,
+      seasons: seasons(0, 0),
+      taxa: [taxon('ovoli_caesarea', 'Amanita caesarea', 0.04, 0)],
+    },
+    {
+      species: 'gallinacci',
+      fit_share: 0.7,
+      seasons: seasons(71, 9),
+      taxa: [taxon('gallinacci_cibarius', 'Cantharellus cibarius s.l.', 0.7, 71)],
     },
   ],
 }

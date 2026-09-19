@@ -30,6 +30,9 @@ export type OutlookPeriod = components['schemas']['OutlookPeriod']
 export type RainStat = components['schemas']['RainStat']
 export type TemperatureStat = components['schemas']['TemperatureStat']
 export type StatusResponse = components['schemas']['StatusResponse']
+export type PlausibleSpeciesResponse = components['schemas']['PlausibleSpeciesResponse']
+export type SpeciesProfile = components['schemas']['SpeciesProfile']
+export type TaxonProfile = components['schemas']['TaxonProfile']
 
 export class ApiError extends Error {
   readonly status: number
@@ -243,6 +246,23 @@ export function useOutlook(species: Species | null, comune: string | null) {
           signal,
         })
         .then(unwrap<OutlookResponse>('/outlook')),
+    staleTime: 60 * MINUTE,
+  })
+}
+
+/** Which species the woodland of a comune (or Tuscany) plausibly holds, per species and taxon,
+ * and each one's good days per season. */
+export function usePlausibleSpecies(comune: string | null, enabled: boolean) {
+  return useQuery({
+    queryKey: ['species', comune],
+    enabled,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/species', {
+          params: { query: comune ? { comune } : {} },
+          signal,
+        })
+        .then(unwrap<PlausibleSpeciesResponse>('/species')),
     staleTime: 60 * MINUTE,
   })
 }

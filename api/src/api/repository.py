@@ -10,6 +10,7 @@ from api.models import (
     ComuniResponse,
     HotspotsResponse,
     OutlookResponse,
+    PlausibleSpeciesResponse,
     ScoresResponse,
     SeasonMapResponse,
     SeasonsResponse,
@@ -87,6 +88,10 @@ class ScoresRepository(Protocol):
 
     def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
         """The season so far and the periods after the 7-day forecast. Raises AreaNotFound."""
+
+    def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
+        """Which species the woodland of Tuscany or one comune plausibly holds, and each one's
+        good days per season. Raises AreaNotFound."""
 
     def get_status(self) -> StatusResponse:
         """Data freshness. Raises ScoresUnavailable if the pipeline has never scored anything."""

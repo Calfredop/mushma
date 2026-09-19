@@ -31,9 +31,11 @@ from api.history.areas import (
 )
 from api.history.config import HistoryConfig, load_history_config, rain_lead_days
 from api.history.normals import complete_years, daily_normals
+from api.history.plausible import area_fit, static_fit
 from api.history.seasons import (
     SPECIES_ALL,
     area_day_scores,
+    area_good_days,
     area_sightings,
     assemble_seasons,
     cell_good_days,
@@ -41,6 +43,7 @@ from api.history.seasons import (
 )
 from api.history.store import ClimatologyStore, HistoryStore
 from api.model.config import ModelConfig, load_model_config
+from api.model.inputs import load_cells
 from api.model.rules import load_rules
 from api.model.series import day_of_year
 from api.model.store import ScoreStore
@@ -246,6 +249,35 @@ def _score_years(seasons: pd.DataFrame, region: str, baseline: list[int]) -> lis
     return sorted(int(y) for y, ok in complete.items() if ok and y in baseline)
 
 
+def _taxon_seasons(
+    con: duckdb.DuckDBPyConnection,
+    scores: ScoreStore,
+    keys: list[str],
+    members: pd.DataFrame,
+    year: int,
+    last_day: date,
+    config: HistoryConfig,
+) -> pd.DataFrame:
+    """Each taxon key's good days per area in ``year``, up to ``last_day``."""
+    end = min(date(year, 12, 31), last_day)
+    frames = []
+    for key in keys:
+        path = scores.partition_path(key, year)
+        if not path.exists():
+            continue
+        relation = con.sql(
+            f"SELECT cell_id, date, score FROM read_parquet('{path}') WHERE date <= DATE '{end}'"
+        )
+        frames.append(
+            area_good_days(relation, members, config.good_score, con).assign(species=key, year=year)
+        )
+    frames = [f for f in frames if not f.empty]
+    if not frames:
+        return pd.DataFrame()
+    columns = ["area_code", "species", "year", "days", "through", "good_days"]
+    return pd.concat(frames, ignore_index=True)[columns]
+
+
 def update_history(
     region: str,
     years: list[int],
@@ -278,6 +310,8 @@ def update_history(
     # (Isola del Giglio) would list with nothing behind it.
     served = cells[cells["cell_id"].isin(set(weights["cell_id"]))]
     store.write(store.areas_path, area_table(served, region, REGION_NAMES.get(region, region)))
+    fits = static_fit(rules, load_cells(grid_dir))
+    store.write(store.area_fit_path, area_fit(fits, members, config.plausible_fit))
 
     rollup = _AreaWeather(
         woodland,
@@ -318,6 +352,9 @@ def update_history(
             store.write_partition(
                 "cell_seasons", year, pd.concat([f for f in cell_frames if not f.empty])
             )
+        taxa = _taxon_seasons(con, scores, list(rules.species), members, year, last_day, config)
+        if not taxa.empty:
+            store.write_partition("taxon_seasons", year, taxa)
         log(f"history {year}: {len(area_weather)} area-days of weather, {len(days)} of scores")
 
     records = SightingsStore(root / "sightings" / region).daily_counts_by_cell(con).df()
@@ -354,6 +391,12 @@ def update_history(
         "written_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "region": region,
         "good_score": config.good_score,
+        "plausible_fit": config.plausible_fit,
+        "groups": {group: list(keys_) for group, keys_ in rules.groups.items()},
+        "taxa": {
+            key: {"taxon": spec.taxon, "i18n_key": spec.i18n_key}
+            for key, spec in rules.species.items()
+        },
         "baseline": [config.baseline.start_year, config.baseline.end_year],
         "weather_years": climatology.read_meta().get("years", []),
         "score_years": _score_years(seasons, region, config.baseline.years),

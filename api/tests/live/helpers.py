@@ -303,6 +303,26 @@ HISTORY_WINDOWS = {
     "combined": (105, 365),
 }
 HISTORY_RAIN_LEAD = {"porcini": [10, 16], "ovoli": [10, 20], "gallinacci": [10, 30]}
+HISTORY_GROUPS = {
+    "porcini": ["porcini_a", "porcini_b"],
+    "ovoli": ["ovoli_a"],
+    "gallinacci": ["gallinacci_a"],
+}
+HISTORY_TAXA = {
+    key: {"taxon": f"Testus {key}", "i18n_key": f"species.{key}"}
+    for keys in HISTORY_GROUPS.values()
+    for key in keys
+}
+HISTORY_FIT = {
+    ("045001", "porcini"): 1.0,
+    ("045001", "porcini_a"): 1.0,
+    ("045001", "porcini_b"): 0.25,
+    ("045001", "gallinacci"): 0.5,
+    ("045001", "gallinacci_a"): 0.5,
+    ("tuscany", "porcini"): 0.4,
+    ("tuscany", "porcini_a"): 1 / 3,
+}
+HISTORY_TAXON_GOOD_DAYS = {"porcini_a": 12.0, "porcini_b": 4.5, "gallinacci_a": 7.0}
 
 
 def _history_days(first: date, last: date) -> list[date]:
@@ -441,9 +461,50 @@ def write_history(root: Path) -> None:
             ]
         ),
     )
+    # Plausible species: Alpha is porcini_a country, Beta and Gamma are not; porcini_b and the
+    # other groups' taxa have their own good days only in the last complete season.
+    store.write(
+        store.area_fit_path,
+        pd.DataFrame(
+            [
+                {
+                    "area_code": code,
+                    "species": species,
+                    "cells": len(cells),
+                    "fit_share": HISTORY_FIT.get((code, species), 0.0),
+                }
+                for code, _, _, _, cells in HISTORY_AREAS
+                for species in (*HISTORY_GROUPS, *HISTORY_TAXA)
+            ]
+        ),
+    )
+    for year in years:
+        store.write_partition(
+            "taxon_seasons",
+            year,
+            pd.DataFrame(
+                [
+                    {
+                        "area_code": code,
+                        "species": key,
+                        "year": year,
+                        "days": 365,
+                        "through": date(year, 12, 31),
+                        "good_days": HISTORY_TAXON_GOOD_DAYS.get(key, 0.0)
+                        if year == years[1]
+                        else 0.0,
+                    }
+                    for code, *_ in HISTORY_AREAS
+                    for key in HISTORY_TAXA
+                ]
+            ),
+        )
     store.write_meta(
         {
             "good_score": 0.6,
+            "plausible_fit": 0.5,
+            "groups": HISTORY_GROUPS,
+            "taxa": HISTORY_TAXA,
             "weather_years": years[:2],
             "score_years": years[:2],
             "windows": {k: list(v) for k, v in HISTORY_WINDOWS.items()},

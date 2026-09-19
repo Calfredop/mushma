@@ -13,6 +13,7 @@ from api.models import (
     ComuniResponse,
     HotspotsResponse,
     OutlookResponse,
+    PlausibleSpeciesResponse,
     ScoresResponse,
     SeasonMapResponse,
     SeasonsResponse,
@@ -254,4 +255,24 @@ def get_outlook(
     except HistoryUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     response.headers["Cache-Control"] = SHORT_LIVED
+    return result
+
+
+@router.get(
+    "/species",
+    response_model=PlausibleSpeciesResponse,
+    summary="Plausible species for Tuscany or a comune: habitat fit and good days per season, "
+    "per species and taxon",
+    responses={404: {"description": "unknown comune"}, **_HISTORY_ERRORS},
+)
+def get_species(
+    repository: Repository, response: Response, comune: Comune = None
+) -> PlausibleSpeciesResponse:
+    try:
+        result = repository.get_species(comune)
+    except AreaNotFound as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except HistoryUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    response.headers["Cache-Control"] = SHORT_LIVED  # this season grows every day
     return result

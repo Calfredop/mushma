@@ -157,6 +157,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/species': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Plausible species for Tuscany or a comune: habitat fit and good days per season, per species and taxon */
+    get: operations['get_species_species_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/spot': {
     parameters: {
       query?: never
@@ -458,6 +475,23 @@ export interface components {
       /** Nearest Place */
       nearest_place: string
     }
+    /**
+     * PlausibleSpeciesResponse
+     * @description Which species an area's woodland plausibly holds, from habitat and altitude alone (weather
+     *     and season aside), and how each species and taxon fared in every stored season.
+     */
+    PlausibleSpeciesResponse: {
+      area: components['schemas']['Area']
+      /** Good Score */
+      good_score: number
+      /**
+       * Plausible Fit
+       * @description the habitat x altitude fit a cell needs for a taxon to count
+       */
+      plausible_fit: number
+      /** Species */
+      species: components['schemas']['SpeciesProfile'][]
+    }
     /** RainLead */
     RainLead: {
       /** Max Days */
@@ -661,6 +695,36 @@ export interface components {
        */
       species: 'porcini' | 'ovoli' | 'gallinacci'
     }
+    /** SpeciesProfile */
+    SpeciesProfile: {
+      /**
+       * Fit Share
+       * @description share of the area's woodland plausible for any of its taxa
+       */
+      fit_share: number
+      /**
+       * Seasons
+       * @description good days per season, oldest first
+       */
+      seasons: components['schemas']['SpeciesSeason'][]
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci'
+      /** Taxa */
+      taxa: components['schemas']['TaxonProfile'][]
+    }
+    /** SpeciesSeason */
+    SpeciesSeason: {
+      /**
+       * Good Days
+       * @description a typical woodland cell's good days
+       */
+      good_days: number
+      /** Year */
+      year: number
+    }
     /**
      * StatusResponse
      * @description Data freshness, for the frontend's "last updated" and stale-data warning (M7).
@@ -682,6 +746,31 @@ export interface components {
        * @description when the scores were last (re)generated; null before the first pipeline run
        */
       updated_at: string | null
+    }
+    /** TaxonProfile */
+    TaxonProfile: {
+      /**
+       * Fit Share
+       * @description share of the area's woodland whose habitat and altitude plausibly suit it
+       */
+      fit_share: number
+      /** I18N Key */
+      i18n_key: string
+      /**
+       * Key
+       * @description the taxon's rule set, e.g. porcini_edulis
+       */
+      key: string
+      /**
+       * Seasons
+       * @description its own good days per season, oldest first
+       */
+      seasons: components['schemas']['SpeciesSeason'][]
+      /**
+       * Taxon
+       * @description scientific name, as the rule set gives it
+       */
+      taxon: string
     }
     /** TemperatureStat */
     TemperatureStat: {
@@ -1053,6 +1142,52 @@ export interface operations {
         content: {
           'application/json': components['schemas']['HTTPValidationError']
         }
+      }
+    }
+  }
+  get_species_species_get: {
+    parameters: {
+      query?: {
+        /** @description ISTAT comune code (see /comuni); omit for all of Tuscany */
+        comune?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlausibleSpeciesResponse']
+        }
+      }
+      /** @description unknown comune */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+      /** @description history not built yet */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }

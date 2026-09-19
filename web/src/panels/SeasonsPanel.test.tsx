@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { SEASON_MAP, SEASONS } from '../test/fixtures'
+import { PLAUSIBLE, SEASON_MAP, SEASONS } from '../test/fixtures'
 import { SeasonsPanel } from './SeasonsPanel'
 
 const props = {
@@ -92,5 +92,53 @@ describe('SeasonsPanel', () => {
       '046009',
     )
     expect(onComune).toHaveBeenCalledWith('046009')
+  })
+
+  it("breaks a zone's chosen season down by species and taxon", () => {
+    render(
+      <SeasonsPanel
+        {...props}
+        comune="046009"
+        seasons={{ ...SEASONS, area: PLAUSIBLE.area }}
+        selected={2025}
+        plausible={{
+          data: PLAUSIBLE,
+          isLoading: false,
+          isError: false,
+          onRetry: () => {},
+        }}
+      />,
+    )
+    expect(screen.getByRole('list', { name: 'Specie plausibili' })).toBeInTheDocument()
+    const byDays = screen.getByRole('list', { name: 'Giorni favorevoli per specie' })
+    const lines = within(byDays)
+      .getAllByRole('listitem')
+      .map((item) => item.firstElementChild?.textContent)
+    expect(lines).toEqual([
+      'GallinacciCantharellus cibarius s.l.71',
+      'PorciniBoletus edulis e affini62',
+      'Boletus edulis40',
+      'Boletus reticulatus21',
+      'Boletus pinophilus12',
+      'Boletus aereus3',
+      'OvoliAmanita caesarea0',
+    ])
+  })
+
+  it('shows no species breakdown for the whole region', () => {
+    render(
+      <SeasonsPanel
+        {...props}
+        selected={2025}
+        plausible={{
+          data: undefined,
+          isLoading: false,
+          isError: false,
+          onRetry: () => {},
+        }}
+      />,
+    )
+    expect(screen.queryByText('Specie plausibili')).not.toBeInTheDocument()
+    expect(screen.queryByText('Giorni favorevoli per specie')).not.toBeInTheDocument()
   })
 })

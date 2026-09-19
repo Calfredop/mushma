@@ -14,11 +14,17 @@
 - ``area_days/year=<yyyy>/data.parquet``: ``area_code, species, date, cells, good_cells,
   mean_score``.
 - ``cell_seasons/year=<yyyy>/data.parquet``: ``species, cell_id, days, good_days`` (the season map).
+- ``taxon_seasons/year=<yyyy>/data.parquet``: ``area_code, species, year, days, through,
+  good_days`` for each taxon key (``porcini_edulis``): its own good days, where ``seasons.parquet``
+  has the groups'.
+- ``area_fit.parquet``: ``area_code, species, cells, fit_share``: the share of each area's woodland
+  where a taxon key or group is plausible (``api.history.plausible``).
 - ``area_sightings.parquet``: ``area_code, species, date, count`` (counts only).
 - ``seasons.parquet`` and ``months.parquet``: ``api.history.seasons.assemble_seasons``.
 - ``area_seasonal.parquet``: the latest long-range forecast per area: ``area_code, kind, start,
   end, variable, value, anomaly, fetched_at``.
-- ``meta.json``: good-day threshold, season windows, and the years behind each baseline.
+- ``meta.json``: good-day and plausible-fit thresholds, season windows, the years behind each
+  baseline, and the groups with their taxa.
 """
 
 import json
@@ -27,7 +33,7 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
-YEARLY = ("area_weather", "area_days", "cell_seasons")
+YEARLY = ("area_weather", "area_days", "cell_seasons", "taxon_seasons")
 
 
 def _write(frame: pd.DataFrame, path: Path) -> Path:
@@ -71,6 +77,7 @@ class HistoryStore:
         self.seasons_path = root / "seasons.parquet"
         self.months_path = root / "months.parquet"
         self.area_seasonal_path = root / "area_seasonal.parquet"
+        self.area_fit_path = root / "area_fit.parquet"
         self.meta_path = root / "meta.json"
 
     def partition_path(self, table: str, year: int) -> Path:
@@ -139,6 +146,19 @@ class HistoryStore:
         if not path.exists():
             return pd.DataFrame(columns=["species", "cell_id", "days", "good_days"])
         return pd.read_parquet(path, filters=[("species", "==", species)])
+
+    def read_taxon_seasons(self, area_code: str) -> pd.DataFrame:
+        frame = self._read_yearly("taxon_seasons", None, [("area_code", "==", area_code)])
+        if frame.empty:
+            return pd.DataFrame(
+                columns=["area_code", "species", "year", "days", "through", "good_days"]
+            )
+        return _dates(frame, "through").sort_values(["species", "year"], ignore_index=True)
+
+    def read_area_fit(self) -> pd.DataFrame:
+        if not self.area_fit_path.exists():
+            return pd.DataFrame(columns=["area_code", "species", "cells", "fit_share"])
+        return pd.read_parquet(self.area_fit_path)
 
     def read_areas(self) -> pd.DataFrame:
         return pd.read_parquet(self.areas_path)

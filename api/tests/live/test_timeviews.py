@@ -82,6 +82,58 @@ def test_the_outlook_starts_after_the_7_day_forecast_and_reads_the_rain(
         assert period.outlook in ("better", "usual", "worse")
 
 
+def test_a_comunes_plausible_species_break_each_group_down_by_taxon(
+    repo: LiveRepository,
+) -> None:
+    body = repo.get_species("045001")
+
+    assert (body.area.kind, body.area.name) == ("comune", "Alpha")
+    assert body.plausible_fit == pytest.approx(0.5)
+    assert [s.species for s in body.species] == ["porcini", "ovoli", "gallinacci"]
+    porcini = body.species[0]
+    assert porcini.fit_share == pytest.approx(1.0)
+    assert [(t.key, t.fit_share) for t in porcini.taxa] == [("porcini_a", 1.0), ("porcini_b", 0.25)]
+    assert porcini.taxa[0].taxon == "Testus porcini_a"
+    assert porcini.taxa[0].i18n_key == "species.porcini_a"
+    assert body.species[1].fit_share == 0.0  # no ovoli habitat in Alpha
+
+
+def test_plausible_species_carry_each_seasons_good_days(repo: LiveRepository) -> None:
+    last = today_rome().year - 1
+
+    body = repo.get_species("045001")
+
+    porcini = body.species[0]
+    seasons = repo.get_seasons("porcini", "045001").seasons
+    assert [(s.year, s.good_days) for s in porcini.seasons] == pytest.approx(
+        [(s.year, s.good_days) for s in seasons]
+    )
+    by_year = {s.year: s.good_days for s in porcini.taxa[1].seasons}
+    assert by_year[last] == pytest.approx(4.5)
+    assert by_year[last - 1] == 0.0
+
+
+def test_the_regions_plausible_species(repo: LiveRepository) -> None:
+    body = repo.get_species(None)
+
+    assert body.area.kind == "region"
+    assert body.species[0].fit_share == pytest.approx(0.4)
+    with pytest.raises(AreaNotFound):
+        repo.get_species("999999")
+
+
+def test_the_plausible_species_route(repo: LiveRepository) -> None:
+    app.dependency_overrides[get_repository] = lambda: repo
+    try:
+        with TestClient(app) as client:
+            response = client.get("/species", params={"comune": "045001"})
+            assert response.status_code == 200
+            assert response.json()["species"][0]["taxa"][0]["key"] == "porcini_a"
+            assert client.get("/species", params={"comune": "nope"}).status_code == 404
+    finally:
+        app.dependency_overrides.pop(get_repository, None)
+
+
 def test_without_history_the_time_views_are_unavailable(tmp_path: Path) -> None:
     write_cells(tmp_path, [cell(0, 0, lon=10.0, lat=43.0)])
     repo = LiveRepository(tmp_path, rules=None)
@@ -93,6 +145,7 @@ def test_without_history_the_time_views_are_unavailable(tmp_path: Path) -> None:
                 ("/history/seasons", {}),
                 ("/history/season/2025", {"species": "porcini"}),
                 ("/outlook", {"species": "porcini"}),
+                ("/species", {}),
             ):
                 assert client.get(path, params=params).status_code == 503, path
     finally:

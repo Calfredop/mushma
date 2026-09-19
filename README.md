@@ -123,7 +123,7 @@ uv run ruff format --check .
 
 The routes read the data pipeline's stores under `DATA_DIR` (below): `/scores`, `/spot`,
 `/cells/{id}`, `/hotspots`, `/sightings`, and the time views `/comuni`, `/history/seasons`,
-`/history/season/{year}` and `/outlook` (503 until `api.history.build` has run). Set
+`/history/season/{year}`, `/outlook` and `/species` (503 until `api.history.build` has run). Set
 `MUSHMA_FIXTURES=1` (see `api/.env.example`) to serve every route from a hand-shaped fixture
 dataset instead, with no data at all.
 

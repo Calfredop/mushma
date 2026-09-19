@@ -4,8 +4,11 @@ import type {
   SeasonMapResponse,
   SeasonsResponse,
   SeasonSummary,
+  SpeciesProfile,
+  TaxonProfile,
 } from '../api/queries'
 import { AreaPicker } from '../components/AreaPicker'
+import { SpeciesBreakdown } from '../components/SpeciesBreakdown'
 import {
   formatDays,
   formatDelta,
@@ -19,6 +22,7 @@ import { intlLocale, type Language } from '../i18n'
 import type { SpeciesOrCombined } from '../state/urlState'
 import { formatDayLong, formatDayMonth, formatMonth, type IsoDate } from '../time/days'
 import panel from './panel.module.css'
+import { PlausibleSpecies, type PlausibleState } from './PlausibleSpecies'
 import styles from './SeasonsPanel.module.css'
 
 interface Props {
@@ -38,6 +42,8 @@ interface Props {
   onReplayDay: (date: IsoDate) => void
   sightingsVisible: boolean
   onSightingsVisibleChange: (visible: boolean) => void
+  /** The chosen zone's plausible species; not shown for the whole region. */
+  plausible?: PlausibleState
 }
 
 const TOP_COMUNI = 5
@@ -65,11 +71,20 @@ export function SeasonsPanel({
   onReplayDay,
   sightingsVisible,
   onSightingsVisibleChange,
+  plausible,
 }: Props) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
   const locale = intlLocale(language)
   const rows = seasons ? [...seasons.seasons].reverse() : []
+  // The zone's own profile only: a response for the zone picked before is not this one's.
+  const zone =
+    comune !== null && plausible
+      ? {
+          ...plausible,
+          data: plausible.data?.area.code === comune ? plausible.data : undefined,
+        }
+      : null
   const scale =
     Math.max(1, ...rows.flatMap((s) => [s.good_days, s.good_days_typical ?? 0])) * 1.04
   const chosen = rows.find((s) => s.year === selected)
@@ -96,6 +111,7 @@ export function SeasonsPanel({
       </header>
 
       <AreaPicker comuni={comuni} value={comune} onChange={onComune} />
+      {zone && <PlausibleSpecies plausible={zone} />}
 
       {isLoading && <p className={panel.status}>{t('seasons.loading')}</p>}
       {isError && (
@@ -149,6 +165,7 @@ export function SeasonsPanel({
           language={language}
           onReplayDay={onReplayDay}
           onComune={onComune}
+          species={zone?.data?.species}
         />
       )}
 
@@ -255,6 +272,13 @@ interface DetailProps {
   language: Language
   onReplayDay: (date: IsoDate) => void
   onComune: (comune: string | null) => void
+  /** Every species' and taxon's seasons in the zone, to break this one down. */
+  species: SpeciesProfile[] | undefined
+}
+
+/** One season's good days for a species or taxon; 0 for a season it has none stored. */
+function goodDaysIn(entry: SpeciesProfile | TaxonProfile, year: number): number {
+  return entry.seasons.find((s) => s.year === year)?.good_days ?? 0
 }
 
 function SeasonDetail({
@@ -266,9 +290,11 @@ function SeasonDetail({
   language,
   onReplayDay,
   onComune,
+  species,
 }: DetailProps) {
   const { t } = useTranslation()
   const locale = intlLocale(language)
+  const daysIn = (entry: SpeciesProfile | TaxonProfile) => goodDaysIn(entry, season.year)
   const verdict = seasonVerdict(season.good_days, season.good_days_typical)
   const rain = rainPercent(season.rain)
   const delta = temperatureDelta(season.temperature)
@@ -366,6 +392,21 @@ function SeasonDetail({
             years: weatherYears,
           })}
         </p>
+      )}
+
+      {species && (
+        <>
+          <h4 className={styles.subhead}>{t('plausible.seasonTitle')}</h4>
+          <SpeciesBreakdown
+            label={t('plausible.seasonTitle')}
+            profiles={species}
+            value={daysIn}
+            scale={Math.max(1, ...species.map(daysIn))}
+            format={(days) => formatDays(days, language)}
+            tone="good"
+          />
+          <p className={panel.note}>{t('plausible.seasonNote')}</p>
+        </>
       )}
 
       {months.length > 0 && (

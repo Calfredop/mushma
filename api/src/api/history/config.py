@@ -1,5 +1,5 @@
-"""Time-views config (``config/history.yaml``): good-day threshold, baseline years, normals and
-the outlook's rain tilt. Cited like any rule: every ``source`` must resolve in
+"""Time-views config (``config/history.yaml``): good-day and plausible-fit thresholds, baseline
+years, normals and the outlook's rain tilt. Cited like any rule: every ``source`` must resolve in
 ``species/references.yaml``."""
 
 from pathlib import Path
@@ -66,6 +66,7 @@ class Outlook(_Strict):
 
 class HistoryConfig(_Strict):
     good_score: Annotated[float, Field(gt=0, le=1)]
+    plausible_fit: Annotated[float, Field(gt=0, le=1)]
     baseline: Baseline
     normals: Normals
     outlook: Outlook

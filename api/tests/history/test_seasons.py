@@ -9,6 +9,7 @@ from pydantic import TypeAdapter
 from api.history.areas import area_members
 from api.history.seasons import (
     area_day_scores,
+    area_good_days,
     area_sightings,
     assemble_seasons,
     cell_good_days,
@@ -139,6 +140,20 @@ def test_cell_good_days_count_each_cells_good_days() -> None:
 
     assert good["good_days"].to_dict() == {"c1": 2, "c2": 1}
     assert good["days"].to_dict() == {"c1": 2, "c2": 2}
+
+
+def test_area_good_days_sum_each_days_share_of_good_cells() -> None:
+    scores = _scores(
+        [("c1", D1, 0.7), ("c2", D1, 0.2), ("c3", D1, 0.6), ("c1", D2, 0.1), ("c2", D2, 0.7)]
+    )
+
+    good = area_good_days(scores, area_members(_cells(), REGION), good_score=0.6)
+
+    table = good.set_index("area_code")
+    assert table["good_days"].to_dict() == pytest.approx({"A": 1.0, "B": 1.0, REGION: 7 / 6})
+    assert table["days"].to_dict() == {"A": 2, "B": 1, REGION: 2}
+    assert table.loc["A", "through"] == D2
+    assert table.loc["B", "through"] == D1
 
 
 # --- season_scores / month_scores --------------------------------------------------------------

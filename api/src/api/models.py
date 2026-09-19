@@ -267,3 +267,41 @@ class OutlookResponse(BaseModel):
     window: SeasonWindow
     season_to_date: SeasonToDate | None
     periods: list[OutlookPeriod]
+
+
+class SpeciesSeason(BaseModel):
+    year: int
+    good_days: float = Field(ge=0, description="a typical woodland cell's good days")
+
+
+class TaxonProfile(BaseModel):
+    key: str = Field(description="the taxon's rule set, e.g. porcini_edulis")
+    taxon: str = Field(description="scientific name, as the rule set gives it")
+    i18n_key: str
+    fit_share: float = Field(
+        ge=0,
+        le=1,
+        description="share of the area's woodland whose habitat and altitude plausibly suit it",
+    )
+    seasons: list[SpeciesSeason] = Field(description="its own good days per season, oldest first")
+
+
+class SpeciesProfile(BaseModel):
+    species: Species
+    fit_share: float = Field(
+        ge=0, le=1, description="share of the area's woodland plausible for any of its taxa"
+    )
+    seasons: list[SpeciesSeason] = Field(description="good days per season, oldest first")
+    taxa: list[TaxonProfile]
+
+
+class PlausibleSpeciesResponse(BaseModel):
+    """Which species an area's woodland plausibly holds, from habitat and altitude alone (weather
+    and season aside), and how each species and taxon fared in every stored season."""
+
+    area: Area
+    plausible_fit: float = Field(
+        gt=0, le=1, description="the habitat x altitude fit a cell needs for a taxon to count"
+    )
+    good_score: float = Field(gt=0, le=1)
+    species: list[SpeciesProfile]

@@ -242,6 +242,15 @@
     "region": "Tutta la Toscana",
     "comune": "{{name}} ({{province}})"
   },
+  "plausible": {
+    "title": "Specie plausibili",
+    "note": "Quanta parte del bosco della zona ha tipo e quota adatti a ogni specie, meteo a parte. Un gruppo conta il bosco adatto ad almeno una delle sue specie: le righe sotto non si sommano.",
+    "loading": "Carico le specie plausibili…",
+    "loadError": "Non riesco a caricare le specie plausibili.",
+    "none": "In questa zona nessuna delle tre specie trova bosco adatto.",
+    "seasonTitle": "Giorni favorevoli per specie",
+    "seasonNote": "Un gruppo conta i giorni favorevoli ad almeno una delle sue specie, perciò le righe sotto non si sommano."
+  },
   "seasons": {
     "title": "Stagioni",
     "subtitle": "{{species}} · {{area}}",

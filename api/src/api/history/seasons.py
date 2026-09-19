@@ -89,6 +89,35 @@ def area_day_scores(
     return out
 
 
+def area_good_days(
+    scores: Scores,
+    members: pd.DataFrame,
+    good_score: float,
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> pd.DataFrame:
+    """``area_code, days, through, good_days``: per area, the days scored, the last of them, and
+    a typical woodland cell's good days (the sum of each day's share of good cells, as
+    :func:`season_scores` counts them). The taxon keys' seasons: their good days alone."""
+    con = con or duckdb.connect()
+    source = _scores_view(con, scores)
+    con.register("history_members", members[["area_code", "cell_id"]])
+    out = con.sql(
+        f"""
+        WITH days AS (
+            SELECT m.area_code, s.date, count(*) AS cells,
+                   sum(CASE WHEN s.score >= {float(good_score)} THEN 1 ELSE 0 END) AS good_cells
+            FROM {source} AS s JOIN history_members AS m USING (cell_id)
+            GROUP BY m.area_code, s.date
+        )
+        SELECT area_code, count(*)::INTEGER AS days, max(date) AS through,
+               sum(good_cells::DOUBLE / cells) AS good_days
+        FROM days GROUP BY area_code ORDER BY area_code
+        """
+    ).df()
+    out["through"] = _dates(out["through"])
+    return out
+
+
 def cell_good_days(
     scores: Scores, good_score: float, con: duckdb.DuckDBPyConnection | None = None
 ) -> pd.DataFrame:

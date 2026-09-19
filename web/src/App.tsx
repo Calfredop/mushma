@@ -16,6 +16,7 @@ import {
   useComuni,
   useHotspots,
   useOutlook,
+  usePlausibleSpecies,
   useScores,
   useSeasonMap,
   useSeasons,
@@ -120,6 +121,17 @@ function MapScreen() {
     app.view === 'outlook' && app.species !== 'combined' ? app.species : null,
     app.comune,
   )
+  // A chosen zone's plausible species, in the seasons and outlook views.
+  const plausibleQuery = usePlausibleSpecies(
+    app.comune,
+    app.view !== 'now' && app.comune !== null,
+  )
+  const plausible = {
+    data: plausibleQuery.data,
+    isLoading: plausibleQuery.isPending,
+    isError: plausibleQuery.isError,
+    onRetry: () => void plausibleQuery.refetch(),
+  }
 
   // Sightings from the time on the map: the last months, the weeks around a replayed day, or
   // the whole of a season.
@@ -410,6 +422,7 @@ function MapScreen() {
                       onReplayDay={app.setDate}
                       sightingsVisible={app.sightingsVisible}
                       onSightingsVisibleChange={app.setSightingsVisible}
+                      plausible={plausible}
                     />
                   )}
                   {app.view === 'outlook' && (
@@ -423,6 +436,7 @@ function MapScreen() {
                       isLoading={outlook.isPending && outlook.fetchStatus !== 'idle'}
                       isError={outlook.isError}
                       onRetry={() => void outlook.refetch()}
+                      plausible={plausible}
                     />
                   )}
                 </PanelBoundary>

@@ -11,11 +11,14 @@ Principles (honest uncertainty, sightings privacy), Architecture (areas are comu
 | **Replay a season** | where were conditions good in 2024? | good days per woodland cell over the season (`GET /history/season/{year}`) plus the season's sighting counts |
 | **Season comparison** | which years were good here, and what drove them? | per-year and per-month stats for Tuscany or one comune (`GET /history/seasons`) |
 | **Seasonal outlook** | how is this season going, and when might the next good windows come? | the season so far against normal, the same weeks in past seasons, and the rain leading into them (`GET /outlook`) |
+| **Plausible species** | which species does this zone's woodland suit, and how did each fare? | per species and taxon, the share of the zone's woodland whose habitat and altitude suit it, and its good days per season (`GET /species`) |
 
 `GET /comuni` lists the comuni with woodland for the area picker. The web app puts the three views
 on tabs in the sheet (Now, Seasons, Outlook). A calendar button beside the date strip replays any
 past day; picking a season in the Seasons tab puts it on the map with its own legend; the season's
-best day can be replayed from there.
+best day can be replayed from there. Once a zone (comune) is picked, the Seasons and Outlook tabs
+list its plausible species under the picker, and a chosen season's stats break its good days down
+by species and taxon.
 
 ## Definitions
 
@@ -40,6 +43,17 @@ best day can be replayed from there.
   every update so they follow the backfill. A season's "typical" good days are the median over the
   complete scored seasons inside the same baseline, to the same day of the year for the season
   under way. Every response lists the years it actually used, so a thin baseline shows.
+- **Plausible species.** A taxon (a rule set: the four porcini keys, the ovolo, the gallinaccio)
+  is plausible in a woodland cell when its static gates, habitat affinity times the altitude band
+  (weather and season aside: the backtest's `static` baseline), reach **0.5**: a moderate host, as
+  the rule files rank hosts, inside the altitude band. A species group is plausible where any of
+  its taxa is, as its score is the best of its taxa. An area's **fit share** is the share of its
+  woodland cells where a taxon or group is plausible. Aggregation, not a species rule, so the 0.5
+  lives in `config/history.yaml` (`plausible_fit`). Gallinacci on pure Turkey or downy oak sit
+  exactly at 0.5 and count.
+- **Good days per taxon.** Each taxon key's own good days, counted like a group's from its own
+  stored scores. A group's good days count the cell-days any of its taxa was good, so a group's
+  taxa never add up to it.
 - **Area weather.** An area's daily rain and temperature are a weighted mean of the weather points,
   with the weights of the downscaling (`weights.parquet`) averaged over the area's woodland cells.
   That is exactly the mean of the downscaled cells: downscaling is linear in the point values, so
@@ -55,7 +69,9 @@ weather store ──► climatology/normals.parquet  (per point, day of year)
      ▼                         ▼
 area weights ──► history/area_weather (per area, day: rain, temp, normals, forecast flag)
 score store ───► history/area_days    (per area, species, day: cells, good cells, mean)
-             └─► history/cell_seasons (per cell, species, year: good days)
+             ├─► history/cell_seasons (per cell, species, year: good days)
+             └─► history/taxon_seasons (per area, taxon key, year: good days)
+grid habitats + species rules ──► history/area_fit.parquet (per area, taxon or group: fit share)
 sightings ─────► history/area_sightings (per area, species, day: counts, never coordinates)
                                │
                                ▼
@@ -83,6 +99,8 @@ connection capped at 256 MB (spilling to `$DATA_DIR/tmp/duckdb`), reading the st
 as relations, with hash aggregates rather than window sorts. Measured peak RSS of the daily
 `update`: 610–640 MB with twelve seasons stored (4.3 M area-days), about 5 seconds; a first
 pandas version peaked at 1.6 GB with five, so the cap is what keeps it flat as seasons are added.
+With the taxon seasons and habitat fit added (2026-09-19), a five-year `update --years 2022-2026`
+peaked at 644 MB in 15 seconds.
 
 ## Seasonal forecast
 
@@ -151,6 +169,21 @@ The Garfagnana comuni (Careggine, Fosciandora, Pieve Fosciana) top 2024; the dry
 "worse than usual" so far, and the outlook for early October leans worse (lead-window rain about a
 quarter of normal) before returning to usual by late October. The season map for one species and
 year is about 870 KB of JSON and 149 KB gzipped (the API now gzips responses over 1 KB).
+
+### Plausible species (2026-09-19)
+
+Fit shares from the current rules and grid, and 2025 good days per taxon:
+
+| comune | porcini | *B. edulis* | *B. pinophilus* | *B. reticulatus* | *B. aereus* | ovoli | gallinacci |
+|---|---|---|---|---|---|---|---|
+| Abetone Cutigliano | 100 % | 100 % (80 d) | 100 % (80 d) | 37 % (26 d) | 17 % (6 d) | 11 % (4 d) | 43 % (25 d) |
+| Careggine | 100 % | 100 % (76 d) | 95 % (61 d) | 95 % (71 d) | 62 % (26 d) | 48 % (23 d) | 95 % (52 d) |
+| Montalcino | 99 % | 0 % (0 d) | 0 % (0 d) | 23 % (6 d) | 98 % (39 d) | 95 % (36 d) | 87 % (39 d) |
+| Tuscany | 93 % | 30 % (15 d) | 21 % (10 d) | 72 % (29 d) | 76 % (32 d) | 71 % (35 d) | 62 % (29 d) |
+
+The porcini group is plausible almost everywhere, because *B. aereus* and *B. reticulatus* cover
+the low hills that *B. edulis* and *B. pinophilus* leave out; the taxa are what tell a mountain
+comune from a hill one.
 
 ## Known gaps
 

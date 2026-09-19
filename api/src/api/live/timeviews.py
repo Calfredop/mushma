@@ -1,5 +1,6 @@
 """The time views (M6) served from the history tables ``api.history.build`` writes: comuni,
-season comparison, the season map and the seasonal outlook. ``LiveRepository`` delegates here.
+season comparison, the season map, the seasonal outlook and an area's plausible species.
+``LiveRepository`` delegates here.
 """
 
 from datetime import date, datetime, timedelta
@@ -32,6 +33,7 @@ from api.models import (
     MonthStat,
     OutlookPeriod,
     OutlookResponse,
+    PlausibleSpeciesResponse,
     RainLead,
     RainStat,
     RainTiltBands,
@@ -40,10 +42,13 @@ from api.models import (
     SeasonSummary,
     SeasonToDate,
     SeasonWindow,
+    SpeciesProfile,
+    SpeciesSeason,
+    TaxonProfile,
     TemperatureStat,
 )
 from api.repository import AreaNotFound, HistoryUnavailable, SeasonNotFound
-from api.species import Species, SpeciesOrCombined
+from api.species import SPECIES, Species, SpeciesOrCombined
 from api.timeutil import ROME_TZ, today_rome
 from api.weather.config import load_weather_config
 
@@ -238,6 +243,59 @@ class TimeViews:
                 )
                 for r in comuni.itertuples()
             ],
+        )
+
+    # --- plausible species -------------------------------------------------------------------
+
+    def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
+        code, area = self._area(comune)
+        meta = self.store.read_meta()
+        groups, taxa = meta.get("groups"), meta.get("taxa")
+        if not groups or not taxa or not self.store.area_fit_path.exists():
+            raise HistoryUnavailable(
+                "plausible species not built yet: run `python -m api.history.build update`"
+            )
+        fit = self.store.read_area_fit()
+        fit = fit[fit["area_code"] == code].set_index("species")["fit_share"]
+        seasons = self.store.read_seasons()
+        seasons = seasons[seasons["area_code"] == code]
+        taxon_seasons = self.store.read_taxon_seasons(code)
+
+        def share(species: str) -> float:
+            value = _number(fit.get(species))
+            return min(max(value, 0.0), 1.0) if value is not None else 0.0
+
+        def by_year(rows: pd.DataFrame) -> list[SpeciesSeason]:
+            return [
+                SpeciesSeason(year=int(r.year), good_days=max(float(r.good_days), 0.0))
+                for r in rows.sort_values("year").itertuples()
+            ]
+
+        profiles = [
+            SpeciesProfile(
+                species=group,
+                fit_share=share(group),
+                seasons=by_year(seasons[seasons["species"] == group]),
+                taxa=[
+                    TaxonProfile(
+                        key=key,
+                        taxon=str(taxa[key]["taxon"]),
+                        i18n_key=str(taxa[key]["i18n_key"]),
+                        fit_share=share(key),
+                        seasons=by_year(taxon_seasons[taxon_seasons["species"] == key]),
+                    )
+                    for key in groups[group]
+                    if key in taxa
+                ],
+            )
+            for group in groups
+            if group in SPECIES
+        ]
+        return PlausibleSpeciesResponse(
+            area=area,
+            plausible_fit=float(meta.get("plausible_fit", self.config.plausible_fit)),
+            good_score=self._good_score(),
+            species=profiles,
         )
 
     # --- outlook -----------------------------------------------------------------------------

@@ -1,4 +1,5 @@
-"""Fixture stand-in for the time views (M6): comuni, seasons, the season map and the outlook.
+"""Fixture stand-in for the time views (M6): comuni, seasons, the season map, the outlook and the
+plausible species.
 
 Deterministic, plausible-looking numbers hashed from the fixture cells, so the frontend has
 something shaped exactly like the real history to draw. No real weather or scores behind them.
@@ -12,6 +13,7 @@ from api.fixtures.cells import CELLS, CellSpec
 from api.history.config import load_history_config
 from api.history.outlook import outlook_periods, period_starts, tilt
 from api.jobs.daily import WINDOW_FORWARD_DAYS
+from api.model.rules import load_rules
 from api.models import (
     Area,
     Baseline,
@@ -22,6 +24,7 @@ from api.models import (
     MonthStat,
     OutlookPeriod,
     OutlookResponse,
+    PlausibleSpeciesResponse,
     RainLead,
     RainStat,
     RainTiltBands,
@@ -30,6 +33,9 @@ from api.models import (
     SeasonSummary,
     SeasonToDate,
     SeasonWindow,
+    SpeciesProfile,
+    SpeciesSeason,
+    TaxonProfile,
     TemperatureStat,
 )
 from api.repository import AreaNotFound, SeasonNotFound
@@ -39,6 +45,7 @@ from api.weather.config import load_weather_config
 
 FIRST_YEAR = 2016
 GOOD_SCORE = 0.6
+PLAUSIBLE_FIT = 0.5
 REGION_NAME = "Toscana"
 # (month, day) spans, like the real rule files' season windows.
 WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
@@ -323,4 +330,46 @@ class FixtureTimeViews:
                 sightings=season.sightings,
             ),
             periods=out,
+        )
+
+    def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
+        today = today_rome()
+        key, area = _area(comune)
+        rules = load_rules()
+        profiles = []
+        for group, keys in rules.groups.items():
+            group_days = {
+                year: _season(key, group, year, today).good_days for year in _years(today)
+            }
+            taxa = [
+                TaxonProfile(
+                    key=taxon,
+                    taxon=rules.species[taxon].taxon,
+                    i18n_key=rules.species[taxon].i18n_key,
+                    # Squared: most taxa suit a little of an area's woodland, a few most of it.
+                    fit_share=round(_unit(key, taxon, "fit") ** 2, 2),
+                    seasons=[
+                        SpeciesSeason(
+                            year=year,
+                            good_days=round(days * (0.2 + 0.8 * _unit(key, taxon, year)), 1),
+                        )
+                        for year, days in group_days.items()
+                    ],
+                )
+                for taxon in keys
+            ]
+            best = max(t.fit_share for t in taxa)
+            profiles.append(
+                SpeciesProfile(
+                    species=group,
+                    fit_share=round(min(1.0, best + 0.15 * _unit(key, group, "fit")), 2),
+                    seasons=[
+                        SpeciesSeason(year=year, good_days=days)
+                        for year, days in group_days.items()
+                    ],
+                    taxa=taxa,
+                )
+            )
+        return PlausibleSpeciesResponse(
+            area=area, plausible_fit=PLAUSIBLE_FIT, good_score=GOOD_SCORE, species=profiles
         )

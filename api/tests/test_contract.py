@@ -14,6 +14,7 @@ from api.models import (
     ComuniResponse,
     HotspotsResponse,
     OutlookResponse,
+    PlausibleSpeciesResponse,
     ScoresResponse,
     SeasonMapResponse,
     SeasonsResponse,
@@ -283,6 +284,39 @@ class TestOutlook:
         assert response.status_code == 404
 
 
+class TestSpecies:
+    def _check(self, body: PlausibleSpeciesResponse) -> None:
+        assert [s.species for s in body.species] == ["porcini", "ovoli", "gallinacci"]
+        for profile in body.species:
+            assert profile.taxa, f"{profile.species} has no taxa"
+            # A group is plausible wherever any of its taxa is.
+            assert profile.fit_share >= max(t.fit_share for t in profile.taxa) - 1e-9
+            years = [s.year for s in profile.seasons]
+            assert years == sorted(set(years))
+            for taxon in profile.taxa:
+                assert taxon.key.startswith(f"{profile.species}_")
+                assert [s.year for s in taxon.seasons] == sorted({s.year for s in taxon.seasons})
+
+    def test_the_region_by_default(self, client: httpx.Client) -> None:
+        response = client.get("/species")
+        assert response.status_code == 200
+        body = PlausibleSpeciesResponse.model_validate(response.json())
+        assert body.area.kind == "region"
+        self._check(body)
+
+    def test_one_comune(self, client: httpx.Client, comuni: ComuniResponse) -> None:
+        comune = comuni.comuni[0]
+        response = client.get("/species", params={"comune": comune.code})
+        assert response.status_code == 200
+        body = PlausibleSpeciesResponse.model_validate(response.json())
+        assert (body.area.code, body.area.name) == (comune.code, comune.name)
+        self._check(body)
+
+    def test_an_unknown_comune_404s(self, client: httpx.Client) -> None:
+        response = client.get("/species", params={"comune": "nope"})
+        assert response.status_code == 404
+
+
 class TestStatus:
     def test_scored_through_covers_at_least_today(self, client: httpx.Client) -> None:
         response = client.get("/status")
@@ -305,4 +339,5 @@ class TestOpenAPISurface:
             "/history/seasons",
             "/history/season/{year}",
             "/outlook",
+            "/species",
         }

@@ -27,6 +27,7 @@ from api.models import (
     HotspotsResponse,
     OutlookResponse,
     Place,
+    PlausibleSpeciesResponse,
     ScoresResponse,
     SeasonMapResponse,
     SeasonsResponse,
@@ -240,3 +241,6 @@ class LiveRepository:
 
     def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
         return self.time_views.get_outlook(species, comune)
+
+    def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
+        return self.time_views.get_species(comune)
