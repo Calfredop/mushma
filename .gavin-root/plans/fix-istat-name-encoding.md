@@ -1,4 +1,5 @@
 ---
+order: 1024
 kind: task
 title: Grid · Fix mojibake in ISTAT comune and locality names
 status: To Do
