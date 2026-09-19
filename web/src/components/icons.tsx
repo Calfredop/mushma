@@ -88,3 +88,14 @@ export const DownloadIcon = () => (
     <path d="M4.5 19.5h15" />
   </Icon>
 )
+
+export const OfflineIcon = () => (
+  <Icon>
+    <path d="M3 3l18 18" />
+    <path d="M8.5 8.7A9.9 9.9 0 0 0 3.5 11" />
+    <path d="M12 5c3.2 0 6.2 1.1 8.5 3" />
+    <path d="M6.8 12.4a5.9 5.9 0 0 1 3.4-1.8" />
+    <path d="M9.5 15.8a2.9 2.9 0 0 1 3-.7" />
+    <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
+  </Icon>
+)

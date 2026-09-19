@@ -49,3 +49,10 @@ export const REPLAY_SIGHTINGS_DAYS = 14
 export const HOTSPOT_LIMIT = 10
 
 export const CELL_SIZE_KM = 1
+
+/**
+ * How old `/status`'s `updated_at` can be before the UI calls it stale (M7). The daily job must
+ * finish before 07:00 Europe/Rome (PRD → Constraints → Freshness); this gives it room to run late
+ * without a false warning, while still catching a genuinely missed run by the next morning.
+ */
+export const STALE_DATA_HOURS = 30

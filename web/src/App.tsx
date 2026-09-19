@@ -21,8 +21,10 @@ import {
   useSeasons,
   useSightingTotals,
   useSpotForecast,
+  useStatus,
 } from './api/queries'
 import styles from './App.module.css'
+import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
 import { ChevronIcon, InfoIcon, LocateIcon, SearchIcon } from './components/icons'
 import { InstallBanner } from './components/InstallBanner'
@@ -107,6 +109,7 @@ function MapScreen() {
     !seasonMode && app.view === 'now',
   )
   const spotForecast = useSpotForecast(app.spot, app.today)
+  const dataStatus = useStatus()
   const comuni = useComuni(app.view !== 'now')
   const seasons = useSeasons(
     app.species,
@@ -428,6 +431,10 @@ function MapScreen() {
           )}
           <InstallBanner />
           <footer className={styles.footer}>
+            <DataStatus
+              online={online}
+              updatedAt={dataStatus.data?.updated_at ?? undefined}
+            />
             <p>{t('disclaimer.short')}</p>
             <p className={styles.links}>
               <a

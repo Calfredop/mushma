@@ -8,6 +8,7 @@ import {
   formatDayLong,
   formatDayMonth,
   formatMonth,
+  formatUpdatedAt,
   sameDayLastYear,
   todayInRome,
 } from './days'
@@ -70,6 +71,11 @@ describe('time-view formats', () => {
     expect(formatMonth(10, 'it-IT')).toBe('ott')
     expect(formatMonth(10, 'it-IT', 'long')).toBe('ottobre')
     expect(formatMonth(5, 'en-GB')).toBe('May')
+  })
+
+  it('writes a generation timestamp in Europe/Rome, not UTC', () => {
+    // 05:02 UTC is 07:02 in Rome (CEST, UTC+2) on 18 September.
+    expect(formatUpdatedAt('2026-09-18T05:02:00Z', 'it-IT')).toBe('18 set, 07:02')
   })
 })
 

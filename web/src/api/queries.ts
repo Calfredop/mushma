@@ -29,6 +29,7 @@ export type OutlookResponse = components['schemas']['OutlookResponse']
 export type OutlookPeriod = components['schemas']['OutlookPeriod']
 export type RainStat = components['schemas']['RainStat']
 export type TemperatureStat = components['schemas']['TemperatureStat']
+export type StatusResponse = components['schemas']['StatusResponse']
 
 export class ApiError extends Error {
   readonly status: number
@@ -166,6 +167,20 @@ export function useSightingTotals(
 // --- Time views (M6) ----------------------------------------------------------------------------
 
 /** Comuni with woodland, for the area picker. Changes only when the grid is rebuilt. */
+/** Data freshness (M7): when the pipeline last ran and through which day. Polled, not just
+ * fetched once, so a long-open tab picks up tomorrow's run without a reload. */
+export function useStatus() {
+  return useQuery({
+    queryKey: ['status'],
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/status', { signal })
+        .then(unwrap<components['schemas']['StatusResponse']>('/status')),
+    staleTime: 10 * MINUTE,
+    refetchInterval: 10 * MINUTE,
+  })
+}
+
 export function useComuni(enabled: boolean) {
   return useQuery({
     queryKey: ['comuni'],

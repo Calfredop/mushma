@@ -19,6 +19,11 @@
     "install": "Installa",
     "dismiss": "Non ora"
   },
+  "freshness": {
+    "updated": "Aggiornato {{date}}",
+    "stale": "L'ultimo aggiornamento è di {{date}}: i dati di oggi potrebbero non essere ancora arrivati.",
+    "offline": "Offline"
+  },
   "species": {
     "label": "Specie",
     "porcini": {

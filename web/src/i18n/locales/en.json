@@ -19,6 +19,11 @@
     "install": "Install",
     "dismiss": "Not now"
   },
+  "freshness": {
+    "updated": "Updated {{date}}",
+    "stale": "The last update was {{date}} — today's numbers may not be in yet.",
+    "offline": "Offline"
+  },
   "species": {
     "label": "Species",
     "porcini": {

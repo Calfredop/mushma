@@ -95,6 +95,22 @@ export function formatDayMonth(date: IsoDate, locale: string): string {
     .replace('.', '')
 }
 
+/**
+ * A generation timestamp (`/status`'s `updated_at`, a full ISO datetime, not a calendar day) in
+ * Europe/Rome (AGENTS.md → Time): "18 set, 07:02".
+ */
+export function formatUpdatedAt(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Rome',
+  })
+    .format(new Date(iso))
+    .replace('.', '')
+}
+
 /** A month (1–12) by name: "ott", or "ottobre" with `long`. */
 export function formatMonth(
   month: number,
