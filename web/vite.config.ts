@@ -2,7 +2,7 @@
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs'
 import { isAbsolute, relative, resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
-import { type Connect, defineConfig, loadEnv, type Plugin } from 'vite'
+import { type Connect, defineConfig, loadEnv, type Plugin, type UserConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const BASEMAP_DIR = resolve(import.meta.dirname, 'data/basemap')
@@ -223,11 +223,11 @@ function pwaPlugin(env: Record<string, string>): Plugin[] {
  * second hostname and no CORS. `tunnel.sh` exports `VITE_API_BASE_URL=/api` to make sure of
  * it (a real env var outranks `.env`, where a local override may point at localhost:8000).
  */
-const TUNNEL_SERVER = {
+const TUNNEL_SERVER: UserConfig['server'] = {
   allowedHosts: ['.trycloudflare.com'],
   host: true,
   hmr: { protocol: 'wss', clientPort: 443 },
-} as const
+}
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {

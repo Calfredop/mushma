@@ -1,6 +1,6 @@
 ---
 title: Dev tunnel: reach the local stack from outside
-status: In Progress
+status: Done
 priority: medium
 complexity: simple
 ---
@@ -37,16 +37,16 @@ its own URL. All are later upgrades to the same script.
 
 ## Checklist
 
-- [ ] Tunnel mode in `web/vite.config.ts`, guarded by a `TUNNEL` env var so
+- [x] Tunnel mode in `web/vite.config.ts`, guarded by a `TUNNEL` env var so
       plain `pnpm dev` is untouched: `allowedHosts`, `host`, `hmr`
-- [ ] `web/scripts/tunnel.sh`: check for `cloudflared`, warn if the API is not
+- [x] `web/scripts/tunnel.sh`: check for `cloudflared`, warn if the API is not
       listening on 8000, start Vite, wait for the port, start cloudflared,
       parse and print the URL, QR code when `qrencode` is present, trap EXIT so
       neither process is orphaned
-- [ ] `"tunnel"` script in `web/package.json`
-- [ ] Document it in `README.md` under `## web/`, with the "public while it
+- [x] `"tunnel"` script in `web/package.json`
+- [x] Document it in `README.md` under `## web/`, with the "public while it
       runs" warning
-- [ ] Note the tunnel override in `web/.env.example`
-- [ ] Verify end to end: run it, load the printed URL, confirm the map renders
+- [x] Note the tunnel override in `web/.env.example`
+- [x] Verify end to end: run it, load the printed URL, confirm the map renders
       and `/api` calls succeed through the proxy
-- [ ] `cd web && pnpm run lint && pnpm run format:check`
+- [x] `cd web && pnpm run lint && pnpm run format:check`

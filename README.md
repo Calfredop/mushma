@@ -81,11 +81,32 @@ pnpm run lint        # ESLint (also rejects hardcoded UI strings)
 pnpm run format:check
 pnpm run build       # type-check + production build
 pnpm run perf        # first-map-paint check on a throttled phone profile (local only)
+pnpm run tunnel      # dev server + a public URL for it (see Tunnel below)
 ```
 
 `.env` points `VITE_API_BASE_URL` at `/api`, which the dev server proxies to
 `API_PROXY_TARGET` (default `http://localhost:8000`). Run the API in fixture
 mode alongside it (see api/ below).
+
+**Tunnel.** To reach the local stack from outside — the map on a real phone,
+or showing work in progress to someone without deploying it:
+
+```sh
+cd web && pnpm run tunnel   # needs cloudflared: brew install cloudflared
+```
+
+It starts the dev server and a cloudflared quick tunnel together, prints the
+public `https://<words>.trycloudflare.com` URL (with a QR code, if you have
+`qrencode`), and one Ctrl-C stops both. One tunnel carries the whole stack:
+the app and `/api` share its single origin through the proxy above, so there
+is no second hostname and no CORS to configure. The script forces
+`VITE_API_BASE_URL=/api` for that run, so a local `.env` pointing straight at
+`http://localhost:8000` — unreachable from outside — needs no editing. Run the
+API alongside it as usual; the script warns if nothing is on `:8000`.
+
+The URL is **public while the tunnel runs**, and a fresh one every run. Anyone
+holding it reaches this machine's dev API and whatever is in `api/data/`, so
+don't leave it up unattended. `PORT` and `API_PORT` override the defaults.
 
 **Basemap.** The map uses a self-hosted Protomaps extract plus Mapterhorn
 hillshade (PRD → Architecture → Basemap). Fetch them once with the
