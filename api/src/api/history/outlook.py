@@ -81,9 +81,10 @@ def period_starts(
     today: date, week_horizon_days: int, months: int
 ) -> tuple[list[date], list[date]]:
     """The calendar the outlook is cut from: the Mondays from this week's whose whole week ends
-    within ``week_horizon_days`` (the long-range weeks' reach), and the first days of this month and the ``months - 1``
-    after it. From the calendar, not from the stored long-range rows, so a missing or partial
-    fetch shows as periods without a tendency rather than as no periods at all."""
+    within ``week_horizon_days`` (the long-range weeks' reach), and the first days of this month
+    and the ``months - 1`` after it. From the calendar, not from the stored long-range rows, so a
+    missing or partial fetch shows as periods without a tendency rather than as no periods at
+    all."""
     monday = today - timedelta(days=today.weekday())
     horizon = today + timedelta(days=week_horizon_days)
     weeks = []
