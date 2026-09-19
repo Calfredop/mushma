@@ -208,6 +208,27 @@ function pwaPlugin(env: Record<string, string>): Plugin[] {
   })
 }
 
+/**
+ * Tunnel mode (`scripts/tunnel.sh`, `pnpm run tunnel`): serve this dev server through a
+ * cloudflared quick tunnel so a phone or a friend can reach the local stack.
+ *
+ * - `allowedHosts`: Vite refuses a request whose `Host` header it doesn't know. The quick
+ *   tunnel's hostname is random per run, so the whole domain is allowed (a leading dot is
+ *   Vite's subdomain wildcard) rather than passed back in from cloudflared.
+ * - `host`: bind every interface, which also makes the server reachable over the LAN.
+ * - `hmr`: the tunnel terminates TLS on 443, so the HMR socket has to be told to dial
+ *   `wss://<host>:443`. Without this the app loads and live reload silently stops.
+ *
+ * The API needs nothing: it rides the `/api` proxy below on the same origin, so there is no
+ * second hostname and no CORS. `tunnel.sh` exports `VITE_API_BASE_URL=/api` to make sure of
+ * it (a real env var outranks `.env`, where a local override may point at localhost:8000).
+ */
+const TUNNEL_SERVER = {
+  allowedHosts: ['.trycloudflare.com'],
+  host: true,
+  hmr: { protocol: 'wss', clientPort: 443 },
+} as const
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, import.meta.dirname, '')
@@ -221,7 +242,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), serveBasemap(), vendorMaplibre(), ...pwaPlugin(env)],
     optimizeDeps: { exclude: ['maplibre-gl'] },
-    server: { proxy: apiProxy },
+    server: { proxy: apiProxy, ...(env.TUNNEL ? TUNNEL_SERVER : {}) },
     preview: { proxy: apiProxy },
     test: {
       environment: 'jsdom',

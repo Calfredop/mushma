@@ -9,6 +9,7 @@
   "packageManager": "pnpm@10.28.1",
   "scripts": {
     "dev": "vite",
+    "tunnel": "bash scripts/tunnel.sh",
     "build": "tsc -b && vite build",
     "generate:api": "openapi-typescript ../api/openapi.json -o src/api/schema.ts && prettier --write src/api/schema.ts",
     "lint": "eslint .",
