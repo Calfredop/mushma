@@ -107,4 +107,36 @@ woodland gauges of 2025. On the 145 gauges of 2026 it moves the pooled model/gau
 0.99 (0.96–1.03 in each elevation band). It corrects totals, not timing. Tuning tests scoring with and
 without it.
 
+## What the "why this score" panel showed for the mid-September high scores
+
+The panel now states the measurement behind each factor (card `verbose-score-explanation`). Read on
+the 2026-09-19 run (rules version `1171b4eb48d2`), because many cells scored high with only one
+modest rain event a few days back. All rain below is the model's, after the rain scale above.
+
+- **How many are high.** Of the 10,777 woodland cells, 9,002 (84 %) score at least 0.5 and 6,090
+  (57 %) at least 0.7; the median is 0.74. Of the 6,090, ovoli wins 3,778, *P. reticulatus* 1,147,
+  *P. edulis* 506, gallinacci 370 and *P. aereus* 289.
+- **`rain_trigger`.** One 3-day total of a median 40 mm (10th to 90th percentile 28 to 81 mm), which is
+  27 mm (20 to 53) of reanalysis rain before the scale. It ended 8 to 10 days before the scored day
+  for 94 % of the cells, 9 days for 74 %; the other 6 % are gallinacci, whose lag window is longer
+  (29 to 30 days). Half the cells sit under 40 mm, close to the 30 mm where the rule already gives
+  full credit, so the value is 1.00 almost everywhere.
+- **`rain_30d`.** A median 104 mm (72 to 205) in the last 30 days, against full credit from 70 to
+  80 mm. Region-wide the median is 102 mm.
+- **`soil_moisture`.** Not measured: every rule file has it off (it needs the per-cell climatology
+  v1 does not compute), so no key scores it.
+- **Is it a wet month?** Not unusually. The region-mean reanalysis rain for 21 August to 19 September
+  was 82 mm in 2026, against 30, 52, 70, 88, 50, 141 and 112 mm in 2019 to 2025 (the store holds
+  2019 onward until the backfill reaches earlier years), so 2026 ranks fourth of eight.
+- **Example.** Cell `1kmE4400N2259`, porcini group, score 0.86: 36.7 mm in 3 days up to 9 September
+  (10 days before), 153 mm in 30 days, mean air temperature 22.5 °C over 20 days.
+
+**Reading.** The scores follow the rules as written: nothing here is a bug. The scores are high
+because both rain drivers reach full credit in an ordinary September: one event of about 30 mm ten
+days earlier fills the trigger, and about 80 mm a month fills the 30-day driver, which so cannot tell
+a good year from an average one. Whether that is too generous is a tuning question, and no threshold
+changed with this card. The candidates to test on the train seasons are the trigger ramp (10 to
+30 mm), the 30-day ramp (to 70 to 80 mm) and how they interact with the rain scale, which raises
+the rain by 28 % at sea level to 77 % at 1.7 km. Filed as `tune-rain-drivers-saturate.md`.
+
 <!-- RESULTS, TUNING, HOLD-OUT, TARGETS AND SANITY CHECK FOLLOW -->
