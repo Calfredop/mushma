@@ -2,7 +2,7 @@
 order: 4096
 kind: task
 title: [ui] new icon
-status: In Progress
+status: Done
 ---
 Create a new icon, with a mushroom them
 
