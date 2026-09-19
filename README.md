@@ -2,8 +2,54 @@
 
 Estimates where and when wild edible mushrooms (porcini, ovoli, gallinacci)
 are likely to be fruiting in **Tuscany**, from transparent per-species rules
-over weather, habitat and terrain, validated against public sightings. See
+over weather, habitat and terrain, validated against public sightings. Built
+for a small group of Tuscan foragers, and as a portfolio piece: the data work
+and "why this score" transparency matter as much as the map itself. See
 `.gavin-root/PRD.md` for the full product requirements.
+
+mushma never identifies mushrooms or says one is safe to eat — it forecasts
+*conditions* only.
+
+| | |
+|---|---|
+| ![The conditions map: a species switcher, a date strip from six days ago to a week ahead, and scored woodland areas](.github/assets/map.png) | ![A spot forecast: one place's score per species, today and the next 7 days, as a bar per day](.github/assets/spot.png) |
+
+## How it works
+
+Every woodland cell in Tuscany (about 1 km, ~10,800 of them) gets a **0–1
+conditions score** per day and species — an index of how favourable the
+weather and woodland are, never a probability or an edibility claim. A
+species' score is the max over its rule sets (porcini alone has four, one per
+sub-species); the combined score shown by default is the max over whichever
+species are in season. Every score keeps its full factor breakdown — rain
+days ago, cumulative rain, soil/air temperature, drying, habitat, altitude,
+season window — so "why this score" is never a black box.
+
+The rules live in [`api/src/api/config/species/`](api/src/api/config/species/),
+one YAML file per species, every threshold and window carrying a cited
+source. Weather comes from Open-Meteo (ERA5-Land reanalysis history, ECMWF
+IFS forecast), downscaled from a coarse model grid to each cell by elevation.
+Habitat, altitude and soil come from a static grid built once from Regione
+Toscana, ISPRA, Copernicus and SoilGrids sources (see
+[Credits](#credits--sources) below and the app's own Data and credits page).
+The daily pipeline (`api.jobs.daily`) re-scores the served window — six days
+back to seven days ahead — every morning before 07:00 Europe/Rome.
+
+## Validation
+
+The model is backtested against public sightings (GBIF + iNaturalist): is a
+sighting's cell-day scored higher than the cell-days it could have been
+instead, once the comparison controls for where and when people actually go
+looking? Full method, the null check that motivates it, and the baselines the
+weather rules have to beat are in
+[`.gavin-root/docs/model-v1-validation.md`](.gavin-root/docs/model-v1-validation.md).
+
+Train/hold-out seasons and the backtest method were frozen **before any score
+was compared against a sighting** (2016–2023 train, 2024–2025 hold-out,
+2026 reported once it ends). Tuning against the train seasons and the final
+hold-out numbers are still in progress as of this write-up — that document is
+the live source of truth; this section will carry its headline numbers once
+they land.
 
 ## Layout
 
@@ -190,7 +236,10 @@ running the ingest CLI's `downscale` export here would just be unused disk churn
 step as its own process in that order and stops at the first failure rather than risk scoring on
 top of a half-updated weather store; every step logs one JSON line on start and finish.
 Set `ALERT_WEBHOOK_URL` (a Slack/Discord/etc. incoming webhook) to get a one-line POST on failure;
-unset, it's a no-op and only Fly's own machine-exit alerting fires.
+unset, it's a no-op and only Fly's own machine-exit alerting fires. Set `HEARTBEAT_URL` (a
+healthchecks.io-style check: a plain GET on success) to catch the case `ALERT_WEBHOOK_URL` can't --
+the scheduler never running the job at all; point it at a free healthchecks.io/Cronitor/etc. check
+configured to expect a ping roughly once a day, and it pages on a missed one. See Monitoring below.
 
 ```sh
 cd api
@@ -229,5 +278,43 @@ GitHub Actions (`.github/workflows/ci.yml`) lints and tests both `web/` and
   (check `fly machine run --help` for the exact flags on your flyctl version —
   they've moved before). After the first couple of runs, check `fly machine
   status`/`fly logs` for the actual trigger time and nudge the schedule if
-  needed so it lands before 07:00 Europe/Rome. Set `ALERT_WEBHOOK_URL` with
-  `fly secrets set` if you want failure notifications.
+  needed so it lands before 07:00 Europe/Rome. Set `ALERT_WEBHOOK_URL` and
+  `HEARTBEAT_URL` with `fly secrets set` if you want failure notifications and
+  a missed-run alert (see Monitoring below).
+
+## Monitoring
+
+Fly's own `[[http_service.checks]]` (`fly.toml`) hits `/health` every 30s and restarts the machine
+on failure -- that keeps the API up, but doesn't page anyone. For that, point a free external
+pinger (UptimeRobot, healthchecks.io, Better Uptime, ...) at the deployed `/health` URL; a forager
+finding the map down is worse than a human finding out first.
+
+- `ALERT_WEBHOOK_URL`: the daily job posts one line to it if a step fails.
+- `HEARTBEAT_URL`: the daily job pings it (a plain GET) once it finishes successfully. Configure
+  the check (healthchecks.io or similar) to expect roughly one ping a day -- a missed one means the
+  scheduler didn't even run the job, which `ALERT_WEBHOOK_URL` alone can't catch.
+- An uptime pinger on `/health` (above): catches the API itself being down between daily job runs.
+- `SENTRY_DSN`: error tracking for the API (`api/src/api/main.py`). Unset, Sentry is never
+  initialized -- no dependency on it for local dev, CI or fixtures mode. Create a free Sentry
+  project and `fly secrets set SENTRY_DSN=...` to turn it on; sampling is kept low/zero by default
+  to stay well inside the free tier.
+- Rate limiting: the API is public, GET-only and cookie-less (see the CORS comment in `main.py`),
+  so it limits requests per IP to guard the single small Fly machine against a runaway client.
+  `/health` is exempt so Fly's own checks and any uptime pinger are never throttled.
+
+## Credits & sources
+
+mushma uses only public data and open-source software; every source is credited, with its licence,
+on the app's own Data and credits page (`/credits`). The full, current list lives in
+[`web/src/credits.ts`](web/src/credits.ts) (kept in step with the pipeline's own
+[`api/src/api/config/sources.yaml`](api/src/api/config/sources.yaml)) — briefly:
+
+- **Weather:** Open-Meteo, serving Copernicus ERA5-Land reanalysis and ECMWF IFS/EC46/SEAS5
+  forecasts.
+- **Habitat, terrain, soil:** Regione Toscana land use, ISPRA Corine Land Cover, Copernicus DEM
+  GLO-30, SoilGrids (ISRIC).
+- **Sightings:** GBIF (which carries research-grade iNaturalist records) and iNaturalist directly,
+  shown only as counts per cell (PRD → Sightings privacy).
+- **Boundaries and places:** ISTAT.
+- **Basemap:** a self-hosted Protomaps (OpenStreetMap) extract with Mapterhorn hillshade; place
+  search by Photon (komoot); map rendering by MapLibre GL JS.
