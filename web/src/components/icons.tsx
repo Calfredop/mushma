@@ -81,3 +81,10 @@ export const CalendarIcon = () => (
     <path d="M8 14h2M14 14h2M8 17h2" />
   </Icon>
 )
+
+export const DownloadIcon = () => (
+  <Icon>
+    <path d="M12 3v12M7 10.5 12 15.5 17 10.5" />
+    <path d="M4.5 19.5h15" />
+  </Icon>
+)

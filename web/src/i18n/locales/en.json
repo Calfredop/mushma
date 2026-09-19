@@ -14,6 +14,11 @@
     "disclaimer": "Disclaimer",
     "backToMap": "Back to the map"
   },
+  "pwa": {
+    "installBanner": "Install mushma for quick access and offline maps in the woods.",
+    "install": "Install",
+    "dismiss": "Not now"
+  },
   "species": {
     "label": "Species",
     "porcini": {

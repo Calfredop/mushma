@@ -25,6 +25,7 @@ import {
 import styles from './App.module.css'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
 import { ChevronIcon, InfoIcon, LocateIcon, SearchIcon } from './components/icons'
+import { InstallBanner } from './components/InstallBanner'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { PanelBoundary } from './components/PanelBoundary'
 import { Legend } from './components/Legend'
@@ -425,6 +426,7 @@ function MapScreen() {
               </div>
             </>
           )}
+          <InstallBanner />
           <footer className={styles.footer}>
             <p>{t('disclaimer.short')}</p>
             <p className={styles.links}>

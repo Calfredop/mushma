@@ -3,6 +3,7 @@ import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs'
 import { isAbsolute, relative, resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { type Connect, defineConfig, loadEnv, type Plugin } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 
 const BASEMAP_DIR = resolve(import.meta.dirname, 'data/basemap')
 
@@ -105,6 +106,108 @@ function vendorMaplibre(): Plugin {
   }
 }
 
+/**
+ * Offline caching (PRD → PWA, M7): the app shell and fonts are precached (generateSW's own
+ * build manifest, below); everything else is cached as it's used, never speculatively:
+ * - API responses (scores, spot forecasts, hotspots, comuni, history, outlook, status): the
+ *   read-only GET routes the API serves, matched by path regardless of `VITE_API_BASE_URL`
+ *   being a same-origin proxy/rewrite or an absolute cross-origin URL. NetworkFirst, so a
+ *   forager with signal always gets today's numbers; a short timeout falls back to whatever
+ *   was last cached for that place once the signal drops.
+ * - Basemap/terrain tiles and Protomaps' glyphs/sprite (self-hosted extracts, PRD → Basemap):
+ *   CacheFirst, since a build-pinned tile never changes. `cacheableResponse: [0, 200]` is the
+ *   safety net PRD → Basemap warns about: the pmtiles protocol reads `.pmtiles` files with
+ *   byte-range requests (206), which the Cache API can't store — Workbox silently skips
+ *   caching those and the map still works, just without that tile offline.
+ */
+const API_ROUTE_RE =
+  /\/(scores|spot|cells\/[^/?]+|hotspots|sightings|comuni|history\/[^/?]+|outlook|status)(\?|$)/
+
+function tileOrigin(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  try {
+    return new URL(url).origin
+  } catch {
+    return undefined // relative (local dev, served from this same origin under /basemap/)
+  }
+}
+
+function pwaPlugin(env: Record<string, string>): Plugin[] {
+  const tileOrigins = new Set(
+    [tileOrigin(env.VITE_BASEMAP_URL), tileOrigin(env.VITE_TERRAIN_URL)].filter(
+      (v) => !!v,
+    ),
+  )
+  return VitePWA({
+    registerType: 'autoUpdate',
+    includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+    manifest: {
+      name: 'mushma',
+      short_name: 'mushma',
+      description:
+        'Fruiting-conditions scores for porcini, ovoli and gallinacci in Tuscany.',
+      lang: 'it',
+      start_url: '/',
+      scope: '/',
+      display: 'standalone',
+      background_color: '#edf0ea',
+      theme_color: '#edf0ea',
+      icons: [
+        {
+          src: '/icons/icon-192.png',
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'any',
+        },
+        {
+          src: '/icons/icon-512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any',
+        },
+        {
+          src: '/icons/icon-maskable-512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+      ],
+    },
+    workbox: {
+      navigateFallback: '/index.html',
+      // The basemap/terrain extracts are 100+ MB and never part of the build; only the app
+      // shell (JS/CSS/fonts) is precached here.
+      globPatterns: ['**/*.{js,css,html,woff2}'],
+      runtimeCaching: [
+        {
+          urlPattern: ({ url, request }) =>
+            request.method === 'GET' && API_ROUTE_RE.test(url.pathname),
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'mushma-api',
+            networkTimeoutSeconds: 4,
+            cacheableResponse: { statuses: [0, 200] },
+            expiration: { maxEntries: 300, maxAgeSeconds: 2 * 24 * 60 * 60 },
+          },
+        },
+        {
+          urlPattern: ({ url, request }) =>
+            request.method === 'GET' &&
+            (url.origin === 'https://protomaps.github.io' ||
+              tileOrigins.has(url.origin) ||
+              url.pathname.startsWith('/basemap/')),
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'mushma-basemap',
+            cacheableResponse: { statuses: [0, 200] },
+            expiration: { maxEntries: 4000, maxAgeSeconds: 30 * 24 * 60 * 60 },
+          },
+        },
+      ],
+    },
+  })
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, import.meta.dirname, '')
@@ -116,7 +219,7 @@ export default defineConfig(({ mode }) => {
     },
   }
   return {
-    plugins: [react(), serveBasemap(), vendorMaplibre()],
+    plugins: [react(), serveBasemap(), vendorMaplibre(), ...pwaPlugin(env)],
     optimizeDeps: { exclude: ['maplibre-gl'] },
     server: { proxy: apiProxy },
     preview: { proxy: apiProxy },

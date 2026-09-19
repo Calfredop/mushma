@@ -14,6 +14,11 @@
     "disclaimer": "Avvertenze",
     "backToMap": "Torna alla mappa"
   },
+  "pwa": {
+    "installBanner": "Installa mushma per un accesso rapido e la mappa anche offline nel bosco.",
+    "install": "Installa",
+    "dismiss": "Non ora"
+  },
   "species": {
     "label": "Specie",
     "porcini": {
