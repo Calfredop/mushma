@@ -140,6 +140,18 @@ All seven milestones below are v1; there is no smaller cut.
   counts if it's mostly forest), each with forest type, elevation, slope and
   aspect attached. Use a projected equal-area grid (e.g. EPSG:3035, the EEA
   reference grid) and convert to WGS84 for the map.
+- **Grid delivery.** A flat JSON array (`GET /scores`: `cell_id`, `lon`, `lat`,
+  `score` per woodland cell), gzip-compressed over HTTP like everything else
+  the API serves. Decided over vector tiles or a raster PNG: measured against
+  the real M2/M3 grid (10,777 woodland cells for Tuscany), the whole-region
+  payload for one species and day is ~740 KB raw and ~120 KB gzipped — under a
+  sixth of the ~1 MB compressed budget, with room to keep `lon`/`lat` per cell
+  (dropping them and relying on the client's cached `/grid` geometry would
+  gzip to ~40 KB, but isn't needed at this size). A JSON array of ~11k points
+  is also well inside what MapLibre's point/circle layers render smoothly, and
+  keeping JSON avoids a second encoding the frontend (already built against
+  this contract, M5) would have to learn. Revisit only if the grid grows much
+  denser or another region is added.
 - **Areas.** Aggregation for the seasonal outlook, history and hotspot labels
   uses **comuni** (ISTAT boundaries). A hotspot is a cluster of adjacent
   high-scoring cells, labelled by comune and nearest named place.
@@ -269,4 +281,4 @@ BY 4.0, per-dataset GBIF licenses, Copernicus). Show credits in the app.
 
 ## Open questions
 
-- How to deliver the grid to the map: vector tiles, a compact binary/JSON grid, or raster PNGs?
+None.
