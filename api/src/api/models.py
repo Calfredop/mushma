@@ -14,6 +14,67 @@ class Place(BaseModel):
     nearest_place: str
 
 
+class FactorRule(BaseModel):
+    """What a rule asked of the measurement (`config/species/*.yaml`), so the copy can say what it
+    wanted. Which fields are set follows `kind`: a season window or habitat has none of them.
+    """
+
+    kind: Literal[
+        "season_window",
+        "habitat",
+        "static_band",
+        "rain_event",
+        "window_aggregate",
+        "count_days",
+        "days_since",
+    ]
+    variable: str | None = Field(
+        default=None, description="the weather variable or cell attribute the factor reads"
+    )
+    variable_unit: str | None = Field(
+        default=None, description="the unit of `variable` (and of `threshold`); '' when unitless"
+    )
+    aggregate: Literal["sum", "mean", "min", "max"] | None = Field(
+        default=None, description="how a window aggregate combines the days"
+    )
+    window_days: int | None = Field(
+        default=None,
+        description="days of rain a rain event adds up, the days an aggregate or count spans, or "
+        "how far back days_since looks",
+    )
+    offset_days: int | None = Field(
+        default=None, description="the window ends this many days before the scored day"
+    )
+    op: Literal["lt", "lte", "gt", "gte"] | None = Field(
+        default=None, description="what counts as a matching day, against `threshold`"
+    )
+    threshold: float | None = None
+    # Lists, not tuples: openapi-fetch turns a generated tuple type into an array, so the client's
+    # response type would no longer match the schema's.
+    trapezoid: list[float | None] | None = Field(
+        default=None,
+        min_length=4,
+        max_length=4,
+        description="[zero_below, full_from, full_to, zero_above] over the measurement (`input`, "
+        "in `unit`); a null pair leaves that side open",
+    )
+    lag_days: list[float | None] | None = Field(
+        default=None,
+        min_length=4,
+        max_length=4,
+        description="rain events: the same shape over `days_ago`, the lag the rain may have",
+    )
+
+    @property
+    def input_unit(self) -> str | None:
+        """The unit of the measurement the rule reads: days for a count, else the variable's own."""
+        if self.kind in ("count_days", "days_since"):
+            return "days"
+        if self.kind in ("season_window", "habitat"):
+            return None
+        return self.variable_unit
+
+
 class FactorBreakdown(BaseModel):
     """One rule's contribution to a score, in evaluation order (gates, then
     drivers, then stoppers) -- the "why this score" breakdown never re-sorts
@@ -21,12 +82,27 @@ class FactorBreakdown(BaseModel):
 
     `contribution` is this factor's own multiplicative share of the day's
     score: the product of every factor's `contribution` equals `score`.
+
+    `input`, `unit` and `days_ago` are the measurement this factor read; they
+    are null for a factor that measures nothing (season, habitat) and for days
+    scored without the measurement columns. `rule` says what the rule wanted.
     """
 
     key: str
     i18n_key: str
     value: float = Field(ge=0, le=1)
     contribution: float = Field(ge=0, le=1)
+    role: Literal["gate", "driver", "stopper"] | None = None
+    weight: float | None = Field(default=None, description="drivers only")
+    input: float | None = Field(
+        default=None,
+        description="what the factor measured: mm of rain, a temperature, a count of days, metres",
+    )
+    unit: str | None = Field(default=None, description="the unit of `input`")
+    days_ago: int | None = Field(
+        default=None, description="rain events: when the rain it scored ended"
+    )
+    rule: FactorRule | None = None
 
 
 class DayScore(BaseModel):

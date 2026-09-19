@@ -200,7 +200,11 @@ def build_dataset(root: Path) -> RuleSet:
         porcini_daily.append(
             {"cell_id": CELL_B["cell_id"], "date": day, "score": b_score, "source_key": "porcini_a"}
         )
-        porcini_a_factors.append({"cell_id": CELL_B["cell_id"], "date": day, "rain_a": b_score})
+        # Cell B's rows carry the stored measurement (its rule reads the cell's elevation); cell A's
+        # do not, like days scored before the pipeline kept measurements.
+        porcini_a_factors.append(
+            {"cell_id": CELL_B["cell_id"], "date": day, "rain_a": b_score, "rain_a__input": 640.0}
+        )
     write_daily(root, "porcini", porcini_daily)
     write_factors(root, "porcini_a", porcini_a_factors)
     write_factors(root, "porcini_b", porcini_b_factors)

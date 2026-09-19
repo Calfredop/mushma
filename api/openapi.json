@@ -278,7 +278,7 @@
         "type": "object"
       },
       "FactorBreakdown": {
-        "description": "One rule's contribution to a score, in evaluation order (gates, then\ndrivers, then stoppers) -- the \"why this score\" breakdown never re-sorts\nby magnitude, so the same species always reads in the same order.\n\n`contribution` is this factor's own multiplicative share of the day's\nscore: the product of every factor's `contribution` equals `score`.",
+        "description": "One rule's contribution to a score, in evaluation order (gates, then\ndrivers, then stoppers) -- the \"why this score\" breakdown never re-sorts\nby magnitude, so the same species always reads in the same order.\n\n`contribution` is this factor's own multiplicative share of the day's\nscore: the product of every factor's `contribution` equals `score`.\n\n`input`, `unit` and `days_ago` are the measurement this factor read; they\nare null for a factor that measures nothing (season, habitat) and for days\nscored without the measurement columns. `rule` says what the rule wanted.",
         "properties": {
           "contribution": {
             "maximum": 1.0,
@@ -286,19 +286,93 @@
             "title": "Contribution",
             "type": "number"
           },
+          "days_ago": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "rain events: when the rain it scored ended",
+            "title": "Days Ago"
+          },
           "i18n_key": {
             "title": "I18N Key",
             "type": "string"
           },
+          "input": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "what the factor measured: mm of rain, a temperature, a count of days, metres",
+            "title": "Input"
+          },
           "key": {
             "title": "Key",
             "type": "string"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "gate",
+                  "driver",
+                  "stopper"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FactorRule"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "the unit of `input`",
+            "title": "Unit"
           },
           "value": {
             "maximum": 1.0,
             "minimum": 0.0,
             "title": "Value",
             "type": "number"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "drivers only",
+            "title": "Weight"
           }
         },
         "required": [
@@ -308,6 +382,172 @@
           "contribution"
         ],
         "title": "FactorBreakdown",
+        "type": "object"
+      },
+      "FactorRule": {
+        "description": "What a rule asked of the measurement (`config/species/*.yaml`), so the copy can say what it\nwanted. Which fields are set follows `kind`: a season window or habitat has none of them.",
+        "properties": {
+          "aggregate": {
+            "anyOf": [
+              {
+                "enum": [
+                  "sum",
+                  "mean",
+                  "min",
+                  "max"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "how a window aggregate combines the days",
+            "title": "Aggregate"
+          },
+          "kind": {
+            "enum": [
+              "season_window",
+              "habitat",
+              "static_band",
+              "rain_event",
+              "window_aggregate",
+              "count_days",
+              "days_since"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "lag_days": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "maxItems": 4,
+                "minItems": 4,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "rain events: the same shape over `days_ago`, the lag the rain may have",
+            "title": "Lag Days"
+          },
+          "offset_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "the window ends this many days before the scored day",
+            "title": "Offset Days"
+          },
+          "op": {
+            "anyOf": [
+              {
+                "enum": [
+                  "lt",
+                  "lte",
+                  "gt",
+                  "gte"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "what counts as a matching day, against `threshold`",
+            "title": "Op"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          },
+          "trapezoid": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "maxItems": 4,
+                "minItems": 4,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "[zero_below, full_from, full_to, zero_above] over the measurement (`input`, in `unit`); a null pair leaves that side open",
+            "title": "Trapezoid"
+          },
+          "variable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "the weather variable or cell attribute the factor reads",
+            "title": "Variable"
+          },
+          "variable_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "the unit of `variable` (and of `threshold`); '' when unitless",
+            "title": "Variable Unit"
+          },
+          "window_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "days of rain a rain event adds up, the days an aggregate or count spans, or how far back days_since looks",
+            "title": "Window Days"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "FactorRule",
         "type": "object"
       },
       "GridCellScore": {

@@ -1,11 +1,13 @@
 """api.live.breakdown replays api.model.engine.score_species's contribution formula from a
 stored factors-tier row, since the row only keeps each factor's raw `value`."""
 
+import numpy as np
+import pandas as pd
 import pytest
 from pydantic import TypeAdapter
 
 from api.live.breakdown import reconstruct_breakdown
-from api.model.rules import Factor
+from api.model.rules import DERIVED_SERIES, GRID_ATTRIBUTES, Factor, load_rules
 
 _FACTOR = TypeAdapter(Factor)
 COMMON = {
@@ -57,6 +59,167 @@ def stopper(id: str = "drying_wind", **overrides) -> Factor:
         response={"trapezoid": [0, 1, 2, 3]},
         **overrides,
     )
+
+
+def rain_event(id: str = "rain_trigger", weight: float = 2.0) -> Factor:
+    return factor(
+        id=id,
+        role="driver",
+        weight=weight,
+        kind="rain_event",
+        input={"variable": "precipitation_sum", "accumulation_days": 3},
+        response={"amount_mm": [10, 30, None, None], "lag_days": [6, 10, 16, 24]},
+    )
+
+
+def window_aggregate(id: str, variable: str, **overrides) -> Factor:
+    return factor(
+        id=id,
+        role="driver",
+        weight=1.0,
+        kind="window_aggregate",
+        input={"variable": variable, "aggregate": "mean", "window_days": 20, "offset_days": 2},
+        response={"trapezoid": [6, 10, 17, 22]},
+        **overrides,
+    )
+
+
+def days_since(id: str = "last_rain") -> Factor:
+    return factor(
+        id=id,
+        role="stopper",
+        kind="days_since",
+        input={
+            "variable": "precipitation_sum",
+            "op": "gte",
+            "threshold": 5,
+            "max_lookback_days": 30,
+        },
+        response={"trapezoid": [None, None, 10, 20]},
+    )
+
+
+class TestFactorMeasurements:
+    """The measurement behind a value (stored as ``<factor>__input`` / ``__days_ago``) and what the
+    rule wanted of it, so the "why this score" copy can say both."""
+
+    def test_a_factor_reports_its_role_and_weight(self) -> None:
+        factors = [gate(), driver("a", weight=2.0), stopper()]
+        row = {"season_window": 1.0, "a": 0.5, "drying_wind": 1.0}
+        breakdown = reconstruct_breakdown(factors, row)
+        assert [(b.role, b.weight) for b in breakdown] == [
+            ("gate", None),
+            ("driver", 2.0),
+            ("stopper", None),
+        ]
+
+    def test_a_rain_event_carries_the_amount_its_lag_and_the_rule_bands(self) -> None:
+        row = {"rain_trigger": 0.7, "rain_trigger__input": 42.0, "rain_trigger__days_ago": 6}
+        (b,) = reconstruct_breakdown([rain_event()], row)
+        assert (b.input, b.unit, b.days_ago) == (42.0, "mm", 6)
+        assert b.rule is not None
+        assert (b.rule.kind, b.rule.variable, b.rule.variable_unit) == (
+            "rain_event",
+            "precipitation_sum",
+            "mm",
+        )
+        assert b.rule.window_days == 3
+        assert b.rule.trapezoid == [10, 30, None, None]
+        assert b.rule.lag_days == [6, 10, 16, 24]
+
+    def test_a_window_aggregate_takes_its_unit_from_the_weather_config(self) -> None:
+        factors = [window_aggregate("air_temperature", "temperature_2m_mean")]
+        row = {"air_temperature": 0.8, "air_temperature__input": 14.2}
+        (b,) = reconstruct_breakdown(factors, row)
+        assert (b.input, b.unit, b.days_ago) == (14.2, "°C", None)
+        assert b.rule is not None
+        assert (b.rule.aggregate, b.rule.window_days, b.rule.offset_days) == ("mean", 20, 2)
+        assert b.rule.trapezoid == [6, 10, 17, 22]
+        assert b.rule.lag_days is None
+
+    def test_a_derived_series_has_its_own_unit(self) -> None:
+        factors = [
+            window_aggregate("balance", "water_balance"),
+            window_aggregate("spike", "temperature_2m_max_anomaly_30d"),
+        ]
+        row = {"balance": 1.0, "spike": 1.0}
+        assert [b.rule.variable_unit for b in reconstruct_breakdown(factors, row)] == ["mm", "°C"]
+
+    def test_a_count_of_days_is_in_days_and_keeps_the_threshold_it_counted(self) -> None:
+        row = {"drying_wind": 0.5, "drying_wind__input": 2.0}
+        (b,) = reconstruct_breakdown([stopper()], row)
+        assert (b.input, b.unit) == (2.0, "days")
+        assert b.rule is not None
+        assert (b.rule.op, b.rule.threshold, b.rule.variable_unit) == ("gt", 10, "km/h")
+        assert b.rule.window_days == 3
+        assert b.rule.trapezoid == [0, 1, 2, 3]
+
+    def test_days_since_is_in_days_and_reports_its_lookback(self) -> None:
+        row = {"last_rain": 1.0, "last_rain__input": 12.0}
+        (b,) = reconstruct_breakdown([days_since()], row)
+        assert (b.input, b.unit) == (12.0, "days")
+        assert b.rule is not None
+        assert (b.rule.op, b.rule.threshold, b.rule.window_days) == ("gte", 5, 30)
+
+    def test_a_static_band_reads_the_cell_attribute_in_its_unit(self) -> None:
+        row = {"altitude": 1.0, "altitude__input": 640.0}
+        (b,) = reconstruct_breakdown([driver("altitude", weight=1.0)], row)
+        assert (b.input, b.unit) == (640.0, "m")
+        assert b.rule is not None
+        assert (b.rule.kind, b.rule.variable, b.rule.variable_unit) == (
+            "static_band",
+            "elevation_m",
+            "m",
+        )
+
+    def test_season_and_habitat_have_a_rule_kind_and_nothing_measured(self) -> None:
+        (b,) = reconstruct_breakdown([gate()], {"season_window": 0.6})
+        assert (b.input, b.unit, b.days_ago) == (None, None, None)
+        assert b.rule is not None
+        assert (b.rule.kind, b.rule.variable, b.rule.trapezoid) == ("season_window", None, None)
+
+    def test_columns_missing_from_the_row_degrade_to_none(self) -> None:
+        """Days scored without the factors tier's measurement columns still explain themselves."""
+        (b,) = reconstruct_breakdown([rain_event()], {"rain_trigger": 0.7})
+        assert (b.input, b.days_ago) == (None, None)
+        assert b.unit == "mm"
+        assert b.rule is not None
+
+    @pytest.mark.parametrize("empty", [np.nan, pd.NA, None])
+    def test_an_empty_measurement_is_none(self, empty: object) -> None:
+        row = {"rain_trigger": 0.0, "rain_trigger__input": empty, "rain_trigger__days_ago": empty}
+        (b,) = reconstruct_breakdown([rain_event()], row)
+        assert (b.input, b.days_ago) == (None, None)
+
+    def test_a_stored_measurement_is_rounded_for_display(self) -> None:
+        """The store keeps float32, whose 14.2 would reach the JSON as 14.199999809265137."""
+        row = {"rain_trigger": 1.0, "rain_trigger__input": np.float32(14.2)}
+        (b,) = reconstruct_breakdown([rain_event()], row)
+        assert b.input == 14.2
+
+    def test_a_pandas_nullable_lag_is_a_plain_int(self) -> None:
+        stored = pd.DataFrame(
+            {"rain_trigger": [1.0], "rain_trigger__days_ago": pd.array([6], "Int16")}
+        )
+        (b,) = reconstruct_breakdown([rain_event()], stored.iloc[0].to_dict())
+        assert b.days_ago == 6
+        assert isinstance(b.days_ago, int)
+
+    def test_every_grid_attribute_and_derived_series_has_a_unit(self) -> None:
+        from api.model.rules import ATTRIBUTE_UNITS, DERIVED_UNITS
+
+        assert GRID_ATTRIBUTES <= set(ATTRIBUTE_UNITS)
+        assert set(DERIVED_SERIES) == set(DERIVED_UNITS)
+
+    def test_every_shipped_factor_describes_itself(self) -> None:
+        """A new rule on an unknown variable would fail here, not in front of a forager."""
+        for key, species in load_rules().species.items():
+            row = {f.id: 0.5 for f in species.enabled_factors}
+            for b in reconstruct_breakdown(species.enabled_factors, row):
+                assert b.rule is not None, (key, b.key)
+                if b.rule.variable is not None:
+                    assert b.rule.variable_unit is not None, (key, b.key)
+                    assert b.unit is not None, (key, b.key)
 
 
 class TestReconstructBreakdown:

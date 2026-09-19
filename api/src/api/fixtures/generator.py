@@ -9,6 +9,7 @@ there is no pipeline yet (M2/M3). It just needs to look, and stay, plausible.
 
 import hashlib
 import math
+from dataclasses import replace
 from datetime import date
 
 from api.fixtures.cells import CellSpec
@@ -20,6 +21,8 @@ from api.fixtures.scoring import (
     FactorResult,
     FactorSpec,
     combine_factors,
+    measure,
+    rule_for,
     season_gate,
     trapezoid,
 )
@@ -70,10 +73,25 @@ def score_and_factors(
     cell: CellSpec, species: Species, target_date: date, day_offset: int
 ) -> tuple[float, list[FactorResult]]:
     specs = FACTOR_SPECS[species]
-    values = {
-        spec.id: _factor_value(spec, cell, species, target_date, day_offset) for spec in specs
-    }
-    return combine_factors(specs, values)
+    values, measured = {}, {}
+    for spec in specs:
+        rule = rule_for(species, spec.id)
+        value, input_, days_ago = measure(
+            rule, _factor_value(spec, cell, species, target_date, day_offset), cell.elevation_m
+        )
+        values[spec.id] = value
+        measured[spec.id] = (rule, input_, days_ago)
+    score, results = combine_factors(specs, values)
+    return score, [
+        replace(
+            result,
+            rule=measured[result.key][0],
+            input=measured[result.key][1],
+            unit=measured[result.key][0].input_unit,
+            days_ago=measured[result.key][2],
+        )
+        for result in results
+    ]
 
 
 def combined_score(cell: CellSpec, target_date: date, day_offset: int) -> float:

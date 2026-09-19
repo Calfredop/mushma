@@ -5,26 +5,131 @@ its ``contribution`` -- that's cheap to replay from ``value`` plus the rule conf
 ``api.model.engine.score_species`` computes it live: a gate's or stopper's contribution is its own
 value; a driver's is ``value ** (weight / total_driver_weight)``. The product of every row's
 contributions is the row's stored ``score``.
+
+The row also keeps, per factor, the measurement behind the value (``<factor>__input``, and for rain
+events ``<factor>__days_ago``). Those columns are absent for days scored without them, so they read
+as ``None`` rather than raising. What the rule wanted of the measurement comes from the rule config.
 """
 
 from collections.abc import Mapping
+from functools import cache
 
-from api.model.rules import Factor
-from api.models import FactorBreakdown
+import pandas as pd
+
+from api.model.rules import (
+    ATTRIBUTE_UNITS,
+    DERIVED_UNITS,
+    CountDaysFactor,
+    DaysSinceFactor,
+    Factor,
+    RainEventFactor,
+    StaticBandFactor,
+    WindowAggregateFactor,
+)
+from api.models import FactorBreakdown, FactorRule
+from api.weather.config import load_weather_config
+
+
+@cache
+def _weather_units() -> dict[str, str]:
+    return {name: v.unit for name, v in load_weather_config().variables.items()}
+
+
+def _variable_unit(variable: str) -> str:
+    if variable in ATTRIBUTE_UNITS:
+        return ATTRIBUTE_UNITS[variable]
+    if variable in DERIVED_UNITS:
+        return DERIVED_UNITS[variable]
+    return _weather_units()[variable]
+
+
+def _describe(factor: Factor) -> FactorRule:
+    """What the rule wants of the measurement it reads."""
+    match factor:
+        case StaticBandFactor():
+            return FactorRule(
+                kind=factor.kind,
+                variable=factor.input.attribute,
+                variable_unit=_variable_unit(factor.input.attribute),
+                trapezoid=factor.response.trapezoid,
+            )
+        case RainEventFactor():
+            return FactorRule(
+                kind=factor.kind,
+                variable=factor.input.variable,
+                variable_unit=_variable_unit(factor.input.variable),
+                window_days=factor.input.accumulation_days,
+                trapezoid=factor.response.amount_mm,
+                lag_days=factor.response.lag_days,
+            )
+        case WindowAggregateFactor():
+            return FactorRule(
+                kind=factor.kind,
+                variable=factor.input.variable,
+                variable_unit=_variable_unit(factor.input.variable),
+                aggregate=factor.input.aggregate,
+                window_days=factor.input.window_days,
+                offset_days=factor.input.offset_days,
+                trapezoid=factor.response.trapezoid,
+            )
+        case CountDaysFactor():
+            return FactorRule(
+                kind=factor.kind,
+                variable=factor.input.variable,
+                variable_unit=_variable_unit(factor.input.variable),
+                window_days=factor.input.window_days,
+                offset_days=factor.input.offset_days,
+                op=factor.input.op,
+                threshold=factor.input.threshold,
+                trapezoid=factor.response.trapezoid,
+            )
+        case DaysSinceFactor():
+            return FactorRule(
+                kind=factor.kind,
+                variable=factor.input.variable,
+                variable_unit=_variable_unit(factor.input.variable),
+                window_days=factor.input.max_lookback_days,
+                op=factor.input.op,
+                threshold=factor.input.threshold,
+                trapezoid=factor.response.trapezoid,
+            )
+        case _:
+            return FactorRule(kind=factor.kind)
+
+
+def _measured(row: Mapping[str, object], column: str) -> float | None:
+    value = row.get(column)
+    return None if value is None or pd.isna(value) else float(value)
 
 
 def reconstruct_breakdown(
-    enabled_factors: list[Factor], row: Mapping[str, float]
+    enabled_factors: list[Factor], row: Mapping[str, object]
 ) -> list[FactorBreakdown]:
     """``enabled_factors`` in breakdown order (``SpeciesRules.enabled_factors``: gates, drivers,
-    stoppers, file order). ``row`` maps each factor's ``id`` to its stored value; raises
-    ``KeyError`` if a factor's value wasn't stored."""
+    stoppers, file order). ``row`` maps each factor's ``id`` to its stored value, and may carry the
+    ``<id>__input`` and ``<id>__days_ago`` measurements; raises ``KeyError`` if a factor's value
+    wasn't stored."""
     total_weight = sum(f.weight for f in enabled_factors if f.role == "driver")
     breakdown = []
     for f in enabled_factors:
-        value = row[f.id]
+        value = float(row[f.id])
         contribution = value ** (f.weight / total_weight) if f.role == "driver" else value
+        rule = _describe(f)
+        measured = _measured(row, f"{f.id}__input")
+        days_ago = _measured(row, f"{f.id}__days_ago")
         breakdown.append(
-            FactorBreakdown(key=f.id, i18n_key=f.i18n_key, value=value, contribution=contribution)
+            FactorBreakdown(
+                key=f.id,
+                i18n_key=f.i18n_key,
+                value=value,
+                contribution=contribution,
+                role=f.role,
+                weight=f.weight,
+                # Stored as float32: two decimals is all the pipeline kept on purpose.
+                input=None if measured is None else round(measured, 2),
+                unit=rule.input_unit,
+                days_ago=None if days_ago is None else int(days_ago),
+                rule=rule,
+            )
         )
     return breakdown

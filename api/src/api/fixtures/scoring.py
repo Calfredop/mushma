@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Literal
 
+from api.models import FactorRule
 from api.species import Species
 
 Trapezoid = tuple[float | None, float | None, float | None, float | None]
@@ -151,6 +152,12 @@ class FactorResult:
     i18n_key: str
     value: float
     contribution: float
+    role: Role | None = None
+    weight: float | None = None
+    input: float | None = None
+    unit: str | None = None
+    days_ago: int | None = None
+    rule: FactorRule | None = None
 
 
 # Trimmed, illustrative subsets of the real per-species factor lists in
@@ -211,7 +218,119 @@ def combine_factors(
         score *= contribution
         results.append(
             FactorResult(
-                key=spec.id, i18n_key=spec.i18n_key, value=value, contribution=contribution
+                key=spec.id,
+                i18n_key=spec.i18n_key,
+                value=value,
+                contribution=contribution,
+                role=spec.role,
+                weight=spec.weight,
             )
         )
     return score, results
+
+
+# The rule each fixture factor stands for (fixture-only numbers, shaped like the real
+# config/species/*.yaml so the "why this score" copy has something true to say). The altitude band
+# is per species, in ALTITUDE_TRAPEZOID.
+_DRYING = FactorRule(
+    kind="count_days",
+    variable="et0_fao_evapotranspiration",
+    variable_unit="mm",
+    window_days=7,
+    offset_days=0,
+    op="gte",
+    threshold=4,
+    trapezoid=(None, None, 1, 3),
+)
+FACTOR_RULES: dict[str, FactorRule] = {
+    "season": FactorRule(kind="season_window"),
+    "habitat": FactorRule(kind="habitat"),
+    "rain_trigger": FactorRule(
+        kind="rain_event",
+        variable="precipitation_sum",
+        variable_unit="mm",
+        window_days=3,
+        trapezoid=(10, 30, None, None),
+        lag_days=(6, 10, 16, 24),
+    ),
+    "rain_30d": FactorRule(
+        kind="window_aggregate",
+        variable="precipitation_sum",
+        variable_unit="mm",
+        aggregate="sum",
+        window_days=30,
+        offset_days=0,
+        trapezoid=(20, 80, None, None),
+    ),
+    "air_temperature": FactorRule(
+        kind="window_aggregate",
+        variable="temperature_2m_mean",
+        variable_unit="°C",
+        aggregate="mean",
+        window_days=20,
+        offset_days=0,
+        trapezoid=(6, 10, 17, 22),
+    ),
+    "drought_14d": FactorRule(
+        kind="window_aggregate",
+        variable="water_balance",
+        variable_unit="mm",
+        aggregate="sum",
+        window_days=14,
+        offset_days=0,
+        trapezoid=(-70, -40, None, None),
+    ),
+    "frost": FactorRule(
+        kind="count_days",
+        variable="temperature_2m_min",
+        variable_unit="°C",
+        window_days=7,
+        offset_days=0,
+        op="lte",
+        threshold=0,
+        trapezoid=(None, None, 1, 2),
+    ),
+    "drying": _DRYING,
+    "evaporative_demand": _DRYING,
+}
+FIXTURE_RAIN_LAG_DAYS = 12  # inside every fixture rain lag plateau
+
+
+def rule_for(species: Species, factor_id: str) -> FactorRule:
+    if factor_id == "altitude":
+        return FactorRule(
+            kind="static_band",
+            variable="elevation_m",
+            variable_unit="m",
+            trapezoid=ALTITUDE_TRAPEZOID[species],
+        )
+    return FACTOR_RULES[factor_id]
+
+
+def _input_for(value: float, params: Trapezoid) -> float:
+    """An x with ``trapezoid(x, params) == value``: on the rising ramp, or the falling one when the
+    rule is open below."""
+    a, b, c, d = params
+    if a is not None and b is not None:
+        return a + value * (b - a)
+    assert c is not None and d is not None
+    return d - value * (d - c)
+
+
+def measure(
+    rule: FactorRule, value: float, elevation_m: float
+) -> tuple[float, float | None, int | None]:
+    """``(value, input, days_ago)``: the measurement a fixture factor stands in for, worked back
+    from its value so it agrees with the rule. A count of days is whole, so its value is read again
+    from the count; every other value is returned as given."""
+    if rule.kind == "static_band":
+        return value, elevation_m, None
+    if rule.kind in ("season_window", "habitat"):
+        return value, None, None
+    assert rule.trapezoid is not None
+    if rule.kind in ("count_days", "days_since"):
+        count = round(_input_for(value, rule.trapezoid))
+        return trapezoid(count, rule.trapezoid), float(count), None
+    amount = round(_input_for(value, rule.trapezoid), 1)
+    days_ago = FIXTURE_RAIN_LAG_DAYS if rule.kind == "rain_event" else None
+    return value, amount, days_ago

@@ -74,6 +74,16 @@ StaticAttribute = Literal[
     "litter_depth",
 ]
 GRID_ATTRIBUTES = {"elevation_m", "slope_deg", "aspect_deg", "northness", "soil_ph"}
+# Display units for the "why this score" measurements. Weather variables carry theirs in
+# config/weather.yaml; these two cover what that file lacks. A unitless attribute has "".
+ATTRIBUTE_UNITS = {
+    "elevation_m": "m",
+    "slope_deg": "°",
+    "aspect_deg": "°",
+    "northness": "",
+    "soil_ph": "",
+}
+DERIVED_UNITS = {"water_balance": "mm", "temperature_2m_max_anomaly_30d": "°C"}
 # Aggregates that compare a window with the cell's own climatology, which v1 does not compute.
 CLIMATOLOGY_AGGREGATES = {"percent_of_normal", "percentile_of_normal"}
 

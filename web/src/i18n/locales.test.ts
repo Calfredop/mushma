@@ -43,4 +43,19 @@ describe('locales', () => {
       [],
     )
   })
+
+  test('every weather variable and cell attribute the species rules read has a label', () => {
+    const used = readdirSync(SPECIES_RULES_DIR)
+      .filter((file) => file.endsWith('.yaml'))
+      .flatMap((file) => [
+        ...readFileSync(join(SPECIES_RULES_DIR, file), 'utf8').matchAll(
+          /\b(?:variable|attribute):\s*(\w+)/g,
+        ),
+      ])
+      .map((match) => match[1])
+    expect(used.length).toBeGreaterThan(0)
+
+    const labelled = new Set(Object.keys(it.why.detail.variable))
+    expect([...new Set(used)].filter((name) => !labelled.has(name)).sort()).toEqual([])
+  })
 })

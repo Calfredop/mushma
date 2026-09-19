@@ -95,6 +95,11 @@ class TestSpotAndCells:
                     assert len(day.factors) > 0
                     contributions = math.prod(f.contribution for f in day.factors)
                     assert contributions == pytest.approx(day.score, abs=1e-6)
+                    for f in day.factors:
+                        assert f.role is not None
+                        assert f.rule is not None
+                        if f.input is not None:
+                            assert f.unit is not None
 
     def test_unknown_cell_id_404s(self, client: httpx.Client) -> None:
         response = client.get("/cells/not-a-real-cell")

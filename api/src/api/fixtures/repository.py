@@ -64,7 +64,18 @@ def _score_for(cell: CellSpec, species: SpeciesOrCombined, target_date: date, of
 
 def _to_breakdown(factors: list[FactorResult]) -> list[FactorBreakdown]:
     return [
-        FactorBreakdown(key=f.key, i18n_key=f.i18n_key, value=f.value, contribution=f.contribution)
+        FactorBreakdown(
+            key=f.key,
+            i18n_key=f.i18n_key,
+            value=f.value,
+            contribution=f.contribution,
+            role=f.role,
+            weight=f.weight,
+            input=f.input,
+            unit=f.unit,
+            days_ago=f.days_ago,
+            rule=f.rule,
+        )
         for f in factors
     ]
 

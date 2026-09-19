@@ -110,6 +110,18 @@ class TestGetCellDetailAndSpot:
         assert porcini.days[0].factors[0].key == "rain_a"
         assert porcini.days[7].factors[0].key == "rain_b"
 
+    def test_a_stored_measurement_reaches_the_breakdown_and_its_absence_reads_none(
+        self, repo: LiveRepository
+    ) -> None:
+        def first_porcini_factor(cell_id: str):
+            species = repo.get_cell_detail(cell_id).species
+            return next(f for f in species if f.species == "porcini").days[0].factors[0]
+
+        measured = first_porcini_factor(CELL_B["cell_id"])
+        assert (measured.key, measured.input, measured.unit) == ("rain_a", 640.0, "m")
+        unmeasured = first_porcini_factor(CELL_A["cell_id"])
+        assert (unmeasured.key, unmeasured.input, unmeasured.unit) == ("rain_a", None, "m")
+
     def test_unknown_cell_id_raises(self, repo: LiveRepository) -> None:
         with pytest.raises(CellNotFound):
             repo.get_cell_detail("not-a-real-cell")

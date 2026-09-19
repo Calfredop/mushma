@@ -328,16 +328,104 @@ export interface components {
      *
      *     `contribution` is this factor's own multiplicative share of the day's
      *     score: the product of every factor's `contribution` equals `score`.
+     *
+     *     `input`, `unit` and `days_ago` are the measurement this factor read; they
+     *     are null for a factor that measures nothing (season, habitat) and for days
+     *     scored without the measurement columns. `rule` says what the rule wanted.
      */
     FactorBreakdown: {
       /** Contribution */
       contribution: number
+      /**
+       * Days Ago
+       * @description rain events: when the rain it scored ended
+       */
+      days_ago?: number | null
       /** I18N Key */
       i18n_key: string
+      /**
+       * Input
+       * @description what the factor measured: mm of rain, a temperature, a count of days, metres
+       */
+      input?: number | null
       /** Key */
       key: string
+      /** Role */
+      role?: ('gate' | 'driver' | 'stopper') | null
+      rule?: components['schemas']['FactorRule'] | null
+      /**
+       * Unit
+       * @description the unit of `input`
+       */
+      unit?: string | null
       /** Value */
       value: number
+      /**
+       * Weight
+       * @description drivers only
+       */
+      weight?: number | null
+    }
+    /**
+     * FactorRule
+     * @description What a rule asked of the measurement (`config/species/*.yaml`), so the copy can say what it
+     *     wanted. Which fields are set follows `kind`: a season window or habitat has none of them.
+     */
+    FactorRule: {
+      /**
+       * Aggregate
+       * @description how a window aggregate combines the days
+       */
+      aggregate?: ('sum' | 'mean' | 'min' | 'max') | null
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind:
+        | 'season_window'
+        | 'habitat'
+        | 'static_band'
+        | 'rain_event'
+        | 'window_aggregate'
+        | 'count_days'
+        | 'days_since'
+      /**
+       * Lag Days
+       * @description rain events: the same shape over `days_ago`, the lag the rain may have
+       */
+      lag_days?: (number | null)[] | null
+      /**
+       * Offset Days
+       * @description the window ends this many days before the scored day
+       */
+      offset_days?: number | null
+      /**
+       * Op
+       * @description what counts as a matching day, against `threshold`
+       */
+      op?: ('lt' | 'lte' | 'gt' | 'gte') | null
+      /** Threshold */
+      threshold?: number | null
+      /**
+       * Trapezoid
+       * @description [zero_below, full_from, full_to, zero_above] over the measurement (`input`, in `unit`); a null pair leaves that side open
+       */
+      trapezoid?: (number | null)[] | null
+      /**
+       * Variable
+       * @description the weather variable or cell attribute the factor reads
+       */
+      variable?: string | null
+      /**
+       * Variable Unit
+       * @description the unit of `variable` (and of `threshold`); '' when unitless
+       */
+      variable_unit?: string | null
+      /**
+       * Window Days
+       * @description days of rain a rain event adds up, the days an aggregate or count spans, or how far back days_since looks
+       */
+      window_days?: number | null
     }
     /** GridCellScore */
     GridCellScore: {

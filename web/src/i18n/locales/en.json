@@ -118,7 +118,69 @@
     "nothingHolding": "Nothing is holding the score back on this day.",
     "forecastNote": "This day is a forecast: the further ahead, the more the score rests on the weather forecast. Rain that has already fallen weighs the most.",
     "explain": "Each factor runs from 0 (unfavourable) to 1 (ideal). The bar on the right shows how much of what keeps the score down comes from that factor.",
-    "unknownFactor": "Other factor ({{key}})"
+    "unknownFactor": "Other factor ({{key}})",
+    "detail": {
+      "showAll": "Show all details",
+      "notMeasured": "No measurement available for this day.",
+      "none": "No detail available for this factor.",
+      "season": "The time of year this species usually fruits; out of season the score is zero.",
+      "habitat": "How well this cell's woodland type suits the species.",
+      "static": "For this cell: {{value}}.",
+      "rain_one": "{{amount}} of rain in {{count}} day{{until}}.",
+      "rain_other": "{{amount}} of rain in {{count}} days{{until}}.",
+      "window_one": "{{variable}}, {{aggregate}} over {{count}} day{{until}}: {{value}}.",
+      "window_other": "{{variable}}, {{aggregate}} over {{count}} days{{until}}: {{value}}.",
+      "count_one": "{{count}} day out of {{window}} with {{variable}} {{op}} {{threshold}}{{until}}.",
+      "count_other": "{{count}} days out of {{window}} with {{variable}} {{op}} {{threshold}}{{until}}.",
+      "daysSince_one": "{{count}} day since the last day with {{variable}} {{op}} {{threshold}}.",
+      "daysSince_other": "{{count}} days since the last day with {{variable}} {{op}} {{threshold}}.",
+      "until": " up to {{date}} ({{lag}})",
+      "daysBefore_one": "{{count}} day before",
+      "daysBefore_other": "{{count}} days before",
+      "sameDay": "the same day",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "rule": "The rule gives full credit {{full}}.",
+      "ruleZero": "The rule gives full credit {{full}}; none {{zero}}.",
+      "lagRule": "Distance from the scored day: full credit {{full}}.",
+      "lagRuleZero": "Distance from the scored day: full credit {{full}}; none {{zero}}.",
+      "full": {
+        "between": "from {{from}} to {{to}}",
+        "at": "at {{value}}",
+        "from": "from {{value}} up",
+        "upTo": "up to {{value}}"
+      },
+      "zero": {
+        "atOrBelow": "up to {{value}}",
+        "below": "below {{value}}",
+        "atOrAbove": "from {{value}} up",
+        "above": "above {{value}}"
+      },
+      "aggregate": {
+        "sum": "total",
+        "mean": "mean",
+        "min": "lowest",
+        "max": "highest"
+      },
+      "variable": {
+        "precipitation_sum": "rain",
+        "snowfall_sum": "snow",
+        "temperature_2m_min": "minimum temperature",
+        "temperature_2m_max": "maximum temperature",
+        "temperature_2m_mean": "air temperature",
+        "temperature_2m_max_anomaly_30d": "departure of the maximum temperature from the previous 30-day mean",
+        "soil_temperature_0_to_7cm_mean": "soil temperature (0–7 cm)",
+        "soil_moisture_0_to_7cm_mean": "soil moisture (0–7 cm)",
+        "soil_moisture_7_to_28cm_mean": "soil moisture (7–28 cm)",
+        "et0_fao_evapotranspiration": "potential evaporation (ET0)",
+        "vapour_pressure_deficit_max": "maximum vapour pressure deficit",
+        "water_balance": "water balance (rain minus evaporation)",
+        "elevation_m": "altitude",
+        "soil_ph": "soil pH",
+        "lithology_calcareous": "calcareous bedrock"
+      },
+      "rainNote": "Rain is the weather model's estimate, adjusted upward (more at altitude) to match rain gauges; forecast days have no such adjustment."
+    }
   },
   "factor": {
     "season": "Season",

@@ -118,7 +118,69 @@
     "nothingHolding": "Nessun fattore frena l'indice in questo giorno.",
     "forecastNote": "Questo giorno è una previsione: più è lontano, più l'indice dipende dalle previsioni meteo. Pesa di più la pioggia già caduta.",
     "explain": "Ogni fattore va da 0 (sfavorevole) a 1 (ideale). La barra a destra mostra quanta parte di ciò che tiene basso l'indice dipende da quel fattore.",
-    "unknownFactor": "Altro fattore ({{key}})"
+    "unknownFactor": "Altro fattore ({{key}})",
+    "detail": {
+      "showAll": "Mostra tutti i dettagli",
+      "notMeasured": "Misura non disponibile per questo giorno.",
+      "none": "Nessun dettaglio disponibile per questo fattore.",
+      "season": "Il periodo dell'anno in cui questa specie di solito fruttifica; fuori stagione l'indice è zero.",
+      "habitat": "Quanto il tipo di bosco di questa cella si adatta alla specie.",
+      "static": "Per questa cella: {{value}}.",
+      "rain_one": "{{amount}} di pioggia in {{count}} giorno{{until}}.",
+      "rain_other": "{{amount}} di pioggia in {{count}} giorni{{until}}.",
+      "window_one": "{{variable}}, {{aggregate}} su {{count}} giorno{{until}}: {{value}}.",
+      "window_other": "{{variable}}, {{aggregate}} su {{count}} giorni{{until}}: {{value}}.",
+      "count_one": "{{count}} giorno su {{window}} con {{variable}} {{op}} {{threshold}}{{until}}.",
+      "count_other": "{{count}} giorni su {{window}} con {{variable}} {{op}} {{threshold}}{{until}}.",
+      "daysSince_one": "{{count}} giorno dall'ultimo giorno con {{variable}} {{op}} {{threshold}}.",
+      "daysSince_other": "{{count}} giorni dall'ultimo giorno con {{variable}} {{op}} {{threshold}}.",
+      "until": " fino a {{date}} ({{lag}})",
+      "daysBefore_one": "{{count}} giorno prima",
+      "daysBefore_other": "{{count}} giorni prima",
+      "sameDay": "lo stesso giorno",
+      "days_one": "{{count}} giorno",
+      "days_other": "{{count}} giorni",
+      "rule": "La regola dà credito pieno {{full}}.",
+      "ruleZero": "La regola dà credito pieno {{full}}; nullo {{zero}}.",
+      "lagRule": "Distanza dal giorno valutato: credito pieno {{full}}.",
+      "lagRuleZero": "Distanza dal giorno valutato: credito pieno {{full}}; nullo {{zero}}.",
+      "full": {
+        "between": "da {{from}} a {{to}}",
+        "at": "a {{value}}",
+        "from": "da {{value}} in su",
+        "upTo": "fino a {{value}}"
+      },
+      "zero": {
+        "atOrBelow": "fino a {{value}}",
+        "below": "sotto {{value}}",
+        "atOrAbove": "da {{value}} in su",
+        "above": "oltre {{value}}"
+      },
+      "aggregate": {
+        "sum": "somma",
+        "mean": "media",
+        "min": "minimo",
+        "max": "massimo"
+      },
+      "variable": {
+        "precipitation_sum": "pioggia",
+        "snowfall_sum": "neve",
+        "temperature_2m_min": "temperatura minima",
+        "temperature_2m_max": "temperatura massima",
+        "temperature_2m_mean": "temperatura dell'aria",
+        "temperature_2m_max_anomaly_30d": "scarto della temperatura massima dalla media dei 30 giorni precedenti",
+        "soil_temperature_0_to_7cm_mean": "temperatura del suolo (0–7 cm)",
+        "soil_moisture_0_to_7cm_mean": "umidità del suolo (0–7 cm)",
+        "soil_moisture_7_to_28cm_mean": "umidità del suolo (7–28 cm)",
+        "et0_fao_evapotranspiration": "evaporazione potenziale (ET0)",
+        "vapour_pressure_deficit_max": "deficit di pressione di vapore massimo",
+        "water_balance": "bilancio idrico (pioggia meno evaporazione)",
+        "elevation_m": "quota",
+        "soil_ph": "pH del suolo",
+        "lithology_calcareous": "roccia calcarea"
+      },
+      "rainNote": "La pioggia è la stima del modello meteo, corretta al rialzo (di più in quota) per avvicinarla a quella dei pluviometri; i giorni di previsione non hanno questa correzione."
+    }
   },
   "factor": {
     "season": "Stagione",

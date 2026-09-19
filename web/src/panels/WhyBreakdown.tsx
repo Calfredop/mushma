@@ -1,10 +1,15 @@
+import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { DayScore } from '../api/queries'
+import { ChevronIcon } from '../components/icons'
 import { ScoreChip } from '../components/ScoreChip'
+import { usePersistentFlag } from '../hooks/usePersistentFlag'
 import { intlLocale, type Language } from '../i18n'
+import { usesRain } from '../score/detail'
 import { explainScore, type FactorBreakdown } from '../score/impact'
 import type { Species } from '../state/urlState'
 import { formatDayLong } from '../time/days'
+import { FactorDetail } from './FactorDetail'
 import panel from './panel.module.css'
 import styles from './WhyBreakdown.module.css'
 
@@ -16,6 +21,10 @@ interface Props {
 
 export function WhyBreakdown({ species, day, isForecast }: Props) {
   const { t, i18n } = useTranslation()
+  const detailIds = useId()
+  const [showAll, setShowAll] = usePersistentFlag('mushma.whyDetails')
+  // A row the visitor opened or closed on its own; the switch resets them all.
+  const [overrides, setOverrides] = useState<Record<string, boolean>>({})
   const language = i18n.resolvedLanguage as Language
   const locale = intlLocale(language)
   const explanation = explainScore(day.factors)
@@ -31,6 +40,17 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
 
   const percent = (impact: number) =>
     impact > 0 && impact < 0.005 ? '<1' : String(Math.round(impact * 100))
+
+  const isOpen = (key: string) => overrides[key] ?? showAll
+  const toggleRow = (key: string) =>
+    setOverrides((current) => ({ ...current, [key]: !(current[key] ?? showAll) }))
+  const toggleAll = () => {
+    setShowAll(!showAll)
+    setOverrides({})
+  }
+  const rainDetailOpen = explanation.factors.some(
+    (f) => isOpen(f.key) && usesRain(f.rule),
+  )
 
   const blockedLabels = new Intl.ListFormat(locale, { type: 'conjunction' }).format(
     day.factors.filter((f) => explanation.blockedBy.includes(f.key)).map(label),
@@ -60,6 +80,21 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
         <p className={styles.summary}>{t('why.nothingHolding')}</p>
       )}
 
+      <div className={styles.tools}>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={showAll}
+          className={styles.switch}
+          onClick={toggleAll}
+        >
+          <span className={styles.switchTrack} aria-hidden="true">
+            <span className={styles.switchThumb} />
+          </span>
+          {t('why.detail.showAll')}
+        </button>
+      </div>
+
       <div className={styles.columns} aria-hidden="true">
         <span>{t('why.favourable')}</span>
         <span>{t('why.holdsBack')}</span>
@@ -71,7 +106,18 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
             className={styles.factor}
             data-blocking={explanation.blockedBy.includes(factor.key)}
           >
-            <span className={styles.name}>{label(factor)}</span>
+            <button
+              type="button"
+              className={styles.name}
+              aria-expanded={isOpen(factor.key)}
+              aria-controls={
+                isOpen(factor.key) ? `${detailIds}-${factor.key}` : undefined
+              }
+              onClick={() => toggleRow(factor.key)}
+            >
+              {label(factor)}
+              <ChevronIcon direction={isOpen(factor.key) ? 'up' : 'down'} />
+            </button>
             <span className={styles.impactText}>
               {factor.impact > 0 &&
                 t('why.holdsBackValue', { percent: percent(factor.impact) })}
@@ -98,10 +144,18 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
                 style={{ width: `${factor.impact * 100}%` }}
               />
             </span>
+            {isOpen(factor.key) && (
+              <FactorDetail
+                factor={factor}
+                date={day.date}
+                id={`${detailIds}-${factor.key}`}
+              />
+            )}
           </li>
         ))}
       </ul>
 
+      {rainDetailOpen && <p className={panel.note}>{t('why.detail.rainNote')}</p>}
       <p className={panel.note}>{t('why.explain')}</p>
       {isForecast && (
         <p className={styles.forecast}>

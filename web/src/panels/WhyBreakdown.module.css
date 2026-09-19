@@ -53,8 +53,96 @@
 }
 
 .name {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
   font-size: var(--text-body);
   line-height: 1.25;
+  text-align: left;
+}
+
+/* A full-size tap target without the height, so the rows stay compact. */
+.name::after {
+  content: '';
+  position: absolute;
+  inset: min(0px, calc((100% - var(--tap)) / 2)) 0;
+}
+
+.name svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  color: var(--felce);
+}
+
+.detail {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--rule);
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.detail p {
+  margin: 0;
+}
+
+.tools {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-caption);
+  font-weight: 600;
+}
+
+.switchTrack {
+  position: relative;
+  flex: none;
+  width: 2.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: rgb(28 33 29 / 18%);
+  transition: background 120ms var(--ease);
+}
+
+.switchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.25rem - 4px);
+  height: calc(1.25rem - 4px);
+  border-radius: 50%;
+  background: var(--carta);
+  box-shadow: var(--shadow-float);
+  transition: transform 120ms var(--ease);
+}
+
+.switch[aria-checked='true'] .switchTrack {
+  background: var(--lago);
+}
+
+.switch[aria-checked='true'] .switchThumb {
+  transform: translateX(1rem);
 }
 
 .impactText {
