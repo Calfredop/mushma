@@ -95,6 +95,10 @@ function MapScreen() {
   const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
   // A key, not a translated string, so it follows a language switch.
   const [locateError, setLocateError] = useState<LocateError | null>(null)
+  // The last GPS fix, for the dot on the map. Never in the URL: a shared link doesn't carry it.
+  const [userPosition, setUserPosition] = useState<{ lat: number; lon: number } | null>(
+    null,
+  )
   const online = useOnline()
 
   // What the map shows: a day (the date strip or a replayed past day), or a whole season.
@@ -178,14 +182,29 @@ function MapScreen() {
     [selectSpot],
   )
 
-  const { locate, locating } = useLocate({
+  // The top bar opens the forecast where you stand; the button on the map only goes there.
+  const spotLocate = useLocate({
     onLocated: useCallback(
-      (lat: number, lon: number) =>
-        openSpot({ kind: 'point', lat, lon }, { lat, lon, zoom: SPOT_ZOOM }),
+      (lat: number, lon: number) => {
+        setUserPosition({ lat, lon })
+        openSpot({ kind: 'point', lat, lon }, { lat, lon, zoom: SPOT_ZOOM })
+      },
       [openSpot],
     ),
     onError: setLocateError,
   })
+  const centerLocate = useLocate({
+    onLocated: useCallback(
+      (lat: number, lon: number) => {
+        setUserPosition({ lat, lon })
+        setLocateError(null)
+        flyTo({ lat, lon, zoom: SPOT_ZOOM })
+      },
+      [flyTo],
+    ),
+    onError: setLocateError,
+  })
+  const locating = spotLocate.locating || centerLocate.locating
 
   // A shared link (?cell= or ?at=) opens on its spot: move the map there once
   // the forecast says where the cell is. A distant cell is framed by the map itself.
@@ -261,8 +280,8 @@ function MapScreen() {
             type="button"
             className={styles.iconButton}
             aria-label={t('locate.button')}
-            aria-busy={locating}
-            onClick={locate}
+            aria-busy={spotLocate.locating}
+            onClick={spotLocate.locate}
           >
             <LocateIcon />
           </button>
@@ -299,6 +318,7 @@ function MapScreen() {
                 }
               : null
           }
+          userPosition={userPosition}
           lang={language}
           // On a phone the sheet opens and the map shrinks around its centre:
           // centre on the tap so the chosen spot stays in view.
@@ -328,6 +348,15 @@ function MapScreen() {
           <div className={styles.legend}>
             <Legend showSightings={app.sightingsVisible} season={app.season} />
           </div>
+          <button
+            type="button"
+            className={styles.center}
+            aria-label={t('locate.center')}
+            aria-busy={centerLocate.locating}
+            onClick={centerLocate.locate}
+          >
+            <LocateIcon />
+          </button>
           <div className={styles.dates}>
             <TimeBar
               today={app.today}

@@ -78,7 +78,8 @@
     "canvas": "Map",
     "toggleAttribution": "Show or hide map credits",
     "feedback": "Report a map error",
-    "marker": "Map marker"
+    "marker": "Map marker",
+    "userPosition": "Your position"
   },
   "search": {
     "open": "Search a place",
@@ -91,6 +92,7 @@
   },
   "locate": {
     "button": "Use my location",
+    "center": "Center on my position",
     "locating": "Finding your location…",
     "denied": "Location access is off. Allow it in your browser settings, or search a place instead.",
     "unavailable": "Couldn't find your location. Try again, or search a place.",

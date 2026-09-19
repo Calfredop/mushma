@@ -162,6 +162,8 @@ interface Props {
   camera: CameraRequest | null
   /** A point spot and, once resolved, the centre of the cell that answers for it. */
   spotPoint: { point: [number, number]; cell?: [number, number] } | null
+  /** The visitor's last GPS fix, or null before one. */
+  userPosition: { lat: number; lon: number } | null
   lang: Language
   onCellClick: (cellId: string, lat: number, lon: number) => void
   onPointClick: (lat: number, lon: number) => void
@@ -186,6 +188,7 @@ export function ConditionsMap({
   hotspots,
   camera,
   spotPoint,
+  userPosition,
   lang,
   onCellClick,
   onPointClick,
@@ -314,6 +317,20 @@ export function ConditionsMap({
     })
     return () => markers.forEach((marker) => marker.remove())
   }, [hotspots, ready, t])
+
+  // "You are here", a dot that lets taps through to the map below it.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready || !userPosition) return
+    const element = document.createElement('div')
+    element.className = styles.userPosition
+    element.setAttribute('role', 'img')
+    element.setAttribute('aria-label', t('map.userPosition'))
+    const marker = new Marker({ element })
+      .setLngLat([userPosition.lon, userPosition.lat])
+      .addTo(map)
+    return () => void marker.remove()
+  }, [userPosition, ready, t])
 
   // Camera requests (search, GPS, hot places, a tap on a phone). Declared before
   // the spot effect so a framed spot-and-cell view wins over the fly-to.

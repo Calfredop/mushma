@@ -78,7 +78,8 @@
     "canvas": "Mappa",
     "toggleAttribution": "Mostra o nascondi i crediti della mappa",
     "feedback": "Segnala un errore nella mappa",
-    "marker": "Segnaposto"
+    "marker": "Segnaposto",
+    "userPosition": "La tua posizione"
   },
   "search": {
     "open": "Cerca un luogo",
@@ -91,6 +92,7 @@
   },
   "locate": {
     "button": "Usa la mia posizione",
+    "center": "Centra sulla mia posizione",
     "locating": "Cerco la tua posizione…",
     "denied": "La posizione è disattivata. Consentila nelle impostazioni del browser oppure cerca un luogo.",
     "unavailable": "Non riesco a trovare la tua posizione. Riprova oppure cerca un luogo.",
