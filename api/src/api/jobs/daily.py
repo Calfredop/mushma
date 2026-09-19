@@ -38,6 +38,8 @@ WINDOW_BACK_DAYS = 6
 WINDOW_FORWARD_DAYS = 7
 ALERT_WEBHOOK_ENV = "ALERT_WEBHOOK_URL"
 ALERT_TIMEOUT_S = 10
+HEARTBEAT_ENV = "HEARTBEAT_URL"
+HEARTBEAT_TIMEOUT_S = 10
 
 
 class StepResult(Protocol):
@@ -46,6 +48,7 @@ class StepResult(Protocol):
 
 Runner = Callable[[list[str]], StepResult]
 Alert = Callable[[str], None]
+Heartbeat = Callable[[], None]
 
 
 def score_window(today: date) -> tuple[date, date]:
@@ -101,6 +104,18 @@ def send_alert(message: str) -> None:
         _log(event="alert_failed", error=str(error))
 
 
+def send_heartbeat() -> None:
+    """A dead-man's-switch ping (healthchecks.io-style: a plain GET) for a run that finished --
+    `send_alert` only fires if the job runs and fails, not if the scheduler never runs it at all."""
+    url = os.environ.get(HEARTBEAT_ENV)
+    if not url:
+        return
+    try:
+        urllib.request.urlopen(urllib.request.Request(url), timeout=HEARTBEAT_TIMEOUT_S)
+    except (urllib.error.URLError, OSError) as error:
+        _log(event="heartbeat_failed", error=str(error))
+
+
 def _run_step(args: list[str], runner: Runner) -> None:
     step = " ".join(args[2:])  # drop the interpreter and "-m"
     _log(event="step_start", step=step)
@@ -118,6 +133,7 @@ def main(
     today: date | None = None,
     runner: Runner = subprocess.run,
     alert: Alert = send_alert,
+    heartbeat: Heartbeat = send_heartbeat,
 ) -> None:
     today = today or today_rome()
     started = time.monotonic()
@@ -132,6 +148,7 @@ def main(
         alert(f"mushma daily job failed at step {current!r} -- see Fly logs")
         raise
     _log(event="job_done", job="daily", elapsed_s=round(time.monotonic() - started, 1))
+    heartbeat()
 
 
 if __name__ == "__main__":

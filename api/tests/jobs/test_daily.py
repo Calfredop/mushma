@@ -118,3 +118,47 @@ def test_a_failed_step_is_logged_and_the_job_failure_is_logged_too(
 
     events = [json.loads(line)["event"] for line in capsys.readouterr().out.splitlines() if line]
     assert events == ["job_start", "step_start", "step_failed", "job_failed"]
+
+
+def test_heartbeat_fires_once_the_job_succeeds() -> None:
+    heartbeats: list[None] = []
+    daily.main(
+        today=date(2026, 9, 18),
+        runner=lambda args: FakeResult(),
+        alert=lambda message: None,
+        heartbeat=lambda: heartbeats.append(None),
+    )
+    assert len(heartbeats) == 1
+
+
+def test_no_heartbeat_on_failure() -> None:
+    heartbeats: list[None] = []
+
+    def runner(args: list[str]) -> FakeResult:
+        return FakeResult(returncode=1)
+
+    with pytest.raises(SystemExit):
+        daily.main(
+            today=date(2026, 9, 18),
+            runner=runner,
+            alert=lambda message: None,
+            heartbeat=lambda: heartbeats.append(None),
+        )
+    assert heartbeats == []
+
+
+def test_send_heartbeat_is_a_no_op_without_a_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv(daily.HEARTBEAT_ENV, raising=False)
+    daily.send_heartbeat()  # must not raise / must not attempt a request
+
+
+def test_send_heartbeat_pings_the_configured_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(daily.HEARTBEAT_ENV, "https://hc-ping.com/some-id")
+    requested: list[str] = []
+    monkeypatch.setattr(
+        daily.urllib.request,
+        "urlopen",
+        lambda request, timeout: requested.append(request.full_url),
+    )
+    daily.send_heartbeat()
+    assert requested == ["https://hc-ping.com/some-id"]
