@@ -6,6 +6,8 @@
   grid-template-areas: 'top' 'map' 'sheet';
   height: 100dvh;
   overflow: hidden;
+  /* Not scrollable at all, unlike hidden: scrollIntoView and focus can't push it sideways. */
+  overflow: clip;
 }
 
 .topbar {
@@ -324,7 +326,9 @@
     bottom: calc(100% + var(--space-2));
   }
 
+  /* Its natural width, so it centres where it fits (about 1416px and up); narrower, it shrinks
+     to its column and the date strip scrolls inside it, as on a phone. */
   .dates > * {
-    flex: none;
+    flex: 0 1 auto;
   }
 }
