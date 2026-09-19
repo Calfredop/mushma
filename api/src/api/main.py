@@ -1,10 +1,22 @@
 import os
 
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
+from api.ratelimit import RateLimitMiddleware
 from api.routes import router
+
+# Error tracking (M7 · production hardening): only when a DSN is set, so local dev, CI and
+# fixtures mode need no Sentry project at all. Sampling stays low/zero to stay well inside the
+# free tier at this app's scale.
+if os.environ.get("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=os.environ["SENTRY_DSN"],
+        traces_sample_rate=0.0,
+        send_default_pii=False,
+    )
 
 app = FastAPI(
     title="mushma API",
@@ -16,6 +28,8 @@ app = FastAPI(
     version="0.1.0",
 )
 app.include_router(router)
+
+app.add_middleware(RateLimitMiddleware)
 
 # The web app (M5) is a static SPA on Vercel: any of its preview deployments and its production
 # domain must be able to call this read-only, GET-only, cookie-less API. CORS_ORIGINS lets a
