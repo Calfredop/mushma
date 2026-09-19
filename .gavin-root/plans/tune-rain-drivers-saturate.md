@@ -29,6 +29,9 @@ windows, altitude bands and habitat affinities frozen.
       the raw rain a threshold needs by 22 % at sea level to 43 % at 1.7 km
 - [ ] Consider a relative 30-day driver (`percent_of_normal`, already written and disabled) once
       the per-cell climatology exists, so an ordinary month stops scoring as a good one
+- [ ] Test the growth clock's temperatures and the gallinacci shade rule (GAL-07, applied all year
+      though its source limits it to June–September), which cost gallinacci some `auc_local` in the
+      comparison of card `algo-more-factor` (`model-v1-validation.md`)
 - [ ] Judge any change on the hold-out seasons (2024, 2025), and write the result into
       `model-v1-validation.md`
 - [ ] If `precipitation_scale.enabled` changes, remove or reword `why.detail.rainNote` in
