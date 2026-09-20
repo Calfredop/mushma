@@ -16,6 +16,6 @@ Write tests first for parsers and downscaling (AGENTS.md). Cache every response,
 - [x] Normalized daily weather table (point × date × variable) in the chosen storage; re-runs for the same date are idempotent
 - [x] Downscaling to cells: elevation lapse-rate temperature correction; precipitation by nearest or interpolated point
 - [x] Decide history backfill depth (archive range vs rate limits vs backtest needs) and record it in the PRD
-- [ ] [Run the backfill](./run-the-backfill.md)
+- [x] [Run the backfill](./run-the-backfill.md)
 - [x] Optional ground-truth check: compare ERA5-Land rain with a few SIR Toscana gauges and note any bias
 - [x] Record Open-Meteo attribution (CC BY 4.0) for the credits page
