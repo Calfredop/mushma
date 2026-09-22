@@ -1,7 +1,7 @@
 ---
 order: 8
 title: M4 · API + daily pipeline in production
-status: In Progress
+status: Done
 priority: high
 complexity: moderate
 ---
