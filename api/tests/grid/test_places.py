@@ -78,14 +78,41 @@ def test_read_comuni_keeps_the_region_and_joins_the_province_abbreviation(tmp_pa
     assert result.crs == "EPSG:3035"
 
 
-def _localities(tmp_path: Path, rows: list[tuple[str, int, float, float]]) -> Path:
+def _localities(
+    tmp_path: Path, rows: list[tuple[str, int, float, float]], without_cpg: bool = False
+) -> Path:
     """An ISTAT-like locality archive: (NOME, TIPO_LOC, lon, lat) points in UTM 32N."""
     points = gpd.GeoDataFrame(
         {"NOME": [r[0] for r in rows], "TIPO_LOC": [r[1] for r in rows]},
         geometry=gpd.points_from_xy([r[2] for r in rows], [r[3] for r in rows]),
         crs="EPSG:4326",
     ).to_crs("EPSG:32632")
-    return zip_shapefiles(tmp_path / "LocalitaPuntuali_21.zip", {"Localita_2021_Point": points})
+    return zip_shapefiles(
+        tmp_path / "LocalitaPuntuali_21.zip", {"Localita_2021_Point": points}, without_cpg
+    )
+
+
+def test_read_comuni_recovers_accented_names_from_a_cpg_less_archive(tmp_path: Path) -> None:
+    comuni = gpd.GeoDataFrame(
+        {
+            "COD_REG": [9],
+            "COD_UTS": [51],
+            "PRO_COM_T": ["051011"],
+            "COMUNE": ["Castel San Niccolò"],
+        },
+        geometry=[box(0, 0, 1, 1)],
+        crs="EPSG:32632",
+    )
+    provinces = gpd.GeoDataFrame(
+        {"COD_UTS": [51], "SIGLA": ["AR"]}, geometry=[box(0, 0, 1, 1)], crs="EPSG:32632"
+    )
+    archive = zip_shapefiles(
+        tmp_path / "limits.zip", {"Com": comuni, "Prov": provinces}, without_cpg=True
+    )
+
+    result = read_comuni(archive, "Com/Com.shp", "Prov/Prov.shp", region_code=9, crs="EPSG:3035")
+
+    assert result["comune_name"].tolist() == ["Castel San Niccolò"]
 
 
 def test_read_localities_keeps_inhabited_places_inside_the_bbox(tmp_path: Path) -> None:
@@ -104,6 +131,16 @@ def test_read_localities_keeps_inhabited_places_inside_the_bbox(tmp_path: Path) 
 
     assert places["place_name"].tolist() == ["Badia Prataglia", "Camaldoli"]
     assert places.crs == "EPSG:3035"
+
+
+def test_read_localities_recovers_accented_names_from_a_cpg_less_archive(tmp_path: Path) -> None:
+    archive = _localities(
+        tmp_path, [("Campiglio di Sammommè", 1, 11.878, 43.794)], without_cpg=True
+    )
+
+    places = read_istat_localities(archive, bbox_wgs84=(9.68, 42.23, 12.38, 44.48), crs="EPSG:3035")
+
+    assert places["place_name"].tolist() == ["Campiglio di Sammommè"]
 
 
 def test_nearest_place_is_measured_from_the_cell_centre() -> None:

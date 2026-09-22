@@ -21,8 +21,10 @@ def read_comuni(
     archive: Path, comuni_member: str, provinces_member: str, region_code: int, crs: str
 ) -> gpd.GeoDataFrame:
     """The region's comuni from the ISTAT boundary archive, with the province abbreviation."""
-    comuni = gpd.read_file(f"zip://{archive}!{comuni_member}")
-    provinces = gpd.read_file(f"zip://{archive}!{provinces_member}", ignore_geometry=True)
+    comuni = gpd.read_file(f"zip://{archive}!{comuni_member}", encoding="utf-8")
+    provinces = gpd.read_file(
+        f"zip://{archive}!{provinces_member}", ignore_geometry=True, encoding="utf-8"
+    )
     comuni = comuni[comuni["COD_REG"] == region_code].merge(
         provinces[["COD_UTS", "SIGLA"]], on="COD_UTS", how="left"
     )
@@ -55,7 +57,9 @@ def read_istat_localities(
     """Inhabited localities (ISTAT Basi territoriali 2021 points) inside a lon/lat bbox."""
     with zipfile.ZipFile(archive) as zf:
         member = next(n for n in zf.namelist() if n.endswith(".shp"))
-    points = pyogrio.read_dataframe(f"/vsizip/{archive}/{member}", columns=["NOME", "TIPO_LOC"])
+    points = pyogrio.read_dataframe(
+        f"/vsizip/{archive}/{member}", columns=["NOME", "TIPO_LOC"], encoding="utf-8"
+    )
     points = points[points["TIPO_LOC"].astype(int).isin(INHABITED_LOCALITY_TYPES)].to_crs(
         "EPSG:4326"
     )
