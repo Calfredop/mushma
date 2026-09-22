@@ -417,7 +417,19 @@ The timer runs the daily job at 05:00 Europe/Rome as a one-off container of the 
 restarts the API. `journalctl -u mushma-daily` has its JSON step log, `systemctl list-timers
 mushma-daily.timer` the next run; `systemctl start mushma-daily` runs it now.
 
-To ship an API change: `cd /opt/mushma && git pull && cd deploy && docker compose up -d --build`.
+**Shipping an API change.** Pushing to `main` redeploys the web app but not the API. After the push,
+run this from a clean `main` (the gavin tool **Deploy API** runs the same script):
+
+```sh
+deploy/deploy-api.sh              # API lint + tests, then pull, rebuild and restart on the server
+deploy/deploy-api.sh --run-job    # ...and re-score now, e.g. after a species rules change
+deploy/deploy-api.sh --skip-tests # when CI has just run them
+```
+
+It refuses anything the server can't pull (another branch, uncommitted `api/` or `deploy/`
+changes, a `main` that isn't pushed). It also installs the daily job's systemd units when they
+changed, then smoke-tests the live routes. It warns when the served scores predate the deployed
+rules. Only `deploy/.env` stays a manual edit on the server.
 
 ## Monitoring
 
