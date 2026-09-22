@@ -379,9 +379,9 @@ export interface components {
     FactorRule: {
       /**
        * Aggregate
-       * @description how a window aggregate combines the days
+       * @description how a window aggregate combines the days; `percent_of_normal` is their sum as a percentage of the cell's normal for the same days
        */
-      aggregate?: ('sum' | 'mean' | 'min' | 'max') | null
+      aggregate?: ('sum' | 'mean' | 'min' | 'max' | 'percent_of_normal') | null
       /**
        * Kind
        * @enum {string}

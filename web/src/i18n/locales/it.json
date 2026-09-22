@@ -170,7 +170,8 @@
         "sum": "somma",
         "mean": "media",
         "min": "minimo",
-        "max": "massimo"
+        "max": "massimo",
+        "percent_of_normal": "rispetto alla norma di questa cella"
       },
       "variable": {
         "precipitation_sum": "pioggia",

@@ -184,6 +184,27 @@ class TestFactorMeasurements:
         assert b.rule.trapezoid == [6, 10, 17, 22]
         assert b.rule.lag_days is None
 
+    def test_rain_as_a_share_of_its_normal_is_in_percent(self) -> None:
+        factors = [
+            factor(
+                id="rain_30d",
+                role="driver",
+                weight=1.0,
+                kind="window_aggregate",
+                input={
+                    "variable": "precipitation_sum",
+                    "aggregate": "percent_of_normal",
+                    "window_days": 30,
+                },
+                response={"trapezoid": [50, 125, None, None]},
+            )
+        ]
+        row = {"rain_30d": 0.62, "rain_30d__input": 97.0}
+        (b,) = reconstruct_breakdown(factors, row)
+        assert (b.input, b.unit) == (97.0, "%")
+        assert b.rule is not None
+        assert (b.rule.aggregate, b.rule.variable_unit) == ("percent_of_normal", "mm")
+
     def test_a_derived_series_has_its_own_unit(self) -> None:
         factors = [
             window_aggregate("balance", "water_balance"),

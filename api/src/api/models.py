@@ -47,8 +47,10 @@ class FactorRule(BaseModel):
     variable_unit: str | None = Field(
         default=None, description="the unit of `variable` (and of `threshold`); '' when unitless"
     )
-    aggregate: Literal["sum", "mean", "min", "max"] | None = Field(
-        default=None, description="how a window aggregate combines the days"
+    aggregate: Literal["sum", "mean", "min", "max", "percent_of_normal"] | None = Field(
+        default=None,
+        description="how a window aggregate combines the days; `percent_of_normal` is their sum "
+        "as a percentage of the cell's normal for the same days",
     )
     window_days: int | None = Field(
         default=None,
@@ -88,11 +90,14 @@ class FactorRule(BaseModel):
 
     @property
     def input_unit(self) -> str | None:
-        """The unit of the measurement the rule reads: days for a count, else the variable's own."""
+        """The unit of the measurement the rule reads: days for a count, % for a share of the
+        normal, else the variable's own."""
         if self.kind in ("count_days", "days_since"):
             return "days"
         if self.kind in ("season_window", "habitat"):
             return None
+        if self.aggregate == "percent_of_normal":
+            return "%"
         return self.variable_unit
 
 

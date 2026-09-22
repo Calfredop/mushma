@@ -170,7 +170,8 @@
         "sum": "total",
         "mean": "mean",
         "min": "lowest",
-        "max": "highest"
+        "max": "highest",
+        "percent_of_normal": "compared with this cell's normal"
       },
       "variable": {
         "precipitation_sum": "rain",

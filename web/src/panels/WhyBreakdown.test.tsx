@@ -199,6 +199,24 @@ const airTemperature: FactorInput = {
     trapezoid: [6, 10, 17, 22],
   },
 }
+const rainShare: FactorInput = {
+  key: 'rain_30d',
+  value: 0.62,
+  contribution: 0.85,
+  role: 'driver',
+  weight: 1,
+  input: 97,
+  unit: '%',
+  rule: {
+    kind: 'window_aggregate',
+    variable: 'precipitation_sum',
+    variable_unit: 'mm',
+    aggregate: 'percent_of_normal',
+    window_days: 30,
+    offset_days: 0,
+    trapezoid: [50, 125, null, null],
+  },
+}
 const season: FactorInput = {
   key: 'season',
   value: 1,
@@ -386,6 +404,22 @@ describe('WhyBreakdown details', () => {
     expect(row).toHaveTextContent("Temperatura dell'aria, media su 20 giorni: 14,2 °C.")
     expect(row).toHaveTextContent(
       'La regola dà credito pieno da 10 a 17 °C; nullo fino a 6 °C e da 22 °C in su.',
+    )
+  })
+
+  it("compares the month's rain with the cell's own normal", async () => {
+    render(
+      <WhyBreakdown species="porcini" isForecast={false} day={day([rainShare], 0.62)} />,
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Pioggia degli ultimi 30 giorni' }),
+    )
+    const row = rowOf('Pioggia degli ultimi 30 giorni')
+    expect(row).toHaveTextContent(
+      'Pioggia, rispetto alla norma di questa cella su 30 giorni: 97%.',
+    )
+    expect(row).toHaveTextContent(
+      'La regola dà credito pieno da 125% in su; nullo fino a 50%.',
     )
   })
 

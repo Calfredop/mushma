@@ -406,7 +406,8 @@
                   "sum",
                   "mean",
                   "min",
-                  "max"
+                  "max",
+                  "percent_of_normal"
                 ],
                 "type": "string"
               },
@@ -414,7 +415,7 @@
                 "type": "null"
               }
             ],
-            "description": "how a window aggregate combines the days",
+            "description": "how a window aggregate combines the days; `percent_of_normal` is their sum as a percentage of the cell's normal for the same days",
             "title": "Aggregate"
           },
           "kind": {
