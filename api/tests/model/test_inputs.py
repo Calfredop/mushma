@@ -9,6 +9,7 @@ import pytest
 from api.grid.habitats import load_vocabulary
 from api.model.config import ModelConfig, load_model_config
 from api.model.inputs import load_cells, load_weather
+from api.model.series import day_of_year
 from api.weather.config import load_weather_config
 
 from ..weather.test_downscale import _store
@@ -145,3 +146,42 @@ def test_load_weather_moves_each_cell_to_its_own_slope(tmp_path: Path) -> None:
     assert (
         sloped.values["temperature_2m_min"].tolist() == flat.values["temperature_2m_min"].tolist()
     )
+
+
+def test_load_weather_downscales_the_rain_normals_and_scales_them_like_the_rain(
+    tmp_path: Path,
+) -> None:
+    cells = load_cells(write_grid(tmp_path / "grid"))
+    store = _store(
+        tmp_path / "weather",
+        [("era5_seamless", "A", DAY, "precipitation_sum", 6.0)],
+        {("era5_seamless", "A"): 500.0},
+    )
+    doy = day_of_year(np.array([DAY], dtype="datetime64[D]"))[0]
+    normals = pd.DataFrame(
+        {
+            "point_id": ["A", "A", "A"],
+            "variable": ["precipitation_sum", "precipitation_sum", "temperature_2m_mean"],
+            "doy": [doy, doy + 1, doy],
+            "normal": [3.0, 99.0, 15.0],
+            "years": [10, 10, 10],
+        }
+    )
+
+    weather = load_weather(
+        duckdb.connect(),
+        store,
+        cells,
+        _weights(),
+        DAY,
+        DAY,
+        load_weather_config(),
+        _without_microclimate(),
+        normals,
+    )
+
+    normal = weather.normals["precipitation_sum"]
+    assert normal[:, 0] == pytest.approx([3.0 * 1.57, 3.0 * 1.28])
+    rain = weather.values["precipitation_sum"]
+    assert (rain / normal)[:, 0] == pytest.approx([2.0, 2.0])  # the ratio ignores the scale
+    assert set(weather.normals) == {"precipitation_sum"}

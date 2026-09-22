@@ -8,6 +8,7 @@ from api.model.series import (
     day_of_year,
     days_since,
     lagged_anomaly,
+    percent_of_normal,
     rolling,
     trapezoid,
     with_floor,
@@ -164,3 +165,24 @@ def test_day_of_year_uses_a_non_leap_calendar() -> None:
 
     assert day_of_year(dates.astype("datetime64[D]")).tolist() == [1, 59, 59, 60, 365]
     assert day_of_year(np.array([date(2025, 3, 1)], dtype="datetime64[D]")).tolist() == [60]
+
+
+# --- percent of normal -------------------------------------------------------------------------
+
+
+def test_percent_of_normal_compares_the_window_sum_with_the_normal_sum() -> None:
+    rain = _row(0.0, 4.0, 2.0, 6.0)
+    normal = _row(2.0, 2.0, 2.0, 2.0)
+
+    out = percent_of_normal(rain, normal, 2)
+
+    assert out[0].tolist() == pytest.approx([nan, 100.0, 150.0, 200.0], nan_ok=True)
+
+
+def test_percent_of_normal_is_missing_on_gaps_and_where_the_normal_is_dry() -> None:
+    rain = _row(1.0, nan, 1.0, 1.0)
+    normal = _row(1.0, 1.0, 0.0, 0.0)
+
+    out = percent_of_normal(rain, normal, 2)
+
+    assert np.isnan(out[0]).tolist() == [True, True, True, True]

@@ -35,7 +35,7 @@ from api.model.engine import (
     required_lookback,
     score_species,
 )
-from api.model.inputs import load_cells, load_weather
+from api.model.inputs import load_cells, load_normals, load_weather
 from api.model.rules import SPECIES_DIR, RuleSet, load_rules
 from api.model.store import ScoreStore, Tier
 from api.weather.config import load_weather_config
@@ -214,6 +214,7 @@ def run_scoring(
 
     cells = load_cells(grid_dir)
     weights = pd.read_parquet(weather_store.weights_path)
+    normals = load_normals(root, region)
     store = ScoreStore(root / "scores" / region)
     rows_written: dict[str, int] = {}
     missing_cell_days = 0
@@ -234,6 +235,7 @@ def run_scoring(
                     period_end,
                     weather_config,
                     model_config,
+                    normals,
                 )
                 frames = score_frames(
                     rules, chunk, weather, period_start, period_end, version, factors

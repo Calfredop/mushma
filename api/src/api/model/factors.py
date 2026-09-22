@@ -228,9 +228,17 @@ def _rain_event(
 
 def _window_aggregate(factor: WindowAggregateFactor, cells: Cells, weather: Weather, targets):
     inp = factor.input
-    aggregate = series.rolling(
-        weather.series(inp.variable), inp.window_days, inp.aggregate, inp.offset_days
-    )[:, targets]
+    if inp.aggregate == "percent_of_normal":
+        aggregate = series.percent_of_normal(
+            weather.series(inp.variable),
+            weather.normal(inp.variable),
+            inp.window_days,
+            inp.offset_days,
+        )[:, targets]
+    else:
+        aggregate = series.rolling(
+            weather.series(inp.variable), inp.window_days, inp.aggregate, inp.offset_days
+        )[:, targets]
     value = series.trapezoid(aggregate, factor.response.trapezoid)
     return Evaluated(value=series.with_floor(value, factor.floor), input=aggregate)
 
@@ -282,7 +290,7 @@ def evaluate(
 ) -> Evaluated:
     """The factor for every cell on the target days ``weather.dates[targets]``; ``growth`` is the
     species' clock, which rain events count their lag in."""
-    if getattr(factor.input, "aggregate", None) in ("percent_of_normal", "percentile_of_normal"):
+    if getattr(factor.input, "aggregate", None) == "percentile_of_normal":
         raise NotImplementedError(f"{factor.id}: {factor.input.aggregate} needs a climatology")
     if factor.kind == "rain_event":
         result = _rain_event(factor, cells, weather, targets, growth)

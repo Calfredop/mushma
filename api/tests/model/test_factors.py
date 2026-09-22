@@ -341,6 +341,42 @@ def test_window_aggregate_scores_the_aggregate_and_reports_it() -> None:
     assert lookback_days(rule) == 29
 
 
+def test_percent_of_normal_scores_the_window_against_the_cells_own_normal() -> None:
+    rule = factor(
+        kind="window_aggregate",
+        role="driver",
+        weight=1,
+        input={
+            "variable": "precipitation_sum",
+            "aggregate": "percent_of_normal",
+            "window_days": 30,
+        },
+        response={"trapezoid": [50, 150, None, None]},
+    )
+    w = weather(precipitation_sum=[[3.0] * 40, [3.0] * 40])
+    w.normals["precipitation_sum"] = np.array([[3.0] * 40, [2.0] * 40])
+
+    result = evaluate(rule, cells(2), w, slice(29, 31))
+
+    assert result.input[:, 0].tolist() == pytest.approx([100.0, 150.0])
+    assert result.value[:, 0].tolist() == pytest.approx([0.5, 1.0])
+    assert lookback_days(rule) == 29
+
+
+def test_percent_of_normal_without_normals_says_what_is_missing() -> None:
+    rule = factor(
+        kind="window_aggregate",
+        role="driver",
+        weight=1,
+        input={"variable": "precipitation_sum", "aggregate": "percent_of_normal", "window_days": 3},
+        response={"trapezoid": [50, 150, None, None]},
+    )
+    w = weather(precipitation_sum=[1.0] * 5)
+
+    with pytest.raises(KeyError, match="normals"):
+        evaluate(rule, cells(), w, slice(2, 5))
+
+
 def test_count_days_applies_the_floor() -> None:
     rule = factor(
         kind="count_days",

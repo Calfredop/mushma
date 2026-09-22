@@ -49,7 +49,7 @@ from api.model.engine import (
     required_lookback,
     score_species,
 )
-from api.model.inputs import load_cells, load_weather
+from api.model.inputs import load_cells, load_normals, load_weather
 from api.model.pipeline import rules_version
 from api.model.rules import RuleSet, load_rules
 from api.sightings.config import load_sightings_config
@@ -318,11 +318,12 @@ def prepare(
     weather_config = load_weather_config()
     cells = load_cells(grid_dir)
     weights = pd.read_parquet(weather_store.weights_path)
+    normals = load_normals(root, region)
     con = duckdb.connect()
 
     def load(chunk: Cells, start: date, end: date) -> Weather:
         return load_weather(
-            con, weather_store, chunk, weights, start, end, weather_config, model_config
+            con, weather_store, chunk, weights, start, end, weather_config, model_config, normals
         )
 
     place_id = load_sightings_config().inaturalist.place_id

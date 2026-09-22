@@ -36,6 +36,8 @@ class Weather:
     dates: np.ndarray  # (days,) datetime64[D]
     values: dict[str, np.ndarray]  # variable -> (cells, days) float, NaN when missing
     forecast: np.ndarray | None = None  # (cells, days) bool: the day leans on a forecast
+    # variable -> (cells, days) the cell's normal for each day (``percent_of_normal``)
+    normals: dict[str, np.ndarray] = field(default_factory=dict)
     _derived: dict[str, np.ndarray] = field(default_factory=dict, repr=False, compare=False)
 
     def series(self, name: str) -> np.ndarray:
@@ -54,6 +56,12 @@ class Weather:
                 )
             self._derived[name] = derived
         return self._derived[name]
+
+    def normal(self, name: str) -> np.ndarray:
+        """The cell's daily normal of a weather variable."""
+        if name not in self.normals:
+            raise KeyError(f"no normals for {name!r}: build them with api.history.build normals")
+        return self.normals[name]
 
     def index_of(self, day: np.datetime64) -> int:
         position = int((np.datetime64(day, "D") - self.dates[0]).astype(int))

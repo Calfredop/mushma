@@ -157,6 +157,17 @@ BROKEN = {
     "enabled rule on missing data": (_set("frost", data="missing"), "missing"),
     "derived rule without notes": (_drop("frost", "notes"), "notes"),
     "enabled climatology aggregate": (_set("soil_moisture", enabled=True), "climatology"),
+    "percent of normal on a variable without normals": (
+        _set(
+            "air_temperature",
+            input={
+                "variable": "temperature_2m_mean",
+                "aggregate": "percent_of_normal",
+                "window_days": 20,
+            },
+        ),
+        "percent_of_normal",
+    ),
     "bad date": (
         lambda doc: _factor(doc, "season")["input"]["windows"][0].update(
             {"dates": ["01-07", "31-09", "15-11", "20-12"]}
@@ -216,6 +227,15 @@ def test_a_broken_rule_file_is_refused(tmp_path: Path, case: str) -> None:
     with pytest.raises(RuleConfigError, match=message) as error:
         load_rules(folder)
     assert "porcini_edulis" in str(error.value)
+
+
+def test_an_enabled_percent_of_normal_rain_rule_loads(tmp_path: Path) -> None:
+    folder = _broken_copy(tmp_path, "porcini_edulis", _set("early_season_wetness", enabled=True))
+
+    factors = load_rules(folder).species["porcini_edulis"].factors
+    rule = next(f for f in factors if f.id == "early_season_wetness")
+
+    assert rule.enabled and rule.input.aggregate == "percent_of_normal"
 
 
 def test_the_untouched_copy_loads(tmp_path: Path) -> None:

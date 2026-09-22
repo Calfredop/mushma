@@ -91,8 +91,11 @@ DERIVED_UNITS = {
     "temperature_2m_max_anomaly_30d": "°C",
     SUN_SERIES: "%",
 }
-# Aggregates that compare a window with the cell's own climatology, which v1 does not compute.
-CLIMATOLOGY_AGGREGATES = {"percent_of_normal", "percentile_of_normal"}
+# Aggregates that compare a window with the cell's own climatology. ``percent_of_normal`` reads
+# the daily rain normals (api.history.normals, downscaled like the rain); a percentage only makes
+# sense for rain. ``percentile_of_normal`` needs a distribution per cell, which is not computed.
+PERCENT_OF_NORMAL_VARIABLES = {"precipitation_sum"}
+UNSUPPORTED_AGGREGATES = {"percentile_of_normal"}
 
 Trapezoid = tuple[float | None, float | None, float | None, float | None]
 
@@ -555,10 +558,16 @@ def _check_species(
             missing = [v for v in inputs if v not in ingested]
             if missing:
                 errors.append(f"{where}: enabled but the weather ingest lacks {missing}")
-        if getattr(factor.input, "aggregate", None) in CLIMATOLOGY_AGGREGATES:
+        aggregate = getattr(factor.input, "aggregate", None)
+        if aggregate in UNSUPPORTED_AGGREGATES:
             errors.append(
-                f"{where}: {factor.input.aggregate} needs a per-cell climatology, which the v1 "
-                "engine does not compute"
+                f"{where}: {aggregate} needs a per-cell climatology, which the engine does not "
+                "compute"
+            )
+        elif aggregate == "percent_of_normal" and uses not in PERCENT_OF_NORMAL_VARIABLES:
+            errors.append(
+                f"{where}: percent_of_normal only reads {sorted(PERCENT_OF_NORMAL_VARIABLES)}, "
+                f"not {uses!r}"
             )
     return errors
 

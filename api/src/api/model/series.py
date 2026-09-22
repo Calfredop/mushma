@@ -73,6 +73,19 @@ def rolling(values: np.ndarray, window: int, how: str, offset: int = 0) -> np.nd
     return reducer(sliding_window_view(padded, window, axis=1)[:, :days], axis=2)
 
 
+def percent_of_normal(
+    values: np.ndarray, normals: np.ndarray, window: int, offset: int = 0
+) -> np.ndarray:
+    """The ``window``-day sum of ``values`` as a percentage of the same days' ``normals``; missing
+    where either window is incomplete or the normal sums to nothing."""
+    total = rolling(values, window, "sum", offset)
+    normal = rolling(normals, window, "sum", offset)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out = 100.0 * total / normal
+    out[~(normal > 0)] = np.nan
+    return out
+
+
 _OPS = {"lt": np.less, "lte": np.less_equal, "gt": np.greater, "gte": np.greater_equal}
 
 
