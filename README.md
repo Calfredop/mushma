@@ -23,17 +23,46 @@ species' score is the max over its rule sets (porcini alone has four, one per
 sub-species); the combined score shown by default is the max over whichever
 species are in season. Every score keeps its full factor breakdown — rain
 days ago, cumulative rain, soil/air temperature, drying, habitat, altitude,
-season window — so "why this score" is never a black box.
+season window, sun exposure, slope — so "why this score" is never a black box.
+The panel states, for each factor, what was measured (millimetres of rain and
+how many days ago, degrees, metres) and the band the rule gives full credit to,
+so a suspicious score can be checked on the phone rather than in Parquet.
 
 The rules live in [`api/src/api/config/species/`](api/src/api/config/species/),
 one YAML file per species, every threshold and window carrying a cited
 source. Weather comes from Open-Meteo (ERA5-Land reanalysis history, ECMWF
 IFS forecast), downscaled from a coarse model grid to each cell by elevation.
+Reanalysis rain is scaled up with elevation before scoring, because it runs dry
+in the hills against Tuscany's rain gauges. Each species carries a growth
+clock: warm, humid days after a rain bring the flush forward and cold or dry
+ones hold it back, so the rain lag is counted in growth days rather than
+calendar days. And every cell's temperatures and drying are shifted by how much
+sun its slope and aspect get compared with flat ground.
 Habitat, altitude and soil come from a static grid built once from Regione
 Toscana, ISPRA, Copernicus and SoilGrids sources (see
 [Credits](#credits--sources) below and the app's own Data and credits page).
 The daily pipeline (`api.jobs.daily`) re-scores the served window — six days
 back to seven days ahead — every morning before 07:00 Europe/Rome.
+
+In the app, that becomes three views:
+
+- **Now.** The conditions map for one species or the combined score, from six
+  days ago to a week ahead. Tap a cell, search a place or use GPS for a spot
+  forecast: a score per species, seven days of bars and the "why this score"
+  breakdown. A floating button centres the map on your position without
+  opening a spot. The hot places list ranks clusters of high-scoring cells,
+  labelled by comune and nearest named place, with recent public sightings per
+  cell.
+- **Seasons.** Every stored season for Tuscany or one comune — good days, rain
+  and temperature against normal, sightings — compared with each other and
+  replayed on the map day by day, plus which species the area's woodland can
+  plausibly hold, taxon by taxon.
+- **Outlook.** The season so far and ECMWF's long-range tendencies for the
+  weeks and months ahead, per area: an outlook, not a forecast.
+
+It is an installable PWA that caches the latest forecast for the woods, shows
+when the data was last updated and warns when today's numbers are not in yet,
+runs in Italian and English, and credits every source on its own page.
 
 ## Validation
 
@@ -50,6 +79,15 @@ was compared against a sighting** (2016–2023 train, 2024–2025 hold-out,
 hold-out numbers are still in progress as of this write-up — that document is
 the live source of truth; this section will carry its headline numbers once
 they land.
+
+Two findings so far, both written up there. The rain drivers reach full credit
+in an ordinary September (one ~30 mm event ten days earlier plus ~80 mm in a
+month), so they cannot yet tell a good year from an average one; tuning them
+on the train seasons is an open card. And the growth clock with the terrain
+factors moves porcini's effort-weighted timing AUC on the train seasons from
+0.56 to 0.62, the first porcini interval clear of chance — though with 16–23
+sightings per species none of the differences is outside its bootstrap
+interval, so they stay on as priors, not results.
 
 ## Layout
 
@@ -108,6 +146,10 @@ The URL is **public while the tunnel runs**, and a fresh one every run. Anyone
 holding it reaches this machine's dev API and whatever is in `api/data/`, so
 don't leave it up unattended. `PORT` and `API_PORT` override the defaults.
 
+**App icon.** `web/public/favicon.svg` (a porcino) is the one source of the app
+icon; `scripts/render-icons.sh` renders the PWA and home-screen PNGs in
+`web/public/icons/` from it. Rerun it after editing the SVG and commit the PNGs.
+
 **Basemap.** The map uses a self-hosted Protomaps extract plus Mapterhorn
 hillshade (PRD → Architecture → Basemap). Fetch them once with the
 [pmtiles CLI](https://docs.protomaps.com/pmtiles/cli) (`brew install pmtiles`):
@@ -144,9 +186,16 @@ uv run ruff format --check .
 
 The routes read the data pipeline's stores under `DATA_DIR` (below): `/scores`, `/spot`,
 `/cells/{id}`, `/hotspots`, `/sightings`, and the time views `/comuni`, `/history/seasons`,
-`/history/season/{year}`, `/outlook` and `/species` (503 until `api.history.build` has run). Set
+`/history/season/{year}`, `/outlook` and `/species` (503 until `api.history.build` has run).
+`/status` reports data freshness — the latest scored day, when it was generated and the rules
+version — and backs the app's "Updated …" line. Set
 `MUSHMA_FIXTURES=1` (see `api/.env.example`) to serve every route from a hand-shaped fixture
 dataset instead, with no data at all.
+
+Every factor in a `/spot` or `/cells/{id}` breakdown carries its role, weight, the measured input
+with its unit, the lag of the rain it scored, its growth days, and the rule's bands inlined, so
+the "why this score" panel quotes the evidence and the quoted band can never drift from the value
+beside it.
 
 ### Woodland grid
 
@@ -175,10 +224,16 @@ uv run python -m api.weather.ingest points            # land nodes and cell weig
 uv run python -m api.weather.ingest backfill --wait   # history from 2016, newest first; ~4 days
 uv run python -m api.weather.ingest update            # daily: new reanalysis days + 7-day forecast
 uv run python -m api.weather.ingest downscale --start 2026-09-10 --end 2026-09-24
+uv run python -m api.weather.checks gauges --start 2025-01-01 --end 2025-12-31   # model rain vs SIR Toscana gauges
+uv run python -m api.weather.checks lattice                                      # downscaling leave-out test
 ```
 
 The backfill stays under the free API limits (it keeps a shared tally in
 `api/data/raw/open_meteo/usage.json`), resumes where it stopped, and skips anything already stored.
+The first full run (2016–2025, September 2026) took three UTC days of quota; keep the machine awake
+while it waits for the next day's budget, since a sleeping laptop stalls the wait, and never run
+two at once. Verify a finished backfill by re-running `backfill` without `--wait`: it should fetch
+nothing and end with `"done": true`.
 Sources, method, checks and the backfill-depth decision are in `.gavin-root/docs/weather-ingest.md`.
 
 ### Sightings
@@ -205,6 +260,16 @@ source) score each woodland cell and day from 0 to 1: a conditions index, not a 
 (porcini, ovoli, gallinacci) take the max over their keys and `combined` the max over the groups in
 season. Every score keeps its factor breakdown.
 
+A score is gates (season, habitat, altitude) × stoppers (frost, snow, heat spike, drying, sun
+exposure, slope) × a weighted geometric mean of the weather drivers (rain, temperature, moisture),
+so out of season means 0 and heat cannot make up for missing rain.
+`api/src/api/config/model.yaml` holds what applies to every species: the group roll-up, the rain
+rescale (reanalysis rain × 1.28 + 0.29 per km of elevation, fitted to the SIR Toscana gauges), the
+terrain microclimate (each cell's temperatures and ET0 shifted by its clear-sky sun ratio, computed
+from slope and aspect in `api.model.terrain`) and the frozen backtest split. Each species file adds
+its growth clock: a cardinal-temperature curve on topsoil temperature, slowed by dry air, that
+counts the rain lag in growth days instead of calendar days.
+
 ```sh
 cd api
 uv run python -m api.model.pipeline rules                                          # validate and summarise
@@ -213,7 +278,8 @@ uv run python -m api.model.pipeline score --start 2025-01-01 --end 2025-12-31 --
 ```
 
 Scores land in `api/data/scores/tuscany/` (`daily/` for every key, `factors/` for the breakdowns).
-A year of every cell takes about 25 seconds. How a score is computed is in
+A year of every cell took about 25 seconds before the growth clock and about three times that
+with it (the daily run scores 14 days, so it adds seconds). How a score is computed is in
 `api/src/api/config/species/README.md`; the evidence is in `.gavin-root/docs/species-ecology.md`.
 
 To build and run the production container locally:
