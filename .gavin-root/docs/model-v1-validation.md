@@ -201,4 +201,91 @@ The calendar baseline (the gates alone, unchanged by this card) scores `auc_time
 - **Cost.** Scoring a season takes about three times as long: 40–75 calendar lags per rain event
   instead of about 18. The daily run scores 14 days, so it adds seconds.
 
-<!-- RESULTS, TUNING, HOLD-OUT, TARGETS AND SANITY CHECK FOLLOW -->
+## Rain drivers: tuning on the train seasons, judged on the hold-out (2026-09-22)
+
+Card `tune-rain-drivers-saturate`. The panel reading above showed both rain drivers at full credit in
+an ordinary September. This is the tuning that reading left open, done by the protocol: tuned on the
+train seasons only, judged once on the hold-out, with season windows, altitude bands and habitat
+affinities frozen.
+
+**Search** (`api.model.tuning --search rain`, written into the code before any train season was
+scored with these rules). One pass of coordinate descent per group, each alternative kept only if it
+raises the group's train objective by at least 0.02 (`MARGIN`):
+
+| choice | prior | alternatives |
+|---|---|---|
+| `rain_trigger` amount | porcini, ovoli 10→30 mm; gallinacci 10→20 mm | ×1.5 (`higher`), ×2 (`much_higher`) |
+| `rain_30d` | porcini 20→80, ovoli 25→75, gallinacci 15→70 mm | ×1.5, ×2, and `relative`: the 30 days as a percentage of the cell's own normal, 0 at 50 %, full from 125 % |
+| growth-clock temperatures | the rule files | cardinal curve and reference 3 °C cooler, or warmer |
+| gallinacci `sun_exposure` (GAL-07) | on all year | off |
+
+The whole search ran twice, with the rain scale on (as configured) and off, because the scale lowers
+the raw rain a millimetre threshold needs by 22 % at sea level to 43 % at 1.7 km.
+
+**The relative driver** is new engine code: `percent_of_normal` reads the daily rain normals per
+weather point (`api.history.build normals`: the mean of each calendar day over the complete
+reanalysis years 2016–2025, smoothed over 31 days), downscaled to the cell with the rain's own
+weights and multiplied by the same rain scale, so the percentage does not depend on the scale. The
+normals use every baseline year's weather, hold-out included. That is weather, not sightings, so it
+leaks nothing about where the fungi were found.
+
+**Train objective per trial** (mean of the pooled `auc_local` and `auc_time_effort`; 55 presences:
+porcini 23, ovoli 16, gallinacci 16):
+
+| trial | scale on | scale off |
+|---|---|---|
+| start (prior rules) | porcini 0.558, ovoli 0.509, gallinacci 0.600 | 0.563, 0.507, 0.627 |
+| porcini trigger ×1.5 / ×2 | 0.574 / 0.555 | 0.554 / 0.549 |
+| porcini `rain_30d` ×1.5 / ×2 / **relative** | 0.561 / 0.571 / **0.587** (kept) | 0.571 / 0.591 / **0.594** (kept) |
+| porcini clock cooler / warmer | 0.550 / 0.585 | 0.566 / 0.599 |
+| ovoli trigger ×1.5 / **×2** | 0.531 / **0.540** (kept) | 0.530 / **0.543** (kept) |
+| ovoli `rain_30d` ×1.5 / ×2 / relative | 0.533 / 0.538 / 0.525 | 0.544 / 0.526 / 0.535 |
+| ovoli clock cooler / warmer | 0.511 / 0.544 | 0.491 / 0.543 |
+| gallinacci trigger ×1.5 / ×2 | 0.608 / 0.608 | 0.627 / 0.636 |
+| gallinacci `rain_30d` ×1.5 / ×2 / relative | 0.593 / 0.604 / 0.610 | 0.621 / 0.620 / 0.612 |
+| gallinacci clock cooler / warmer | 0.604 / 0.596 | 0.625 / 0.618 |
+| gallinacci sun line off | 0.604 | 0.625 |
+
+Both runs kept the same two changes and nothing else. With them, the scale-off run ends at a mean of
+0.588 over the three groups and the scale-on run at 0.576: 0.012 apart, under the margin, so **the
+rain scale stays on**. It is fitted to gauges, not to sightings, and the tuning gives no reason to
+drop it; `why.detail.rainNote` stays as written.
+
+**Hold-out** (2024, 2025: porcini 19, ovoli 6, gallinacci 10 presences), scored once with the prior
+rules and once with the two train winners:
+
+| group | objective prior → tuned | `auc_local` | `auc_time_effort` |
+|---|---|---|---|
+| porcini (relative `rain_30d`) | 0.526 → **0.539** | 0.476 → 0.477 | 0.576 (0.49–0.66) → 0.601 (0.51–0.69) |
+| ovoli (trigger 20→60 mm) | 0.507 → **0.463** | 0.523 → 0.531 | 0.490 (0.33–0.65) → 0.394 (0.24–0.57) |
+| gallinacci (unchanged) | 0.578 → 0.578 | 0.550 | 0.605 |
+
+**Decision.**
+
+- **Porcini: adopted.** The 30-day rain of all four porcini keys is now scored against the cell's
+  own normal (the factor notes record the tuning, and cite `mushma_rain_tuning_2026`). It won under both rain scalings, and
+  it held its direction on the hold-out (+0.013), mostly in timing (`auc_time_effort` +0.025, on top
+  of the growth clock's gain).
+- **Ovoli: not adopted.** The doubled trigger ramp cleared the train margin under both scalings but
+  lost 0.044 on the hold-out, all of it in timing. Six presences is too few to call that a
+  reversal, but a change the hold-out does not confirm is not shipped. The ramp stays at 10→30 mm.
+  Choosing between the two with the hold-out uses it once more than the protocol intends; reverting
+  to the prior is the conservative side of that choice.
+- **Gallinacci and the growth clock: nothing changes.** No alternative cleared the margin, the
+  shade line (GAL-07) included: turning it off gave −0.002 to +0.004, so its all-year application
+  is not what cost gallinacci its `auc_local`.
+
+**What it does to the saturated day.** Re-scoring 2026-09-19 (the weather stored on 2026-09-22) with
+the prior and the adopted rules: the porcini `rain_30d` input has a median of 97 % of normal, an
+ordinary month, and the share of woodland cells where it gives full credit falls from 77 % to 18 %
+(median value 1.00 → 0.62). Porcini cells scoring at least 0.7 fall from 34 % to 18 % (median
+0.63 → 0.54). The combined score moves less (at least 0.7: 48 % → 43 %), because ovoli wins most of
+the high cells and its rain lines are unchanged; its trigger and 30-day ramps still fill in an
+ordinary September, and whether that is too generous has to wait for more ovoli sightings.
+
+**Still open.** With the prior rules, the habitat baseline beats the model on `auc_local` in every
+group on the train seasons (porcini 0.561 vs 0.498, ovoli 0.470 vs 0.428, gallinacci 0.759 vs 0.684): within 20 km on a
+given day, the weather and terrain lines rank the finder's cell below where habitat alone would.
+The rain drivers were not the cause; that is for a later card.
+
+<!-- RESULTS, TARGETS AND SANITY CHECK FOLLOW -->
