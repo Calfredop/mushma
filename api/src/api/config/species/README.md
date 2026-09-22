@@ -36,8 +36,8 @@ score = Π gates  ×  Π stoppers  ×  exp( Σ_d w_d · ln f_d  /  Σ_d w_d )
 - **stopper** (frost, snow, heat spike, drying, sun exposure, slope): a penalty that multiplies the score, where 1 means no
   effect.
 - Factors with `enabled: false` are recorded but not scored. They are alternatives to compare in the
-  backtest (air vs soil temperature, rain vs water balance), rules that need a per-cell climatology v1
-  does not compute (`percent_of_normal`, `percentile_of_normal`), or rules on data v1 does not have
+  backtest (air vs soil temperature, rain vs water balance), rules that need a per-cell distribution
+  the engine does not compute (`percentile_of_normal`), or rules on data v1 does not have
   (`data: missing`).
 
 Every factor value is in [0, 1] and comes from a **trapezoid** `[zero_below, full_from, full_to,
@@ -65,9 +65,15 @@ partial weather.
 | `habitat` | affinity 0–1 per habitat key | Σ over the cell's habitat fractions of fraction × affinity (`default` for unlisted habitats) |
 | `static_band` | a cell attribute (`elevation_m`, `soil_ph`, …) | trapezoid of the attribute |
 | `rain_event` | daily rain, `accumulation_days` | max over whole-day lags d of amount(rain summed over the days ending d days ago) × lag(d); a tie goes to the longest lag, so "30 mm, 12 days ago" names when the rain ended. With the species' growth clock, lag(d) reads the growth days since then instead of d (below) |
-| `window_aggregate` | a daily variable, `sum`/`mean`/`min`/`max` over `window_days` ending `offset_days` ago | trapezoid of the aggregate |
+| `window_aggregate` | a daily variable, `sum`/`mean`/`min`/`max` over `window_days` ending `offset_days` ago, or `percent_of_normal` (rain only) | trapezoid of the aggregate; `percent_of_normal` is the window's rain as a percentage of the cell's normal for the same days (below) |
 | `count_days` | a daily variable, comparison and threshold | trapezoid of the number of matching days in the window |
 | `days_since` | a daily variable, comparison and threshold | trapezoid of the days since the last matching day, capped at `max_lookback_days` |
+
+Rain normals: `percent_of_normal` reads the daily normals per weather point
+(`api.history.build normals`, 2016–2025 reanalysis, each calendar day smoothed over 31 days),
+downscaled to the cell with the rain's own weights and multiplied by the same rain scale, so the
+percentage does not depend on the scale. Scoring refuses to start while a rule needs them and they
+are not built.
 
 Derived daily series: `water_balance` = `precipitation_sum − et0_fao_evapotranspiration`;
 `temperature_2m_max_anomaly_30d` = the day's Tmax minus the mean Tmax of the 30 days before;

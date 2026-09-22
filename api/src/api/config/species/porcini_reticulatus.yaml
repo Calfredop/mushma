@@ -126,13 +126,18 @@ factors:
     weight: 1
     kind: window_aggregate
     i18n_key: factor.rain_30d
-    input: {variable: precipitation_sum, aggregate: sum, window_days: 30}
-    response: {trapezoid: [20, 80, null, null]}
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 30}
+    response: {trapezoid: [50, 125, null, null]}
     confidence: plausible
-    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018]
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, mushma_rain_tuning_2026]
     derived: true
-    data: available
-    notes: POR-M1, transferred from B. edulis and community studies.
+    data: derived
+    notes: >-
+      POR-M1, transferred from B. edulis and community studies.
+      Tuned (2026-09-22): the absolute 20->80 mm ramp was full in an ordinary September, so the 30
+      days are scored as a percentage of the cell's own normal for those days (2016-2025 reanalysis,
+      downscaled and rain-scaled like the rain): 0 at 50 %, full from 125 %. It raised the porcini
+      train objective by 0.03 with or without the rain scale, and the hold-out one by 0.013.
 
   - id: air_temperature
     role: driver

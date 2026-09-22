@@ -212,9 +212,21 @@ def run_scoring(
             f"but the weather store starts {first_available}"
         )
 
+    normals = load_normals(root, region)
+    needing = sorted(
+        f"{key}.{factor.id}"
+        for key, spec in rules.species.items()
+        for factor in spec.enabled_factors
+        if getattr(factor.input, "aggregate", None) == "percent_of_normal"
+    )
+    if needing and normals is None:
+        raise ValueError(
+            f"{', '.join(needing)} read the rain normals, which are not built for {region}: "
+            "run `python -m api.history.build normals` first"
+        )
+
     cells = load_cells(grid_dir)
     weights = pd.read_parquet(weather_store.weights_path)
-    normals = load_normals(root, region)
     store = ScoreStore(root / "scores" / region)
     rows_written: dict[str, int] = {}
     missing_cell_days = 0

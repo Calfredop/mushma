@@ -173,7 +173,7 @@ def _autumn(rain_days_ago: int | None, tmean: float = 13.0, tmin: float = 8.0, v
     if rain_days_ago is not None:
         for d in range(3):
             rain[days - 1 - rain_days_ago - d] = 15.0
-    return weather(
+    autumn = weather(
         start=date(2024, 8, 1),
         precipitation_sum=rain,
         temperature_2m_mean=[tmean] * days,
@@ -185,6 +185,8 @@ def _autumn(rain_days_ago: int | None, tmean: float = 13.0, tmin: float = 8.0, v
         vapour_pressure_deficit_max=[vpd] * days,
         sun_exposure_pct=[100.0] * days,
     )
+    autumn.normals["precipitation_sum"] = np.full((1, days), 2.0)  # the drizzle is normal
+    return autumn
 
 
 def test_porcini_score_high_twelve_days_after_a_good_rain_in_a_beech_wood() -> None:

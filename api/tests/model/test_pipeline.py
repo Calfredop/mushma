@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from api.history.store import ClimatologyStore
 from api.model.pipeline import rules_version, run_scoring
 from api.model.store import ScoreStore
 
@@ -54,6 +55,16 @@ def _data_root(tmp_path: Path, first: date, days: int) -> Path:
     pd.DataFrame(weights, columns=["method", "cell_id", "point_id", "weight"]).to_parquet(
         store.weights_path
     )
+    normals = pd.DataFrame(
+        {
+            "point_id": "A",
+            "variable": "precipitation_sum",
+            "doy": range(1, 366),
+            "normal": 2.2,
+            "years": 10,
+        }
+    )
+    ClimatologyStore(root / "climatology" / "tuscany").write_normals(normals, {})
     return root
 
 
@@ -210,3 +221,11 @@ def test_a_period_without_enough_lookback_weather_is_refused(tmp_path: Path) -> 
 
     with pytest.raises(ValueError, match="lookback"):
         run_scoring("tuscany", date(2024, 8, 10), date(2024, 8, 12), data_root=root)
+
+
+def test_rules_that_read_normals_are_refused_before_the_normals_are_built(tmp_path: Path) -> None:
+    root = _data_root(tmp_path, FIRST, 86)
+    (root / "climatology" / "tuscany" / "normals.parquet").unlink()
+
+    with pytest.raises(ValueError, match="api.history.build normals"):
+        run_scoring("tuscany", START, END, data_root=root)

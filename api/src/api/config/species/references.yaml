@@ -756,6 +756,20 @@ references:
     cited_as:
     - weather-ingest.md
     - model-v1-validation.md
+  mushma_rain_tuning_2026:
+    citation: 'mushma rain-driver tuning: coordinate descent over pre-registered rain-ramp, relative-rain, growth-clock
+      and shade-line choices on the train seasons 2016-2023 (55 sightings), with and without the rain scale, judged on
+      the hold-out seasons 2024-2025. See .gavin-root/docs/model-v1-validation.md, Rain drivers'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/model-v1-validation.md
+    kind: analysis
+    region: Tuscany
+    verified: verified
+    supports: porcini 30-day rain scored against the cell's own normal (0 at 50 %, full from 125 %), which raised
+      the porcini train objective by about 0.03 under both rain scalings and held its direction on the hold-out
+      (0.526 -> 0.539). The ovoli trigger ramp doubled (20 -> 60 mm) also cleared the train margin but fell on the
+      hold-out (0.507 -> 0.463, 6 sightings) and was not adopted.
+    cited_as:
+    - model-v1-validation.md
   myboletus_finferli:
     citation: 'MyBoletus. Chanterelles in Europe: where to find them, season and habitat'
     url: https://myboletus.com/en/funghi/finferli/

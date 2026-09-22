@@ -309,6 +309,9 @@ uv run python -m api.history.build outlook                    # ...averaged over
 
 Tables land in `api/data/climatology/`, `api/data/history/` and `api/data/outlook/`. `update`
 takes about 5 seconds per year and rebuilds the normals every time, so they follow the backfill.
+Scoring needs the normals too: the porcini 30-day rain is scored as a share of the cell's normal, so
+build them (`uv run python -m api.history.build normals`) before the first `pipeline score` on a
+fresh volume.
 Definitions (good day, typical season, normals, the outlook's rain tilt) and the design are in
 `.gavin-root/docs/time-views.md`; the thresholds are in `api/src/api/config/history.yaml`.
 
