@@ -26,9 +26,11 @@ def _request(headers: dict[str, str], client_host: str | None = "203.0.113.5") -
     return request
 
 
-def test_prefers_flys_own_header() -> None:
+def test_ignores_a_client_sent_fly_header() -> None:
+    # Caddy passes unknown request headers through untouched, so a Fly-Client-IP header can only
+    # have come from the client itself: trusting it would let anyone pick their own bucket.
     request = _request({"fly-client-ip": "1.2.3.4", "x-forwarded-for": "5.6.7.8"})
-    assert client_ip(request) == "1.2.3.4"
+    assert client_ip(request) == "5.6.7.8"
 
 
 def test_falls_back_to_x_forwarded_for_first_hop() -> None:

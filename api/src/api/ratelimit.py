@@ -1,7 +1,7 @@
 """Per-IP rate limiting for the public, GET-only, cookie-less API (see the CORS comment in
-main.py): protects the single small Fly machine (``min_machines_running = 0``, no Redis) from a
-runaway client. In-memory (``limits``' moving-window strategy) is enough at this scale, and
-simply resets on redeploy/restart -- an acceptable tradeoff for a hobby-scale app.
+main.py): protects the single small server (one uvicorn process, no Redis) from a runaway
+client. In-memory (``limits``' moving-window strategy) is enough at this scale, and simply resets
+on redeploy/restart -- an acceptable tradeoff for a hobby-scale app.
 
 A plain ASGI middleware rather than a Starlette ``BaseHTTPMiddleware`` (which the `slowapi`
 package builds on): ``BaseHTTPMiddleware`` reconstructs every response as a stream, which drops
@@ -9,7 +9,7 @@ the `Content-Length` `api.main`'s `GZipMiddleware` relies on to skip small respo
 it broke tests/test_compression.py's tiny-response case). This middleware never touches the
 response for a request under the limit -- it forwards ``send`` untouched -- so it can't do that.
 
-``/health`` and ``/status`` are exempt: Fly's own health checks and any uptime pinger must never
+``/health`` and ``/status`` are exempt: health checks and any uptime pinger must never
 be throttled. Disabled entirely under ``MUSHMA_FIXTURES=1`` (dev, CI and the contract test suite,
 which shares one client "IP" across hundreds of requests a second -- nothing a real deployment
 would ever see from one visitor, so there's nothing to protect there).
@@ -29,11 +29,9 @@ EXEMPT_PATHS = frozenset({"/health", "/status"})
 
 
 def client_ip(request: Request) -> str:
-    """Fly's edge sets `Fly-Client-IP`; `X-Forwarded-For`'s first hop is the fallback for any
-    other proxy, and the raw socket address for local dev with no proxy in front at all."""
-    fly_ip = request.headers.get("fly-client-ip")
-    if fly_ip:
-        return fly_ip
+    """`X-Forwarded-For`'s first hop behind the proxy (Caddy in production, which replaces any
+    value the client sent with the peer address), and the raw socket address for local dev with no
+    proxy in front at all."""
     forwarded = request.headers.get("x-forwarded-for")
     if forwarded:
         return forwarded.split(",")[0].strip()
