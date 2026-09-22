@@ -82,6 +82,25 @@ def set_factor(
     )
 
 
+def shift_growth_temperature(rules: RuleSet, key: str, delta_c: float) -> RuleSet:
+    """A copy of ``rules`` with one key's growth-clock temperatures (cardinal curve and reference)
+    moved by ``delta_c``: the same curve, warmer or cooler."""
+    species = rules.species[key]
+    temperature = species.growth.temperature
+    growth = species.growth.model_dump()
+    growth["temperature"] = {
+        **temperature.model_dump(),
+        "cardinal_c": [t + delta_c for t in temperature.cardinal_c],
+        "reference_c": temperature.reference_c + delta_c,
+    }
+    rebuilt = SpeciesRules.model_validate({**species.model_dump(), "growth": growth})
+    return RuleSet(
+        species={**rules.species, key: rebuilt},
+        groups=rules.groups,
+        references=rules.references,
+    )
+
+
 def set_precipitation_scale(config: ModelConfig, enabled: bool) -> ModelConfig:
     scale = config.precipitation_scale.model_copy(update={"enabled": enabled})
     return config.model_copy(update={"precipitation_scale": scale})
@@ -97,6 +116,17 @@ def _factors(keys: list[str], updates: dict[str, dict]) -> Apply:
             for factor_id, update in updates.items():
                 if factor_id in present:
                     rules = set_factor(rules, key, factor_id, update, frozen)
+        return rules, config
+
+    return apply
+
+
+def _clock(keys: list[str], delta_c: float) -> Apply:
+    """Shift every key's growth-clock temperatures by ``delta_c``."""
+
+    def apply(rules: RuleSet, config: ModelConfig) -> tuple[RuleSet, ModelConfig]:
+        for key in keys:
+            rules = shift_growth_temperature(rules, key, delta_c)
         return rules, config
 
     return apply
@@ -298,6 +328,86 @@ SEARCH: list[Choice] = [
 ]
 
 
+# --- the rain drivers (card tune-rain-drivers-saturate) ------------------------------------------
+#
+# Fixed before the train seasons were scored with the rules of 2026-09-22. Both rain drivers reach
+# full credit in an ordinary September (model-v1-validation.md), so each group tries its trigger
+# ramp and its 30-day ramp raised by half and doubled, and a 30-day driver relative to the cell's
+# own normal (0 at 50 %, full from 125 %, the outlook's "wetter"), which an ordinary month cannot
+# fill. Then the growth clock's temperatures 3 °C cooler and warmer, and gallinacci's shade line
+# (GAL-07) off, which the engine applies all year though its source limits it to June-September.
+# Run once with the rain scale as configured and once without (``--rain-scale off``): the scale
+# lowers the raw rain a threshold needs by 22 % at sea level to 43 % at 1.7 km.
+
+
+def _relative_30d() -> dict:
+    return {
+        "input": {"aggregate": "percent_of_normal"},
+        "response": {"trapezoid": [50, 125, None, None]},
+    }
+
+
+def _rain_choices(group: str, keys: list[str], trigger: list, rain_30d: list) -> list[Choice]:
+    """Trigger and 30-day ramps as ``[prior, x1.5, x2]`` lower and full edges."""
+
+    def amount(edges: tuple[float, float]) -> dict:
+        return {"rain_trigger": {"response": {"amount_mm": [*edges, None, None]}}}
+
+    def month(edges: tuple[float, float]) -> dict:
+        return {"rain_30d": {"response": {"trapezoid": [*edges, None, None]}}}
+
+    return [
+        Choice(
+            f"{group}_trigger_amount",
+            [group],
+            [
+                Change("prior", _prior),
+                Change("higher", _factors(keys, amount(trigger[1]))),
+                Change("much_higher", _factors(keys, amount(trigger[2]))),
+            ],
+        ),
+        Choice(
+            f"{group}_rain_30d",
+            [group],
+            [
+                Change("prior", _prior),
+                Change("higher", _factors(keys, month(rain_30d[1]))),
+                Change("much_higher", _factors(keys, month(rain_30d[2]))),
+                Change("relative", _factors(keys, {"rain_30d": _relative_30d()})),
+            ],
+        ),
+        Choice(
+            f"{group}_clock_temperature",
+            [group],
+            [
+                Change("prior", _prior),
+                Change("cooler", _clock(keys, -3)),
+                Change("warmer", _clock(keys, 3)),
+            ],
+        ),
+    ]
+
+
+RAIN_SEARCH: list[Choice] = [
+    *_rain_choices(
+        "porcini", PORCINI, [(10, 30), (15, 45), (20, 60)], [(20, 80), (30, 120), (40, 160)]
+    ),
+    *_rain_choices(
+        "ovoli", OVOLI, [(10, 30), (15, 45), (20, 60)], [(25, 75), (40, 110), (50, 150)]
+    ),
+    *_rain_choices(
+        "gallinacci", GALLINACCI, [(10, 20), (15, 30), (20, 40)], [(15, 70), (25, 105), (30, 140)]
+    ),
+    Choice(
+        "gallinacci_sun_exposure",
+        ["gallinacci"],
+        [Change("prior", _prior), Change("off", _factors(GALLINACCI, {"sun_exposure": OFF}))],
+    ),
+]
+
+SEARCHES = {"v1": SEARCH, "rain": RAIN_SEARCH}
+
+
 @dataclass
 class TuningResult:
     rules: RuleSet
@@ -375,6 +485,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--label", required=True)
     parser.add_argument("--region", default="tuscany")
+    parser.add_argument("--search", choices=sorted(SEARCHES), default="v1")
+    parser.add_argument(
+        "--rain-scale",
+        choices=["config", "off"],
+        default="config",
+        help="start from the rain scale as configured, or with it off",
+    )
     args = parser.parse_args()
     started = time.monotonic()
 
@@ -382,9 +499,15 @@ def main() -> None:
         print(f"[{time.monotonic() - started:7.1f}s] {message}", flush=True)
 
     config = load_model_config()
+    if args.rain_scale == "off":
+        config = set_precipitation_scale(config, False)
     seasons = config.backtest.train_seasons
     result = coordinate_descent(
-        SEARCH, load_rules(), config, backtest_evaluator(args.region, seasons), log=log
+        SEARCHES[args.search],
+        load_rules(),
+        config,
+        backtest_evaluator(args.region, seasons),
+        log=log,
     )
     out = data_dir() / "backtest" / args.region / args.label
     out.mkdir(parents=True, exist_ok=True)
@@ -393,6 +516,8 @@ def main() -> None:
         json.dumps(
             {
                 "margin": MARGIN,
+                "search": args.search,
+                "rain_scale": config.precipitation_scale.enabled,
                 "seasons": seasons,
                 "kept": result.kept,
                 "objective": result.objective,

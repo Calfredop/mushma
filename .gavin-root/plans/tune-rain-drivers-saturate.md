@@ -1,7 +1,7 @@
 ---
 order: 3072
 title: Tune the rain drivers: both reach full credit in an ordinary September
-status: To Do
+status: In Progress
 priority: medium
 complexity: complex
 ---
@@ -21,7 +21,7 @@ windows, altitude bands and habitat affinities frozen.
 
 ## Checklist
 
-- [ ] Read the backtest and tuning harness (`api/src/api/model/backtest.py`, `tuning.py`) and the
+- [x] Read the backtest and tuning harness (`api/src/api/model/backtest.py`, `tuning.py`) and the
       current train-season baseline before changing anything
 - [ ] Test the trigger ramp (`amount_mm` 10 to 30 mm) and the 30-day ramp (to 70 to 80 mm) with
       higher plateaus, on the train seasons, per species key
