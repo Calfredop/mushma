@@ -28,8 +28,8 @@ This file is the single source of project instructions: `CLAUDE.md` and
     + production build).
 - `api/` — Python + FastAPI service and the scheduled data pipeline
   (ingest → grid scoring → store). Storage is DuckDB reading Parquet files on
-  a Fly Volume (not Postgres/PostGIS — see PRD → Architecture). Deployed to
-  Fly.io.
+  the server's disk (not Postgres/PostGIS — see PRD → Architecture). Deployed
+  with Docker to a Hetzner server; `deploy/` holds the production stack.
   - `cd api && uv sync` then `uv run fastapi dev src/api/main.py` (dev
     server), `uv run pytest`, `uv run ruff check .`,
     `uv run ruff format --check .`.

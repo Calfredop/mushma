@@ -8,15 +8,15 @@ season's per-area history, fetch the long-range forecast and average it over the
 There's no separate "downscale to cells" step: scoring reads the point-level weather store and
 downscales on the fly (``api.model.inputs.load_weather``) -- the ingest CLI's own ``downscale``
 command only writes a standalone export nothing else reads, so running it here would just be unused
-disk churn on the Fly volume. Fly runs this as the scheduled machine's command (see ``fly.toml``);
-it must finish well before 07:00 Europe/Rome.
+disk churn on the server. deploy/mushma-daily.timer runs this every morning as a one-off container
+of the API image; it must finish well before 07:00 Europe/Rome.
 
 Each step is a child process, so one step's crash can't take the others down with a shared
 in-process state; failure still stops the job (a partial pipeline run is safe to resume tomorrow,
 but scoring on top of half-updated weather is not worth risking). Every step logs one JSON line on
-start and on completion, so Fly's log viewer can be grepped for ``"event": "step_failed"``. On
-failure, an optional webhook (``ALERT_WEBHOOK_URL``) gets a one-line summary; unset, it's a no-op --
-Fly's own machine-exit-code alerting still fires either way.
+start and on completion, so ``journalctl -u mushma-daily`` can be grepped for
+``"event": "step_failed"``. On failure, an optional webhook (``ALERT_WEBHOOK_URL``) gets a one-line
+summary; unset, it's a no-op -- the failed systemd unit still records it either way.
 
     uv run python -m api.jobs.daily
 """
@@ -145,7 +145,7 @@ def main(
             _run_step(args, runner)
     except SystemExit:
         _log(event="job_failed", job="daily", elapsed_s=round(time.monotonic() - started, 1))
-        alert(f"mushma daily job failed at step {current!r} -- see Fly logs")
+        alert(f"mushma daily job failed at step {current!r} -- see journalctl -u mushma-daily")
         raise
     _log(event="job_done", job="daily", elapsed_s=round(time.monotonic() - started, 1))
     heartbeat()

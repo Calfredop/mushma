@@ -51,8 +51,8 @@ app.add_middleware(
 
 
 # The grids (/scores, /history/season/{year}) are ~11k cells of JSON: about 0.8 MB raw and a
-# sixth of that gzipped (PRD -> Architecture -> Grid delivery). Nothing in front of the API on
-# Fly compresses, so the API does.
+# sixth of that gzipped (PRD -> Architecture -> Grid delivery). Caddy in front of it
+# (deploy/Caddyfile) doesn't compress, so the API does.
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 

@@ -1,0 +1,7 @@
+# The api.mappafunghi.app DNS record is "DNS only" on Cloudflare, so Let's Encrypt reaches this
+# box directly and Caddy sees each visitor's own address (the rate limiter keys on it through
+# X-Forwarded-For, which Caddy sets itself and never takes from the client). The API gzips its
+# own responses (api/src/api/main.py), so there is no `encode` here.
+api.mappafunghi.app {
+	reverse_proxy api:8000
+}

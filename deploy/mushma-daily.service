@@ -1,0 +1,15 @@
+# The daily pipeline (api/src/api/jobs/daily.py) as a one-off container of the API image, then an
+# API restart so nothing cached in the running process outlives the new stores. Started by
+# mushma-daily.timer. Install: README.md -> Deploying.
+[Unit]
+Description=mushma daily pipeline
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/mushma/deploy
+ExecStart=/usr/bin/docker compose run --rm api python -m api.jobs.daily
+ExecStartPost=/usr/bin/docker compose restart api
+TimeoutStartSec=2h

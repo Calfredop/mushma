@@ -2,8 +2,8 @@
 once against a real `LiveRepository` over a tiny synthetic on-disk dataset (tests/live/helpers.py)
 -- so "the contract tests pass against real data" (M4-api.md) is actually exercised, not just
 plausible. Point MUSHMA_CONTRACT_BASE_URL at a deployed api/ to run the exact same tests against a
-live deployment instead (e.g. to verify one after `fly deploy`); that replaces both modes with a
-single run against the given URL."""
+live deployment instead (e.g. `https://api.mappafunghi.app` after a deploy); that replaces both
+modes with a single run against the given URL."""
 
 import os
 from collections.abc import Iterator

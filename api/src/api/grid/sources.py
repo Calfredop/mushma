@@ -41,7 +41,7 @@ def load_sources() -> dict[str, Source]:
 
 
 def data_dir() -> Path:
-    """Root for downloads and build outputs: ``$DATA_DIR`` on Fly, ``api/data`` locally."""
+    """Root for downloads and build outputs: ``$DATA_DIR`` in production, ``api/data`` locally."""
     return Path(os.environ.get("DATA_DIR", API_ROOT / "data"))
 
 

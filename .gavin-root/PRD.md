@@ -129,14 +129,19 @@ All seven milestones below are v1; there is no smaller cut.
 - **Frontend.** A static SPA built with Vite + React + TypeScript and MapLibre
   GL, hosted on **Vercel**. Uses i18n (it/en) and a PWA service worker.
 - **Backend.** A small **Python + FastAPI** API plus a scheduled data pipeline,
-  hosted on **Fly.io**. The pipeline runs daily: it ingests weather
-  history and forecast plus recent sightings, scores the grid and stores the
-  results. The API serves scores, cell detail and breakdowns, hotspots,
-  sightings and history. The frontend never computes the model.
-  Decided over Railway: Fly Machines run the daily pipeline on a native
-  `--schedule` flag with no extra cron tooling, and Fly's per-VM + per-GB
-  volume pricing is cheaper at this scale than Railway's Hobby plan floor.
-- **Storage.** **DuckDB reading Parquet files** on a Fly Volume, not
+  hosted on a small **Hetzner** cloud server (CX23) with Docker. The pipeline
+  runs daily: it ingests weather history and forecast plus recent sightings,
+  scores the grid and stores the results. The API serves scores, cell detail
+  and breakdowns, hotspots, sightings and history. The frontend never
+  computes the model.
+  Decided at the production deploy (2026-09-22), replacing Fly.io, which M1
+  had chosen over Railway: a Fly volume attaches to one machine only, so a
+  scheduled job machine could never share its stores with the API machine, and
+  Fly no longer has a free allowance. One server keeps the stores on one disk,
+  runs the API behind Caddy and the pipeline from a systemd timer, for about
+  €7.31/month with VAT. DNS, the web app and the basemap stay on free tiers
+  (Cloudflare, Vercel, Cloudflare R2). Setup is in the README → Deploying.
+- **Storage.** **DuckDB reading Parquet files** on the server's disk, not
   Postgres/PostGIS. At ~12k cells × 3 species × 365 days ≈ 13M rows/year the
   workload is a daily batch write followed by read-mostly analytical queries —
   a good fit for columnar Parquet, and DuckDB queries it directly with no

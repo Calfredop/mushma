@@ -1,0 +1,11 @@
+# Every morning with two hours to spare before 07:00 Europe/Rome (PRD -> Constraints ->
+# Freshness). Persistent: a run missed while the server was down happens at the next boot.
+[Unit]
+Description=Run the mushma daily pipeline
+
+[Timer]
+OnCalendar=*-*-* 05:00:00 Europe/Rome
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -94,7 +94,9 @@ interval, so they stay on as priors, not results.
 - `web/` — Vite + React + TypeScript SPA, MapLibre GL, i18n (it/en), PWA.
   Deployed to Vercel.
 - `api/` — Python + FastAPI service and the scheduled data pipeline
-  (ingest → grid scoring → store). Deployed to Fly.io.
+  (ingest → grid scoring → store). Deployed to a Hetzner server with Docker.
+- `deploy/` — the production stack for that server: Docker Compose (API + Caddy), the daily job's
+  systemd timer and the server's `.env` template.
 - `.gavin-root/docs/` — research and reports (species ecology, sightings
   profile, validation).
 
@@ -104,7 +106,8 @@ interval, so they stay on as priors, not results.
   [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to install it)
 - [uv](https://docs.astral.sh/uv/) (installs the pinned Python itself)
 - [Docker](https://www.docker.com/) if you want to build the `api/` image locally
-- [flyctl](https://fly.io/docs/flyctl/install/) to deploy `api/`
+- [wrangler](https://developers.cloudflare.com/workers/wrangler/) (`pnpm dlx wrangler`) to upload
+  the basemap and deploy its tile Worker
 
 ## web/
 
@@ -209,7 +212,7 @@ cd api
 uv run python -m api.grid.build --region tuscany
 ```
 
-Set `DATA_DIR` to build somewhere else (it is `/data` on Fly). Outputs, sources and the woodland
+Set `DATA_DIR` to build somewhere else (it is `/data` in the production container). Outputs, sources and the woodland
 rule are described in `.gavin-root/docs/woodland-grid.md`.
 
 ### Weather
@@ -317,7 +320,7 @@ Definitions (good day, typical season, normals, the outlook's rain tilt) and the
 
 ### Scheduled job
 
-`api/src/api/jobs/daily.py` is the one command the Fly-scheduled machine runs: weather update →
+`api/src/api/jobs/daily.py` is the one command the daily systemd timer runs on the server: weather update →
 sightings fetch → score today -6 to +7 (the served window, with factors) → this season's history
 tables → long-range tendencies → their per-area averages. The long-range fetch comes after the
 day's scores, so an outage of the seasonal API never holds back today's map. (No separate
@@ -326,7 +329,7 @@ running the ingest CLI's `downscale` export here would just be unused disk churn
 step as its own process in that order and stops at the first failure rather than risk scoring on
 top of a half-updated weather store; every step logs one JSON line on start and finish.
 Set `ALERT_WEBHOOK_URL` (a Slack/Discord/etc. incoming webhook) to get a one-line POST on failure;
-unset, it's a no-op and only Fly's own machine-exit alerting fires. Set `HEARTBEAT_URL` (a
+unset, it's a no-op and only the failed systemd unit records it (`systemctl status mushma-daily`). Set `HEARTBEAT_URL` (a
 healthchecks.io-style check: a plain GET on success) to catch the case `ALERT_WEBHOOK_URL` can't --
 the scheduler never running the job at all; point it at a free healthchecks.io/Cronitor/etc. check
 configured to expect a ping roughly once a day, and it pages on a missed one. See Monitoring below.
@@ -346,38 +349,82 @@ GitHub Actions (`.github/workflows/ci.yml`) lints and tests both `web/` and
 
 ## Deploying
 
-- **web/** → Vercel. Import the repo, set the project's Root Directory to
-  `web`, and set these environment variables:
-  - `VITE_API_BASE_URL`: the deployed `api/` URL (the API needs CORS for the
-    Vercel domain; M4).
-  - `VITE_BASEMAP_URL` and `VITE_TERRAIN_URL`: the basemap files uploaded to
-    object storage (a `.pmtiles` URL served with range requests, or a TileJSON
-    URL from the Protomaps Cloudflare Worker).
-- **api/** → Fly.io. From `api/`: `fly launch --no-deploy` to attach an app
-  (the included `fly.toml` is a starting point), `fly volumes create
-  mushma_data --size 1` for the DuckDB/Parquet data directory, then
-  `fly deploy`. That starts the `web` process group behind `http_service`;
-  the scheduled job is a separate machine you create once from the `job`
-  process group in `fly.toml`:
+Production is **mappafunghi.app**. Everything runs on free tiers except the API server:
 
-  ```sh
-  fly machine run . --app mushma-api --process-group job --schedule daily \
-    --vm-memory 1024
-  ```
+| Piece | Where | Cost |
+|---|---|---|
+| DNS for `mappafunghi.app` (registered at Namecheap) | Cloudflare, Free plan | €0 |
+| `web/` at `mappafunghi.app` (`www` redirects to it) | Vercel, Hobby | €0 |
+| Basemap tiles at `tiles.mappafunghi.app` | Cloudflare R2 + the Protomaps Worker | €0 (free tier) |
+| `api/` and the daily job at `api.mappafunghi.app` | Hetzner CX23 `mushma-prod-01`, Falkenstein | ~€7.31/month incl. VAT |
 
-  (check `fly machine run --help` for the exact flags on your flyctl version —
-  they've moved before). After the first couple of runs, check `fly machine
-  status`/`fly logs` for the actual trigger time and nudge the schedule if
-  needed so it lands before 07:00 Europe/Rome. Set `ALERT_WEBHOOK_URL` and
-  `HEARTBEAT_URL` with `fly secrets set` if you want failure notifications and
-  a missed-run alert (see Monitoring below).
+Fly.io, which M1 chose, was dropped at deploy time: a Fly volume attaches to one machine only, so
+the scheduled job machine could never share its stores with the API machine.
+
+**web/ → Vercel.** The `mushma` project builds `web/` (Root Directory `web`, settings in
+`web/vercel.json`) on every push to `main`; pull requests get preview deployments. Its environment
+variables (Production and Preview):
+
+- `VITE_API_BASE_URL=https://api.mappafunghi.app`
+- `VITE_BASEMAP_URL=https://tiles.mappafunghi.app/tuscany.json`
+- `VITE_TERRAIN_URL=https://tiles.mappafunghi.app/tuscany-terrain.json`
+
+They are baked in at build time, so changing one needs a redeploy. `mappafunghi.app` and
+`www.mappafunghi.app` are CNAMEs to Vercel on Cloudflare, "DNS only" (not proxied).
+
+**Basemap → R2 + Worker.** The two extracts from `web/scripts/extract-basemap.sh` live in the R2
+bucket `mushma-tiles`; the [Protomaps Cloudflare Worker](https://docs.protomaps.com/deploy/cloudflare)
+(`serverless/cloudflare` in `protomaps/PMTiles`, deployed as `mushma-tiles`) serves them as TileJSON
+and z/x/y tiles on the custom domain `tiles.mappafunghi.app`, where Cloudflare's edge caches them
+(it doesn't on `workers.dev`). Its `wrangler.toml`: `bucket_name = "mushma-tiles"`,
+`PUBLIC_HOSTNAME = "tiles.mappafunghi.app"`, `ALLOWED_ORIGINS` the production origins plus
+`localhost:5173`/`4173`, and a `custom_domain` route for the hostname. To refresh the basemap:
+
+```sh
+cd web && scripts/extract-basemap.sh
+pnpm dlx wrangler r2 object put mushma-tiles/tuscany.pmtiles --file data/basemap/tuscany.pmtiles --remote
+pnpm dlx wrangler r2 object put mushma-tiles/tuscany-terrain.pmtiles --file data/basemap/tuscany-terrain.pmtiles --remote
+```
+
+Tiles stay cached for a day (`CACHE_CONTROL`) and in the PWA's own cache for 30.
+
+**api/ → Hetzner.** One Docker CE server runs the API behind Caddy (`deploy/compose.yaml`,
+`deploy/Caddyfile`), which gets the `api.mappafunghi.app` certificate itself; that DNS record is
+"DNS only" so Let's Encrypt and the rate limiter see the real client. The repo is cloned at
+`/opt/mushma`, the stores live in `/srv/mushma-data`, and `deploy/.env` (from
+`deploy/.env.example`) sets `CORS_ORIGINS` and the monitoring URLs. The data is copied from a
+machine that already has it, not rebuilt: the weather backfill alone takes about four days of API
+quota. The raw grid sources are only needed to rebuild the grid, so they stay behind:
+
+```sh
+# from the repo root, on a machine with the stores (-L: api/data/ may hold symlinks)
+rsync -azL --exclude 'raw/rt_ucs' --exclude 'raw/copernicus_dem' --exclude 'raw/ispra_clc18_iv' \
+  --exclude 'raw/soilgrids' --exclude 'raw/sir_toscana' --exclude tmp --exclude backtest \
+  --exclude '*.lock' api/data/ root@<server>:/srv/mushma-data/
+```
+
+First setup on the server:
+
+```sh
+git clone https://github.com/Calfredop/mushma.git /opt/mushma
+cd /opt/mushma/deploy && cp .env.example .env    # then edit it
+docker compose up -d --build
+cp mushma-daily.service mushma-daily.timer /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now mushma-daily.timer
+```
+
+The timer runs the daily job at 05:00 Europe/Rome as a one-off container of the API image, then
+restarts the API. `journalctl -u mushma-daily` has its JSON step log, `systemctl list-timers
+mushma-daily.timer` the next run; `systemctl start mushma-daily` runs it now.
+
+To ship an API change: `cd /opt/mushma && git pull && cd deploy && docker compose up -d --build`.
 
 ## Monitoring
 
-Fly's own `[[http_service.checks]]` (`fly.toml`) hits `/health` every 30s and restarts the machine
-on failure -- that keeps the API up, but doesn't page anyone. For that, point a free external
-pinger (UptimeRobot, healthchecks.io, Better Uptime, ...) at the deployed `/health` URL; a forager
-finding the map down is worse than a human finding out first.
+Caddy and the API restart on their own (`restart: unless-stopped`) but nothing pages anyone. For
+that, point a free external pinger (UptimeRobot, healthchecks.io, Better Uptime, ...) at
+`https://api.mappafunghi.app/health`; a forager finding the map down is worse than a human finding
+out first. The rest is set in `deploy/.env` on the server, then `docker compose up -d`:
 
 - `ALERT_WEBHOOK_URL`: the daily job posts one line to it if a step fails.
 - `HEARTBEAT_URL`: the daily job pings it (a plain GET) once it finishes successfully. Configure
@@ -386,11 +433,12 @@ finding the map down is worse than a human finding out first.
 - An uptime pinger on `/health` (above): catches the API itself being down between daily job runs.
 - `SENTRY_DSN`: error tracking for the API (`api/src/api/main.py`). Unset, Sentry is never
   initialized -- no dependency on it for local dev, CI or fixtures mode. Create a free Sentry
-  project and `fly secrets set SENTRY_DSN=...` to turn it on; sampling is kept low/zero by default
-  to stay well inside the free tier.
+  project and set it to turn it on; sampling is kept low/zero by default to stay well inside the
+  free tier.
 - Rate limiting: the API is public, GET-only and cookie-less (see the CORS comment in `main.py`),
-  so it limits requests per IP to guard the single small Fly machine against a runaway client.
-  `/health` is exempt so Fly's own checks and any uptime pinger are never throttled.
+  so it limits requests per IP (from Caddy's `X-Forwarded-For`) to guard the one small server
+  against a runaway client. `/health` and `/status` are exempt so uptime pingers are never
+  throttled.
 
 ## Credits & sources
 

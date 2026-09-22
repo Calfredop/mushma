@@ -1,0 +1,44 @@
+# Production stack on the Hetzner server (README.md -> Deploying): the API behind Caddy, which
+# gets and renews the api.mappafunghi.app certificate on its own. The repo is cloned at
+# /opt/mushma and the data stores live outside it, in /srv/mushma-data (the API's DATA_DIR).
+#
+#   cd /opt/mushma/deploy && docker compose up -d --build
+#
+# The daily pipeline is not a service here: mushma-daily.timer runs it once a day as a one-off
+# container of the same image (`docker compose run --rm api python -m api.jobs.daily`).
+services:
+  api:
+    build: ../api
+    image: mushma-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - /srv/mushma-data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  caddy_data:
+  caddy_config:
