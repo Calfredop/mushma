@@ -133,17 +133,20 @@ def dataset_ruleset() -> RuleSet:
     )
 
 
-def build_dataset(root: Path) -> RuleSet:
+def build_dataset(root: Path, outlook_days: int = 8) -> RuleSet:
     """A small but complete synthetic $DATA_DIR: enough for every ScoresRepository method (and
     the API contract tests) to exercise real code paths, not just fixture-mode stand-ins.
 
     - cells A and B are edge-adjacent (a hotspot cluster); C is isolated; D isn't woodland.
     - one arbitrary day (SCORES_DATE, unrelated to "today") has combined + all 3 groups scored
       for A/B/C, for get_scores / get_hotspots / cross-species cell-set consistency.
-    - the 8-day "today..+7" outlook is scored (with factors) for all 3 groups plus combined, on
-      cells A and B, for get_spot / get_cell_detail and for the contract tests (which query with
-      no explicit date, defaulting to "today"). Porcini switches its winning member halfway
-      through the window at cell A, to exercise the per-day daily-tier -> factors-tier join.
+    - the "today.." outlook is scored (with factors) for all 3 groups plus combined, on cells A
+      and B, for get_spot / get_cell_detail and for the contract tests (which query with no
+      explicit date, defaulting to "today"). Porcini switches its winning member halfway through
+      the window at cell A, to exercise the per-day daily-tier -> factors-tier join.
+      ``outlook_days`` defaults to the full 8-day (today + 7-day) window the daily job keeps; pass
+      fewer to simulate the store before the job has caught the window up (M4-api.md), e.g.
+      overnight before the 05:00 Europe/Rome run.
     - a couple of sightings, for get_sightings and hotspot sighting counts.
     """
     write_cells(root, [CELL_A, CELL_B, CELL_C, CELL_D_NON_WOODLAND])
@@ -181,7 +184,7 @@ def build_dataset(root: Path) -> RuleSet:
     # window for every group, so every group/combined agrees on the same served cell set. Porcini
     # switches its winning member halfway through the window at cell A, to exercise the per-day
     # daily-tier -> factors-tier join; cell B keeps one winner throughout, simpler.
-    days = [today_rome() + timedelta(days=i) for i in range(8)]
+    days = [today_rome() + timedelta(days=i) for i in range(outlook_days)]
     porcini_daily, porcini_a_factors, porcini_b_factors = [], [], []
     for i, day in enumerate(days):
         winner, score = ("porcini_a", 0.4 + 0.01 * i) if i < 4 else ("porcini_b", 0.5 + 0.01 * i)

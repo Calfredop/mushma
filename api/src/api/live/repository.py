@@ -154,12 +154,11 @@ class LiveRepository:
 
         species_forecasts = []
         for group in SPECIES:
+            # The daily job scores this window at 05:00 Europe/Rome (M4-api.md); before that (or
+            # after a failed run) fewer than FORECAST_OFFSETS days are stored. Serve whichever
+            # ones are, rather than 500 until the job catches up -- get_spot's contract
+            # (ScoresRepository) is to always succeed.
             daily = self.scores.read(con, group, start, end, cell_ids=[cell_id]).df()
-            if len(daily) != len(FORECAST_OFFSETS):
-                raise RuntimeError(
-                    f"incomplete {group} outlook for {cell_id}: "
-                    f"{len(daily)}/{len(FORECAST_OFFSETS)} days stored"
-                )
             daily["date"] = pd.to_datetime(daily["date"]).dt.date
             daily = daily.sort_values("date")
 

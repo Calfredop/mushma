@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import type { CellDetailResponse } from '../api/queries'
 import { CELL_DETAIL } from '../test/fixtures'
 import { SpotPanel } from './SpotPanel'
 
@@ -77,6 +78,34 @@ describe('SpotPanel', () => {
     expect(screen.getByText(/per i giorni passati guarda la mappa/)).toBeInTheDocument()
     const why = screen.getByRole('region', { name: 'Perché questo indice' })
     expect(within(why).getByText('Gallinacci · giovedì 17 settembre')).toBeInTheDocument()
+  })
+
+  it('renders fewer than 8 bars when the store has an incomplete outlook', () => {
+    // Overnight before the daily job catches the window up (or after a failed run), the API
+    // serves whichever days are stored instead of 500ing -- the panel must not assume 8.
+    const truncated: CellDetailResponse = {
+      ...CELL_DETAIL,
+      species: CELL_DETAIL.species.map((forecast) => ({
+        ...forecast,
+        days: forecast.days.slice(0, 7),
+      })),
+    }
+    render(
+      <SpotPanel
+        {...base}
+        spot={{ kind: 'cell', cellId: truncated.cell_id }}
+        detail={truncated}
+        species="porcini"
+        date="2026-09-17"
+      />,
+    )
+    const porciniBars = screen.getAllByRole('button', { name: /^Porcini, / })
+    expect(porciniBars).toHaveLength(7)
+    expect(screen.getAllByRole('button', { name: /^(Ovoli|Gallinacci), / })).toHaveLength(
+      14,
+    )
+    const why = screen.getByRole('region', { name: 'Perché questo indice' })
+    expect(within(why).getByText('Porcini · giovedì 17 settembre')).toBeInTheDocument()
   })
 
   it('offers a retry when the forecast fails, and closes', async () => {

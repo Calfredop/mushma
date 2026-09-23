@@ -130,6 +130,25 @@ class TestGetCellDetailAndSpot:
         spot = repo.get_spot(lat=CELL_A["lat"] + 0.0001, lon=CELL_A["lon"] + 0.0001)
         assert spot.cell_id == CELL_A["cell_id"]
 
+    def test_an_incomplete_outlook_returns_the_days_actually_stored(self, tmp_path: Path) -> None:
+        # Overnight before the 05:00 Europe/Rome daily job runs (or after a failed run), only
+        # today..+6 is stored -- get_spot and get_cell_detail must still answer, not 500.
+        rules = build_dataset(tmp_path, outlook_days=7)
+        repo = LiveRepository(tmp_path, rules=rules)
+        expected_dates = [today_rome() + timedelta(days=i) for i in range(7)]
+
+        cell_detail = repo.get_cell_detail(CELL_A["cell_id"])
+        spot = repo.get_spot(lat=CELL_A["lat"] + 0.0001, lon=CELL_A["lon"] + 0.0001)
+
+        for detail in (cell_detail, spot):
+            assert {f.species for f in detail.species} == {"porcini", "ovoli", "gallinacci"}
+            for forecast in detail.species:
+                assert [d.date for d in forecast.days] == expected_dates
+                for day in forecast.days:
+                    assert len(day.factors) > 0
+                    product = math.prod(f.contribution for f in day.factors)
+                    assert product == pytest.approx(day.score, abs=1e-6)
+
 
 class TestGetStatus:
     def test_scored_through_is_the_latest_stored_combined_day(self, repo: LiveRepository) -> None:
