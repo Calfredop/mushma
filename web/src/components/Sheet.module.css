@@ -40,6 +40,14 @@
   cursor: grab;
 }
 
+/* A whole tap target: 44px of hit area for a 24px handle, reaching down over the wordmark
+   (above the sheet it would cover the map's attribution riding on its edge). */
+.handle::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 -20px;
+}
+
 .handle:focus-visible {
   box-shadow: inset 0 0 0 2px var(--lago);
 }
@@ -113,6 +121,8 @@
 
 .panel[data-collapsed] {
   height: auto;
+  /* Folded, the header row is all of it: the search's list must open over the map. */
+  overflow: visible;
 }
 
 .panelHead {

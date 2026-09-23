@@ -587,7 +587,11 @@ function MapScreen() {
               </div>
               <PlaceSearch
                 onSelect={onPlace}
-                onLocate={spotLocate.locate}
+                // Down to half, so the map shows the search for a fix and any error.
+                onLocate={() => {
+                  setSnap('half')
+                  spotLocate.locate()
+                }}
                 locating={spotLocate.locating}
                 // A phone: the sheet comes up full, so the list has room above the keyboard.
                 onFocus={() => setSnap('full')}

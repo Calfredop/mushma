@@ -46,6 +46,16 @@ function mockGeolocation(lat: number, lon: number) {
   })
 }
 
+function mockGeolocationDenied() {
+  Object.defineProperty(navigator, 'geolocation', {
+    configurable: true,
+    value: {
+      getCurrentPosition: (_: PositionCallback, error: PositionErrorCallback) =>
+        error({ code: 1, PERMISSION_DENIED: 1 } as GeolocationPositionError),
+    },
+  })
+}
+
 const mapProp = (name: string): unknown =>
   JSON.parse(screen.getByTestId('map').getAttribute(`data-${name}`) ?? 'null')
 
@@ -170,6 +180,19 @@ describe('the phone shell', () => {
       'href',
       'https://github.com/Calfredop/mushma',
     )
+  })
+
+  it('comes down to half for "La mia posizione", so its progress and errors show on the map', async () => {
+    mockGeolocationDenied()
+    render(<App />)
+    const sheet = screen.getByRole('complementary')
+    await userEvent.click(
+      screen.getByRole('combobox', { name: 'Cerca un luogo in Toscana' }),
+    )
+    expect(sheet).toHaveAttribute('data-snap', 'full')
+    await userEvent.click(screen.getByRole('option', { name: /^La mia posizione/ }))
+    expect(sheet).toHaveAttribute('data-snap', 'half')
+    expect(await screen.findByText(/La posizione è disattivata/)).toBeInTheDocument()
   })
 
   it('opens the disclaimer and the pages from the ⓘ menu', async () => {

@@ -118,6 +118,24 @@ describe('Sheet', () => {
     expect(onSnap).not.toHaveBeenCalled()
   })
 
+  it('settles when a second finger lands mid-drag, instead of stopping between snaps', () => {
+    const { onSnap } = setup('half')
+    const body = screen.getByRole('button', { name: 'Stagioni' }).parentElement!
+    const touch = (type: string, ...ys: number[]) => {
+      const event = new Event(type, { bubbles: true, cancelable: true })
+      Object.defineProperty(event, 'touches', {
+        value: ys.map((y) => ({ clientX: 100, clientY: y })),
+      })
+      body.dispatchEvent(event)
+    }
+    touch('touchstart', 400)
+    touch('touchmove', 450)
+    touch('touchmove', 700)
+    // A thumb comes down beside the dragging finger; no touchend for the first one yet.
+    touch('touchstart', 700, 300)
+    expect(onSnap).toHaveBeenLastCalledWith('peek')
+  })
+
   it('is a plain panel on a desktop: no handle, no drag', () => {
     render(
       <Sheet

@@ -118,6 +118,45 @@ test('the panel folds to its header, stays folded after a reload, and a chosen s
   await expect(panel.getByText('Previsione del punto')).toBeVisible()
 })
 
+test.describe('a folded panel', () => {
+  test.use({
+    geolocation: { latitude: 43.32, longitude: 11.33 },
+    permissions: ['geolocation'],
+  })
+
+  test('still searches: its list opens over the map, and a place chosen unfolds it', async ({
+    page,
+  }) => {
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Ho capito' }).click()
+    await page.getByRole('button', { name: 'Rifiuta' }).click()
+    await page.getByRole('button', { name: 'Riduci il pannello' }).click()
+    // Folded all the way, not mid-animation.
+    const panel = page.getByRole('complementary')
+    await expect.poll(async () => (await panel.boundingBox())!.height).toBeLessThan(160)
+    await page.getByRole('combobox').click()
+    const option = page.getByRole('option', { name: /^La mia posizione/ })
+    // Where a finger would land, without the scroll Playwright does to reach an element: a
+    // list clipped by the folded panel is not there to be tapped.
+    const target = (await option.boundingBox())!
+    const point: [number, number] = [
+      target.x + target.width / 2,
+      target.y + target.height / 2,
+    ]
+    expect(
+      await option.evaluate(
+        (el, [x, y]) => el.contains(document.elementFromPoint(x, y)),
+        point,
+      ),
+    ).toBe(true)
+    await page.mouse.click(...point)
+    await expect(
+      page.getByRole('button', { name: 'Riduci il pannello' }),
+    ).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.getByText('Previsione del punto')).toBeVisible()
+  })
+})
+
 // The narrowest phone the layout promises, and a common one.
 for (const [width, height] of [
   [360, 640],
@@ -181,6 +220,22 @@ for (const [width, height] of [
       const app = page.getByRole('main').locator('xpath=..')
       expect(await app.evaluate((el) => el.scrollLeft)).toBe(0)
       expect(await page.evaluate(() => document.scrollingElement!.scrollLeft)).toBe(0)
+    })
+
+    test('the species pill fades as glass: the fade is on the pill, not on a wrapper', async ({
+      page,
+    }) => {
+      await page.goto('/')
+      await page.getByRole('button', { name: 'Ho capito' }).click()
+      const pill = page.getByRole('radiogroup', { name: 'Specie' })
+      // Halfway from half to full: an opacity on the pill's wrapper would cut its blur off.
+      await page
+        .getByRole('main')
+        .evaluate((main) => main.style.setProperty('--sheet-cover', '0.5'))
+      expect(await pill.evaluate((el) => getComputedStyle(el).opacity)).toBe('0.5')
+      expect(
+        await pill.evaluate((el) => getComputedStyle(el.parentElement!).opacity),
+      ).toBe('1')
     })
 
     test('the footer keeps its links on one row, none broken across lines', async ({

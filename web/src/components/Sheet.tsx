@@ -291,8 +291,10 @@ function PhoneSheet({
     let y0 = 0
     const onStart = (event: TouchEvent) => {
       if (event.touches.length !== 1) {
+        // A second finger: settle what the first one dragged, rather than stop in between.
+        if (mode === 'sheet') end()
+        else drag.current = null
         mode = 'native'
-        drag.current = null
         return
       }
       const touch = event.touches[0]

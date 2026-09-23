@@ -125,6 +125,17 @@ test('a tapped place stays in view above the sheet', async ({ page }) => {
   expect(onScreen).toBeGreaterThan(0)
 })
 
+test('the handle is a whole tap target: a tap just below its grip still steps the sheet', async ({
+  page,
+}) => {
+  const sheet = await open(page)
+  const handle = await box(page.getByRole('button', { name: 'Espandi il pannello' }))
+  expect(handle.height).toBeLessThan(44)
+  // 8px under the handle's own box, over the wordmark.
+  await page.mouse.click(handle.x + 40, handle.y + handle.height + 8)
+  await expect(sheet).toHaveAttribute('data-snap', 'half')
+})
+
 test('with reduced motion the sheet jumps to its snap, without a spring', async ({
   page,
 }) => {

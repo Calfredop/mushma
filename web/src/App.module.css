@@ -16,8 +16,9 @@
   inset: 0;
 }
 
-/* The top controls fade as the sheet comes up over them, and are gone at full. */
-.species,
+/* The top controls fade as the sheet comes up over them, and are gone at full. The pill's
+   fade is on the pill itself: an opacity on its wrapper would cut its glass off from the map. */
+.species > *,
 .cluster,
 .status {
   opacity: calc(1 - var(--sheet-cover, 0));
