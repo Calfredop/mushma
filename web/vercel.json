@@ -2,12 +2,7 @@
   "framework": "vite",
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/((?!assets/|vendor/|icons/|favicon|manifest\\.webmanifest|registerSW\\.js|sw\\.js|workbox-).*)",
-      "destination": "/index.html"
-    }
-  ],
+  "redirects": [{ "source": "/", "destination": "/toscana", "permanent": true }],
   "headers": [
     {
       "source": "/vendor/(.*)",
@@ -20,6 +15,10 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
     }
   ]
 }

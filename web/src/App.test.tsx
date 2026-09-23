@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
+import { getConsent, setConsent } from './consent'
 
 // WebGL doesn't run in jsdom: the stub shows what the app asks of the map.
 vi.mock('./map/ConditionsMap', () => ({
@@ -43,7 +44,7 @@ function mockGeolocation(lat: number, lon: number) {
 const mapProp = (name: string): unknown =>
   JSON.parse(screen.getByTestId('map').getAttribute(`data-${name}`) ?? 'null')
 
-beforeEach(() => localStorage.setItem('mushma.disclaimer.v1', 'accepted'))
+beforeEach(() => localStorage.setItem('mushma.disclaimer.v2', 'accepted'))
 
 afterEach(() => {
   localStorage.clear()
@@ -75,5 +76,152 @@ describe('centre on my position', () => {
     expect(await screen.findByText(/fuori dalla Toscana/i)).toBeInTheDocument()
     expect(mapProp('camera')).toBeNull()
     expect(mapProp('user-position')).toBeNull()
+  })
+})
+
+describe('routing', () => {
+  afterEach(() => {
+    window.history.replaceState(null, '', '/')
+    document.head
+      .querySelectorAll(
+        'meta[name="description"], meta[name="robots"], link[rel="canonical"], script[type="application/ld+json"]',
+      )
+      .forEach((el) => el.remove())
+  })
+
+  it('redirects the bare root to the default region, combined view', async () => {
+    window.history.replaceState(null, '', '/')
+    render(<App />)
+    expect(await screen.findByTestId('map')).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/toscana')
+  })
+
+  it('navigates to the species path when the switcher is used', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await userEvent.click(screen.getByRole('radio', { name: 'Porcini' }))
+    expect(window.location.pathname).toBe('/toscana/porcini')
+  })
+
+  it('keeps the title, description and canonical in step with the route', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+    expect(document.title).toContain('Toscana')
+    const canonical = () =>
+      document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')
+    expect(canonical()).toBe('https://mappafunghi.app/toscana')
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Porcini' }))
+    expect(document.title).toContain('Porcini')
+    expect(canonical()).toBe('https://mappafunghi.app/toscana/porcini')
+    expect(
+      document.head.querySelector('meta[name="description"]')?.getAttribute('content'),
+    ).toBeTruthy()
+    expect(document.head.querySelector('meta[name="robots"]')).toBeNull()
+  })
+
+  it('keeps the JSON-LD graph in step with the route, and drops it on a 404', async () => {
+    const webPageUrl = () => {
+      const script = document.head.querySelector('script[type="application/ld+json"]')
+      if (!script) return null
+      const graph = JSON.parse(script.textContent!)['@graph'] as Record<string, unknown>[]
+      return graph.find((node) => node['@type'] === 'WebPage')?.url
+    }
+    window.history.replaceState(null, '', '/toscana')
+    const { unmount } = render(<App />)
+    await screen.findByTestId('map')
+    expect(webPageUrl()).toBe('https://mappafunghi.app/toscana')
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Porcini' }))
+    expect(webPageUrl()).toBe('https://mappafunghi.app/toscana/porcini')
+    expect(
+      document.head.querySelectorAll('script[type="application/ld+json"]'),
+    ).toHaveLength(1)
+    unmount()
+
+    window.history.replaceState(null, '', '/lombardia')
+    render(<App />)
+    expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
+    expect(webPageUrl()).toBeNull()
+  })
+
+  it('shows the not-found page for an unknown region, with a link back to the map', async () => {
+    window.history.replaceState(null, '', '/lombardia')
+    render(<App />)
+    expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
+    expect(screen.queryByTestId('map')).not.toBeInTheDocument()
+    expect(
+      document.head.querySelector('meta[name="robots"]')?.getAttribute('content'),
+    ).toBe('noindex')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Torna alla mappa' }))
+    expect(window.location.pathname).toBe('/toscana')
+  })
+
+  it('shows the not-found page for an unknown species', () => {
+    window.history.replaceState(null, '', '/toscana/tartufi')
+    render(<App />)
+    expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
+  })
+
+  it('opens the Terms and Privacy pages from the footer, with a way back to the map', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Termini e condizioni' }))
+    expect(window.location.pathname).toBe('/terms')
+    expect(
+      screen.getByRole('heading', { name: 'Termini e condizioni' }),
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('link', { name: 'Torna alla mappa' }))
+    expect(window.location.pathname).toBe('/toscana')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Privacy' }))
+    expect(window.location.pathname).toBe('/privacy')
+    expect(
+      screen.getByRole('heading', { name: 'Informativa sulla privacy' }),
+    ).toBeInTheDocument()
+  })
+})
+
+describe('cookie banner', () => {
+  afterEach(() => window.history.replaceState(null, '', '/'))
+
+  it('shows on a first visit, and remembers Accept so it never comes back', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    const { unmount } = render(<App />)
+    await screen.findByTestId('map')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Accetta' }))
+    expect(getConsent()).toBe('accepted')
+    unmount()
+
+    render(<App />)
+    await screen.findByTestId('map')
+    expect(screen.queryByRole('button', { name: 'Accetta' })).not.toBeInTheDocument()
+  })
+
+  it('stays away once a choice is already stored', async () => {
+    setConsent('declined')
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+    expect(screen.queryByRole('button', { name: 'Rifiuta' })).not.toBeInTheDocument()
+  })
+
+  it('is reopenable from the footer to change the choice', async () => {
+    setConsent('declined')
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Preferenze sui cookie' }))
+    expect(screen.getByRole('button', { name: 'Accetta' })).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Accetta' }))
+    expect(getConsent()).toBe('accepted')
   })
 })

@@ -1,0 +1,51 @@
+.banner {
+  position: fixed;
+  z-index: 40;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  left: var(--space-3);
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-l);
+  background: var(--lichene);
+  box-shadow: 0 20px 60px rgb(28 33 29 / 30%);
+  color: var(--humus);
+}
+
+.intro {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-caption);
+}
+
+.privacyLink {
+  display: inline-block;
+  margin: 0 0 var(--space-3);
+  color: var(--humus);
+  font-size: var(--text-caption);
+  font-weight: 650;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.actions button {
+  flex: 1;
+  min-height: var(--tap);
+  border-radius: var(--radius-m);
+  font-weight: 650;
+}
+
+.decline {
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--humus);
+}
+
+.accept {
+  border: 0;
+  background: var(--humus);
+  color: var(--carta);
+}

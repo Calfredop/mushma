@@ -7,7 +7,15 @@ import {
   useRef,
   useState,
 } from 'react'
-import { DATE_WINDOW, HISTORY_START, REGION } from '../config'
+import { DATE_WINDOW, DEFAULT_REGION_SLUG, HISTORY_START, REGIONS } from '../config'
+import { type Navigate, usePath } from '../hooks/usePath'
+import {
+  matchPath,
+  regionPath,
+  resolveLocation,
+  speciesPath,
+  type RouteMatch,
+} from '../routes'
 import { type IsoDate, todayInRome } from '../time/days'
 import {
   parseUrlState,
@@ -18,6 +26,20 @@ import {
   type UrlState,
   type View,
 } from './urlState'
+import type { RegionDefinition } from '../regions'
+
+/**
+ * Fixes a legacy `/` or `?species=` link to its canonical region/species path, once,
+ * synchronously, before the first paint. Idempotent: safe to run twice (StrictMode).
+ */
+function normalizeLegacyLocation(): null {
+  const { redirectTo } = resolveLocation(window.location.pathname, window.location.search)
+  const current = `${window.location.pathname}${window.location.search}`
+  if (redirectTo && redirectTo !== current) {
+    window.history.replaceState(window.history.state, '', redirectTo)
+  }
+  return null
+}
 
 /** A one-shot request for the map camera, e.g. after a search or GPS fix. */
 export interface CameraRequest {
@@ -31,7 +53,14 @@ export interface CameraRequest {
 
 export interface AppStateValue extends UrlState {
   today: IsoDate
+  /** What the path resolved to: the map (a region), a static page, or nothing known. */
+  route: RouteMatch
+  /** The active region: the path's region, or the default region on a static/not-found page. */
+  region: RegionDefinition
+  species: SpeciesOrCombined
   setSpecies: (species: SpeciesOrCombined) => void
+  path: string
+  navigate: Navigate
   /** A day on the map; takes a season off the map. */
   setDate: (date: IsoDate) => void
   setView: (view: View) => void
@@ -51,13 +80,19 @@ export interface AppStateValue extends UrlState {
 export const AppStateContext = createContext<AppStateValue | null>(null)
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
+  useState(normalizeLegacyLocation)
+  const [path, navigate] = usePath()
+  const route = useMemo(() => matchPath(path), [path])
+  const region = route.kind === 'region' ? route.region : REGIONS[DEFAULT_REGION_SLUG]
+  const species: SpeciesOrCombined = route.kind === 'region' ? route.species : 'combined'
+
   const [today, setToday] = useState(() => todayInRome())
   const [state, setState] = useState<UrlState>(() =>
     parseUrlState(
       window.location.search,
       today,
       DATE_WINDOW,
-      REGION.bounds,
+      region.bounds,
       HISTORY_START,
     ),
   )
@@ -100,8 +135,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, [state, today])
 
   const setSpecies = useCallback(
-    (species: SpeciesOrCombined) => setState((s) => ({ ...s, species })),
-    [],
+    (next: SpeciesOrCombined) => {
+      navigate(
+        next === 'combined' ? regionPath(region.slug) : speciesPath(region.slug, next),
+      )
+    },
+    [navigate, region.slug],
   )
   const setDate = useCallback(
     (date: IsoDate) => setState((s) => ({ ...s, date, season: null })),
@@ -135,7 +174,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     () => ({
       ...state,
       today,
+      route,
+      region,
+      species,
       setSpecies,
+      path,
+      navigate,
       setDate,
       setView,
       setComune,
@@ -150,7 +194,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [
       state,
       today,
+      route,
+      region,
+      species,
       setSpecies,
+      path,
+      navigate,
       setDate,
       setView,
       setComune,

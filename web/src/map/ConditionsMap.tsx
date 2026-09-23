@@ -15,6 +15,7 @@ import type { Hotspot } from '../api/queries'
 import type { components } from '../api/schema'
 import { MinusIcon, PlusIcon } from '../components/icons'
 import { BASEMAP_URL, CELL_SIZE_KM, REGION, TERRAIN_URL } from '../config'
+import type { RegionDefinition } from '../regions'
 import type { Language } from '../i18n'
 import type { CameraRequest } from '../state/AppState'
 import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
@@ -76,10 +77,13 @@ interface MapCallbacks {
   onReady: () => void
 }
 
+type MapRegion = Pick<RegionDefinition, 'bounds' | 'maxBounds' | 'minZoom' | 'maxZoom'>
+
 function createMap(
   container: HTMLDivElement,
   lang: Language,
   locale: Record<string, string>,
+  region: MapRegion,
   callbacks: { current: MapCallbacks },
 ): MapLibreMap {
   registerPmtiles()
@@ -87,13 +91,13 @@ function createMap(
     container,
     style: withDataLayers(
       buildMapStyle({ basemapUrl: BASEMAP_URL, lang }),
-      REGION.bounds,
+      region.bounds,
     ),
-    bounds: REGION.bounds,
+    bounds: region.bounds,
     fitBoundsOptions: { padding: 24 },
-    maxBounds: REGION.maxBounds,
-    minZoom: REGION.minZoom,
-    maxZoom: REGION.maxZoom,
+    maxBounds: region.maxBounds,
+    minZoom: region.minZoom,
+    maxZoom: region.maxZoom,
     dragRotate: false,
     pitchWithRotate: false,
     touchPitch: false,
@@ -165,6 +169,8 @@ interface Props {
   /** The visitor's last GPS fix, or null before one. */
   userPosition: { lat: number; lon: number } | null
   lang: Language
+  /** Defaults to the default region. Read once, at map creation. */
+  region?: MapRegion
   onCellClick: (cellId: string, lat: number, lon: number) => void
   onPointClick: (lat: number, lon: number) => void
   onHotspotClick: (hotspot: Hotspot) => void
@@ -190,6 +196,7 @@ export function ConditionsMap({
   spotPoint,
   userPosition,
   lang,
+  region = REGION,
   onCellClick,
   onPointClick,
   onHotspotClick,
@@ -206,6 +213,7 @@ export function ConditionsMap({
   })
   const initialLang = useRef(lang)
   const initialLocale = useRef(mapLocale(t))
+  const initialRegion = useRef(region)
 
   useEffect(() => {
     callbacks.current = {
@@ -225,7 +233,13 @@ export function ConditionsMap({
     let timer: ReturnType<typeof setTimeout> | undefined
     const frame = requestAnimationFrame(() => {
       timer = setTimeout(() => {
-        map = createMap(container, initialLang.current, initialLocale.current, callbacks)
+        map = createMap(
+          container,
+          initialLang.current,
+          initialLocale.current,
+          initialRegion.current,
+          callbacks,
+        )
         mapRef.current = map
       })
     })

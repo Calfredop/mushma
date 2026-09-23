@@ -12,6 +12,7 @@
     "tunnel": "bash scripts/tunnel.sh",
     "build": "tsc -b && vite build",
     "generate:api": "openapi-typescript ../api/openapi.json -o src/api/schema.ts && prettier --write src/api/schema.ts",
+    "generate:og": "node scripts/generate-og-images.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

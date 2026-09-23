@@ -71,3 +71,15 @@
   font-family: var(--font-data);
   font-size: 0.75rem;
 }
+
+/* A cross-link to another page or dialog, inline in a paragraph of legal copy. */
+.inlineLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--humus);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

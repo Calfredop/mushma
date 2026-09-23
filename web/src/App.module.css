@@ -248,6 +248,12 @@
   margin-bottom: var(--space-4);
 }
 
+.intro {
+  margin: 0 0 var(--space-4);
+  color: var(--humus);
+  font-size: var(--text-body);
+}
+
 .footer {
   margin-top: var(--space-5);
   padding-top: var(--space-3);

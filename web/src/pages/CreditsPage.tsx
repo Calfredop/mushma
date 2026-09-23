@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next'
+import { DisclaimerText } from '../components/DisclaimerText'
 import { ChevronIcon } from '../components/icons'
 import { type Credit, DATA_CREDITS, SOFTWARE_CREDITS } from '../credits'
 import styles from './CreditsPage.module.css'
 
 interface Props {
+  backHref: string
   onBack: () => void
 }
 
@@ -26,13 +28,13 @@ function CreditList({ credits }: { credits: Credit[] }) {
   )
 }
 
-export function CreditsPage({ onBack }: Props) {
+export function CreditsPage({ backHref, onBack }: Props) {
   const { t } = useTranslation()
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
         <a
-          href="/"
+          href={backHref}
           className={styles.back}
           onClick={(event) => {
             event.preventDefault()
@@ -53,9 +55,7 @@ export function CreditsPage({ onBack }: Props) {
         <CreditList credits={SOFTWARE_CREDITS} />
 
         <h2 className={styles.heading}>{t('disclaimer.title')}</h2>
-        <p>{t('disclaimer.body1')}</p>
-        <p>{t('disclaimer.body2')}</p>
-        <p>{t('disclaimer.body3')}</p>
+        <DisclaimerText />
       </div>
     </div>
   )

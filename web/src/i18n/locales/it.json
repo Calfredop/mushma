@@ -1,7 +1,6 @@
 {
   "app": {
-    "name": "mushma",
-    "documentTitle": "mushma · condizioni per porcini, ovoli e gallinacci in Toscana",
+    "name": "Mappa Funghi",
     "region": "Toscana"
   },
   "language": {
@@ -12,10 +11,13 @@
   "nav": {
     "credits": "Dati e crediti",
     "disclaimer": "Avvertenze",
-    "backToMap": "Torna alla mappa"
+    "backToMap": "Torna alla mappa",
+    "terms": "Termini e condizioni",
+    "privacy": "Privacy",
+    "cookies": "Preferenze sui cookie"
   },
   "pwa": {
-    "installBanner": "Installa mushma per un accesso rapido e la mappa anche offline nel bosco.",
+    "installBanner": "Installa Mappa Funghi per un accesso rapido e la mappa anche offline nel bosco.",
     "install": "Installa",
     "dismiss": "Non ora"
   },
@@ -96,7 +98,7 @@
     "locating": "Cerco la tua posizione…",
     "denied": "La posizione è disattivata. Consentila nelle impostazioni del browser oppure cerca un luogo.",
     "unavailable": "Non riesco a trovare la tua posizione. Riprova oppure cerca un luogo.",
-    "outside": "Sei fuori dalla Toscana: per ora mushma copre solo la Toscana."
+    "outside": "Sei fuori dalla Toscana: per ora Mappa Funghi copre solo la Toscana."
   },
   "spot": {
     "title": "Previsione del punto",
@@ -250,16 +252,47 @@
     "collapse": "Riduci il pannello"
   },
   "disclaimer": {
-    "title": "Solo condizioni, mai commestibilità",
-    "body1": "mushma stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare.",
-    "body2": "L'indice delle condizioni va da 0 a 1 e non è una probabilità. Oltre qualche giorno è una tendenza, non una certezza.",
-    "body3": "Prima di consumare qualsiasi fungo raccolto, fallo controllare gratuitamente all'ispettorato micologico della tua ASL.",
+    "title": "Prima di usare la mappa",
+    "sections": {
+      "conditions": {
+        "title": "Solo condizioni, mai commestibilità",
+        "body": "Mappa Funghi stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare."
+      },
+      "score": {
+        "title": "Un indice, non una probabilità",
+        "body": "L'indice delle condizioni va da 0 a 1 e non è una probabilità. Oltre qualche giorno è una tendenza, non una certezza."
+      },
+      "terrain": {
+        "title": "Terreno pericoloso",
+        "body": "Il bosco può essere pericoloso: pendii ripidi, dirupi, fossi, sassi e foglie bagnate, alberi caduti, zone senza campo e buio che arriva presto. La mappa usa quota, pendenza ed esposizione solo per stimare l'habitat: non segna sentieri né pericoli, e una cella con un buon punteggio può essere impervia o irraggiungibile. Usa scarpe adatte, meglio non andare da soli, e di' sempre a qualcuno dove vai. Controlla le allerte meteo e, nella stagione di caccia, indossa qualcosa di ben visibile. In caso di emergenza chiama il 112."
+      },
+      "access": {
+        "title": "Aree private o interdette",
+        "body": "La mappa colora i boschi senza sapere di chi sono né se ci si può entrare. Molti sono proprietà private, dove la raccolta può essere riservata al proprietario; altri sono parchi, riserve, zone militari o aree chiuse, per esempio dopo un incendio o durante una battuta di caccia. Un buon punteggio non è un permesso: rispetta recinzioni, cartelli e divieti. Anche la raccolta ha le sue regole (autorizzazioni, quantità, periodi e zone), fissate da regione, comuni ed enti parco: informati prima di andare."
+      },
+      "noGuarantee": {
+        "title": "Nessuna garanzia",
+        "body": "Mappa Funghi è un progetto personale e gratuito, offerto così com'è. Meteo, previsioni, carte del bosco e avvistamenti arrivano da fonti pubbliche e possono essere sbagliati, incompleti o in ritardo; il modello semplifica e può sbagliare; il servizio può interrompersi senza preavviso. Un punteggio alto non garantisce di trovare funghi, e uno basso non esclude che ci siano."
+      },
+      "judgement": {
+        "title": "Dati da valutare personalmente",
+        "body": "Punteggi e dati sono un aiuto, non una decisione. Confrontali con quello che vedi sul posto, con le previsioni e le allerte ufficiali e con chi conosce la zona. Dove andare, quando e come muoverti lo decidi tu, e la responsabilità di queste scelte resta tua."
+      }
+    },
+    "inspection": "Prima di consumare qualsiasi fungo raccolto, fallo controllare gratuitamente all'ispettorato micologico della tua ASL.",
     "accept": "Ho capito",
-    "short": "Solo condizioni: mushma non riconosce funghi e non ne valuta la commestibilità."
+    "short": "Solo condizioni, nessuna garanzia: Mappa Funghi non riconosce funghi e non ne valuta la commestibilità."
+  },
+  "cookies": {
+    "title": "La tua privacy",
+    "intro": "Usiamo Umami, un software di analisi che ospitiamo sui nostri stessi server, per capire come viene usata la mappa. Non usa cookie, non condivide nulla con terzi e non registra mai la tua posizione. Puoi accettarlo o rifiutarlo, e cambiare idea quando vuoi da qui.",
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "privacyLink": "Leggi l'informativa sulla privacy"
   },
   "credits": {
     "title": "Dati e crediti",
-    "intro": "mushma usa solo dati pubblici e software libero. Grazie a chi li rende disponibili.",
+    "intro": "Mappa Funghi usa solo dati pubblici e software libero. Grazie a chi li rende disponibili.",
     "dataTitle": "Dati",
     "softwareTitle": "Mappa e software",
     "license": "Licenza: {{license}}",
@@ -281,9 +314,161 @@
       "seasonal": "Tendenze a lungo termine per le prospettive stagionali"
     }
   },
+  "terms": {
+    "title": "Termini e condizioni",
+    "intro": "Questi termini regolano l'uso di Mappa Funghi, un progetto personale e gratuito. Usando il sito accetti quanto segue.",
+    "sections": {
+      "service": {
+        "title": "Il servizio",
+        "body": "Mappa Funghi stima, cella per cella, quanto il meteo, il bosco e il terreno favoriscono la crescita di porcini, ovoli e gallinacci in Toscana. Il servizio è offerto gratuitamente, così com'è, e può cambiare o interrompersi in qualsiasi momento senza preavviso."
+      },
+      "scoreNature": {
+        "title": "L'indice delle condizioni non è una garanzia",
+        "body": "L'indice delle condizioni va da 0 a 1 e misura solo quanto meteo e bosco sono favorevoli: non è una probabilità di trovare funghi, non è una previsione certa e non garantisce alcun risultato. Un indice alto non assicura di trovarne, e uno basso non lo esclude."
+      },
+      "userResponsibility": {
+        "title": "La responsabilità è tua",
+        "body": "Come usi la mappa, dove vai, quando ci vai e come ti muovi nel bosco è una tua scelta, e la responsabilità di quella scelta resta interamente tua. Mappa Funghi non risponde di come interpreti o usi i punteggi e i dati che mostra."
+      },
+      "liability": {
+        "title": "Limitazione di responsabilità",
+        "body": "Nei limiti consentiti dalla legge, Mappa Funghi e chi lo gestisce non rispondono di danni diretti o indiretti derivanti dall'uso del sito, da dati inesatti o mancanti, da interruzioni del servizio o da scelte fatte affidandosi ai punteggi mostrati. Nulla in questi termini esclude una responsabilità che la legge non permette di escludere."
+      },
+      "governingLaw": {
+        "title": "Legge applicabile e foro competente",
+        "body": "Questi termini sono regolati dalla legge italiana. Per qualsiasi controversia è competente il foro del consumatore previsto dal Codice del Consumo (D.Lgs. 206/2005), quando applicabile; altrimenti è competente il foro di Firenze."
+      },
+      "changes": {
+        "title": "Modifiche a questi termini",
+        "body": "Possiamo aggiornare questi termini quando cambia il servizio o la normativa. La versione in vigore è sempre quella pubblicata su questa pagina; continuando a usare il sito dopo una modifica ne accetti la nuova versione."
+      }
+    },
+    "disclaimerNote": "Le Avvertenze spiegano i rischi del terreno, dell'accesso al bosco e i limiti dei dati: leggile prima di andare.",
+    "privacyNote": "Per sapere quali dati raccogliamo e come li trattiamo, leggi l'informativa sulla privacy."
+  },
+  "privacy": {
+    "title": "Informativa sulla privacy",
+    "intro": "Questa informativa descrive quali dati Mappa Funghi raccoglie e come li usa, secondo il Regolamento (UE) 2016/679 (GDPR) e il Codice in materia di protezione dei dati personali (D.Lgs. 196/2003, come modificato dal D.Lgs. 101/2018).",
+    "controller": {
+      "title": "Titolare del trattamento",
+      "body": "Il titolare del trattamento è Cosimo Alfredo Pina Lari, che gestisce Mappa Funghi come progetto personale. Per qualsiasi richiesta relativa ai tuoi dati puoi scrivere a contact@cosimoalfredopinalari.me."
+    },
+    "sections": {
+      "dataCollected": {
+        "title": "Quali dati raccogliamo",
+        "body": "Per far funzionare la mappa raccogliamo: il tuo indirizzo IP, letto per un breve periodo dal server per limitare il numero di richieste ed evitare abusi (mai salvato su disco, si azzera a ogni riavvio); la tua posizione geografica, solo se la concedi esplicitamente dal browser per centrare la mappa o cercare la previsione più vicina, tenuta solo in memoria sul tuo dispositivo e mai inviata né salvata sui nostri server; alcuni valori tecnici salvati nel tuo browser (non cookie: la lingua scelta, se hai già letto le avvertenze e la tua scelta sui cookie di analisi), che restano solo sul tuo dispositivo; e, se acconsenti, i dati anonimi di utilizzo raccolti da Umami (vedi sotto)."
+      },
+      "legalBasis": {
+        "title": "Base giuridica del trattamento",
+        "body": "Trattiamo l'indirizzo IP per il legittimo interesse a proteggere il servizio da abusi (art. 6, par. 1, lett. f, GDPR). La posizione geografica e i dati di analisi Umami sono trattati solo con il tuo consenso (art. 6, par. 1, lett. a, GDPR), che puoi revocare in ogni momento senza conseguenze. I valori tecnici salvati nel browser servono a fornire il servizio che richiedi (art. 6, par. 1, lett. b, GDPR)."
+      },
+      "analytics": {
+        "title": "Analisi del traffico (Umami)",
+        "body": "Usiamo Umami, un software di analisi open source che ospitiamo sui nostri stessi server: nessun dato di analisi viene mai inviato a terzi. Umami non usa cookie: per distinguere le visite calcola un codice cifrato (hash) a partire dal tuo indirizzo IP e dal tipo di browser, senza mai conservare l'indirizzo IP in chiaro, e non ti segue su altri siti. Registriamo solo le pagine visitate, il cambio di specie o di vista, l'apertura di una previsione puntuale (e il modo in cui l'hai aperta: mappa, ricerca, posizione o zona migliore), lo spostamento tra i giorni, l'installazione dell'app e il cambio di lingua. L'indirizzo esatto della pagina (con eventuali coordinate) e ogni altra informazione che potrebbe indicare dove sei stato non vengono mai inviati: solo il percorso della pagina, senza parametri. Puoi rifiutare questa analisi dal banner sui cookie, o cambiare scelta in qualsiasi momento dal link «Preferenze sui cookie» nel piè di pagina."
+      },
+      "sightingsPrivacy": {
+        "title": "Avvistamenti pubblici",
+        "body": "Gli avvistamenti che vedi sulla mappa vengono da fonti pubbliche (iNaturalist e GBIF) e sono mostrati solo come conteggi per cella di 1 km: mai come coordinate esatte, e mai in una forma più precisa di come la fonte li ha già resi pubblici. Non raccogliamo né pubblichiamo mai la posizione di chi usa la mappa come se fosse un avvistamento."
+      },
+      "subprocessors": {
+        "title": "A chi affidiamo i dati",
+        "body": "Il sito è ospitato su Vercel; il traffico passa attraverso Cloudflare, che fornisce DNS e protezione dagli abusi; l'API e l'analisi Umami, che gestiamo noi stessi, girano su un server Hetzner in Germania. Nessuno di questi fornitori usa i tuoi dati per scopi propri: li trattano solo per farci funzionare il servizio."
+      },
+      "retention": {
+        "title": "Per quanto tempo conserviamo i dati",
+        "body": "L'indirizzo IP usato per il limite di richieste resta solo in memoria e si azzera a ogni riavvio del server; non lo scriviamo mai su disco. I valori salvati nel tuo browser restano finché non li cancelli tu, svuotando i dati del sito o rifiutando i cookie di analisi. I dati di utilizzo raccolti da Umami restano sui nostri server finché non li cancelliamo manualmente; non li condividiamo né li vendiamo a nessuno."
+      },
+      "internationalTransfer": {
+        "title": "Trasferimento dei dati all'estero",
+        "body": "I nostri server (Hetzner) e l'analisi Umami restano nell'Unione Europea. Vercel e Cloudflare possono instradare il traffico attraverso infrastrutture fuori dallo Spazio Economico Europeo, anche negli Stati Uniti; in questi casi si affidano alle clausole contrattuali standard approvate dalla Commissione Europea o ad altre garanzie equivalenti previste dal GDPR."
+      },
+      "rights": {
+        "title": "I tuoi diritti",
+        "body": "Hai diritto di accedere ai tuoi dati, farli correggere o cancellare, limitarne o opporti al trattamento, e di ricevere in un formato portabile quelli che ci hai fornito (artt. 15–22 GDPR). Per esercitare questi diritti scrivi a contact@cosimoalfredopinalari.me: ti risponderemo il prima possibile."
+      },
+      "complaint": {
+        "title": "Reclamo al Garante",
+        "body": "Se ritieni che il trattamento dei tuoi dati violi il GDPR, puoi proporre reclamo al Garante per la protezione dei dati personali (www.garanteprivacy.it), fermo restando il diritto di ricorrere all'autorità giudiziaria."
+      }
+    },
+    "disclaimerNote": "Le Avvertenze spiegano più nel dettaglio come trattiamo gli avvistamenti pubblici e i limiti della mappa."
+  },
   "errors": {
     "generic": "Qualcosa non ha funzionato. Ricarica la pagina.",
     "offline": "Sei offline: i dati potrebbero non essere aggiornati."
+  },
+  "notFound": {
+    "eyebrow": "Pagina non trovata",
+    "title": "Questa pagina non esiste",
+    "body": "L'indirizzo non corrisponde a nessuna pagina di Mappa Funghi."
+  },
+  "seo": {
+    "region": {
+      "title": "Mappa Funghi – porcini, ovoli e gallinacci in Toscana",
+      "description": "L'indice delle condizioni per porcini, ovoli e gallinacci in Toscana: meteo, bosco e quota aggiornati ogni giorno, cella per cella da 1 km."
+    },
+    "porcini": {
+      "title": "Porcini in Toscana: indice delle condizioni | Mappa Funghi",
+      "description": "Dove e quando le condizioni favoriscono i porcini in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
+    },
+    "ovoli": {
+      "title": "Ovoli in Toscana: indice delle condizioni | Mappa Funghi",
+      "description": "Dove e quando le condizioni favoriscono gli ovoli in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
+    },
+    "gallinacci": {
+      "title": "Gallinacci in Toscana: indice delle condizioni | Mappa Funghi",
+      "description": "Dove e quando le condizioni favoriscono i gallinacci in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
+    },
+    "credits": {
+      "title": "Dati e crediti | Mappa Funghi",
+      "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi in Toscana."
+    },
+    "terms": {
+      "title": "Termini e condizioni | Mappa Funghi",
+      "description": "I termini d'uso di Mappa Funghi: cosa significa l'indice delle condizioni, la responsabilità di chi usa il sito e i limiti del servizio."
+    },
+    "privacy": {
+      "title": "Informativa sulla privacy | Mappa Funghi",
+      "description": "Come Mappa Funghi tratta i tuoi dati: indirizzo IP, posizione facoltativa, valori tecnici nel browser e l'analisi Umami, nel rispetto del GDPR."
+    }
+  },
+  "intro": {
+    "region": "La mappa mostra, cella per cella, l'indice delle condizioni di porcini, ovoli e gallinacci in Toscana: quanto il meteo e il bosco favoriscono la loro crescita, non dove si trovano i funghi. Qui vedi la specie più favorita in ogni cella; scegli una specie per la sua stagione e il dettaglio dei fattori. L'indice va da 0 a 1 e non è una probabilità.",
+    "porcini": "La mappa mostra, cella per cella, l'indice delle condizioni per i porcini in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va principalmente da fine estate all'autunno. L'indice va da 0 a 1 e non è una probabilità.",
+    "ovoli": "La mappa mostra, cella per cella, l'indice delle condizioni per gli ovoli in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va da giugno a novembre, soprattutto in autunno. L'indice va da 0 a 1 e non è una probabilità.",
+    "gallinacci": "La mappa mostra, cella per cella, l'indice delle condizioni per i gallinacci in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione è quasi tutto l'anno, con i picchi in primavera e in autunno. L'indice va da 0 a 1 e non è una probabilità."
+  },
+  "structuredData": {
+    "appDescription": "Mappa Funghi stima ogni giorno, cella per cella, quanto meteo, bosco e terreno favoriscono la crescita di porcini, ovoli e gallinacci in Toscana, con le prospettive a 7 giorni e i fattori dietro ogni indice. Stima solo le condizioni: non riconosce i funghi e non dice mai se un fungo si può mangiare.",
+    "browserRequirements": "Richiede JavaScript e WebGL",
+    "features": {
+      "map": "Mappa dell'indice delle condizioni per ogni cella di bosco da 1 km",
+      "spot": "Indice di oggi e prospettive a 7 giorni per un punto, un luogo cercato o la tua posizione",
+      "why": "I fattori dietro ogni indice: pioggia, temperature, bosco, quota ed esposizione",
+      "hotspots": "Le zone più favorite di oggi e gli avvistamenti pubblici recenti, contati per cella",
+      "seasons": "Le stagioni passate giorno per giorno, a confronto con gli avvistamenti di allora",
+      "outlook": "Le prospettive della stagione, con pioggia e temperature rispetto al normale",
+      "offline": "Installabile come app e utilizzabile anche senza rete"
+    },
+    "dataset": {
+      "region": "Indice delle condizioni per porcini, ovoli e gallinacci in Toscana",
+      "porcini": "Indice delle condizioni per i porcini in Toscana",
+      "ovoli": "Indice delle condizioni per gli ovoli in Toscana",
+      "gallinacci": "Indice delle condizioni per i gallinacci in Toscana"
+    },
+    "score": {
+      "name": "Indice delle condizioni",
+      "description": "Quanto meteo, bosco e terreno favoriscono la crescita dei funghi in una cella di bosco da 1 km in un dato giorno, da 0 (sfavorevoli) a 1 (ideali). È un indice e non è una probabilità di trovarli."
+    },
+    "method": "Regole per specie, ognuna con la sua fonte, applicate ogni giorno al meteo (rianalisi ERA5-Land e previsioni ECMWF IFS, portate alla quota di ogni cella), al tipo di bosco e al terreno di ogni cella; verificate sugli avvistamenti pubblici di GBIF e iNaturalist.",
+    "country": "Italia"
+  },
+  "llms": {
+    "methodTitle": "Come si calcola",
+    "liveData": "Gli indici del giorno si vedono solo sulla mappa interattiva, che richiede JavaScript: le pagine e questo file descrivono cosa mostra la mappa, non i valori di oggi.",
+    "privacy": "Gli avvistamenti pubblici sono mostrati solo come conteggi per cella da 1 km, mai come coordinate.",
+    "featuresIntro": "Cosa fa l'app:",
+    "mapsTitle": "Mappe"
   },
   "views": {
     "label": "Cosa mostrare",

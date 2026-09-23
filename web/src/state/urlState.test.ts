@@ -5,9 +5,8 @@ const today = '2026-09-17'
 const window = { pastDays: 6, forecastDays: 7 }
 
 describe('parseUrlState', () => {
-  it('defaults to porcini, today and no spot', () => {
+  it('defaults to today and no spot', () => {
     expect(parseUrlState('', today, window)).toEqual({
-      species: 'porcini',
       date: today,
       spot: null,
       view: 'now',
@@ -16,11 +15,10 @@ describe('parseUrlState', () => {
     })
   })
 
-  it('reads species, a date inside the window and a cell', () => {
+  it('reads a date inside the window and a cell', () => {
     expect(
-      parseUrlState('?species=ovoli&date=2026-09-20&cell=1kmN2438E4372', today, window),
+      parseUrlState('?date=2026-09-20&cell=1kmN2438E4372', today, window),
     ).toMatchObject({
-      species: 'ovoli',
       date: '2026-09-20',
       spot: { kind: 'cell', cellId: '1kmN2438E4372' },
     })
@@ -34,11 +32,8 @@ describe('parseUrlState', () => {
     })
   })
 
-  it('falls back to defaults for unknown species, dates outside the window and bad points', () => {
-    expect(
-      parseUrlState('?species=tartufi&date=2026-10-30&at=abc,1', today, window),
-    ).toMatchObject({
-      species: 'porcini',
+  it('falls back to defaults for dates outside the window and bad points', () => {
+    expect(parseUrlState('?date=2026-10-30&at=abc,1', today, window)).toMatchObject({
       date: today,
       spot: null,
     })
@@ -51,14 +46,7 @@ describe('serializeUrlState', () => {
   it('omits defaults', () => {
     expect(
       serializeUrlState(
-        {
-          species: 'porcini',
-          date: today,
-          spot: null,
-          view: 'now',
-          comune: null,
-          season: null,
-        },
+        { date: today, spot: null, view: 'now', comune: null, season: null },
         today,
       ),
     ).toBe('')
@@ -66,7 +54,6 @@ describe('serializeUrlState', () => {
 
   it('round-trips a full state', () => {
     const state = {
-      species: 'combined' as const,
       date: '2026-09-12',
       spot: { kind: 'point' as const, lat: 43.123456789, lon: 11.5 },
       view: 'now' as const,
@@ -74,7 +61,7 @@ describe('serializeUrlState', () => {
       season: null,
     }
     const search = serializeUrlState(state, today)
-    expect(search).toBe('?species=combined&date=2026-09-12&at=43.12346%2C11.5')
+    expect(search).toBe('?date=2026-09-12&at=43.12346%2C11.5')
     expect(parseUrlState(search, today, window)).toEqual({
       ...state,
       spot: { kind: 'point', lat: 43.12346, lon: 11.5 },
@@ -175,7 +162,6 @@ describe('time views in the URL', () => {
 
   it('round-trips the time views and omits their defaults', () => {
     const state = {
-      species: 'porcini' as const,
       date: '2024-10-12',
       spot: null,
       view: 'seasons' as const,
@@ -187,14 +173,7 @@ describe('time views in the URL', () => {
     expect(parseUrlState(search, today, window, undefined, historyStart)).toEqual(state)
     expect(
       serializeUrlState(
-        {
-          species: 'porcini',
-          date: today,
-          spot: null,
-          view: 'now',
-          comune: null,
-          season: null,
-        },
+        { date: today, spot: null, view: 'now', comune: null, season: null },
         today,
       ),
     ).toBe('')

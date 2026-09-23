@@ -2,6 +2,9 @@
 # box directly and Caddy sees each visitor's own address (the rate limiter keys on it through
 # X-Forwarded-For, which Caddy sets itself and never takes from the client). The API gzips its
 # own responses (api/src/api/main.py), so there is no `encode` here.
+#
+# X-Robots-Tag: the API is data, not a page; nothing here belongs in a search index.
 api.mappafunghi.app {
+	header X-Robots-Tag noindex
 	reverse_proxy api:8000
 }

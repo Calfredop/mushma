@@ -25,6 +25,7 @@ import {
   useStatus,
 } from './api/queries'
 import styles from './App.module.css'
+import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
 import { ChevronIcon, InfoIcon, LocateIcon, SearchIcon } from './components/icons'
@@ -40,23 +41,34 @@ import {
   DATE_WINDOW,
   HISTORY_START,
   HOTSPOT_LIMIT,
-  REGION,
   REPLAY_SIGHTINGS_DAYS,
   SIGHTINGS_WINDOW_DAYS,
 } from './config'
+import { getConsent } from './consent'
 import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
 import { type LocateError, useLocate } from './hooks/useLocate'
 import { useMediaQuery } from './hooks/useMediaQuery'
-import { usePath } from './hooks/usePath'
-import { intlLocale, type Language } from './i18n'
+import { currentLanguage, intlLocale, type Language } from './i18n'
 import './i18n'
 import { ConditionsMap } from './map/ConditionsMap'
 import { CreditsPage } from './pages/CreditsPage'
+import { NotFoundPage } from './pages/NotFoundPage'
+import { PrivacyPage } from './pages/PrivacyPage'
+import { TermsPage } from './pages/TermsPage'
 import { HotPlaces } from './panels/HotPlaces'
 import { OutlookPanel } from './panels/OutlookPanel'
 import { SeasonsPanel } from './panels/SeasonsPanel'
 import { SpotPanel } from './panels/SpotPanel'
+import { regionPath, SITE_URL, siteRouteFor } from './routes'
+import {
+  seoKeyForRoute,
+  setDocumentCanonical,
+  setDocumentDescription,
+  setDocumentJsonLd,
+  setDocumentRobots,
+} from './seo/head'
+import { structuredData } from './seo/structuredData'
 import { AppStateProvider } from './state/AppState'
 import { useAppState } from './state/useAppState'
 import { addDays, daysBetween, formatDayMonth } from './time/days'
@@ -87,12 +99,13 @@ function MapScreen() {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
   const app = useAppState()
-  const [path, navigate] = usePath()
+  const { navigate } = app
   const desktop = useMediaQuery('(min-width: 900px)')
 
   const [sheetOpen, setSheetOpen] = useState(app.spot !== null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
+  const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
   // A key, not a translated string, so it follows a language switch.
   const [locateError, setLocateError] = useState<LocateError | null>(null)
   // The last GPS fix, for the dot on the map. Never in the URL: a shared link doesn't carry it.
@@ -192,6 +205,7 @@ function MapScreen() {
       [openSpot],
     ),
     onError: setLocateError,
+    bounds: app.region.bounds,
   })
   const centerLocate = useLocate({
     onLocated: useCallback(
@@ -203,6 +217,7 @@ function MapScreen() {
       [flyTo],
     ),
     onError: setLocateError,
+    bounds: app.region.bounds,
   })
   const locating = spotLocate.locating || centerLocate.locating
 
@@ -243,6 +258,7 @@ function MapScreen() {
       onSelect={onPlace}
       autoFocus={!desktop}
       onDismiss={desktop ? undefined : () => setSearchOpen(false)}
+      bounds={app.region.bounds}
     />
   )
 
@@ -320,13 +336,14 @@ function MapScreen() {
           }
           userPosition={userPosition}
           lang={language}
+          region={app.region}
           // On a phone the sheet opens and the map shrinks around its centre:
           // centre on the tap so the chosen spot stays in view.
           onCellClick={(cellId, lat, lon) =>
             openSpot({ kind: 'cell', cellId }, desktop ? undefined : { lat, lon })
           }
           onPointClick={(lat, lon) => {
-            if (!inBounds(lat, lon, REGION.bounds)) return
+            if (!inBounds(lat, lon, app.region.bounds)) return
             openSpot({ kind: 'point', lat, lon }, desktop ? undefined : { lat, lon })
           }}
           onHotspotClick={onHotspot}
@@ -406,6 +423,11 @@ function MapScreen() {
             />
           ) : (
             <>
+              {app.route.kind === 'region' && (
+                <p className={styles.intro}>
+                  {t(`intro.${app.species === 'combined' ? 'region' : app.species}`)}
+                </p>
+              )}
               <ViewTabs
                 value={app.view}
                 panelId="sheet-view"
@@ -489,25 +511,91 @@ function MapScreen() {
               >
                 {t('nav.credits')}
               </a>
+              <a
+                href="/terms"
+                onClick={(event) => {
+                  event.preventDefault()
+                  navigate('/terms')
+                }}
+              >
+                {t('nav.terms')}
+              </a>
+              <a
+                href="/privacy"
+                onClick={(event) => {
+                  event.preventDefault()
+                  navigate('/privacy')
+                }}
+              >
+                {t('nav.privacy')}
+              </a>
               <button type="button" onClick={() => setDisclaimerOpen(true)}>
                 {t('nav.disclaimer')}
+              </button>
+              <button type="button" onClick={() => setCookieBannerOpen(true)}>
+                {t('nav.cookies')}
               </button>
             </p>
           </footer>
         </div>
       </aside>
 
-      {path === '/credits' && <CreditsPage onBack={() => navigate('/')} />}
+      {app.route.kind === 'static' && app.route.page === 'credits' && (
+        <CreditsPage
+          backHref={regionPath(app.region.slug)}
+          onBack={() => navigate(regionPath(app.region.slug))}
+        />
+      )}
+      {app.route.kind === 'static' && app.route.page === 'terms' && (
+        <TermsPage
+          backHref={regionPath(app.region.slug)}
+          onBack={() => navigate(regionPath(app.region.slug))}
+          onDisclaimerClick={() => setDisclaimerOpen(true)}
+          onPrivacyClick={() => navigate('/privacy')}
+        />
+      )}
+      {app.route.kind === 'static' && app.route.page === 'privacy' && (
+        <PrivacyPage
+          backHref={regionPath(app.region.slug)}
+          onBack={() => navigate(regionPath(app.region.slug))}
+          onDisclaimerClick={() => setDisclaimerOpen(true)}
+        />
+      )}
       <DisclaimerDialog open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
+      <CookieBanner
+        open={cookieBannerOpen}
+        onClose={() => setCookieBannerOpen(false)}
+        onPrivacyClick={() => {
+          setCookieBannerOpen(false)
+          navigate('/privacy')
+        }}
+      />
     </div>
   )
+}
+
+function Root() {
+  const app = useAppState()
+  const { t, i18n } = useTranslation()
+
+  useEffect(() => {
+    const key = seoKeyForRoute(app.route)
+    document.title = t(key ? `seo.${key}.title` : 'notFound.title')
+    setDocumentDescription(key ? t(`seo.${key}.description`) : undefined)
+    setDocumentCanonical(key ? `${SITE_URL}${app.path}` : undefined)
+    setDocumentRobots(key === null)
+    const siteRoute = siteRouteFor(app.route)
+    setDocumentJsonLd(siteRoute && structuredData(siteRoute, currentLanguage()))
+  }, [app.route, app.path, t, i18n.resolvedLanguage])
+
+  return app.route.kind === 'not-found' ? <NotFoundPage /> : <MapScreen />
 }
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppStateProvider>
-        <MapScreen />
+        <Root />
       </AppStateProvider>
     </QueryClientProvider>
   )

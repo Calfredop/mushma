@@ -1,6 +1,8 @@
 /** Build-time settings (Vite env) and region constants. */
-import type { LngLatBoundsLike } from 'maplibre-gl'
 import type { DateWindowSize } from './state/urlState'
+import { REGIONS, DEFAULT_REGION_SLUG } from './regions'
+
+export * from './regions'
 
 /** `/api` goes through the Vite dev proxy (vite.config.ts) or a host rewrite. */
 export const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL || '/api'
@@ -14,31 +16,17 @@ export const BASEMAP_URL: string | undefined =
 export const TERRAIN_URL: string | undefined =
   import.meta.env.VITE_TERRAIN_URL || undefined
 
-/**
- * Tuscany, kept in config so another region can be added later (PRD → Current
- * focus). Bounds include the Tuscan Archipelago.
- */
-export const REGION = {
-  bounds: [
-    [9.68, 42.23],
-    [12.38, 44.48],
-  ] as [[number, number], [number, number]],
-  maxBounds: [
-    [8.4, 41.5],
-    [13.6, 45.2],
-  ] as LngLatBoundsLike,
-  minZoom: 6,
-  maxZoom: 15,
-}
+/** The active region, until path routing (`/:region`) picks one per request. */
+export const REGION = REGIONS[DEFAULT_REGION_SLUG]
 
 /** Past days → today → +7 on the date strip: the scored window with its factor breakdown. */
 export const DATE_WINDOW: DateWindowSize = { pastDays: 6, forecastDays: 7 }
 
 /**
- * The first day a past date can be replayed from: the weather history starts in 2016
- * (.gavin-root/docs/weather-ingest.md). A day the API has no scores for says so on the map.
+ * The first day a past date can be replayed from: the region's history start. A day the API
+ * has no scores for says so on the map.
  */
-export const HISTORY_START = '2016-01-01'
+export const HISTORY_START = REGION.historyStart
 
 /** "Recent" sightings on the map overlay. */
 export const SIGHTINGS_WINDOW_DAYS = 90

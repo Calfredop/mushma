@@ -1,7 +1,6 @@
 {
   "app": {
-    "name": "mushma",
-    "documentTitle": "mushma · porcini, ovoli and gallinacci conditions in Tuscany",
+    "name": "Mappa Funghi",
     "region": "Tuscany"
   },
   "language": {
@@ -12,10 +11,13 @@
   "nav": {
     "credits": "Data and credits",
     "disclaimer": "Disclaimer",
-    "backToMap": "Back to the map"
+    "backToMap": "Back to the map",
+    "terms": "Terms and conditions",
+    "privacy": "Privacy",
+    "cookies": "Cookie preferences"
   },
   "pwa": {
-    "installBanner": "Install mushma for quick access and offline maps in the woods.",
+    "installBanner": "Install Mappa Funghi for quick access and offline maps in the woods.",
     "install": "Install",
     "dismiss": "Not now"
   },
@@ -96,7 +98,7 @@
     "locating": "Finding your location…",
     "denied": "Location access is off. Allow it in your browser settings, or search a place instead.",
     "unavailable": "Couldn't find your location. Try again, or search a place.",
-    "outside": "You're outside Tuscany: mushma only covers Tuscany for now."
+    "outside": "You're outside Tuscany: Mappa Funghi only covers Tuscany for now."
   },
   "spot": {
     "title": "Spot forecast",
@@ -250,16 +252,47 @@
     "collapse": "Collapse the panel"
   },
   "disclaimer": {
-    "title": "Conditions only, never edibility",
-    "body1": "mushma estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat.",
-    "body2": "The conditions score runs from 0 to 1 and is not a probability. More than a few days ahead it is a trend, not a certainty.",
-    "body3": "Before eating any mushroom you pick, have it checked for free by your local ASL mycological inspectorate.",
+    "title": "Before you use the map",
+    "sections": {
+      "conditions": {
+        "title": "Conditions only, never edibility",
+        "body": "Mappa Funghi estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat."
+      },
+      "score": {
+        "title": "An index, not a probability",
+        "body": "The conditions score runs from 0 to 1 and is not a probability. More than a few days ahead it is a trend, not a certainty."
+      },
+      "terrain": {
+        "title": "Dangerous terrain",
+        "body": "Woodland can be dangerous: steep slopes, drops, ditches, wet stones and leaves, fallen trees, no phone signal and early darkness. The map uses elevation, slope and aspect only to estimate habitat: it shows no paths or hazards, and a cell with a good score can be rough or out of reach. Wear proper footwear, try not to go alone, and always tell someone where you are going. Check the weather warnings and, in the hunting season, wear something highly visible. In an emergency, call 112."
+      },
+      "access": {
+        "title": "Private or restricted areas",
+        "body": "The map colours woodland without knowing who owns it or whether you may enter. Much of it is private land, where picking can be reserved for the owner; other areas are parks, reserves, military zones or closed areas, for example after a fire or during a hunt. A good score is not permission: respect fences, signs and bans. Picking has its own rules too (permits, quantities, seasons and areas), set by the region, municipalities and park authorities: check them before you go."
+      },
+      "noGuarantee": {
+        "title": "No guarantee",
+        "body": "Mappa Funghi is a free personal project, provided as is. Weather, forecasts, woodland maps and sightings come from public sources and can be wrong, incomplete or late; the model simplifies and can be wrong; the service can stop without notice. A high score doesn't guarantee you will find mushrooms, and a low one doesn't rule them out."
+      },
+      "judgement": {
+        "title": "Judge the data for yourself",
+        "body": "Scores and data are an aid, not a decision. Compare them with what you see on the ground, with official forecasts and warnings, and with people who know the area. Where to go, when and how to get about is up to you, and so is the responsibility for those choices."
+      }
+    },
+    "inspection": "Before eating any mushroom you pick, have it checked for free by your local ASL mycological inspectorate.",
     "accept": "Got it",
-    "short": "Conditions only: mushma doesn't identify mushrooms or judge whether they are edible."
+    "short": "Conditions only, no guarantee: Mappa Funghi doesn't identify mushrooms or judge whether they are edible."
+  },
+  "cookies": {
+    "title": "Your privacy",
+    "intro": "We use Umami, analytics software we host on our own servers, to understand how the map gets used. It sets no cookies, shares nothing with third parties, and never records your location. You can accept or decline, and change your mind any time from here.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "privacyLink": "Read the Privacy Policy"
   },
   "credits": {
     "title": "Data and credits",
-    "intro": "mushma uses only public data and open-source software. Thanks to everyone who makes them available.",
+    "intro": "Mappa Funghi uses only public data and open-source software. Thanks to everyone who makes them available.",
     "dataTitle": "Data",
     "softwareTitle": "Map and software",
     "license": "License: {{license}}",
@@ -281,9 +314,161 @@
       "seasonal": "Long-range tendencies for the seasonal outlook"
     }
   },
+  "terms": {
+    "title": "Terms and conditions",
+    "intro": "These terms govern the use of Mappa Funghi, a free personal project. By using the site you accept the following.",
+    "sections": {
+      "service": {
+        "title": "The service",
+        "body": "Mappa Funghi estimates, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in Tuscany. The service is provided free of charge, as is, and can change or stop at any time without notice."
+      },
+      "scoreNature": {
+        "title": "The conditions score is not a guarantee",
+        "body": "The conditions score runs from 0 to 1 and measures only how favourable the weather and woodland are: it is not a probability of finding mushrooms, not a certain forecast, and it guarantees no result. A high score doesn't guarantee you will find any, and a low one doesn't rule them out."
+      },
+      "userResponsibility": {
+        "title": "The responsibility is yours",
+        "body": "How you use the map, where you go, when and how you move through the woods is your choice, and the responsibility for that choice is entirely yours. Mappa Funghi is not responsible for how you interpret or act on the scores and data it shows."
+      },
+      "liability": {
+        "title": "Limitation of liability",
+        "body": "To the extent the law allows, Mappa Funghi and the person who runs it are not liable for direct or indirect damages arising from using the site, from inaccurate or missing data, from service interruptions, or from choices made relying on the scores shown. Nothing in these terms excludes liability that the law does not allow to be excluded."
+      },
+      "governingLaw": {
+        "title": "Governing law and jurisdiction",
+        "body": "These terms are governed by Italian law. Any dispute falls under the consumer's home-court venue set by the Italian Consumer Code (Legislative Decree 206/2005), where it applies; otherwise the courts of Florence have jurisdiction."
+      },
+      "changes": {
+        "title": "Changes to these terms",
+        "body": "We may update these terms when the service or the law changes. The version in force is always the one published on this page; continuing to use the site after a change means you accept the new version."
+      }
+    },
+    "disclaimerNote": "The Disclaimer explains the risks of the terrain, of access to the woods, and the limits of the data: read it before you go.",
+    "privacyNote": "To see what data we collect and how we handle it, read the Privacy Policy."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "This policy describes what data Mappa Funghi collects and how it is used, under Regulation (EU) 2016/679 (GDPR) and Italy's data protection code (Legislative Decree 196/2003, as amended by Legislative Decree 101/2018).",
+    "controller": {
+      "title": "Data controller",
+      "body": "The data controller is Cosimo Alfredo Pina Lari, who runs Mappa Funghi as a personal project. For any request about your data, write to contact@cosimoalfredopinalari.me."
+    },
+    "sections": {
+      "dataCollected": {
+        "title": "What data we collect",
+        "body": "To run the map we collect: your IP address, read briefly by the server to limit how many requests you can make and prevent abuse (never written to disk, and reset on every server restart); your geographic location, only if you explicitly grant it from the browser to centre the map or find the nearest forecast, kept only in memory on your device and never sent to or stored on our servers; a few technical values saved in your browser (not cookies: your chosen language, whether you've read the disclaimer, and your choice about analytics cookies), which stay only on your device; and, if you consent, the anonymous usage data collected by Umami (see below)."
+      },
+      "legalBasis": {
+        "title": "Legal basis for processing",
+        "body": "We process your IP address under our legitimate interest in protecting the service from abuse (Art. 6(1)(f) GDPR). Your location and the Umami analytics data are processed only with your consent (Art. 6(1)(a) GDPR), which you can withdraw at any time with no consequences. The technical values saved in your browser are needed to provide the service you're asking for (Art. 6(1)(b) GDPR)."
+      },
+      "analytics": {
+        "title": "Traffic analytics (Umami)",
+        "body": "We use Umami, open-source analytics software that we host on our own servers: no analytics data is ever sent to a third party. Umami sets no cookies: to tell visits apart it computes a hash from your IP address and browser type, without ever storing the IP address itself, and it doesn't follow you across other sites. We only record the pages visited, species or view switches, opening a spot forecast (and how you opened it: map, search, location or a hot place), moving between days, installing the app, and switching language. The exact page address (with any coordinates) and anything else that could show where you've been are never sent: only the page's path, with no parameters. You can decline this analytics from the cookie banner, or change your choice any time from the \"Cookie preferences\" link in the footer."
+      },
+      "sightingsPrivacy": {
+        "title": "Public sightings",
+        "body": "The sightings you see on the map come from public sources (iNaturalist and GBIF) and are shown only as counts per 1 km cell: never as exact coordinates, and never more precise than how the source already made them public. We never collect or publish a visitor's own location as if it were a sighting."
+      },
+      "subprocessors": {
+        "title": "Who we share data with",
+        "body": "The site is hosted on Vercel; traffic passes through Cloudflare, which provides DNS and abuse protection; the API and the Umami analytics, which we run ourselves, live on a Hetzner server in Germany. None of these providers uses your data for their own purposes: they only process it to keep the service running."
+      },
+      "retention": {
+        "title": "How long we keep data",
+        "body": "The IP address used for the request limit stays only in memory and resets on every server restart; we never write it to disk. The values saved in your browser stay until you clear them yourself, by clearing the site's data or declining analytics cookies. The usage data Umami collects stays on our own servers until we delete it manually; we never share or sell it to anyone."
+      },
+      "internationalTransfer": {
+        "title": "International transfers",
+        "body": "Our servers (Hetzner) and the Umami analytics stay inside the European Union. Vercel and Cloudflare may route traffic through infrastructure outside the European Economic Area, including the United States; where they do, they rely on the European Commission's Standard Contractual Clauses or other safeguards the GDPR recognises as equivalent."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "You have the right to access your data, have it corrected or deleted, restrict or object to its processing, and receive what you gave us in a portable format (Arts. 15–22 GDPR). To exercise these rights, write to contact@cosimoalfredopinalari.me: we'll get back to you as soon as we can."
+      },
+      "complaint": {
+        "title": "Complaining to the supervisory authority",
+        "body": "If you believe our handling of your data breaches the GDPR, you can lodge a complaint with Italy's data protection authority, the Garante per la protezione dei dati personali (www.garanteprivacy.it), without prejudice to your right to go to court."
+      }
+    },
+    "disclaimerNote": "The Disclaimer explains in more detail how we handle public sightings and the map's limits."
+  },
   "errors": {
     "generic": "Something went wrong. Reload the page.",
     "offline": "You're offline: the data may be out of date."
+  },
+  "notFound": {
+    "eyebrow": "Page not found",
+    "title": "This page doesn't exist",
+    "body": "That address doesn't match any Mappa Funghi page."
+  },
+  "seo": {
+    "region": {
+      "title": "Mappa Funghi – porcini, ovoli and gallinacci in Tuscany",
+      "description": "The conditions index for porcini, ovoli and gallinacci in Tuscany: weather, woodland and elevation, updated daily, cell by cell."
+    },
+    "porcini": {
+      "title": "Porcini in Tuscany: conditions index | Mappa Funghi",
+      "description": "Where and when conditions favour porcini in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
+    },
+    "ovoli": {
+      "title": "Ovoli in Tuscany: conditions index | Mappa Funghi",
+      "description": "Where and when conditions favour ovoli in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
+    },
+    "gallinacci": {
+      "title": "Gallinacci in Tuscany: conditions index | Mappa Funghi",
+      "description": "Where and when conditions favour gallinacci in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
+    },
+    "credits": {
+      "title": "Data and credits | Mappa Funghi",
+      "description": "The public data sources and open-source software Mappa Funghi uses to estimate mushroom conditions in Tuscany."
+    },
+    "terms": {
+      "title": "Terms and conditions | Mappa Funghi",
+      "description": "Mappa Funghi's terms of use: what the conditions score means, the responsibility of anyone using the site, and the service's limits."
+    },
+    "privacy": {
+      "title": "Privacy Policy | Mappa Funghi",
+      "description": "How Mappa Funghi handles your data: IP address, optional location, technical values in the browser and Umami analytics, under the GDPR."
+    }
+  },
+  "intro": {
+    "region": "The map shows, cell by cell, the conditions index for porcini, ovoli and gallinacci in Tuscany: how much the weather and woodland favour their growth, not where the mushrooms are. This view shows the most favoured species per cell; pick a species for its season and its factor detail. The index runs from 0 to 1 and isn't a probability.",
+    "porcini": "The map shows, cell by cell, the conditions index for porcini in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs mainly from late summer through autumn. The index runs from 0 to 1 and isn't a probability.",
+    "ovoli": "The map shows, cell by cell, the conditions index for ovoli in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs from June to November, mostly in autumn. The index runs from 0 to 1 and isn't a probability.",
+    "gallinacci": "The map shows, cell by cell, the conditions index for gallinacci in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn. The index runs from 0 to 1 and isn't a probability."
+  },
+  "structuredData": {
+    "appDescription": "Mappa Funghi estimates every day, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in Tuscany, with a 7-day outlook and the factors behind every score. It forecasts conditions only: it doesn't identify mushrooms and never says whether a mushroom is safe to eat.",
+    "browserRequirements": "Requires JavaScript and WebGL",
+    "features": {
+      "map": "A map of the conditions score for every 1 km woodland cell",
+      "spot": "Today's score and a 7-day outlook for a point, a searched place or your location",
+      "why": "The factors behind every score: rain, temperatures, woodland, elevation and aspect",
+      "hotspots": "Today's best areas and recent public sightings, counted per cell",
+      "seasons": "Past seasons day by day, next to the sightings recorded at the time",
+      "outlook": "The season's outlook, with rain and temperature compared with normal",
+      "offline": "Installable as an app and usable without signal"
+    },
+    "dataset": {
+      "region": "Conditions score for porcini, ovoli and gallinacci in Tuscany",
+      "porcini": "Conditions score for porcini in Tuscany",
+      "ovoli": "Conditions score for ovoli in Tuscany",
+      "gallinacci": "Conditions score for gallinacci in Tuscany"
+    },
+    "score": {
+      "name": "Conditions score",
+      "description": "How much the weather, woodland and terrain favour mushroom growth in a 1 km woodland cell on a given day, from 0 (unfavourable) to 1 (ideal). It is an index, not a probability of finding any."
+    },
+    "method": "Per-species rules, each with a cited source, applied every day to the weather (ERA5-Land reanalysis and ECMWF IFS forecasts, adjusted to each cell's elevation), woodland type and terrain of each cell; checked against public GBIF and iNaturalist sightings.",
+    "country": "Italy"
+  },
+  "llms": {
+    "methodTitle": "How it is computed",
+    "liveData": "Today's scores are only on the interactive map, which needs JavaScript: the pages and this file describe what the map shows, not today's values.",
+    "privacy": "Public sightings are only shown as counts per 1 km cell, never as coordinates.",
+    "featuresIntro": "What the app does:",
+    "mapsTitle": "Maps"
   },
   "views": {
     "label": "What to show",
