@@ -4,6 +4,7 @@ import { type Credit, DATA_CREDITS, SOFTWARE_CREDITS } from '../credits'
 import styles from './CreditsPage.module.css'
 
 interface Props {
+  backHref: string
   onBack: () => void
 }
 
@@ -26,13 +27,13 @@ function CreditList({ credits }: { credits: Credit[] }) {
   )
 }
 
-export function CreditsPage({ onBack }: Props) {
+export function CreditsPage({ backHref, onBack }: Props) {
   const { t } = useTranslation()
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
         <a
-          href="/"
+          href={backHref}
           className={styles.back}
           onClick={(event) => {
             event.preventDefault()

@@ -44,8 +44,13 @@ test('map → spot forecast → why this score', async ({ page }) => {
   await disclaimer.getByRole('button', { name: 'Ho capito' }).click()
   await expect(disclaimer).toBeHidden()
 
+  // First-time visitors land on the combined view (`/toscana`); switch to porcini.
+  await expect(page).toHaveURL(/\/toscana$/)
+  await expect(page.getByRole('radio', { name: 'Tutte' })).toBeChecked()
+  await page.getByRole('radio', { name: 'Porcini' }).click()
+  await expect(page).toHaveURL(/\/toscana\/porcini$/)
+
   // The map: species switcher, hatched forecast days, hot places.
-  await expect(page.getByRole('radio', { name: 'Porcini' })).toBeChecked()
   await expect(page.getByRole('radio', { name: /previsione$/ }).first()).toHaveAttribute(
     'data-kind',
     'forecast',
@@ -77,6 +82,10 @@ test('map → spot forecast → why this score', async ({ page }) => {
 test('seasons on the map, a replayed day, and the outlook', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Ho capito' }).click()
+
+  // The outlook needs a single species: the combined default has none.
+  await page.getByRole('radio', { name: 'Porcini' }).click()
+  await expect(page).toHaveURL(/\/toscana\/porcini$/)
 
   // Past seasons: pick one and it goes on the map as good days per cell.
   await page.getByRole('tab', { name: 'Stagioni' }).click()

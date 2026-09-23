@@ -77,3 +77,65 @@ describe('centre on my position', () => {
     expect(mapProp('user-position')).toBeNull()
   })
 })
+
+describe('routing', () => {
+  afterEach(() => {
+    window.history.replaceState(null, '', '/')
+    document.head
+      .querySelectorAll(
+        'meta[name="description"], meta[name="robots"], link[rel="canonical"]',
+      )
+      .forEach((el) => el.remove())
+  })
+
+  it('redirects the bare root to the default region, combined view', async () => {
+    window.history.replaceState(null, '', '/')
+    render(<App />)
+    expect(await screen.findByTestId('map')).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/toscana')
+  })
+
+  it('navigates to the species path when the switcher is used', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await userEvent.click(screen.getByRole('radio', { name: 'Porcini' }))
+    expect(window.location.pathname).toBe('/toscana/porcini')
+  })
+
+  it('keeps the title, description and canonical in step with the route', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+    expect(document.title).toContain('Toscana')
+    const canonical = () =>
+      document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')
+    expect(canonical()).toBe('https://mappafunghi.app/toscana')
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Porcini' }))
+    expect(document.title).toContain('Porcini')
+    expect(canonical()).toBe('https://mappafunghi.app/toscana/porcini')
+    expect(
+      document.head.querySelector('meta[name="description"]')?.getAttribute('content'),
+    ).toBeTruthy()
+    expect(document.head.querySelector('meta[name="robots"]')).toBeNull()
+  })
+
+  it('shows the not-found page for an unknown region, with a link back to the map', async () => {
+    window.history.replaceState(null, '', '/lombardia')
+    render(<App />)
+    expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
+    expect(screen.queryByTestId('map')).not.toBeInTheDocument()
+    expect(
+      document.head.querySelector('meta[name="robots"]')?.getAttribute('content'),
+    ).toBe('noindex')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Torna alla mappa' }))
+    expect(window.location.pathname).toBe('/toscana')
+  })
+
+  it('shows the not-found page for an unknown species', () => {
+    window.history.replaceState(null, '', '/toscana/tartufi')
+    render(<App />)
+    expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
+  })
+})

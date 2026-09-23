@@ -42,10 +42,10 @@ export function intlLocale(language: Language = currentLanguage()): string {
   return language === 'it' ? 'it-IT' : 'en-GB'
 }
 
+/** The route-aware title, description and canonical are `App.tsx`'s `Root` (`seo/head.ts`). */
 function syncDocument(language: string) {
   if (typeof document === 'undefined') return
   document.documentElement.lang = language
-  document.title = i18n.t('app.documentTitle')
 }
 
 void i18n.use(initReactI18next).init({

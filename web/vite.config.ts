@@ -1,9 +1,18 @@
 /// <reference types="vitest/config" />
-import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs'
-import { isAbsolute, relative, resolve } from 'node:path'
+import {
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
+import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { type Connect, defineConfig, loadEnv, type Plugin, type UserConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { renderNotFoundHtml, renderRouteHtml, routeHeads } from './src/seo/prerender.js'
+import { buildRobotsTxt, buildSitemapXml } from './src/seo/sitemap.js'
 
 const BASEMAP_DIR = resolve(import.meta.dirname, 'data/basemap')
 
@@ -107,6 +116,33 @@ function vendorMaplibre(): Plugin {
 }
 
 /**
+ * Writes one prerendered HTML per route (`src/routes.ts` → `ROUTES`) from the built
+ * `dist/index.html`: its own title, meta description, canonical, Open Graph + Twitter tags
+ * and JSON-LD (`src/seo/prerender.ts`). `closeBundle` is the last build hook, so every other
+ * plugin (PWA's manifest link and registerSW script included) has already written its output
+ * by the time this reads the template.
+ */
+function prerenderRoutes(): Plugin {
+  return {
+    name: 'mushma-prerender-routes',
+    apply: 'build',
+    closeBundle() {
+      const outDir = resolve(import.meta.dirname, 'dist')
+      const template = readFileSync(resolve(outDir, 'index.html'), 'utf8')
+      const heads = routeHeads()
+      for (const head of heads) {
+        const outFile = resolve(outDir, `.${head.path}`, 'index.html')
+        mkdirSync(dirname(outFile), { recursive: true })
+        writeFileSync(outFile, renderRouteHtml(template, head))
+      }
+      writeFileSync(resolve(outDir, 'sitemap.xml'), buildSitemapXml(heads))
+      writeFileSync(resolve(outDir, 'robots.txt'), buildRobotsTxt())
+      writeFileSync(resolve(outDir, '404.html'), renderNotFoundHtml(template))
+    },
+  }
+}
+
+/**
  * Offline caching (PRD → PWA, M7): the app shell and fonts are precached (generateSW's own
  * build manifest, below); everything else is cached as it's used, never speculatively:
  * - API responses (scores, spot forecasts, hotspots, comuni, history, outlook, status): the
@@ -147,7 +183,7 @@ function pwaPlugin(env: Record<string, string>): Plugin[] {
       description:
         'Fruiting-conditions scores for porcini, ovoli and gallinacci in Tuscany.',
       lang: 'it',
-      start_url: '/',
+      start_url: '/toscana',
       scope: '/',
       display: 'standalone',
       background_color: '#edf0ea',
@@ -240,7 +276,13 @@ export default defineConfig(({ mode }) => {
     },
   }
   return {
-    plugins: [react(), serveBasemap(), vendorMaplibre(), ...pwaPlugin(env)],
+    plugins: [
+      react(),
+      serveBasemap(),
+      vendorMaplibre(),
+      ...pwaPlugin(env),
+      prerenderRoutes(),
+    ],
     optimizeDeps: { exclude: ['maplibre-gl'] },
     server: { proxy: apiProxy, ...(env.TUNNEL ? TUNNEL_SERVER : {}) },
     preview: { proxy: apiProxy },

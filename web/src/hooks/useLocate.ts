@@ -7,10 +7,12 @@ export type LocateError = 'denied' | 'unavailable' | 'outside'
 interface Options {
   onLocated: (lat: number, lon: number) => void
   onError: (error: LocateError) => void
+  /** Defaults to the default region's bounds. */
+  bounds?: [[number, number], [number, number]]
 }
 
 /** One-shot GPS fix, restricted to the region. */
-export function useLocate({ onLocated, onError }: Options) {
+export function useLocate({ onLocated, onError, bounds = REGION.bounds }: Options) {
   const [locating, setLocating] = useState(false)
 
   const locate = useCallback(() => {
@@ -22,7 +24,7 @@ export function useLocate({ onLocated, onError }: Options) {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setLocating(false)
-        if (inBounds(coords.latitude, coords.longitude, REGION.bounds)) {
+        if (inBounds(coords.latitude, coords.longitude, bounds)) {
           onLocated(coords.latitude, coords.longitude)
         } else {
           onError('outside')
@@ -34,7 +36,7 @@ export function useLocate({ onLocated, onError }: Options) {
       },
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 5 * 60_000 },
     )
-  }, [onLocated, onError])
+  }, [onLocated, onError, bounds])
 
   return { locate, locating }
 }

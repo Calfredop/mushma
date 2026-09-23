@@ -40,7 +40,6 @@ import {
   DATE_WINDOW,
   HISTORY_START,
   HOTSPOT_LIMIT,
-  REGION,
   REPLAY_SIGHTINGS_DAYS,
   SIGHTINGS_WINDOW_DAYS,
 } from './config'
@@ -48,15 +47,22 @@ import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
 import { type LocateError, useLocate } from './hooks/useLocate'
 import { useMediaQuery } from './hooks/useMediaQuery'
-import { usePath } from './hooks/usePath'
 import { intlLocale, type Language } from './i18n'
 import './i18n'
 import { ConditionsMap } from './map/ConditionsMap'
 import { CreditsPage } from './pages/CreditsPage'
+import { NotFoundPage } from './pages/NotFoundPage'
 import { HotPlaces } from './panels/HotPlaces'
 import { OutlookPanel } from './panels/OutlookPanel'
 import { SeasonsPanel } from './panels/SeasonsPanel'
 import { SpotPanel } from './panels/SpotPanel'
+import { regionPath, SITE_URL } from './routes'
+import {
+  seoKeyForRoute,
+  setDocumentCanonical,
+  setDocumentDescription,
+  setDocumentRobots,
+} from './seo/head'
 import { AppStateProvider } from './state/AppState'
 import { useAppState } from './state/useAppState'
 import { addDays, daysBetween, formatDayMonth } from './time/days'
@@ -87,7 +93,7 @@ function MapScreen() {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
   const app = useAppState()
-  const [path, navigate] = usePath()
+  const { navigate } = app
   const desktop = useMediaQuery('(min-width: 900px)')
 
   const [sheetOpen, setSheetOpen] = useState(app.spot !== null)
@@ -192,6 +198,7 @@ function MapScreen() {
       [openSpot],
     ),
     onError: setLocateError,
+    bounds: app.region.bounds,
   })
   const centerLocate = useLocate({
     onLocated: useCallback(
@@ -203,6 +210,7 @@ function MapScreen() {
       [flyTo],
     ),
     onError: setLocateError,
+    bounds: app.region.bounds,
   })
   const locating = spotLocate.locating || centerLocate.locating
 
@@ -243,6 +251,7 @@ function MapScreen() {
       onSelect={onPlace}
       autoFocus={!desktop}
       onDismiss={desktop ? undefined : () => setSearchOpen(false)}
+      bounds={app.region.bounds}
     />
   )
 
@@ -320,13 +329,14 @@ function MapScreen() {
           }
           userPosition={userPosition}
           lang={language}
+          region={app.region}
           // On a phone the sheet opens and the map shrinks around its centre:
           // centre on the tap so the chosen spot stays in view.
           onCellClick={(cellId, lat, lon) =>
             openSpot({ kind: 'cell', cellId }, desktop ? undefined : { lat, lon })
           }
           onPointClick={(lat, lon) => {
-            if (!inBounds(lat, lon, REGION.bounds)) return
+            if (!inBounds(lat, lon, app.region.bounds)) return
             openSpot({ kind: 'point', lat, lon }, desktop ? undefined : { lat, lon })
           }}
           onHotspotClick={onHotspot}
@@ -406,6 +416,11 @@ function MapScreen() {
             />
           ) : (
             <>
+              {app.route.kind === 'region' && (
+                <p className={styles.intro}>
+                  {t(`intro.${app.species === 'combined' ? 'region' : app.species}`)}
+                </p>
+              )}
               <ViewTabs
                 value={app.view}
                 panelId="sheet-view"
@@ -497,17 +512,37 @@ function MapScreen() {
         </div>
       </aside>
 
-      {path === '/credits' && <CreditsPage onBack={() => navigate('/')} />}
+      {app.route.kind === 'static' && app.route.page === 'credits' && (
+        <CreditsPage
+          backHref={regionPath(app.region.slug)}
+          onBack={() => navigate(regionPath(app.region.slug))}
+        />
+      )}
       <DisclaimerDialog open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
     </div>
   )
+}
+
+function Root() {
+  const app = useAppState()
+  const { t, i18n } = useTranslation()
+
+  useEffect(() => {
+    const key = seoKeyForRoute(app.route)
+    document.title = t(key ? `seo.${key}.title` : 'notFound.title')
+    setDocumentDescription(key ? t(`seo.${key}.description`) : undefined)
+    setDocumentCanonical(key ? `${SITE_URL}${app.path}` : undefined)
+    setDocumentRobots(key === null)
+  }, [app.route, app.path, t, i18n.resolvedLanguage])
+
+  return app.route.kind === 'not-found' ? <NotFoundPage /> : <MapScreen />
 }
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppStateProvider>
-        <MapScreen />
+        <Root />
       </AppStateProvider>
     </QueryClientProvider>
   )

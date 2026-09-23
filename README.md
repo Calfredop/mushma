@@ -388,6 +388,11 @@ pnpm dlx wrangler r2 object put mushma-tiles/tuscany-terrain.pmtiles --file data
 
 Tiles stay cached for a day (`CACHE_CONTROL`) and in the PWA's own cache for 30.
 
+`api.mappafunghi.app` sends `X-Robots-Tag: noindex` (`deploy/Caddyfile`); `tiles.mappafunghi.app`
+doesn't, since the stock Protomaps Worker has no config option for custom response headers and
+this repo doesn't vendor its source to add one. Low risk: tile JSON and z/x/y tiles are not the
+kind of content a crawler indexes anyway.
+
 **api/ → Hetzner.** One Docker CE server runs the API behind Caddy (`deploy/compose.yaml`,
 `deploy/Caddyfile`), which gets the `api.mappafunghi.app` certificate itself; that DNS record is
 "DNS only" so Let's Encrypt and the rate limiter see the real client. The repo is cloned at
@@ -430,6 +435,39 @@ It refuses anything the server can't pull (another branch, uncommitted `api/` or
 changes, a `main` that isn't pushed). It also installs the daily job's systemd units when they
 changed, then smoke-tests the live routes. It warns when the served scores predate the deployed
 rules. Only `deploy/.env` stays a manual edit on the server.
+
+`deploy/deploy-api.sh` rebuilds and restarts the `api` service, but Caddy doesn't reload
+`deploy/Caddyfile` on its own: the `caddy` container's config is bind-mounted, and Docker Compose
+only recreates a service whose own declared config changed, not a file a volume points at. After
+editing `deploy/Caddyfile`, deploy as usual, then reload Caddy on the server:
+
+```sh
+cd /opt/mushma/deploy && docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+```
+
+**Search Console & Bing Webmaster Tools.** One-time, once `web/` is deployed and serving
+`/robots.txt` and `/sitemap.xml`. Indexing itself is Google's and Bing's own timeline, not
+something to wait on here.
+
+1. Verify the domain (DNS TXT, at Cloudflare → `mappafunghi.app` → DNS → Records → Add record,
+   type TXT, name `@`):
+   - [Google Search Console](https://search.google.com/search-console): Add property → **Domain**
+     → `mappafunghi.app` → copy the TXT value it gives you into a Cloudflare TXT record → back in
+     Search Console, **Verify** (DNS propagates in minutes on Cloudflare, but allow up to a day).
+   - [Bing Webmaster Tools](https://www.bing.com/webmasters): easiest is **Import from Google
+     Search Console** (reuses the verification above, no second TXT record); otherwise its own
+     **DNS** verification works the same way as Google's.
+2. Submit the sitemap in both: Search Console → Sitemaps → `sitemap.xml`; Bing Webmaster Tools →
+   Sitemaps → `https://mappafunghi.app/sitemap.xml`.
+3. Afterwards, check:
+   - **Coverage / Page indexing**: the 5 sitemap URLs (`/toscana`, the 3 species pages, `/credits`)
+     show as indexed or "Crawled, not yet indexed" (a first-day site: never "blocked" or
+     "noindex"). `api.mappafunghi.app` and `tiles.mappafunghi.app` should stay out of both.
+   - **URL Inspection** on `/toscana`: "Live test" renders the title, description and canonical
+     from `src/i18n/locales/it.json`'s `seo` keys, matches what `curl -s
+     https://mappafunghi.app/toscana` returns, and is not flagged as a duplicate of `/`
+     (the 308 redirect should register as the canonical signal on its own).
+   - An unknown path (e.g. `https://mappafunghi.app/x`) inspects as a real 404, not indexed.
 
 ## Monitoring
 

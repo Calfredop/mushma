@@ -1,6 +1,6 @@
 /** The shareable part of the app state, kept in the URL query string. */
-import { inBounds } from '../geo/distance'
-import { type IsoDate, daysBetween } from '../time/days'
+import { inBounds } from '../geo/distance.js'
+import { type IsoDate, daysBetween } from '../time/days.js'
 
 type Bounds = [[number, number], [number, number]]
 
@@ -9,7 +9,9 @@ export const SPECIES_OR_COMBINED = [...SPECIES, 'combined'] as const
 export type Species = (typeof SPECIES)[number]
 export type SpeciesOrCombined = (typeof SPECIES_OR_COMBINED)[number]
 
-export const DEFAULT_SPECIES: SpeciesOrCombined = 'porcini'
+export function isSpeciesOrCombined(value: string | null): value is SpeciesOrCombined {
+  return SPECIES_OR_COMBINED.includes(value as SpeciesOrCombined)
+}
 
 export type Spot =
   { kind: 'cell'; cellId: string } | { kind: 'point'; lat: number; lon: number }
@@ -18,8 +20,8 @@ export type Spot =
 export const VIEWS = ['now', 'seasons', 'outlook'] as const
 export type View = (typeof VIEWS)[number]
 
+/** The species and region live in the path (`routes.ts`); this is everything else. */
 export interface UrlState {
-  species: SpeciesOrCombined
   /** Any day from the start of the history to the end of the forecast. */
   date: IsoDate
   spot: Spot | null
@@ -38,10 +40,6 @@ export interface DateWindowSize {
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 const COMUNE_CODE = /^[\w-]{1,32}$/
 const POINT_DECIMALS = 5 // ~1 m, far finer than a 1 km cell
-
-function isSpeciesOrCombined(value: string | null): value is SpeciesOrCombined {
-  return SPECIES_OR_COMBINED.includes(value as SpeciesOrCombined)
-}
 
 /** A real calendar day: 2026-09-31 must not become 1 October. */
 function isCalendarDate(value: string): boolean {
@@ -137,11 +135,9 @@ export function parseUrlState(
   historyStart?: IsoDate,
 ): UrlState {
   const params = new URLSearchParams(search)
-  const species = params.get('species')
   const view = parseView(params.get('view'))
   const comune = params.get('comune')
   return {
-    species: isSpeciesOrCombined(species) ? species : DEFAULT_SPECIES,
     date: parseDate(params.get('date'), today, window, historyStart),
     spot: parseSpot(params, region),
     view,
@@ -156,7 +152,6 @@ function round(value: number): number {
 
 export function serializeUrlState(state: UrlState, today: IsoDate): string {
   const params = new URLSearchParams()
-  if (state.species !== DEFAULT_SPECIES) params.set('species', state.species)
   if (state.date !== today) params.set('date', state.date)
   if (state.spot?.kind === 'cell') params.set('cell', state.spot.cellId)
   if (state.spot?.kind === 'point') {

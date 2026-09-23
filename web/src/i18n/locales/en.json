@@ -1,7 +1,6 @@
 {
   "app": {
     "name": "Mappa Funghi",
-    "documentTitle": "Mappa Funghi · porcini, ovoli and gallinacci conditions in Tuscany",
     "region": "Tuscany"
   },
   "language": {
@@ -284,6 +283,39 @@
   "errors": {
     "generic": "Something went wrong. Reload the page.",
     "offline": "You're offline: the data may be out of date."
+  },
+  "notFound": {
+    "eyebrow": "Page not found",
+    "title": "This page doesn't exist",
+    "body": "That address doesn't match any Mappa Funghi page."
+  },
+  "seo": {
+    "region": {
+      "title": "Mappa Funghi – porcini, ovoli and gallinacci in Tuscany",
+      "description": "The conditions index for porcini, ovoli and gallinacci in Tuscany: weather, woodland and elevation, updated daily, cell by cell."
+    },
+    "porcini": {
+      "title": "Porcini in Tuscany: conditions index | Mappa Funghi",
+      "description": "Where and when conditions favour porcini in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
+    },
+    "ovoli": {
+      "title": "Ovoli in Tuscany: conditions index | Mappa Funghi",
+      "description": "Where and when conditions favour ovoli in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
+    },
+    "gallinacci": {
+      "title": "Gallinacci in Tuscany: conditions index | Mappa Funghi",
+      "description": "Where and when conditions favour gallinacci in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
+    },
+    "credits": {
+      "title": "Data and credits | Mappa Funghi",
+      "description": "The public data sources and open-source software Mappa Funghi uses to estimate mushroom conditions in Tuscany."
+    }
+  },
+  "intro": {
+    "region": "The map shows, cell by cell, the conditions index for porcini, ovoli and gallinacci in Tuscany: how much the weather and woodland favour their growth, not where the mushrooms are. This view shows the most favoured species per cell; pick a species for its season and its factor detail. The index runs from 0 to 1 and isn't a probability.",
+    "porcini": "The map shows, cell by cell, the conditions index for porcini in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs mainly from late summer through autumn. The index runs from 0 to 1 and isn't a probability.",
+    "ovoli": "The map shows, cell by cell, the conditions index for ovoli in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs from June to November, mostly in autumn. The index runs from 0 to 1 and isn't a probability.",
+    "gallinacci": "The map shows, cell by cell, the conditions index for gallinacci in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn. The index runs from 0 to 1 and isn't a probability."
   },
   "views": {
     "label": "What to show",

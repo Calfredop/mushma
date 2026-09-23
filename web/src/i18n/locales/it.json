@@ -1,7 +1,6 @@
 {
   "app": {
     "name": "Mappa Funghi",
-    "documentTitle": "Mappa Funghi · condizioni per porcini, ovoli e gallinacci in Toscana",
     "region": "Toscana"
   },
   "language": {
@@ -284,6 +283,39 @@
   "errors": {
     "generic": "Qualcosa non ha funzionato. Ricarica la pagina.",
     "offline": "Sei offline: i dati potrebbero non essere aggiornati."
+  },
+  "notFound": {
+    "eyebrow": "Pagina non trovata",
+    "title": "Questa pagina non esiste",
+    "body": "L'indirizzo non corrisponde a nessuna pagina di Mappa Funghi."
+  },
+  "seo": {
+    "region": {
+      "title": "Mappa Funghi – porcini, ovoli e gallinacci in Toscana",
+      "description": "L'indice delle condizioni per porcini, ovoli e gallinacci in Toscana: meteo, bosco e quota aggiornati ogni giorno, cella per cella da 1 km."
+    },
+    "porcini": {
+      "title": "Porcini in Toscana: indice delle condizioni | Mappa Funghi",
+      "description": "Dove e quando le condizioni favoriscono i porcini in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
+    },
+    "ovoli": {
+      "title": "Ovoli in Toscana: indice delle condizioni | Mappa Funghi",
+      "description": "Dove e quando le condizioni favoriscono gli ovoli in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
+    },
+    "gallinacci": {
+      "title": "Gallinacci in Toscana: indice delle condizioni | Mappa Funghi",
+      "description": "Dove e quando le condizioni favoriscono i gallinacci in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
+    },
+    "credits": {
+      "title": "Dati e crediti | Mappa Funghi",
+      "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi in Toscana."
+    }
+  },
+  "intro": {
+    "region": "La mappa mostra, cella per cella, l'indice delle condizioni di porcini, ovoli e gallinacci in Toscana: quanto il meteo e il bosco favoriscono la loro crescita, non dove si trovano i funghi. Qui vedi la specie più favorita in ogni cella; scegli una specie per la sua stagione e il dettaglio dei fattori. L'indice va da 0 a 1 e non è una probabilità.",
+    "porcini": "La mappa mostra, cella per cella, l'indice delle condizioni per i porcini in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va principalmente da fine estate all'autunno. L'indice va da 0 a 1 e non è una probabilità.",
+    "ovoli": "La mappa mostra, cella per cella, l'indice delle condizioni per gli ovoli in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va da giugno a novembre, soprattutto in autunno. L'indice va da 0 a 1 e non è una probabilità.",
+    "gallinacci": "La mappa mostra, cella per cella, l'indice delle condizioni per i gallinacci in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione è quasi tutto l'anno, con i picchi in primavera e in autunno. L'indice va da 0 a 1 e non è una probabilità."
   },
   "views": {
     "label": "Cosa mostrare",

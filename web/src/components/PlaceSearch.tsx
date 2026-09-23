@@ -14,9 +14,16 @@ interface Props {
   onSelect: (place: Place) => void
   autoFocus?: boolean
   onDismiss?: () => void
+  /** Defaults to the default region's bounds. */
+  bounds?: [[number, number], [number, number]]
 }
 
-export function PlaceSearch({ onSelect, autoFocus, onDismiss }: Props) {
+export function PlaceSearch({
+  onSelect,
+  autoFocus,
+  onDismiss,
+  bounds = REGION.bounds,
+}: Props) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
   const id = useId()
@@ -27,7 +34,7 @@ export function PlaceSearch({ onSelect, autoFocus, onDismiss }: Props) {
 
   const results = useQuery({
     queryKey: ['places', language, query],
-    queryFn: ({ signal }) => searchPlaces(query, language, REGION.bounds, signal),
+    queryFn: ({ signal }) => searchPlaces(query, language, bounds, signal),
     enabled,
     staleTime: Infinity,
     retry: 1,
