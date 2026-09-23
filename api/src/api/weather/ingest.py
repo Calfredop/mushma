@@ -34,6 +34,7 @@ from api.weather.openmeteo import (
     RateLimited,
     parse_daily,
     seconds_until_next_window,
+    sleep_until,
 )
 from api.weather.points import candidate_points, footprint_elevation, interpolation_weights
 from api.weather.store import WeatherStore
@@ -273,9 +274,10 @@ def run_until_done(
         if status.done:
             return status
         if status.paused:
-            wait = seconds_until_next_window(clock(), 86400) + HOUR_MARGIN_S
+            now = clock()
+            wait = seconds_until_next_window(now, 86400) + HOUR_MARGIN_S
             log(f"paused ({status.paused}); sleeping {wait / 3600:.1f} h until the next UTC day")
-            sleep(wait)
+            sleep_until(now + wait, clock, sleep)
             continue
         incomplete_rounds += 1
         if incomplete_rounds >= MAX_INCOMPLETE_ROUNDS:

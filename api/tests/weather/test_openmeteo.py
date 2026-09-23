@@ -8,12 +8,14 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 
 from api.weather.openmeteo import (
+    MAX_SLEEP_S,
     BudgetExhausted,
     Client,
     DailyRequest,
     RateBudget,
     RateLimited,
     parse_daily,
+    sleep_until,
 )
 
 ARCHIVE = "https://archive-api.open-meteo.com/v1/archive"
@@ -205,7 +207,47 @@ class FakeClock:
         self.now += seconds
 
 
+class DozingClock(FakeClock):
+    """A machine asleep from ``dozes`` to ``wakes``. A sleep that spans it returns that much later,
+    as ``time.sleep`` does on macOS, whose clock stops while the machine sleeps."""
+
+    def __init__(self, now: float, dozes: float, wakes: float) -> None:
+        super().__init__(now)
+        self.dozes, self.wakes = dozes, wakes
+
+    def sleep(self, seconds: float) -> None:
+        start = self.now
+        super().sleep(seconds)
+        if start <= self.dozes < self.now:
+            self.now += self.wakes - self.dozes
+
+
 T0 = datetime(2026, 9, 17, 10, 30, 10, tzinfo=UTC).timestamp()
+
+
+def _utc(day: int, hour: int, minute: int = 0) -> float:
+    return datetime(2026, 9, day, hour, minute, tzinfo=UTC).timestamp()
+
+
+def test_sleep_until_wakes_soon_after_a_machine_that_slept_past_the_deadline() -> None:
+    clock = DozingClock(T0, dozes=_utc(17, 22), wakes=_utc(18, 6))
+
+    sleep_until(_utc(18, 0, 1), clock, clock.sleep)
+
+    assert _utc(18, 6) <= clock.now <= _utc(18, 6) + MAX_SLEEP_S
+
+
+def test_budget_waiting_for_the_day_resumes_soon_after_a_machine_that_slept_wakes() -> None:
+    clock = DozingClock(T0, dozes=_utc(17, 22), wakes=_utc(18, 6))
+    budget = RateBudget(
+        per_minute=9000, per_hour=9000, per_day=1000, clock=clock, sleep=clock.sleep
+    )
+    budget.wait_for_day = True
+    budget.acquire(900)
+
+    budget.acquire(200)  # the day is spent: wait for 00:00 UTC, asleep from 22:00 to 06:00
+
+    assert _utc(18, 6) <= clock.now <= _utc(18, 6) + MAX_SLEEP_S
 
 
 def test_budget_waits_for_the_next_minute_when_the_minute_is_spent() -> None:
@@ -295,16 +337,21 @@ def test_budgets_running_side_by_side_see_each_others_calls(tmp_path: Path) -> N
 
 
 class FakeOpenMeteo(BaseHTTPRequestHandler):
-    responses: list[tuple[int, dict]] = []
+    """Serves ``responses`` in turn: ``(status, body)`` or ``(status, body, headers)``. A ``bytes``
+    body goes out as is, e.g. JSON cut off in transit."""
+
+    responses: list[tuple] = []
     hits: list[str] = []
 
     def do_GET(self) -> None:  # noqa: N802
         type(self).hits.append(self.path)
         queue = type(self).responses
-        status, body = queue.pop(0) if len(queue) > 1 else queue[0]
-        payload = json.dumps(body).encode()
+        status, body, *headers = queue.pop(0) if len(queue) > 1 else queue[0]
+        payload = body if isinstance(body, bytes) else json.dumps(body).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
+        for name, value in (headers[0] if headers else {}).items():
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(payload)
 
@@ -392,6 +439,24 @@ def test_client_retries_server_errors_with_backoff(tmp_path: Path, server: str) 
 
     assert payload == OK_BODY
     assert clock.sleeps == [1, 2]
+
+
+@pytest.mark.parametrize(
+    "headers",
+    [{}, {"Content-Length": "100000"}],
+    ids=["no-length", "short-of-length"],
+)
+def test_client_retries_a_response_cut_off_in_transit(
+    tmp_path: Path, server: str, headers: dict
+) -> None:
+    cut = json.dumps(OK_BODY).encode()[:60]
+    FakeOpenMeteo.responses = [(200, cut, headers), (200, OK_BODY)]
+    clock = FakeClock(T0)
+
+    payload = _client(tmp_path, clock).fetch(_history(endpoint=server))
+
+    assert payload == OK_BODY
+    assert clock.sleeps == [1]
 
 
 def test_client_waits_out_a_minutely_rate_limit(tmp_path: Path, server: str) -> None:
