@@ -60,6 +60,7 @@ import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
 import { type LocateError, useLocate } from './hooks/useLocate'
 import { useMediaQuery } from './hooks/useMediaQuery'
+import { usePersistentFlag } from './hooks/usePersistentFlag'
 import { usePlayback } from './hooks/usePlayback'
 import { currentLanguage, intlLocale, type Language } from './i18n'
 import './i18n'
@@ -117,6 +118,10 @@ const loadMotionFeatures = () =>
 // What covers a phone's map besides the sheet: the species pill and cluster on top (under the
 // safe-area inset), the cluster down the right, the time bar riding on the sheet.
 const PHONE_CHROME = { top: 72, right: 68, left: 16, bottom: 96 }
+// On a desktop: the species pill on top, the cluster and zoom on the right, the time bar below,
+// and the floating panel (--panel-width, inset --space-4) on the left while it is open.
+const DESKTOP_CHROME = { top: 82, right: 76, bottom: 100, left: 16 }
+const PANEL_INSET = 16 + 400 + 16
 
 function useOnline(): boolean {
   return useSyncExternalStore(
@@ -136,6 +141,8 @@ function MapScreen() {
   const [snap, setSnap] = useState<Snap>(app.spot ? 'half' : 'peek')
   const [sheetLayout, setSheetLayout] = useState<SheetLayout | null>(null)
   const [introOpen, setIntroOpen] = useState(false)
+  // The desktop panel folded to its header; the browser remembers it.
+  const [panelCollapsed, setPanelCollapsed] = usePersistentFlag('mushma.panel.collapsed')
   const mapAreaRef = useRef<HTMLElement>(null)
   const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
   const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
@@ -288,9 +295,10 @@ function MapScreen() {
       track({ name: 'spot-open', data: { method } })
       selectSpot(spot, camera)
       setSnap('half')
+      setPanelCollapsed(false)
       setLocateError(null)
     },
-    [selectSpot],
+    [selectSpot, setPanelCollapsed],
   )
 
   // "La mia posizione" in the search opens the forecast where you stand; the button on the map
@@ -329,6 +337,8 @@ function MapScreen() {
     if (!initial || !detail) return
     linkedSpot.current = null
     if (JSON.stringify(initial) !== JSON.stringify(app.spot)) return
+    // A link to a spot is a spot chosen: a folded desktop panel opens for it.
+    setPanelCollapsed(false)
     if (initial.kind === 'point') {
       if (distanceKm(initial.lat, initial.lon, detail.lat, detail.lon) > OUTSIDE_CELL_KM)
         return
@@ -336,7 +346,7 @@ function MapScreen() {
     } else {
       selectSpot(initial, { lat: detail.lat, lon: detail.lon, zoom: SPOT_ZOOM })
     }
-  }, [spotForecast.data, app.spot, selectSpot])
+  }, [spotForecast.data, app.spot, selectSpot, setPanelCollapsed])
 
   const selectedCellId =
     app.spot?.kind === 'cell' ? app.spot.cellId : (spotForecast.data?.cell_id ?? null)
@@ -357,7 +367,13 @@ function MapScreen() {
   // On a phone the map runs under the sheet: camera moves keep a place clear of it, as it is
   // or at half, where a chosen spot opens (full leaves too little map to aim at).
   const mapPadding = useMemo<MapPadding | undefined>(() => {
-    if (desktop || !sheetLayout) return undefined
+    if (desktop) {
+      return {
+        ...DESKTOP_CHROME,
+        left: panelCollapsed ? DESKTOP_CHROME.left : PANEL_INSET,
+      }
+    }
+    if (!sheetLayout) return undefined
     return {
       top: sheetLayout.safeTop + PHONE_CHROME.top,
       right: PHONE_CHROME.right,
@@ -365,7 +381,7 @@ function MapScreen() {
       bottom:
         visibleAt(snap === 'full' ? 'half' : snap, sheetLayout) + PHONE_CHROME.bottom,
     }
-  }, [desktop, sheetLayout, snap])
+  }, [desktop, panelCollapsed, sheetLayout, snap])
 
   const introKey = app.species === 'combined' ? 'region' : app.species
 
@@ -403,7 +419,11 @@ function MapScreen() {
 
   return (
     <LazyMotion features={loadMotionFeatures} strict>
-      <div className={styles.app} data-sheet={desktop ? undefined : snap}>
+      <div
+        className={styles.app}
+        data-sheet={desktop ? undefined : snap}
+        data-panel={desktop ? (panelCollapsed ? 'collapsed' : 'open') : undefined}
+      >
         <main ref={mapAreaRef} className={styles.mapArea}>
           <ConditionsMap
             cells={analysis ? undefined : mapCells}
@@ -526,22 +546,35 @@ function MapScreen() {
 
         <Sheet
           mode={desktop ? 'panel' : 'sheet'}
-          className={styles.sheet}
           snap={snap}
           onSnap={setSnap}
           onGeometry={setSheetLayout}
           stage={mapAreaRef}
+          collapsed={desktop && panelCollapsed}
           label={t(app.spot ? 'spot.title' : `views.${app.view}`)}
           header={
             <>
               <div className={styles.brand}>
                 <h1 className={styles.wordmark}>{t('app.name')}</h1>
                 {desktop && (
-                  <InfoMenu
-                    placement="below"
-                    className={styles.headerButton}
-                    {...infoMenuActions}
-                  />
+                  <div className={styles.headerActions}>
+                    <InfoMenu
+                      placement="below"
+                      className={styles.headerButton}
+                      {...infoMenuActions}
+                    />
+                    <button
+                      type="button"
+                      className={styles.headerButton}
+                      aria-expanded={!panelCollapsed}
+                      aria-controls="panel-body"
+                      aria-label={t(panelCollapsed ? 'sheet.expand' : 'sheet.collapse')}
+                      title={t(panelCollapsed ? 'sheet.expand' : 'sheet.collapse')}
+                      onClick={() => setPanelCollapsed(!panelCollapsed)}
+                    >
+                      <ChevronIcon direction={panelCollapsed ? 'down' : 'up'} />
+                    </button>
+                  </div>
                 )}
               </div>
               <PlaceSearch

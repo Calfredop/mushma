@@ -236,12 +236,15 @@ with no top bar, and everything else floats on it or sits in a sheet over it.
   padding keeps a chosen spot visible above it: a tapped place only moves if the sheet would
   hide it.
 
-At 900px and up the map is full-bleed and the panel is a floating inset glass card, 400px wide
-and rounded: wordmark, ⓘ and search in its header, then hot places, and the spot forecast and
-why once a place is chosen. A toggle collapses it to its header row, and the browser remembers
-that. The cluster keeps ◈ and ◎ at the map's top right, the zoom buttons sit on the right edge,
-the grouped factor panel replaces the legend at the bottom left, and the date strip runs along
-the bottom.
+At 900px and up the map is full-bleed and the panel is a floating glass card, inset 16px,
+400px wide and rounded like the phone sheet: wordmark, ⓘ and a fold chevron in its header,
+then the search, then hot places, and the spot forecast and why once a place is chosen. The
+chevron folds it to its header row (the browser remembers that), and choosing a spot, or
+opening a link to one, unfolds it. Map padding follows it, so a place is framed clear of the
+panel, and folded the legend and time bar take back its corner. The species pill starts right
+of the panel, the cluster keeps ◈ and ◎ at the map's top right, the zoom buttons sit on the
+right edge, the grouped factor panel replaces the legend at the bottom left, and the date strip
+runs along the bottom.
 
 Tap targets are at least 44px (`--tap`) everywhere, and at 360px nothing scrolls the page
 sideways and no control sits over another.

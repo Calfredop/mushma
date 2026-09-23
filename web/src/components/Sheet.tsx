@@ -48,6 +48,8 @@ interface Props {
   /** Gets `--sheet-lift` (px) and `--sheet-cover` (0–1) as the sheet moves, for what rides on
    * the map. */
   stage?: RefObject<HTMLElement | null>
+  /** A desktop panel folded to its header (`panel-body` is what a toggle controls). */
+  collapsed?: boolean
   className?: string
 }
 
@@ -55,11 +57,17 @@ export function Sheet(props: Props) {
   return props.mode === 'panel' ? <Panel {...props} /> : <PhoneSheet {...props} />
 }
 
-function Panel({ label, header, children, className }: Props) {
+function Panel({ label, header, children, collapsed = false, className }: Props) {
   return (
-    <aside className={`${styles.panel} ${className ?? ''}`} aria-label={label}>
+    <aside
+      className={`${styles.panel} ${className ?? ''}`}
+      aria-label={label}
+      data-collapsed={collapsed || undefined}
+    >
       <div className={styles.panelHead}>{header}</div>
-      <div className={styles.panelBody}>{children}</div>
+      <div id="panel-body" className={styles.panelBody} hidden={collapsed}>
+        {children}
+      </div>
     </aside>
   )
 }

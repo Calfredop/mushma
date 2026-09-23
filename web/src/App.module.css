@@ -219,7 +219,7 @@
   background: var(--glass-hover);
 }
 
-.headerButton[aria-expanded='true'] {
+.headerButton[aria-haspopup][aria-expanded='true'] {
   background: var(--humus);
   color: var(--carta);
 }
@@ -286,32 +286,25 @@
   text-underline-offset: 2px;
 }
 
+/* From 900px the map is full-bleed too, and the panel (Sheet.module.css) floats on its left:
+   the map's controls keep clear of it, and the bottom ones reclaim its corner when it folds. */
 @media (min-width: 900px) {
   .app {
-    display: grid;
-    grid-template-columns: var(--panel-width) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr);
-    grid-template-areas: 'sheet map';
-  }
-
-  .mapArea {
-    position: relative;
-    inset: auto;
-    grid-area: map;
-    min-height: 0;
-  }
-
-  .sheet {
-    grid-area: sheet;
+    --panel-inset: calc(var(--panel-width) + 2 * var(--space-4));
   }
 
   .wordmark {
     font-size: var(--text-wordmark);
   }
 
+  .headerActions {
+    display: flex;
+    gap: 2px;
+  }
+
   .species {
     top: var(--space-4);
-    left: var(--space-4);
+    left: var(--panel-inset);
     right: calc(var(--space-4) + var(--tap) + var(--space-2));
   }
 
@@ -322,16 +315,20 @@
 
   .status {
     top: 4.25rem;
-    left: 50%;
-    max-width: calc(100% - 2 * (var(--space-4) + var(--tap) + var(--space-2)));
+    left: calc(var(--panel-inset) + (100% - var(--panel-inset)) / 2);
+    max-width: calc(100% - var(--panel-inset) - 2 * (var(--tap) + var(--space-4)));
     transform: translateX(-50%);
   }
 
   .bottom {
-    left: var(--space-4);
+    left: var(--panel-inset);
     right: var(--space-4);
     bottom: calc(var(--space-4) + 1rem);
     grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .app[data-panel='collapsed'] .bottom {
+    left: var(--space-4);
   }
 
   .legend {

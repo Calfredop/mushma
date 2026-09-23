@@ -1,4 +1,11 @@
 import { expect, test } from '@playwright/test'
+import type { Map as MapLibreMap } from 'maplibre-gl'
+
+declare global {
+  interface Window {
+    __mushmaMap?: MapLibreMap
+  }
+}
 
 // The desktop layout from its first width up to past the one where the 14-day time bar (792px)
 // fits its column whole, at about 1416px.
@@ -6,7 +13,7 @@ const WIDTHS = [900, 1024, 1280, 1440]
 
 test.use({ viewport: { width: 1280, height: 800 }, isMobile: false, hasTouch: false })
 
-test('the time bar stays in the map and nothing scrolls the app sideways', async ({
+test('the time bar and the pill stay on the map, clear of the floating panel, and nothing scrolls the app sideways', async ({
   page,
 }) => {
   await page.goto('/')
@@ -17,17 +24,30 @@ test('the time bar stays in the map and nothing scrolls the app sideways', async
   const strip = page.getByRole('radiogroup', { name: 'Giorno' })
   const species = page.getByRole('radiogroup', { name: 'Specie' })
   const center = page.getByRole('button', { name: 'Centra sulla mia posizione' })
+  const panel = page.getByRole('complementary')
   await expect(strip).toBeVisible()
 
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 800 })
     const box = async (locator: typeof strip) => (await locator.boundingBox())!
-    const [mapBox, stripBox, centerBox, speciesBox] = [
+    const [mapBox, stripBox, centerBox, speciesBox, panelBox] = [
       await box(main),
       await box(strip),
       await box(center),
       await box(species),
+      await box(panel),
     ]
+    // The map runs under the whole window; the panel floats inset on it...
+    expect(mapBox.x).toBe(0)
+    expect(panelBox.x, `panel at ${width}px`).toBeGreaterThan(0)
+    const panelRight = panelBox.x + panelBox.width
+    // ...and the date strip and the species pill start clear of it.
+    expect(stripBox.x, `strip under the panel at ${width}px`).toBeGreaterThanOrEqual(
+      panelRight,
+    )
+    expect(speciesBox.x, `pill under the panel at ${width}px`).toBeGreaterThanOrEqual(
+      panelRight,
+    )
 
     // The date strip ends inside the map instead of poking past its right edge...
     expect(stripBox.x, `strip left at ${width}px`).toBeGreaterThanOrEqual(mapBox.x)
@@ -48,6 +68,54 @@ test('the time bar stays in the map and nothing scrolls the app sideways', async
       `species pill at ${width}px`,
     ).toBeLessThanOrEqual(centerBox.x)
   }
+})
+
+test('the panel folds to its header, stays folded after a reload, and a chosen spot opens it', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
+  const panel = page.getByRole('complementary')
+  const legend = page.getByRole('heading', { name: 'Indice delle condizioni' })
+  const box = async (locator: typeof panel) => (await locator.boundingBox())!
+  const open = await box(panel)
+
+  await page.getByRole('button', { name: 'Riduci il pannello' }).click()
+  await expect(page.getByRole('tab', { name: 'Oggi' })).toBeHidden()
+  await expect.poll(async () => (await box(panel)).height).toBeLessThan(200)
+  // The legend takes the corner the panel gave up.
+  await expect.poll(async () => (await box(legend)).x).toBeLessThan(open.x + open.width)
+
+  await page.reload()
+  const expand = page.getByRole('button', { name: 'Espandi il pannello' })
+  await expect(expand).toHaveAttribute('aria-expanded', 'false')
+
+  // A tap on a cell in the middle of the map chooses a spot, and the panel opens for it.
+  await page.waitForFunction(
+    () => (window.__mushmaMap?.querySourceFeatures('cells-points').length ?? 0) > 0,
+  )
+  const cell = await page.evaluate(() => {
+    const map = window.__mushmaMap!
+    const { width, height } = map.getCanvas().getBoundingClientRect()
+    const points = map.querySourceFeatures('cells-points').map((feature) => {
+      const [lon, lat] = (feature.geometry as { coordinates: [number, number] })
+        .coordinates
+      return map.project([lon, lat])
+    })
+    return points.reduce((best, point) =>
+      Math.hypot(point.x - width / 2, point.y - height / 2) <
+      Math.hypot(best.x - width / 2, best.y - height / 2)
+        ? point
+        : best,
+    )
+  })
+  await page.mouse.click(cell.x, cell.y)
+  await expect(page.getByRole('button', { name: 'Riduci il pannello' })).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  )
+  await expect(panel.getByText('Previsione del punto')).toBeVisible()
 })
 
 // The narrowest phone the layout promises, and a common one.

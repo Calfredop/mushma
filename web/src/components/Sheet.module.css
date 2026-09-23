@@ -92,15 +92,27 @@
   height: var(--safe-bottom);
 }
 
-/* A desktop: a side panel. */
+/* A desktop: a glass card floating inset on the full-bleed map. Folded, it is its header row
+   alone, and its height eases between the two where the browser can animate to auto. */
 .panel {
-  position: relative;
+  composes: glass from global;
+  position: absolute;
   z-index: 5;
+  top: var(--space-4);
+  left: var(--space-4);
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  background: var(--lichene);
-  box-shadow: 1px 0 0 var(--rule);
+  width: var(--panel-width);
+  height: calc(100% - 2 * var(--space-4));
+  overflow: hidden;
+  border-radius: var(--radius-sheet);
+  background: var(--glass-tint-strong);
+  interpolate-size: allow-keywords;
+  transition: height 240ms var(--ease);
+}
+
+.panel[data-collapsed] {
+  height: auto;
 }
 
 .panelHead {

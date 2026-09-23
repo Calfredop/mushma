@@ -16,6 +16,7 @@ vi.mock('./map/ConditionsMap', () => ({
       data-spot-point={JSON.stringify(props.spotPoint ?? null)}
       data-user-position={JSON.stringify(props.userPosition ?? null)}
       data-analysis={JSON.stringify(props.analysis ?? null)}
+      data-padding={JSON.stringify(props.padding ?? null)}
     />
   ),
 }))
@@ -157,6 +158,47 @@ describe('the phone shell', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Info e impostazioni' }))
     await userEvent.click(screen.getByRole('menuitem', { name: 'Dati e crediti' }))
     expect(window.location.pathname).toBe('/credits')
+  })
+})
+
+describe('the desktop panel', () => {
+  beforeEach(() => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(min-width: 900px)',
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }))
+  })
+  afterEach(() => Reflect.deleteProperty(window, 'matchMedia'))
+
+  it('collapses to its header, is remembered, and a chosen spot opens it again', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    const { unmount } = render(<App />)
+    const toggle = screen.getByRole('button', { name: 'Riduci il pannello' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('tab', { name: 'Oggi' })).toBeVisible()
+    // Map padding keeps camera moves clear of the open panel: 16 + 400 + 16.
+    expect(mapProp('padding')).toMatchObject({ left: 432 })
+
+    await userEvent.click(toggle)
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(toggle).toHaveAccessibleName('Espandi il pannello')
+    expect(screen.queryByRole('tab', { name: 'Oggi' })).toBeNull()
+    // The header row stays: wordmark and search.
+    expect(screen.getByRole('heading', { level: 1 })).toBeVisible()
+    expect(screen.getByRole('combobox')).toBeVisible()
+    expect(mapProp('padding')).toMatchObject({ left: 16 })
+    unmount()
+
+    mockGeolocation(43.85, 11.73)
+    render(<App />)
+    const again = screen.getByRole('button', { name: 'Espandi il pannello' })
+    expect(again).toHaveAttribute('aria-expanded', 'false')
+
+    await userEvent.click(screen.getByRole('combobox'))
+    await userEvent.click(screen.getByRole('option', { name: /^La mia posizione/ }))
+    expect(again).toHaveAttribute('aria-expanded', 'true')
   })
 })
 
