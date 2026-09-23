@@ -249,12 +249,36 @@
     "collapse": "Collapse the panel"
   },
   "disclaimer": {
-    "title": "Conditions only, never edibility",
-    "body1": "Mappa Funghi estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat.",
-    "body2": "The conditions score runs from 0 to 1 and is not a probability. More than a few days ahead it is a trend, not a certainty.",
-    "body3": "Before eating any mushroom you pick, have it checked for free by your local ASL mycological inspectorate.",
+    "title": "Before you use the map",
+    "sections": {
+      "conditions": {
+        "title": "Conditions only, never edibility",
+        "body": "Mappa Funghi estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat."
+      },
+      "score": {
+        "title": "An index, not a probability",
+        "body": "The conditions score runs from 0 to 1 and is not a probability. More than a few days ahead it is a trend, not a certainty."
+      },
+      "terrain": {
+        "title": "Dangerous terrain",
+        "body": "Woodland can be dangerous: steep slopes, drops, ditches, wet stones and leaves, fallen trees, no phone signal and early darkness. The map uses elevation, slope and aspect only to estimate habitat: it shows no paths or hazards, and a cell with a good score can be rough or out of reach. Wear proper footwear, try not to go alone, and always tell someone where you are going. Check the weather warnings and, in the hunting season, wear something highly visible. In an emergency, call 112."
+      },
+      "access": {
+        "title": "Private or restricted areas",
+        "body": "The map colours woodland without knowing who owns it or whether you may enter. Much of it is private land, where picking can be reserved for the owner; other areas are parks, reserves, military zones or closed areas, for example after a fire or during a hunt. A good score is not permission: respect fences, signs and bans. Picking has its own rules too (permits, quantities, seasons and areas), set by the region, municipalities and park authorities: check them before you go."
+      },
+      "noGuarantee": {
+        "title": "No guarantee",
+        "body": "Mappa Funghi is a free personal project, provided as is. Weather, forecasts, woodland maps and sightings come from public sources and can be wrong, incomplete or late; the model simplifies and can be wrong; the service can stop without notice. A high score doesn't guarantee you will find mushrooms, and a low one doesn't rule them out."
+      },
+      "judgement": {
+        "title": "Judge the data for yourself",
+        "body": "Scores and data are an aid, not a decision. Compare them with what you see on the ground, with official forecasts and warnings, and with people who know the area. Where to go, when and how to get about is up to you, and so is the responsibility for those choices."
+      }
+    },
+    "inspection": "Before eating any mushroom you pick, have it checked for free by your local ASL mycological inspectorate.",
     "accept": "Got it",
-    "short": "Conditions only: Mappa Funghi doesn't identify mushrooms or judge whether they are edible."
+    "short": "Conditions only, no guarantee: Mappa Funghi doesn't identify mushrooms or judge whether they are edible."
   },
   "credits": {
     "title": "Data and credits",

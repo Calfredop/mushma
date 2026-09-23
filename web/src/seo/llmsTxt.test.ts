@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DATA_CREDITS, SOFTWARE_CREDITS } from '../credits'
+import { DISCLAIMER_SECTIONS } from '../disclaimer'
 import en from '../i18n/locales/en.json'
 import itLocale from '../i18n/locales/it.json'
 import { ROUTES } from '../routes'
@@ -30,10 +31,12 @@ describe('buildLlmsTxt', () => {
 
   it('states the rules an answer must keep before any section: conditions only, not a probability', () => {
     const details = txt.slice(0, txt.indexOf('\n## '))
+    const { sections, inspection } = itLocale.disclaimer
     for (const copy of [
-      itLocale.disclaimer.body1,
-      itLocale.disclaimer.body2,
-      itLocale.disclaimer.body3,
+      ...DISCLAIMER_SECTIONS.map(
+        (key) => `**${sections[key].title}.** ${sections[key].body}`,
+      ),
+      inspection,
       itLocale.structuredData.score.description,
       itLocale.structuredData.method,
       itLocale.llms.liveData,

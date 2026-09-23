@@ -43,7 +43,7 @@ function mockGeolocation(lat: number, lon: number) {
 const mapProp = (name: string): unknown =>
   JSON.parse(screen.getByTestId('map').getAttribute(`data-${name}`) ?? 'null')
 
-beforeEach(() => localStorage.setItem('mushma.disclaimer.v1', 'accepted'))
+beforeEach(() => localStorage.setItem('mushma.disclaimer.v2', 'accepted'))
 
 afterEach(() => {
   localStorage.clear()

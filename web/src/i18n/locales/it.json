@@ -249,12 +249,36 @@
     "collapse": "Riduci il pannello"
   },
   "disclaimer": {
-    "title": "Solo condizioni, mai commestibilità",
-    "body1": "Mappa Funghi stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare.",
-    "body2": "L'indice delle condizioni va da 0 a 1 e non è una probabilità. Oltre qualche giorno è una tendenza, non una certezza.",
-    "body3": "Prima di consumare qualsiasi fungo raccolto, fallo controllare gratuitamente all'ispettorato micologico della tua ASL.",
+    "title": "Prima di usare la mappa",
+    "sections": {
+      "conditions": {
+        "title": "Solo condizioni, mai commestibilità",
+        "body": "Mappa Funghi stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare."
+      },
+      "score": {
+        "title": "Un indice, non una probabilità",
+        "body": "L'indice delle condizioni va da 0 a 1 e non è una probabilità. Oltre qualche giorno è una tendenza, non una certezza."
+      },
+      "terrain": {
+        "title": "Terreno pericoloso",
+        "body": "Il bosco può essere pericoloso: pendii ripidi, dirupi, fossi, sassi e foglie bagnate, alberi caduti, zone senza campo e buio che arriva presto. La mappa usa quota, pendenza ed esposizione solo per stimare l'habitat: non segna sentieri né pericoli, e una cella con un buon punteggio può essere impervia o irraggiungibile. Usa scarpe adatte, meglio non andare da soli, e di' sempre a qualcuno dove vai. Controlla le allerte meteo e, nella stagione di caccia, indossa qualcosa di ben visibile. In caso di emergenza chiama il 112."
+      },
+      "access": {
+        "title": "Aree private o interdette",
+        "body": "La mappa colora i boschi senza sapere di chi sono né se ci si può entrare. Molti sono proprietà private, dove la raccolta può essere riservata al proprietario; altri sono parchi, riserve, zone militari o aree chiuse, per esempio dopo un incendio o durante una battuta di caccia. Un buon punteggio non è un permesso: rispetta recinzioni, cartelli e divieti. Anche la raccolta ha le sue regole (autorizzazioni, quantità, periodi e zone), fissate da regione, comuni ed enti parco: informati prima di andare."
+      },
+      "noGuarantee": {
+        "title": "Nessuna garanzia",
+        "body": "Mappa Funghi è un progetto personale e gratuito, offerto così com'è. Meteo, previsioni, carte del bosco e avvistamenti arrivano da fonti pubbliche e possono essere sbagliati, incompleti o in ritardo; il modello semplifica e può sbagliare; il servizio può interrompersi senza preavviso. Un punteggio alto non garantisce di trovare funghi, e uno basso non esclude che ci siano."
+      },
+      "judgement": {
+        "title": "Dati da valutare personalmente",
+        "body": "Punteggi e dati sono un aiuto, non una decisione. Confrontali con quello che vedi sul posto, con le previsioni e le allerte ufficiali e con chi conosce la zona. Dove andare, quando e come muoverti lo decidi tu, e la responsabilità di queste scelte resta tua."
+      }
+    },
+    "inspection": "Prima di consumare qualsiasi fungo raccolto, fallo controllare gratuitamente all'ispettorato micologico della tua ASL.",
     "accept": "Ho capito",
-    "short": "Solo condizioni: Mappa Funghi non riconosce funghi e non ne valuta la commestibilità."
+    "short": "Solo condizioni, nessuna garanzia: Mappa Funghi non riconosce funghi e non ne valuta la commestibilità."
   },
   "credits": {
     "title": "Dati e crediti",

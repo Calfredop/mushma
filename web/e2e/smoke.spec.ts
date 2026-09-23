@@ -36,10 +36,8 @@ async function bestCellOnScreen(page: Page) {
 test('map → spot forecast → why this score', async ({ page }) => {
   await page.goto('/')
 
-  // First visit: the conditions-only disclaimer.
-  const disclaimer = page.getByRole('dialog', {
-    name: 'Solo condizioni, mai commestibilità',
-  })
+  // First visit: the disclaimer.
+  const disclaimer = page.getByRole('dialog', { name: 'Prima di usare la mappa' })
   await expect(disclaimer).toBeVisible()
   await disclaimer.getByRole('button', { name: 'Ho capito' }).click()
   await expect(disclaimer).toBeHidden()

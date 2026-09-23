@@ -1,11 +1,13 @@
 /**
  * `/llms.txt` (llmstxt.org): a Markdown briefing for LLMs and answer engines. It says what the
  * site is, the rules an answer about it must keep (conditions only, never edibility; a 0–1
- * index, not a probability; sightings only as counts per cell) and links every page and data
- * source. Built from the same route list and locale copy as the sitemap and the JSON-LD, in
- * Italian like the rest of the indexed copy (`vite.config.ts` writes it at build time).
+ * index, not a probability; no guarantee; sightings only as counts per cell), the disclaimer's
+ * terrain and access warnings, and links every page and data source. Built from the same
+ * route list and locale copy as the sitemap and the JSON-LD, in Italian like the rest of the
+ * indexed copy (`vite.config.ts` writes it at build time).
  */
 import { type Credit, DATA_CREDITS, SOFTWARE_CREDITS } from '../credits.js'
+import { DISCLAIMER_SECTIONS, type DisclaimerSection } from '../disclaimer.js'
 import en from '../i18n/locales/en.json' with { type: 'json' }
 import it from '../i18n/locales/it.json' with { type: 'json' }
 import { ROUTES, SITE_URL } from '../routes.js'
@@ -14,7 +16,10 @@ import type { JsonLdLanguage } from './structuredData.js'
 interface Copy {
   seo: { credits: { description: string } }
   intro: Record<string, string>
-  disclaimer: { body1: string; body2: string; body3: string }
+  disclaimer: {
+    sections: Record<DisclaimerSection, { title: string; body: string }>
+    inspection: string
+  }
   credits: {
     title: string
     dataTitle: string
@@ -57,9 +62,11 @@ export function buildLlmsTxt(lang: JsonLdLanguage = 'it'): string {
   const blocks = [
     '# Mappa Funghi',
     `> ${sd.appDescription}`,
-    copy.disclaimer.body1,
-    copy.disclaimer.body2,
-    copy.disclaimer.body3,
+    ...DISCLAIMER_SECTIONS.map((key) => {
+      const { title, body } = copy.disclaimer.sections[key]
+      return `**${title}.** ${body}`
+    }),
+    copy.disclaimer.inspection,
     `**${sd.score.name}.** ${sd.score.description}`,
     `**${copy.llms.methodTitle}.** ${sd.method}`,
     copy.llms.liveData,

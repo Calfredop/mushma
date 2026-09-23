@@ -1,6 +1,7 @@
 .dialog {
-  width: min(28rem, calc(100vw - 2rem));
-  padding: var(--space-5);
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
   border: 0;
   border-radius: var(--radius-l);
   background: var(--lichene);
@@ -8,33 +9,45 @@
   box-shadow: 0 20px 60px rgb(28 33 29 / 30%);
 }
 
+/* Only when open: a `display` on the closed dialog would override the UA's hidden state. */
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
 .dialog::backdrop {
   background: rgb(28 33 29 / 45%);
 }
 
-.dialog p {
-  margin: 0 0 var(--space-3);
+.body {
+  min-height: 0;
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .title {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-4);
   font-family: var(--font-display);
   font-size: var(--text-species);
   font-weight: 400;
   line-height: 1.15;
 }
 
-.strong {
-  padding: var(--space-3);
-  border-left: 3px solid var(--humus);
-  background: var(--carta);
-  font-weight: 600;
+/* Focused only so reading starts here; it is not a control, so no ring. */
+.title:focus-visible {
+  box-shadow: none;
+}
+
+.actions {
+  flex: none;
+  padding: var(--space-3) var(--space-5) var(--space-5);
+  border-top: 1px solid var(--rule);
 }
 
 .accept {
   width: 100%;
   min-height: var(--tap);
-  margin-top: var(--space-2);
   border: 0;
   border-radius: var(--radius-m);
   background: var(--humus);
