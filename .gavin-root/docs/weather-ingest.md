@@ -216,14 +216,33 @@ present), 0.2° lattice and config lapse rates:
 | 2026 Jan–Sep 6 | 400–800 m | 59 | 0.66 | 0.68 | 0.60 | 68 % | 7 % | 20.2 mm |
 | 2026 Jan–Sep 6 | ≥ 800 m | 40 | 0.64 | 0.66 | 0.63 | 72 % | 7 % | 19.3 mm |
 | **2026 Jan–Sep 6** | **all** | **145** | **0.68** | **0.70** | **0.62** | **72 %** | **7 %** | **17.8 mm** |
+| 2019–2025 | < 400 m | 39 | 0.91 | 0.92 | 0.64 | 81 % | 10 % | 15.2 mm |
+| 2019–2025 | 400–800 m | 55 | 0.79 | 0.80 | 0.64 | 78 % | 10 % | 16.5 mm |
+| 2019–2025 | ≥ 800 m | 37 | 0.71 | 0.75 | 0.68 | 78 % | 11 % | 19.2 mm |
+| **2019–2025** | **all** | **131** | **0.79** | **0.84** | **0.66** | **79 %** | **10 %** | **16.6 mm** |
 
-The seasons from 2019 go through the same check once the backfill reaches them (the backfill task
-card has the command).
+The 2019–2025 rows are the backtest seasons, checked once the backfill had stored them
+(`checks gauges --start 2019-01-01 --end 2025-12-31`, run 2026-09-19). A gauge qualifies only if SIR
+lists rain for it in all seven years and it has at least 80 % of days (2,058–2,556 matched days per
+gauge). Year by year, the pooled model / gauge ratio (each year's own qualifying gauges) is:
 
-**Finding: the reanalysis rain is too dry in the hills, by about a third.** The model catches most
-wet spells (7–8 in 10 of the gauges' 10 mm+ 3-day windows, with about 1 false alarm in 10 dry
-windows), but with too little rain. The shortfall grows with height: about −20 % below 400 m, −30 %
-at 400–800 m and −35 % above, in both periods. This is the known behaviour of ERA5 rain in complex
+| year | gauges | all | < 400 m | 400–800 m | ≥ 800 m |
+|---|---|---|---|---|---|
+| 2019 | 144 | 0.76 | 0.86 | 0.74 | 0.69 |
+| 2020 | 144 | 0.75 | 0.84 | 0.73 | 0.68 |
+| 2021 | 142 | 0.73 | 0.88 | 0.72 | 0.63 |
+| 2022 | 144 | 0.94 | 1.07 | 0.93 | 0.83 |
+| 2023 | 145 | 0.89 | 1.04 | 0.88 | 0.78 |
+| 2024 | 146 | 0.87 | 0.99 | 0.84 | 0.81 |
+| 2025 | 133 | 0.70 | 0.79 | 0.69 | 0.63 |
+
+**Finding: the reanalysis rain is too dry in the hills: by about a fifth over 2019–2025, and by
+about a third in 2025–2026.** The model catches most wet spells (about 8 in 10 of the gauges' 10 mm+
+3-day windows, with about 1 false alarm in 10 dry windows), but with too little rain. The shortfall
+grows with height: over 2019–2025 it is about −10 % below 400 m, −20 % at 400–800 m and −30 % above.
+In 2025–2026 it is about −20 %, −30 % and −35 %. The size of the shortfall changes from year to year
+(pooled ratio 0.70–0.94), and 2025 is the driest year of the seven relative to the gauges, but the
+growth with height holds every year. This is the known behaviour of ERA5 rain in complex
 terrain: its 31 km model smooths orographic enhancement and convective cores. ERA5-Land does not add rain detail, since its rain is ERA5's interpolated. The
 0.2° lattice is not the cause: against the 0.1° grid it changes wet 3-day totals by 3 mm, not
 tens of mm.
@@ -231,8 +250,17 @@ tens of mm.
 No correction is applied in ingest. The rain thresholds in the draft rules come from gauge-based
 studies, so on this data they would fire too rarely. **M3 should either tune the rain amounts on
 the backtest (their scale is then ERA5's), or scale rain by an elevation-dependent factor fitted to
-these gauges** (about ×1.25 below 400 m, ×1.45 at 400–800 m and ×1.6 above) before scoring.
+these gauges** (fitted on 2025: about ×1.25 below 400 m, ×1.45 at 400–800 m and ×1.6 above) before
+scoring.
 `checks gauges` writes one row per gauge to `checks/gauges_<start>_<end>.csv` for that fit.
+
+**For M3: the 2025 rain scale over-corrects the backtest seasons.** Model v1 multiplies rain by
+`1.28 + 0.29 × elevation (km)`, a least-squares fit of gauge totals on model totals over the 2025
+gauges (`model-v1-validation.md` → "Rain scale"). The same fit on the 131 gauges of 2019–2025 gives
+`1.09 + 0.28 × elevation (km)`, with the same slope and a lower intercept. The scaled pooled ratio
+is then 1.05 below 400 m, 0.99 at 400–800 m and 0.99 above. Applied to 2019–2025, the 2025 fit makes
+rain about 16 % too wet (pooled 1.16; 1.22, 1.14 and 1.13 by band), and most in 2022–2024. The
+tuning search's `rain_scale` choice (prior or raw) should also try the 2019–2025 fit.
 
 ## Backfill depth and API budget
 
@@ -279,7 +307,10 @@ come cheaper from ERA5 at 0.25°.
   was.
 - Chunks older than 10 days are cached for good. A settled chunk that comes back with gaps is
   dropped from the cache and retried.
-- `--wait` sleeps through server-side daily limits and network failures.
+- `--wait` sleeps through server-side daily limits and network failures. Long waits sleep in steps
+  of at most 5 minutes and re-read the wall clock after each, because `time.sleep` does not count
+  time a laptop spends asleep: one sleep until 00:00 UTC once overran by hours. A response cut off in
+  transit is retried like a server error.
 - By default the backfill ends 11 days ago. `update` covers the rest.
 
 ## Daily update
@@ -306,8 +337,9 @@ from Fly's IP, so it does not share the free quota with a laptop.
   time.
 - **ERA5T.** The latest ~3 months of ERA5 are preliminary (ERA5T) and are replaced by final ERA5.
   They are normally identical, and settled chunks are not re-fetched.
-- **Rain is too dry in the hills** (SIR gauges, 2025: model/gauge 0.79 below 400 m, 0.69 at
-  400–800 m, 0.63 above). Not corrected in ingest; M3 decides (see Ground truth).
+- **Rain is too dry in the hills** (SIR gauges, 2019–2025: model/gauge 0.91 below 400 m, 0.79 at
+  400–800 m, 0.71 above; 2025 alone: 0.79, 0.69, 0.63). Not corrected in ingest; M3 decides (see
+  Ground truth, which also has the 2019–2025 fit of M3's rain scale).
 - **M3 · Model v1.** Read cell weather with `cell_weather()`. The derived series (`water_balance`,
   `temperature_2m_max_anomaly_30d`) and the climatology behind `percent_of_normal` /
   `percentile_of_normal` are M3's, from this table. Soil moisture is model-scaled, so prefer
