@@ -86,19 +86,20 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   /* Where the top is clear for anything to read or tap: the inset, and in iOS's installed app
-     the blur under it (below). */
+     the thick of the blur under it (below). */
   --safe-top-clear: var(--safe-top);
 }
 
 /* iOS's installed app (iOS 26 on) lays Liquid Glass over the top of the screen: opaque across the
    status bar, then fading out about 100pt from the top, 38pt under a 62pt inset. It sits above
    the page, so no CSS or meta turns it off (an opaque strip under the status bar doesn't either),
-   and env() doesn't count it: the top controls start below it. Only with a status bar: an iPhone
-   on its side hides it. -webkit-touch-callout is iOS's alone. */
+   and env() doesn't count it. Clearing all of it costs too much map, so the top controls start
+   in its tail, where it washes their edge by under a tenth (measured on an iPhone): 12px more.
+   Only with a status bar: an iPhone on its side hides it. -webkit-touch-callout is iOS's alone. */
 @supports (-webkit-touch-callout: none) {
   @media (display-mode: standalone) and (min-height: 500px) {
     :root {
-      --safe-top-clear: calc(var(--safe-top) + 2rem);
+      --safe-top-clear: calc(var(--safe-top) + 0.75rem);
     }
   }
 }
