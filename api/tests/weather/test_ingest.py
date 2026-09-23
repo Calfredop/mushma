@@ -12,7 +12,7 @@ import pytest
 
 from api.weather.config import load_weather_config
 from api.weather.ingest import backfill, build_points, history_requests, update
-from api.weather.openmeteo import Client, RateBudget
+from api.weather.openmeteo import MAX_SLEEP_S, Client, RateBudget
 from api.weather.store import WeatherStore
 
 TODAY = date(2026, 9, 17)
@@ -259,19 +259,26 @@ def test_run_until_done_sleeps_through_rate_limits_and_network_errors() -> None:
         BackfillStatus(fetched=2),
     ]
     sleeps: list[float] = []
+    now = [datetime(2026, 9, 17, 23, 0, tzinfo=UTC).timestamp()]
+    started: list[datetime] = []
 
     def run() -> BackfillStatus:
+        started.append(datetime.fromtimestamp(now[0], UTC))
         outcome = outcomes.pop(0)
         if isinstance(outcome, Exception):
             raise outcome
         return outcome
 
-    now = datetime(2026, 9, 17, 23, 0, tzinfo=UTC).timestamp()
-    status = run_until_done(run, sleep=sleeps.append, clock=lambda: now, log=lambda m: None)
+    def sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+        now[0] += seconds
+
+    status = run_until_done(run, sleep=sleep, clock=lambda: now[0], log=lambda m: None)
 
     assert status.done and status.fetched == 2
-    assert sleeps[0] == pytest.approx(3600 + 65)  # until just after 00:00 UTC
-    assert sleeps[1] == 600
+    assert started[1] == datetime(2026, 9, 18, 0, 1, 5, tzinfo=UTC)  # just after 00:00 UTC
+    assert max(sleeps[:-1]) <= MAX_SLEEP_S  # short steps re-read the clock if the machine slept
+    assert sleeps[-1] == 600
 
 
 def test_run_until_done_gives_up_on_chunks_that_stay_incomplete() -> None:

@@ -8,8 +8,9 @@
   and the model grid cell each point was served from, with that cell's mean height.
 - :class:`RateBudget` keeps the weighted call count under Open-Meteo's per-minute, per-hour and
   per-day limits. The server counts in fixed UTC windows, so the budget does too.
-- :class:`Client` fetches with a gzip JSON cache, retries server errors with backoff and waits out
-  minute and hour rate limits. A daily limit stops the run: resume it later.
+- :class:`Client` fetches with a gzip JSON cache, retries server errors and responses cut off in
+  transit with backoff, and waits out minute and hour rate limits. A daily limit stops the run:
+  resume it later.
 """
 
 import fcntl
@@ -25,6 +26,7 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import date, datetime
+from http.client import IncompleteRead
 from pathlib import Path
 
 import pandas as pd
@@ -240,7 +242,9 @@ class RateBudget:
                     f"daily budget of {self.per_day:.0f} calls spent ({spent:.0f} used); "
                     "resume after 00:00 UTC"
                 )
-            self.sleep(seconds_until_next_window(now, window_s) + margin)
+            sleep_until(
+                now + seconds_until_next_window(now, window_s) + margin, self.clock, self.sleep
+            )
 
     def exhaust(self, window_s: int) -> None:
         """Mark a window as spent, e.g. after the server said so."""
@@ -253,6 +257,19 @@ class RateBudget:
 
 def seconds_until_next_window(now: float, window_s: int) -> float:
     return math.floor(now / window_s + 1) * window_s - now
+
+
+# The longest single sleep. ``time.sleep`` does not count time the machine spends asleep (macOS), so
+# one sleep until the next UTC day can overrun by the whole night: long waits go in steps instead.
+MAX_SLEEP_S = 300
+
+
+def sleep_until(
+    deadline: float, clock: Callable[[], float], sleep: Callable[[float], None]
+) -> None:
+    """Sleep until the wall clock reaches ``deadline``, re-reading it every few minutes."""
+    while (left := deadline - clock()) > 0:
+        sleep(min(left, MAX_SLEEP_S))
 
 
 @dataclass
@@ -328,6 +345,8 @@ class Client:
                 failure = error
             except (urllib.error.URLError, TimeoutError) as error:
                 failure = error
+            except (IncompleteRead, json.JSONDecodeError) as error:
+                failure = error  # the body was cut off in transit
             if failures >= self.retries:
                 raise failure
             self.sleep(self.backoff_s * 2**failures)
