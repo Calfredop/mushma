@@ -37,7 +37,7 @@ import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import { LayersIcon, LocateIcon } from './components/icons'
+import { ChevronIcon, LayersIcon, LocateIcon } from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
 import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
@@ -135,6 +135,7 @@ function MapScreen() {
   // The phone sheet: a chosen spot opens at half.
   const [snap, setSnap] = useState<Snap>(app.spot ? 'half' : 'peek')
   const [sheetLayout, setSheetLayout] = useState<SheetLayout | null>(null)
+  const [introOpen, setIntroOpen] = useState(false)
   const mapAreaRef = useRef<HTMLElement>(null)
   const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
   const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
@@ -366,6 +367,8 @@ function MapScreen() {
     }
   }, [desktop, sheetLayout, snap])
 
+  const introKey = app.species === 'combined' ? 'region' : app.species
+
   const infoMenuActions = {
     onDisclaimer: () => setDisclaimerOpen(true),
     onCookies: () => setCookieBannerOpen(true),
@@ -569,9 +572,23 @@ function MapScreen() {
           ) : (
             <>
               {app.route.kind === 'region' && (
-                <p className={styles.intro}>
-                  {t(`intro.${app.species === 'combined' ? 'region' : app.species}`)}
-                </p>
+                <div className={styles.intro}>
+                  <p>{t(`intro.lead.${introKey}`)}</p>
+                  <button
+                    type="button"
+                    className={styles.more}
+                    aria-expanded={introOpen}
+                    aria-controls="intro-more"
+                    onClick={() => setIntroOpen((open) => !open)}
+                  >
+                    {t('intro.more')}
+                    <ChevronIcon direction={introOpen ? 'up' : 'down'} />
+                  </button>
+                  {/* Folded, not left out: it is what the page says to search engines too. */}
+                  <p id="intro-more" hidden={!introOpen}>
+                    {t(`intro.${introKey}`)}
+                  </p>
+                </div>
               )}
               <ViewTabs
                 value={app.view}

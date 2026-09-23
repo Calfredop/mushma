@@ -98,6 +98,22 @@ describe('the phone shell', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
   })
 
+  it('introduces the map in one line, with the rest behind "Come funziona"', async () => {
+    window.history.replaceState(null, '', '/toscana/porcini')
+    render(<App />)
+    expect(screen.getByText('Condizioni per i porcini, cella per cella.')).toBeVisible()
+    const more = screen.getByRole('button', { name: 'Come funziona' })
+    expect(more).toHaveAttribute('aria-expanded', 'false')
+    // Still in the page for search engines, only folded away.
+    const full = screen.getByText(/non dove si trovano i funghi/)
+    expect(full).not.toBeVisible()
+
+    await userEvent.click(more)
+    expect(more).toHaveAttribute('aria-expanded', 'true')
+    expect(full).toBeVisible()
+    expect(full).toHaveTextContent(/non è una probabilità/)
+  })
+
   it('has one locate button, and it only centres the map', () => {
     render(<App />)
     expect(

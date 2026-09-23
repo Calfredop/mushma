@@ -470,7 +470,14 @@
     "region": "The map shows, cell by cell, the conditions index for porcini, ovoli and gallinacci in Tuscany: how much the weather and woodland favour their growth, not where the mushrooms are. This view shows the most favoured species per cell; pick a species for its season and its factor detail. The index runs from 0 to 1 and isn't a probability.",
     "porcini": "The map shows, cell by cell, the conditions index for porcini in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs mainly from late summer through autumn. The index runs from 0 to 1 and isn't a probability.",
     "ovoli": "The map shows, cell by cell, the conditions index for ovoli in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs from June to November, mostly in autumn. The index runs from 0 to 1 and isn't a probability.",
-    "gallinacci": "The map shows, cell by cell, the conditions index for gallinacci in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn. The index runs from 0 to 1 and isn't a probability."
+    "gallinacci": "The map shows, cell by cell, the conditions index for gallinacci in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn. The index runs from 0 to 1 and isn't a probability.",
+    "lead": {
+      "region": "Conditions for mushrooms, cell by cell.",
+      "porcini": "Conditions for porcini, cell by cell.",
+      "ovoli": "Conditions for ovoli, cell by cell.",
+      "gallinacci": "Conditions for gallinacci, cell by cell."
+    },
+    "more": "How it works"
   },
   "structuredData": {
     "appDescription": "Mappa Funghi estimates every day, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in Tuscany, with a 7-day outlook and the factors behind every score. It forecasts conditions only: it doesn't identify mushrooms and never says whether a mushroom is safe to eat.",
