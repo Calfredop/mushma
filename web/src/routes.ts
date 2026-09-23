@@ -18,7 +18,7 @@ import {
 
 export const SITE_URL = 'https://mappafunghi.app'
 
-export const STATIC_PAGES = ['credits'] as const
+export const STATIC_PAGES = ['credits', 'terms', 'privacy'] as const
 export type StaticPage = (typeof STATIC_PAGES)[number]
 
 export type RouteMatch =

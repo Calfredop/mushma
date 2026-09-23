@@ -14,7 +14,11 @@ import { ROUTES, SITE_URL } from '../routes.js'
 import type { JsonLdLanguage } from './structuredData.js'
 
 interface Copy {
-  seo: { credits: { description: string } }
+  seo: {
+    credits: { description: string }
+    terms: { description: string }
+    privacy: { description: string }
+  }
   intro: Record<string, string>
   disclaimer: {
     sections: Record<DisclaimerSection, { title: string; body: string }>
@@ -26,6 +30,8 @@ interface Copy {
     license: string
     use: Record<Credit['use'], string>
   }
+  terms: { title: string }
+  privacy: { title: string }
   structuredData: {
     appDescription: string
     features: Record<string, string>
@@ -90,6 +96,8 @@ export function buildLlmsTxt(lang: JsonLdLanguage = 'it'): string {
     '## Optional',
     [
       ...SOFTWARE_CREDITS.map((credit) => creditLink(credit, copy)),
+      link(copy.terms.title, `${SITE_URL}/terms`, copy.seo.terms.description),
+      link(copy.privacy.title, `${SITE_URL}/privacy`, copy.seo.privacy.description),
       link('Sitemap', `${SITE_URL}/sitemap.xml`),
     ],
   ]

@@ -11,7 +11,10 @@
   "nav": {
     "credits": "Dati e crediti",
     "disclaimer": "Avvertenze",
-    "backToMap": "Torna alla mappa"
+    "backToMap": "Torna alla mappa",
+    "terms": "Termini e condizioni",
+    "privacy": "Privacy",
+    "cookies": "Preferenze sui cookie"
   },
   "pwa": {
     "installBanner": "Installa Mappa Funghi per un accesso rapido e la mappa anche offline nel bosco.",
@@ -280,6 +283,13 @@
     "accept": "Ho capito",
     "short": "Solo condizioni, nessuna garanzia: Mappa Funghi non riconosce funghi e non ne valuta la commestibilità."
   },
+  "cookies": {
+    "title": "La tua privacy",
+    "intro": "Usiamo Umami, un software di analisi che ospitiamo sui nostri stessi server, per capire come viene usata la mappa. Non usa cookie, non condivide nulla con terzi e non registra mai la tua posizione. Puoi accettarlo o rifiutarlo, e cambiare idea quando vuoi da qui.",
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "privacyLink": "Leggi l'informativa sulla privacy"
+  },
   "credits": {
     "title": "Dati e crediti",
     "intro": "Mappa Funghi usa solo dati pubblici e software libero. Grazie a chi li rende disponibili.",
@@ -303,6 +313,85 @@
       "fonts": "Caratteri tipografici",
       "seasonal": "Tendenze a lungo termine per le prospettive stagionali"
     }
+  },
+  "terms": {
+    "title": "Termini e condizioni",
+    "intro": "Questi termini regolano l'uso di Mappa Funghi, un progetto personale e gratuito. Usando il sito accetti quanto segue.",
+    "sections": {
+      "service": {
+        "title": "Il servizio",
+        "body": "Mappa Funghi stima, cella per cella, quanto il meteo, il bosco e il terreno favoriscono la crescita di porcini, ovoli e gallinacci in Toscana. Il servizio è offerto gratuitamente, così com'è, e può cambiare o interrompersi in qualsiasi momento senza preavviso."
+      },
+      "scoreNature": {
+        "title": "L'indice delle condizioni non è una garanzia",
+        "body": "L'indice delle condizioni va da 0 a 1 e misura solo quanto meteo e bosco sono favorevoli: non è una probabilità di trovare funghi, non è una previsione certa e non garantisce alcun risultato. Un indice alto non assicura di trovarne, e uno basso non lo esclude."
+      },
+      "userResponsibility": {
+        "title": "La responsabilità è tua",
+        "body": "Come usi la mappa, dove vai, quando ci vai e come ti muovi nel bosco è una tua scelta, e la responsabilità di quella scelta resta interamente tua. Mappa Funghi non risponde di come interpreti o usi i punteggi e i dati che mostra."
+      },
+      "liability": {
+        "title": "Limitazione di responsabilità",
+        "body": "Nei limiti consentiti dalla legge, Mappa Funghi e chi lo gestisce non rispondono di danni diretti o indiretti derivanti dall'uso del sito, da dati inesatti o mancanti, da interruzioni del servizio o da scelte fatte affidandosi ai punteggi mostrati. Nulla in questi termini esclude una responsabilità che la legge non permette di escludere."
+      },
+      "governingLaw": {
+        "title": "Legge applicabile e foro competente",
+        "body": "Questi termini sono regolati dalla legge italiana. Per qualsiasi controversia è competente il foro del consumatore previsto dal Codice del Consumo (D.Lgs. 206/2005), quando applicabile; altrimenti è competente il foro di Firenze."
+      },
+      "changes": {
+        "title": "Modifiche a questi termini",
+        "body": "Possiamo aggiornare questi termini quando cambia il servizio o la normativa. La versione in vigore è sempre quella pubblicata su questa pagina; continuando a usare il sito dopo una modifica ne accetti la nuova versione."
+      }
+    },
+    "disclaimerNote": "Le Avvertenze spiegano i rischi del terreno, dell'accesso al bosco e i limiti dei dati: leggile prima di andare.",
+    "privacyNote": "Per sapere quali dati raccogliamo e come li trattiamo, leggi l'informativa sulla privacy."
+  },
+  "privacy": {
+    "title": "Informativa sulla privacy",
+    "intro": "Questa informativa descrive quali dati Mappa Funghi raccoglie e come li usa, secondo il Regolamento (UE) 2016/679 (GDPR) e il Codice in materia di protezione dei dati personali (D.Lgs. 196/2003, come modificato dal D.Lgs. 101/2018).",
+    "controller": {
+      "title": "Titolare del trattamento",
+      "body": "Il titolare del trattamento è Cosimo Alfredo Pina Lari, che gestisce Mappa Funghi come progetto personale. Per qualsiasi richiesta relativa ai tuoi dati puoi scrivere a contact@cosimoalfredopinalari.me."
+    },
+    "sections": {
+      "dataCollected": {
+        "title": "Quali dati raccogliamo",
+        "body": "Per far funzionare la mappa raccogliamo: il tuo indirizzo IP, letto per un breve periodo dal server per limitare il numero di richieste ed evitare abusi (mai salvato su disco, si azzera a ogni riavvio); la tua posizione geografica, solo se la concedi esplicitamente dal browser per centrare la mappa o cercare la previsione più vicina, tenuta solo in memoria sul tuo dispositivo e mai inviata né salvata sui nostri server; alcuni valori tecnici salvati nel tuo browser (non cookie: la lingua scelta, se hai già letto le avvertenze e la tua scelta sui cookie di analisi), che restano solo sul tuo dispositivo; e, se acconsenti, i dati anonimi di utilizzo raccolti da Umami (vedi sotto)."
+      },
+      "legalBasis": {
+        "title": "Base giuridica del trattamento",
+        "body": "Trattiamo l'indirizzo IP per il legittimo interesse a proteggere il servizio da abusi (art. 6, par. 1, lett. f, GDPR). La posizione geografica e i dati di analisi Umami sono trattati solo con il tuo consenso (art. 6, par. 1, lett. a, GDPR), che puoi revocare in ogni momento senza conseguenze. I valori tecnici salvati nel browser servono a fornire il servizio che richiedi (art. 6, par. 1, lett. b, GDPR)."
+      },
+      "analytics": {
+        "title": "Analisi del traffico (Umami)",
+        "body": "Usiamo Umami, un software di analisi open source che ospitiamo sui nostri stessi server: nessun dato di analisi viene mai inviato a terzi. Umami non usa cookie: per distinguere le visite calcola un codice cifrato (hash) a partire dal tuo indirizzo IP e dal tipo di browser, senza mai conservare l'indirizzo IP in chiaro, e non ti segue su altri siti. Registriamo solo le pagine visitate, il cambio di specie o di vista, l'apertura di una previsione puntuale (e il modo in cui l'hai aperta: mappa, ricerca, posizione o zona migliore), lo spostamento tra i giorni, l'installazione dell'app e il cambio di lingua. L'indirizzo esatto della pagina (con eventuali coordinate) e ogni altra informazione che potrebbe indicare dove sei stato non vengono mai inviati: solo il percorso della pagina, senza parametri. Puoi rifiutare questa analisi dal banner sui cookie, o cambiare scelta in qualsiasi momento dal link «Preferenze sui cookie» nel piè di pagina."
+      },
+      "sightingsPrivacy": {
+        "title": "Avvistamenti pubblici",
+        "body": "Gli avvistamenti che vedi sulla mappa vengono da fonti pubbliche (iNaturalist e GBIF) e sono mostrati solo come conteggi per cella di 1 km: mai come coordinate esatte, e mai in una forma più precisa di come la fonte li ha già resi pubblici. Non raccogliamo né pubblichiamo mai la posizione di chi usa la mappa come se fosse un avvistamento."
+      },
+      "subprocessors": {
+        "title": "A chi affidiamo i dati",
+        "body": "Il sito è ospitato su Vercel; il traffico passa attraverso Cloudflare, che fornisce DNS e protezione dagli abusi; l'API e l'analisi Umami, che gestiamo noi stessi, girano su un server Hetzner in Germania. Nessuno di questi fornitori usa i tuoi dati per scopi propri: li trattano solo per farci funzionare il servizio."
+      },
+      "retention": {
+        "title": "Per quanto tempo conserviamo i dati",
+        "body": "L'indirizzo IP usato per il limite di richieste resta solo in memoria e si azzera a ogni riavvio del server; non lo scriviamo mai su disco. I valori salvati nel tuo browser restano finché non li cancelli tu, svuotando i dati del sito o rifiutando i cookie di analisi. I dati di utilizzo raccolti da Umami restano sui nostri server finché non li cancelliamo manualmente; non li condividiamo né li vendiamo a nessuno."
+      },
+      "internationalTransfer": {
+        "title": "Trasferimento dei dati all'estero",
+        "body": "I nostri server (Hetzner) e l'analisi Umami restano nell'Unione Europea. Vercel e Cloudflare possono instradare il traffico attraverso infrastrutture fuori dallo Spazio Economico Europeo, anche negli Stati Uniti; in questi casi si affidano alle clausole contrattuali standard approvate dalla Commissione Europea o ad altre garanzie equivalenti previste dal GDPR."
+      },
+      "rights": {
+        "title": "I tuoi diritti",
+        "body": "Hai diritto di accedere ai tuoi dati, farli correggere o cancellare, limitarne o opporti al trattamento, e di ricevere in un formato portabile quelli che ci hai fornito (artt. 15–22 GDPR). Per esercitare questi diritti scrivi a contact@cosimoalfredopinalari.me: ti risponderemo il prima possibile."
+      },
+      "complaint": {
+        "title": "Reclamo al Garante",
+        "body": "Se ritieni che il trattamento dei tuoi dati violi il GDPR, puoi proporre reclamo al Garante per la protezione dei dati personali (www.garanteprivacy.it), fermo restando il diritto di ricorrere all'autorità giudiziaria."
+      }
+    },
+    "disclaimerNote": "Le Avvertenze spiegano più nel dettaglio come trattiamo gli avvistamenti pubblici e i limiti della mappa."
   },
   "errors": {
     "generic": "Qualcosa non ha funzionato. Ricarica la pagina.",
@@ -333,6 +422,14 @@
     "credits": {
       "title": "Dati e crediti | Mappa Funghi",
       "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi in Toscana."
+    },
+    "terms": {
+      "title": "Termini e condizioni | Mappa Funghi",
+      "description": "I termini d'uso di Mappa Funghi: cosa significa l'indice delle condizioni, la responsabilità di chi usa il sito e i limiti del servizio."
+    },
+    "privacy": {
+      "title": "Informativa sulla privacy | Mappa Funghi",
+      "description": "Come Mappa Funghi tratta i tuoi dati: indirizzo IP, posizione facoltativa, valori tecnici nel browser e l'analisi Umami, nel rispetto del GDPR."
     }
   },
   "intro": {

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
+import { getConsent, setConsent } from './consent'
 
 // WebGL doesn't run in jsdom: the stub shows what the app asks of the map.
 vi.mock('./map/ConditionsMap', () => ({
@@ -162,5 +163,65 @@ describe('routing', () => {
     window.history.replaceState(null, '', '/toscana/tartufi')
     render(<App />)
     expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
+  })
+
+  it('opens the Terms and Privacy pages from the footer, with a way back to the map', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Termini e condizioni' }))
+    expect(window.location.pathname).toBe('/terms')
+    expect(
+      screen.getByRole('heading', { name: 'Termini e condizioni' }),
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('link', { name: 'Torna alla mappa' }))
+    expect(window.location.pathname).toBe('/toscana')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Privacy' }))
+    expect(window.location.pathname).toBe('/privacy')
+    expect(
+      screen.getByRole('heading', { name: 'Informativa sulla privacy' }),
+    ).toBeInTheDocument()
+  })
+})
+
+describe('cookie banner', () => {
+  afterEach(() => window.history.replaceState(null, '', '/'))
+
+  it('shows on a first visit, and remembers Accept so it never comes back', async () => {
+    window.history.replaceState(null, '', '/toscana')
+    const { unmount } = render(<App />)
+    await screen.findByTestId('map')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Accetta' }))
+    expect(getConsent()).toBe('accepted')
+    unmount()
+
+    render(<App />)
+    await screen.findByTestId('map')
+    expect(screen.queryByRole('button', { name: 'Accetta' })).not.toBeInTheDocument()
+  })
+
+  it('stays away once a choice is already stored', async () => {
+    setConsent('declined')
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+    expect(screen.queryByRole('button', { name: 'Rifiuta' })).not.toBeInTheDocument()
+  })
+
+  it('is reopenable from the footer to change the choice', async () => {
+    setConsent('declined')
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await screen.findByTestId('map')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Preferenze sui cookie' }))
+    expect(screen.getByRole('button', { name: 'Accetta' })).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Accetta' }))
+    expect(getConsent()).toBe('accepted')
   })
 })

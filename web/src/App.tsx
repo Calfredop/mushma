@@ -25,6 +25,7 @@ import {
   useStatus,
 } from './api/queries'
 import styles from './App.module.css'
+import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
 import { ChevronIcon, InfoIcon, LocateIcon, SearchIcon } from './components/icons'
@@ -43,6 +44,7 @@ import {
   REPLAY_SIGHTINGS_DAYS,
   SIGHTINGS_WINDOW_DAYS,
 } from './config'
+import { getConsent } from './consent'
 import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
 import { type LocateError, useLocate } from './hooks/useLocate'
@@ -52,6 +54,8 @@ import './i18n'
 import { ConditionsMap } from './map/ConditionsMap'
 import { CreditsPage } from './pages/CreditsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
+import { PrivacyPage } from './pages/PrivacyPage'
+import { TermsPage } from './pages/TermsPage'
 import { HotPlaces } from './panels/HotPlaces'
 import { OutlookPanel } from './panels/OutlookPanel'
 import { SeasonsPanel } from './panels/SeasonsPanel'
@@ -101,6 +105,7 @@ function MapScreen() {
   const [sheetOpen, setSheetOpen] = useState(app.spot !== null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
+  const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
   // A key, not a translated string, so it follows a language switch.
   const [locateError, setLocateError] = useState<LocateError | null>(null)
   // The last GPS fix, for the dot on the map. Never in the URL: a shared link doesn't carry it.
@@ -506,8 +511,29 @@ function MapScreen() {
               >
                 {t('nav.credits')}
               </a>
+              <a
+                href="/terms"
+                onClick={(event) => {
+                  event.preventDefault()
+                  navigate('/terms')
+                }}
+              >
+                {t('nav.terms')}
+              </a>
+              <a
+                href="/privacy"
+                onClick={(event) => {
+                  event.preventDefault()
+                  navigate('/privacy')
+                }}
+              >
+                {t('nav.privacy')}
+              </a>
               <button type="button" onClick={() => setDisclaimerOpen(true)}>
                 {t('nav.disclaimer')}
+              </button>
+              <button type="button" onClick={() => setCookieBannerOpen(true)}>
+                {t('nav.cookies')}
               </button>
             </p>
           </footer>
@@ -520,7 +546,30 @@ function MapScreen() {
           onBack={() => navigate(regionPath(app.region.slug))}
         />
       )}
+      {app.route.kind === 'static' && app.route.page === 'terms' && (
+        <TermsPage
+          backHref={regionPath(app.region.slug)}
+          onBack={() => navigate(regionPath(app.region.slug))}
+          onDisclaimerClick={() => setDisclaimerOpen(true)}
+          onPrivacyClick={() => navigate('/privacy')}
+        />
+      )}
+      {app.route.kind === 'static' && app.route.page === 'privacy' && (
+        <PrivacyPage
+          backHref={regionPath(app.region.slug)}
+          onBack={() => navigate(regionPath(app.region.slug))}
+          onDisclaimerClick={() => setDisclaimerOpen(true)}
+        />
+      )}
       <DisclaimerDialog open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
+      <CookieBanner
+        open={cookieBannerOpen}
+        onClose={() => setCookieBannerOpen(false)}
+        onPrivacyClick={() => {
+          setCookieBannerOpen(false)
+          navigate('/privacy')
+        }}
+      />
     </div>
   )
 }
