@@ -12,6 +12,7 @@ import pytest
 from api.models import (
     CellDetailResponse,
     ComuniResponse,
+    FactorsResponse,
     HotspotsResponse,
     OutlookResponse,
     PlausibleSpeciesResponse,
@@ -62,6 +63,37 @@ class TestScores:
 
     def test_404s_outside_the_served_window(self, client: httpx.Client) -> None:
         response = client.get("/scores", params={"species": "porcini", "date": "2000-01-01"})
+        assert response.status_code == 404
+
+
+class TestFactors:
+    @pytest.mark.parametrize("species", ["porcini", "ovoli", "gallinacci"])
+    def test_every_scored_cell_has_a_value_per_chip(
+        self, client: httpx.Client, species: str
+    ) -> None:
+        response = client.get("/factors", params={"species": species})
+        assert response.status_code == 200
+        body = FactorsResponse.model_validate(response.json())
+        assert body.species == species
+        assert body.factors, "no factor chips"
+        ids = [chip.id for chip in body.factors]
+        assert len(ids) == len(set(ids))
+        roles = [chip.role for chip in body.factors]
+        assert roles == sorted(roles, key=["gate", "driver", "stopper"].index)
+        scores = client.get("/scores", params={"species": species, "date": str(body.date)})
+        assert {cell.cell_id for cell in body.cells} == {
+            cell["cell_id"] for cell in scores.json()["cells"]
+        }
+        for cell in body.cells:
+            assert len(cell.values) == len(body.factors)
+            assert any(value is not None for value in cell.values)
+
+    def test_the_combined_score_has_no_factors(self, client: httpx.Client) -> None:
+        response = client.get("/factors", params={"species": "combined"})
+        assert response.status_code == 422
+
+    def test_404s_outside_the_stored_factors(self, client: httpx.Client) -> None:
+        response = client.get("/factors", params={"species": "porcini", "date": "2000-01-01"})
         assert response.status_code == 404
 
 
@@ -335,6 +367,7 @@ class TestOpenAPISurface:
         schema = client.get("/openapi.json").json()
         assert set(schema["paths"]) >= {
             "/scores",
+            "/factors",
             "/spot",
             "/cells/{cell_id}",
             "/hotspots",

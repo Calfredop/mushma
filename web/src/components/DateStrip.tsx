@@ -10,9 +10,11 @@ interface Props {
   value: IsoDate
   window: DateWindowSize
   onChange: (date: IsoDate) => void
+  /** Any touch, scroll or key on the strip (analysis mode pauses its playback on it). */
+  onTouch?: () => void
 }
 
-export function DateStrip({ today, value, window, onChange }: Props) {
+export function DateStrip({ today, value, window, onChange, onTouch }: Props) {
   const { t, i18n } = useTranslation()
   const locale = intlLocale(i18n.resolvedLanguage as Language)
   const selectedRef = useRef<HTMLButtonElement>(null)
@@ -22,7 +24,14 @@ export function DateStrip({ today, value, window, onChange }: Props) {
   }, [value])
 
   return (
-    <div role="radiogroup" aria-label={t('date.label')} className={styles.strip}>
+    <div
+      role="radiogroup"
+      aria-label={t('date.label')}
+      className={styles.strip}
+      onPointerDown={onTouch}
+      onWheel={onTouch}
+      onKeyDown={onTouch}
+    >
       {dateWindow(today, window).map(({ date, kind }) => {
         const { weekday, day } = formatDay(date, locale)
         const long = formatDayLong(date, locale)

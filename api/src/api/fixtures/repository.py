@@ -3,14 +3,17 @@ from datetime import UTC, date, datetime, timedelta
 from api.fixtures.cells import CELLS, CellSpec
 from api.fixtures.generator import WINDOW_OFFSETS, combined_score, score_and_factors
 from api.fixtures.hotspots import build_hotspots
-from api.fixtures.scoring import FactorResult
+from api.fixtures.scoring import FACTOR_SPECS, FactorResult
 from api.fixtures.sightings import LICENSES, counts_between, recent_sightings_total
 from api.fixtures.timeviews import FixtureTimeViews
 from api.models import (
     CellDetailResponse,
+    CellFactors,
     ComuniResponse,
     DayScore,
     FactorBreakdown,
+    FactorChip,
+    FactorsResponse,
     GridCellScore,
     Hotspot,
     HotspotsResponse,
@@ -93,6 +96,27 @@ class FixtureRepository:
             for cell in CELLS
         ]
         return ScoresResponse(species=species, date=target_date, cells=cells)
+
+    def get_factors(self, species: Species, target_date: date) -> FactorsResponse:
+        # One stand-in rule file per species, so every cell is won by it.
+        offset = _offset_for(target_date)
+        chips = [
+            FactorChip(id=spec.id, i18n_key=spec.i18n_key, role=spec.role)
+            for spec in FACTOR_SPECS[species]
+        ]
+        cells = [
+            CellFactors(
+                cell_id=cell.id,
+                lon=cell.lon,
+                lat=cell.lat,
+                values=[
+                    round(f.value, 3)
+                    for f in score_and_factors(cell, species, target_date, offset)[1]
+                ],
+            )
+            for cell in CELLS
+        ]
+        return FactorsResponse(species=species, date=target_date, factors=chips, cells=cells)
 
     def _forecast(self, cell: CellSpec) -> CellDetailResponse:
         today = today_rome()

@@ -9,12 +9,23 @@ import type { Feature, FeatureCollection, Point, Polygon, Position } from 'geojs
 import type { components } from '../api/schema'
 
 type GridCellScore = components['schemas']['GridCellScore']
+type CellFactors = components['schemas']['CellFactors']
 type SightingCount = components['schemas']['SightingCount']
+
+/** Anything with a cell centre: a score, a factor row. */
+export interface CellCentre {
+  cell_id: string
+  lon: number
+  lat: number
+}
 
 export interface CellProperties {
   cell_id: string
   score: number
 }
+
+/** Analysis mode: each factor's 0–1 value under its id; a factor the cell lacks is absent. */
+export type FactorProperties = { cell_id: string } & Record<string, number | string>
 
 export interface SightingProperties {
   cell_id: string
@@ -70,6 +81,46 @@ export function cellsToSquares(
   }
 }
 
+function factorProperties(cell: CellFactors, ids: readonly string[]): FactorProperties {
+  const properties: FactorProperties = { cell_id: cell.cell_id }
+  cell.values.forEach((value, i) => {
+    if (value !== null && ids[i] !== undefined) properties[ids[i]] = value
+  })
+  return properties
+}
+
+/** `ids` are the response's factor ids, in the order of each cell's `values`. */
+export function factorCellsToPoints(
+  cells: CellFactors[],
+  ids: readonly string[],
+): FeatureCollection<Point, FactorProperties> {
+  return {
+    type: 'FeatureCollection',
+    features: cells.map((cell): Feature<Point, FactorProperties> => ({
+      type: 'Feature',
+      id: cell.cell_id,
+      geometry: { type: 'Point', coordinates: [cell.lon, cell.lat] },
+      properties: factorProperties(cell, ids),
+    })),
+  }
+}
+
+export function factorCellsToSquares(
+  cells: CellFactors[],
+  ids: readonly string[],
+  sizeKm = 1,
+): FeatureCollection<Polygon, FactorProperties> {
+  return {
+    type: 'FeatureCollection',
+    features: cells.map((cell): Feature<Polygon, FactorProperties> => ({
+      type: 'Feature',
+      id: cell.cell_id,
+      geometry: { type: 'Polygon', coordinates: cellSquare(cell.lon, cell.lat, sizeKm) },
+      properties: factorProperties(cell, ids),
+    })),
+  }
+}
+
 /** Total sightings per cell across every response (species) and source. */
 export function sightingsByCell(
   responses: { counts: SightingCount[] }[],
@@ -86,7 +137,7 @@ export function sightingsByCell(
 /** One point per cell at the cell centre (PRD → Sightings privacy: counts per cell only). */
 export function sightingsToPoints(
   totals: Map<string, number>,
-  cells: GridCellScore[],
+  cells: readonly CellCentre[],
 ): FeatureCollection<Point, SightingProperties> {
   const features: Feature<Point, SightingProperties>[] = []
   for (const cell of cells) {

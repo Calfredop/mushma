@@ -66,3 +66,47 @@ describe('TimeBar', () => {
     expect(onSeason).toHaveBeenLastCalledWith(null)
   })
 })
+
+describe('TimeBar in analysis mode', () => {
+  it('has a play button beside the strip, and touching the strip pauses', async () => {
+    const onToggle = vi.fn()
+    const onTouch = vi.fn()
+    const { rerender } = render(
+      <TimeBar {...props} playback={{ playing: false, onToggle, onTouch }} />,
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Riproduci i giorni' }))
+    expect(onToggle).toHaveBeenCalledTimes(1)
+    expect(onTouch).not.toHaveBeenCalled()
+
+    rerender(<TimeBar {...props} playback={{ playing: true, onToggle, onTouch }} />)
+    expect(screen.getByRole('button', { name: 'Metti in pausa' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await userEvent.click(screen.getAllByRole('radio', { name: /previsione$/ })[0])
+    expect(onTouch).toHaveBeenCalled()
+  })
+
+  it('keeps the forecast hatch on the strip', () => {
+    render(
+      <TimeBar
+        {...props}
+        playback={{ playing: false, onToggle: () => {}, onTouch: () => {} }}
+      />,
+    )
+    const forecast = screen
+      .getAllByRole('radio')
+      .filter((day) => day.getAttribute('data-kind') === 'forecast')
+    expect(forecast).toHaveLength(7)
+  })
+
+  it('has no play button on a replayed day or a season', () => {
+    const playback = { playing: false, onToggle: () => {}, onTouch: () => {} }
+    const { rerender } = render(
+      <TimeBar {...props} date="2024-10-12" playback={playback} />,
+    )
+    expect(screen.queryByRole('button', { name: 'Riproduci i giorni' })).toBeNull()
+    rerender(<TimeBar {...props} season={2024} playback={playback} />)
+    expect(screen.queryByRole('button', { name: 'Riproduci i giorni' })).toBeNull()
+  })
+})

@@ -4,10 +4,12 @@
  */
 import type {
   ExpressionSpecification,
+  FilterSpecification,
   LayerSpecification,
   SourceSpecification,
   StyleSpecification,
 } from 'maplibre-gl'
+import { layerOpacities } from '../score/indicators'
 import { goodDaysStepExpression, scoreStepExpression } from '../score/scale'
 import { DATA_LAYERS_BEFORE, LABEL_FONT } from './basemap'
 
@@ -28,8 +30,26 @@ export function cellColor(scale: CellScale): ExpressionSpecification {
 
 export const EMPTY_COLLECTION = { type: 'FeatureCollection' as const, features: [] }
 
-/** Layers a tap can land on, nearest first. */
+/** Layers a tap can land on, the square first. */
 export const CELL_LAYERS = ['cells-fill', 'cells-dot']
+
+/** The same in analysis mode, where the score layers are hidden. */
+export const ANALYSIS_CELL_LAYERS = ['factors-base-fill', 'factors-base-dot']
+
+/** Indicator layers go in here: over the cells, under their outline and the basemap's roads. */
+export const ANALYSIS_LAYERS_BEFORE = 'cells-outline'
+
+const CELL_DOT_RADIUS: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  6,
+  3.5,
+  8,
+  5,
+  10.5,
+  7,
+]
 
 type Bounds = [[number, number], [number, number]]
 
@@ -72,7 +92,7 @@ const CELL_LAYER_SPECS: LayerSpecification[] = [
     maxzoom: 11,
     paint: {
       'circle-color': SCORE,
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 3.5, 8, 5, 10.5, 7],
+      'circle-radius': CELL_DOT_RADIUS,
       'circle-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 1, 10.5, 0],
       'circle-stroke-color': HUMUS,
       'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.55, 10.5, 0],
@@ -89,6 +109,30 @@ const CELL_LAYER_SPECS: LayerSpecification[] = [
       'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0, 10.5, 0.82],
     },
   },
+  // Analysis mode: where the woodland is (a faint ring per cell) and what a tap lands on, under
+  // the indicators. Hidden with the scores on.
+  {
+    id: 'factors-base-dot',
+    type: 'circle',
+    source: 'cells-points',
+    maxzoom: 11,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-color': 'rgba(0,0,0,0)',
+      'circle-radius': CELL_DOT_RADIUS,
+      'circle-stroke-color': HUMUS,
+      'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.3, 10.5, 0],
+      'circle-stroke-width': 0.8,
+    },
+  },
+  {
+    id: 'factors-base-fill',
+    type: 'fill',
+    source: 'cells-squares',
+    minzoom: 9,
+    layout: { visibility: 'none' },
+    paint: { 'fill-color': 'rgba(0,0,0,0)' },
+  },
   {
     id: 'cells-outline',
     type: 'line',
@@ -97,6 +141,49 @@ const CELL_LAYER_SPECS: LayerSpecification[] = [
     paint: { 'line-color': HUMUS, 'line-opacity': 0.18, 'line-width': 0.6 },
   },
 ]
+
+export interface ActiveIndicator {
+  id: string
+  color: string
+}
+
+/**
+ * Analysis mode: a dot layer (below zoom 11) and a square layer (from 9) per indicator, bottom
+ * to top, fading into each other like the score's. A cell's opacity is the factor's value times
+ * the layer's share of the cap (`layerOpacities`); a cell whose rules lack the factor isn't drawn.
+ */
+export function analysisLayers(active: readonly ActiveIndicator[]): LayerSpecification[] {
+  const shares = layerOpacities(active.length)
+  return active.flatMap(({ id, color }, i): LayerSpecification[] => {
+    const opacity: ExpressionSpecification = ['*', ['get', id], shares[i]]
+    const filter: FilterSpecification = ['has', id]
+    return [
+      {
+        id: `indicator-dot-${id}`,
+        type: 'circle',
+        source: 'cells-points',
+        maxzoom: 11,
+        filter,
+        paint: {
+          'circle-color': color,
+          'circle-radius': CELL_DOT_RADIUS,
+          'circle-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, opacity, 10.5, 0],
+        },
+      },
+      {
+        id: `indicator-fill-${id}`,
+        type: 'fill',
+        source: 'cells-squares',
+        minzoom: 9,
+        filter,
+        paint: {
+          'fill-color': color,
+          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0, 10.5, opacity],
+        },
+      },
+    ]
+  })
+}
 
 /** Above everything in the basemap, labels included. */
 const TOP_LAYER_SPECS: LayerSpecification[] = [

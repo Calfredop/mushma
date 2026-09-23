@@ -18,13 +18,19 @@ import {
 } from '../routes'
 import { type IsoDate, todayInRome } from '../time/days'
 import {
+  canPickSpecies,
+  keepIndicators,
+  type Mode,
   parseUrlState,
   rollToday,
   serializeUrlState,
+  speciesForMode,
   type SpeciesOrCombined,
   type Spot,
+  toggleIndicator,
   type UrlState,
   type View,
+  withMode,
 } from './urlState'
 import type { RegionDefinition } from '../regions'
 
@@ -74,6 +80,10 @@ export interface AppStateValue extends UrlState {
   camera: CameraRequest | null
   sightingsVisible: boolean
   setSightingsVisible: (visible: boolean) => void
+  setMode: (mode: Mode) => void
+  toggleIndicator: (id: string) => void
+  /** Once the species' indicators are known: drop any it doesn't have. */
+  keepIndicators: (available: readonly string[]) => void
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -84,7 +94,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [path, navigate] = usePath()
   const route = useMemo(() => matchPath(path), [path])
   const region = route.kind === 'region' ? route.region : REGIONS[DEFAULT_REGION_SLUG]
-  const species: SpeciesOrCombined = route.kind === 'region' ? route.species : 'combined'
+  const routeSpecies: SpeciesOrCombined =
+    route.kind === 'region' ? route.species : 'combined'
 
   const [today, setToday] = useState(() => todayInRome())
   const [state, setState] = useState<UrlState>(() =>
@@ -96,6 +107,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       HISTORY_START,
     ),
   )
+  const species = speciesForMode(routeSpecies, state.mode)
   const [camera, setCamera] = useState<CameraRequest | null>(null)
   const [sightingsVisible, setSightingsVisible] = useState(false)
   const cameraId = useRef(0)
@@ -134,13 +146,27 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
   }, [state, today])
 
+  // Analysis mode on a "Tutti" path shows porcini: the path follows, without a back-button stop.
+  useEffect(() => {
+    if (route.kind === 'region' && species !== routeSpecies && species !== 'combined') {
+      navigate(speciesPath(region.slug, species), { replace: true })
+    }
+  }, [route.kind, species, routeSpecies, region.slug, navigate])
+
   const setSpecies = useCallback(
     (next: SpeciesOrCombined) => {
+      if (!canPickSpecies(next, state.mode)) return
       navigate(
         next === 'combined' ? regionPath(region.slug) : speciesPath(region.slug, next),
       )
     },
-    [navigate, region.slug],
+    [navigate, region.slug, state.mode],
+  )
+  const setMode = useCallback((mode: Mode) => setState((s) => withMode(s, mode)), [])
+  const toggle = useCallback((id: string) => setState((s) => toggleIndicator(s, id)), [])
+  const keep = useCallback(
+    (available: readonly string[]) => setState((s) => keepIndicators(s, available)),
+    [],
   )
   const setDate = useCallback(
     (date: IsoDate) => setState((s) => ({ ...s, date, season: null })),
@@ -190,6 +216,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       camera,
       sightingsVisible,
       setSightingsVisible,
+      setMode,
+      toggleIndicator: toggle,
+      keepIndicators: keep,
     }),
     [
       state,
@@ -209,6 +238,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       flyTo,
       camera,
       sightingsVisible,
+      setMode,
+      toggle,
+      keep,
     ],
   )
 

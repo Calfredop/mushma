@@ -10,7 +10,7 @@ import {
   sameDayLastYear,
 } from '../time/days'
 import { DateStrip } from './DateStrip'
-import { CalendarIcon, ChevronIcon, CloseIcon } from './icons'
+import { CalendarIcon, ChevronIcon, CloseIcon, PauseIcon, PlayIcon } from './icons'
 import styles from './TimeBar.module.css'
 
 interface Props {
@@ -25,6 +25,8 @@ interface Props {
   seasons: number[]
   onDate: (date: IsoDate) => void
   onSeason: (season: number | null) => void
+  /** Analysis mode: a play button steps through the strip's days; touching the strip pauses. */
+  playback?: { playing: boolean; onToggle: () => void; onTouch: () => void }
 }
 
 /** Which day (or season) the map shows: the date strip, a replayed past day, or a season. */
@@ -37,6 +39,7 @@ export function TimeBar({
   seasons,
   onDate,
   onSeason,
+  playback,
 }: Props) {
   const { t, i18n } = useTranslation()
   const locale = intlLocale(i18n.resolvedLanguage as Language)
@@ -184,6 +187,17 @@ export function TimeBar({
     <div className={styles.stack}>
       {picker}
       <div className={styles.row}>
+        {playback && (
+          <button
+            type="button"
+            className={styles.play}
+            aria-label={t(playback.playing ? 'analysis.pause' : 'analysis.play')}
+            aria-pressed={playback.playing}
+            onClick={playback.onToggle}
+          >
+            {playback.playing ? <PauseIcon /> : <PlayIcon />}
+          </button>
+        )}
         <button
           type="button"
           className={styles.calendar}
@@ -193,7 +207,13 @@ export function TimeBar({
         >
           <CalendarIcon />
         </button>
-        <DateStrip today={today} value={date} window={window} onChange={onDate} />
+        <DateStrip
+          today={today}
+          value={date}
+          window={window}
+          onChange={onDate}
+          onTouch={playback?.onTouch}
+        />
       </div>
     </div>
   )

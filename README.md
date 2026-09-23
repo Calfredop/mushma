@@ -187,9 +187,11 @@ uv run ruff format --check .
 
 `GET /health` returns `{"status": "ok"}`.
 
-The routes read the data pipeline's stores under `DATA_DIR` (below): `/scores`, `/spot`,
-`/cells/{id}`, `/hotspots`, `/sightings`, and the time views `/comuni`, `/history/seasons`,
-`/history/season/{year}`, `/outlook` and `/species` (503 until `api.history.build` has run).
+The routes read the data pipeline's stores under `DATA_DIR` (below): `/scores`, `/factors`
+(analysis mode: every factor's value per cell, for the days the daily job keeps the breakdown),
+`/spot`, `/cells/{id}`, `/hotspots`, `/sightings`, and the time views `/comuni`,
+`/history/seasons`, `/history/season/{year}`, `/outlook` and `/species` (503 until
+`api.history.build` has run).
 `/status` reports data freshness — the latest scored day, when it was generated and the rules
 version — and backs the app's "Updated …" line. Set
 `MUSHMA_FIXTURES=1` (see `api/.env.example`) to serve every route from a hand-shaped fixture

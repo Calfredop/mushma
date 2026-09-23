@@ -1,5 +1,6 @@
 /** The shareable part of the app state, kept in the URL query string. */
 import { inBounds } from '../geo/distance.js'
+import { DEFAULT_INDICATOR, isIndicator } from '../score/indicators.js'
 import { type IsoDate, daysBetween } from '../time/days.js'
 
 type Bounds = [[number, number], [number, number]]
@@ -20,6 +21,10 @@ export type Spot =
 export const VIEWS = ['now', 'seasons', 'outlook'] as const
 export type View = (typeof VIEWS)[number]
 
+/** The map's scores, or analysis mode: the factors behind them, one coloured layer each. */
+export const MODES = ['map', 'analysis'] as const
+export type Mode = (typeof MODES)[number]
+
 /** The species and region live in the path (`routes.ts`); this is everything else. */
 export interface UrlState {
   /** Any day from the start of the history to the end of the forecast. */
@@ -30,6 +35,12 @@ export interface UrlState {
   comune: string | null
   /** A past season shown on the map (seasons view only). */
   season: number | null
+  mode: Mode
+  /**
+   * Analysis mode: the factor ids drawn on the map, in the order they were turned on (the last on
+   * top). Kept while the mode is off, so turning it back on restores them.
+   */
+  indicators: string[]
 }
 
 export interface DateWindowSize {
@@ -127,6 +138,13 @@ function parseSpot(params: URLSearchParams, region?: Bounds): Spot | null {
   return { kind: 'point', lat, lon }
 }
 
+/** No `f` opens on the default indicator; an empty one means every indicator was turned off. */
+function parseIndicators(value: string | null): string[] {
+  if (value === null) return [DEFAULT_INDICATOR]
+  const ids = value.split(',').filter(isIndicator)
+  return [...new Set(ids)]
+}
+
 export function parseUrlState(
   search: string,
   today: IsoDate,
@@ -137,13 +155,70 @@ export function parseUrlState(
   const params = new URLSearchParams(search)
   const view = parseView(params.get('view'))
   const comune = params.get('comune')
+  const mode: Mode = params.get('mode') === 'analysis' ? 'analysis' : 'map'
   return {
     date: parseDate(params.get('date'), today, window, historyStart),
     spot: parseSpot(params, region),
     view,
     comune: comune && COMUNE_CODE.test(comune) ? comune : null,
     season: parseSeason(params.get('season'), view, today, historyStart),
+    mode,
+    indicators: mode === 'analysis' ? parseIndicators(params.get('f')) : [],
   }
+}
+
+// --- Analysis mode -------------------------------------------------------------------------------
+
+/** The species analysis mode opens on in place of "Tutti". */
+export const ANALYSIS_SPECIES: Species = 'porcini'
+
+/**
+ * Analysis mode has no combined score (a cell's factors come from one species' rules), so "Tutti"
+ * becomes porcini. The species lives in the path, so the app state moves the path to match.
+ */
+export function speciesForMode(
+  species: SpeciesOrCombined,
+  mode: Mode,
+): SpeciesOrCombined {
+  return mode === 'analysis' && species === 'combined' ? ANALYSIS_SPECIES : species
+}
+
+/** A species switch keeps the mode; in analysis mode "Tutti" can't be picked. */
+export function canPickSpecies(species: SpeciesOrCombined, mode: Mode): boolean {
+  return !(mode === 'analysis' && species === 'combined')
+}
+
+/** Into or out of analysis mode; with nothing on, it opens on the default indicator. */
+export function withMode<S extends UrlState>(state: S, mode: Mode): S {
+  if (mode === 'map') return state.mode === 'map' ? state : { ...state, mode }
+  const indicators =
+    state.mode === 'map' && state.indicators.length === 0
+      ? [DEFAULT_INDICATOR]
+      : state.indicators
+  if (state.mode === mode && indicators === state.indicators) return state
+  return { ...state, mode, indicators }
+}
+
+/**
+ * Once a species' indicators are known: keep only the ones it has, in order. If none of them is
+ * left, the default indicator (which every species has) comes on instead of a blank map.
+ */
+export function keepIndicators<S extends UrlState>(
+  state: S,
+  available: readonly string[],
+): S {
+  const kept = state.indicators.filter((id) => available.includes(id))
+  if (kept.length === state.indicators.length) return state
+  const fallback = available.includes(DEFAULT_INDICATOR) ? [DEFAULT_INDICATOR] : []
+  return { ...state, indicators: kept.length > 0 ? kept : fallback }
+}
+
+/** On goes on top of the stack; off comes out of it. */
+export function toggleIndicator<S extends UrlState>(state: S, id: string): S {
+  const indicators = state.indicators.includes(id)
+    ? state.indicators.filter((other) => other !== id)
+    : [...state.indicators, id]
+  return { ...state, indicators }
 }
 
 function round(value: number): number {
@@ -160,6 +235,10 @@ export function serializeUrlState(state: UrlState, today: IsoDate): string {
   if (state.view !== 'now') params.set('view', state.view)
   if (state.comune) params.set('comune', state.comune)
   if (state.season !== null) params.set('season', String(state.season))
+  if (state.mode === 'analysis') {
+    params.set('mode', 'analysis')
+    params.set('f', state.indicators.join(','))
+  }
   const search = params.toString()
   return search ? `?${search}` : ''
 }

@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { parseUrlState, rollToday, serializeUrlState } from './urlState'
+import {
+  canPickSpecies,
+  keepIndicators,
+  parseUrlState,
+  rollToday,
+  serializeUrlState,
+  speciesForMode,
+  toggleIndicator,
+  type UrlState,
+  withMode,
+} from './urlState'
 
 const today = '2026-09-17'
 const window = { pastDays: 6, forecastDays: 7 }
@@ -12,6 +22,8 @@ describe('parseUrlState', () => {
       view: 'now',
       comune: null,
       season: null,
+      mode: 'map',
+      indicators: [],
     })
   })
 
@@ -46,19 +58,29 @@ describe('serializeUrlState', () => {
   it('omits defaults', () => {
     expect(
       serializeUrlState(
-        { date: today, spot: null, view: 'now', comune: null, season: null },
+        {
+          date: today,
+          spot: null,
+          view: 'now',
+          comune: null,
+          season: null,
+          mode: 'map',
+          indicators: [],
+        },
         today,
       ),
     ).toBe('')
   })
 
   it('round-trips a full state', () => {
-    const state = {
+    const state: UrlState = {
       date: '2026-09-12',
-      spot: { kind: 'point' as const, lat: 43.123456789, lon: 11.5 },
-      view: 'now' as const,
+      spot: { kind: 'point', lat: 43.123456789, lon: 11.5 },
+      view: 'now',
       comune: null,
       season: null,
+      mode: 'map',
+      indicators: [],
     }
     const search = serializeUrlState(state, today)
     expect(search).toBe('?date=2026-09-12&at=43.12346%2C11.5')
@@ -161,19 +183,29 @@ describe('time views in the URL', () => {
   })
 
   it('round-trips the time views and omits their defaults', () => {
-    const state = {
+    const state: UrlState = {
       date: '2024-10-12',
       spot: null,
-      view: 'seasons' as const,
+      view: 'seasons',
       comune: '046007',
       season: 2024,
+      mode: 'map',
+      indicators: [],
     }
     const search = serializeUrlState(state, today)
     expect(search).toBe('?date=2024-10-12&view=seasons&comune=046007&season=2024')
     expect(parseUrlState(search, today, window, undefined, historyStart)).toEqual(state)
     expect(
       serializeUrlState(
-        { date: today, spot: null, view: 'now', comune: null, season: null },
+        {
+          date: today,
+          spot: null,
+          view: 'now',
+          comune: null,
+          season: null,
+          mode: 'map',
+          indicators: [],
+        },
         today,
       ),
     ).toBe('')
@@ -186,5 +218,104 @@ describe('time views in the URL', () => {
     expect(
       rollToday('2026-09-11', '2026-09-17', '2026-09-18', window, historyStart),
     ).toBe('2026-09-11')
+  })
+})
+
+describe('analysis mode in the URL', () => {
+  const parse = (search: string) => parseUrlState(search, today, window)
+
+  it('reads the mode and its indicators in the order they were turned on', () => {
+    expect(parse('?mode=analysis&f=drying,rain_trigger')).toMatchObject({
+      mode: 'analysis',
+      indicators: ['drying', 'rain_trigger'],
+    })
+  })
+
+  it('drops unknown and repeated ids', () => {
+    expect(
+      parse('?mode=analysis&f=rain_trigger,tartufi,,drying,rain_trigger').indicators,
+    ).toEqual(['rain_trigger', 'drying'])
+  })
+
+  it('turns on rain_trigger when it opens with no f', () => {
+    expect(parse('?mode=analysis').indicators).toEqual(['rain_trigger'])
+  })
+
+  it('keeps an empty f: every indicator turned off', () => {
+    expect(parse('?mode=analysis&f=').indicators).toEqual([])
+  })
+
+  it('has no combined score: Tutti opens as porcini', () => {
+    expect(speciesForMode('combined', 'analysis')).toBe('porcini')
+    expect(speciesForMode('ovoli', 'analysis')).toBe('ovoli')
+    expect(speciesForMode('combined', 'map')).toBe('combined')
+  })
+
+  it('ignores indicators outside the mode, and an unknown mode', () => {
+    expect(parse('?f=drying')).toMatchObject({ mode: 'map', indicators: [] })
+    expect(parse('?mode=xray&f=drying')).toMatchObject({ mode: 'map', indicators: [] })
+  })
+
+  it('round-trips, writing f only in the mode', () => {
+    const state: UrlState = {
+      ...parse(''),
+      mode: 'analysis',
+      indicators: ['rain_trigger', 'evaporative_demand'],
+    }
+    const search = serializeUrlState(state, today)
+    expect(search).toBe('?mode=analysis&f=rain_trigger%2Cevaporative_demand')
+    expect(parse(search)).toEqual(state)
+    expect(serializeUrlState({ ...state, indicators: [] }, today)).toBe(
+      '?mode=analysis&f=',
+    )
+    expect(serializeUrlState({ ...state, mode: 'map' }, today)).toBe('')
+  })
+})
+
+describe('analysis mode transitions', () => {
+  const base = parseUrlState('', today, window)
+
+  it('entering turns on rain_trigger when nothing is on', () => {
+    expect(withMode(base, 'analysis')).toMatchObject({
+      mode: 'analysis',
+      indicators: ['rain_trigger'],
+    })
+  })
+
+  it('entering again brings back the indicators it had', () => {
+    const left = withMode({ ...base, mode: 'analysis', indicators: ['drying'] }, 'map')
+    expect(left.mode).toBe('map')
+    expect(withMode(left, 'analysis').indicators).toEqual(['drying'])
+  })
+
+  it('Tutti cannot be picked in it', () => {
+    expect(canPickSpecies('ovoli', 'analysis')).toBe(true)
+    expect(canPickSpecies('combined', 'analysis')).toBe(false)
+    expect(canPickSpecies('combined', 'map')).toBe(true)
+  })
+
+  it('keeps only the indicators the species has, or rain_trigger when none is left', () => {
+    const inMode = {
+      ...base,
+      mode: 'analysis' as const,
+      indicators: ['drying', 'rain_30d', 'heat_spike'],
+    }
+    const ovoli = ['rain_trigger', 'rain_30d', 'evaporative_demand']
+    expect(keepIndicators(inMode, ovoli).indicators).toEqual(['rain_30d'])
+    expect(
+      keepIndicators({ ...inMode, indicators: ['drying', 'heat_spike'] }, ovoli)
+        .indicators,
+    ).toEqual(['rain_trigger'])
+    expect(keepIndicators({ ...inMode, indicators: [] }, ovoli).indicators).toEqual([])
+    // Nothing to drop: the same state, so no re-render.
+    const kept = { ...inMode, indicators: ['rain_30d'] }
+    expect(keepIndicators(kept, ovoli)).toBe(kept)
+  })
+
+  it('turns an indicator on at the top of the stack, or off', () => {
+    const inMode = { ...base, mode: 'analysis' as const, indicators: ['rain_trigger'] }
+    const on = toggleIndicator(inMode, 'drying')
+    expect(on.indicators).toEqual(['rain_trigger', 'drying'])
+    expect(toggleIndicator(on, 'rain_trigger').indicators).toEqual(['drying'])
   })
 })

@@ -38,6 +38,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/factors': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Analysis mode: every factor behind one species' conditions score, per woodland cell */
+    get: operations['get_factors_factors_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/health': {
     parameters: {
       query?: never
@@ -256,6 +273,20 @@ export interface components {
       /** Species */
       species: components['schemas']['SpeciesForecast'][]
     }
+    /** CellFactors */
+    CellFactors: {
+      /** Cell Id */
+      cell_id: string
+      /** Lat */
+      lat: number
+      /** Lon */
+      lon: number
+      /**
+       * Values
+       * @description each factor's 0-1 value, in `factors` order, rounded to 3 decimals: 1 is favourable, 0 holds the score back. From the rule file that wins the cell that day (the one the breakdown explains); null where that rule file lacks the factor
+       */
+      values: (number | null)[]
+    }
     /** CellSeason */
     CellSeason: {
       /** Cell Id */
@@ -372,6 +403,25 @@ export interface components {
       weight?: number | null
     }
     /**
+     * FactorChip
+     * @description One indicator analysis mode can put on the map: an enabled factor of the species' rules,
+     *     named like its row in the "why this score" breakdown.
+     */
+    FactorChip: {
+      /** I18N Key */
+      i18n_key: string
+      /**
+       * Id
+       * @description the factor id, as `key` in the breakdown
+       */
+      id: string
+      /**
+       * Role
+       * @enum {string}
+       */
+      role: 'gate' | 'driver' | 'stopper'
+    }
+    /**
      * FactorRule
      * @description What a rule asked of the measurement (`config/species/*.yaml`), so the copy can say what it
      *     wanted. Which fields are set follows `kind`: a season window or habitat has none of them.
@@ -460,6 +510,30 @@ export interface components {
        * @description the unit of `variable`; '' when unitless
        */
       variable_unit: string
+    }
+    /**
+     * FactorsResponse
+     * @description Analysis mode: every factor behind a species' conditions score, per woodland cell, for one
+     *     day. Only the days the daily job keeps the breakdown for (today -6 to +7) are stored.
+     */
+    FactorsResponse: {
+      /** Cells */
+      cells: components['schemas']['CellFactors'][]
+      /**
+       * Date
+       * Format: date
+       */
+      date: string
+      /**
+       * Factors
+       * @description the union of the enabled factors over the species' rule files, in breakdown order (gates, drivers, stoppers)
+       */
+      factors: components['schemas']['FactorChip'][]
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci'
     }
     /** GridCellScore */
     GridCellScore: {
@@ -985,6 +1059,46 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+    }
+  }
+  get_factors_factors_get: {
+    parameters: {
+      query: {
+        species: 'porcini' | 'ovoli' | 'gallinacci'
+        /** @description defaults to today, Europe/Rome */
+        date?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FactorsResponse']
+        }
+      }
+      /** @description no factors stored for that day */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
       }
     }
   }

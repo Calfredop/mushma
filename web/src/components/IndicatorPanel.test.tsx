@@ -1,0 +1,99 @@
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
+import type { FactorChip } from '../api/queries'
+import { IndicatorPanel } from './IndicatorPanel'
+
+const chip = (id: string, role: FactorChip['role'], key = id): FactorChip => ({
+  id,
+  role,
+  i18n_key: `factor.${key}`,
+})
+
+// Gallinacci-like: two factors share the "Gelate" label, one has a windowed id.
+const chips = [
+  chip('season', 'gate'),
+  chip('habitat', 'gate'),
+  chip('rain_trigger', 'driver'),
+  chip('soil_temperature', 'driver'),
+  chip('water_balance_60d', 'stopper', 'water_balance'),
+  chip('frost', 'stopper'),
+  chip('hard_frost', 'stopper', 'frost'),
+  chip('slope', 'stopper'),
+  chip('mystery', 'stopper'),
+]
+
+describe('IndicatorPanel', () => {
+  it('groups the chips by family, in the palette order', () => {
+    render(<IndicatorPanel chips={chips} active={[]} onToggle={() => {}} />)
+    const groups = screen
+      .getAllByRole('group')
+      .map((group) => group.getAttribute('aria-labelledby'))
+    expect(groups).toEqual([
+      'indicator-family-water',
+      'indicator-family-warmth',
+      'indicator-family-cold',
+      'indicator-family-terrain',
+      'indicator-family-season',
+      'indicator-family-other',
+    ])
+    const water = screen.getByRole('group', { name: 'Pioggia e umidità' })
+    expect(
+      within(water)
+        .getAllByRole('button')
+        .map((b) => b.textContent),
+    ).toEqual(['Pioggia di innesco', 'Bilancio idrico'])
+  })
+
+  it('names chips like the "why" rows, with their own name where two would share one', () => {
+    render(<IndicatorPanel chips={chips} active={[]} onToggle={() => {}} />)
+    const cold = screen.getByRole('group', { name: 'Freddo' })
+    expect(
+      within(cold)
+        .getAllByRole('button')
+        .map((b) => b.textContent),
+    ).toEqual(['Gelate', 'Gelate forti'])
+    // A factor with no label yet still gets a chip, by its id.
+    expect(screen.getByRole('button', { name: 'mystery' })).toBeInTheDocument()
+  })
+
+  it('shows which chips are on and toggles one', async () => {
+    const onToggle = vi.fn()
+    render(<IndicatorPanel chips={chips} active={['frost']} onToggle={onToggle} />)
+    expect(screen.getByRole('button', { name: 'Gelate' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    expect(screen.getByRole('button', { name: 'Stagione' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Stagione' }))
+    expect(onToggle).toHaveBeenCalledWith('season')
+  })
+
+  it('keys opacity as favourable, never as a chance', () => {
+    render(<IndicatorPanel chips={chips} active={[]} onToggle={() => {}} />)
+    expect(screen.getByText("Frena l'indice")).toBeInTheDocument()
+    expect(screen.getByText(/Più favorevole/)).toBeInTheDocument()
+    expect(document.body.textContent).not.toMatch(/probabilit|%|possibilit/i)
+  })
+
+  it('says why there are no chips, and folds away', async () => {
+    render(
+      <IndicatorPanel
+        chips={undefined}
+        active={['rain_trigger']}
+        onToggle={() => {}}
+        note="Gli indicatori sono conservati solo per gli ultimi 7 giorni e per la previsione."
+      />,
+    )
+    expect(screen.getByText(/solo per gli ultimi 7 giorni/)).toBeVisible()
+    await userEvent.click(screen.getByRole('button', { name: 'Nascondi i fattori' }))
+    expect(screen.queryByText(/solo per gli ultimi 7 giorni/)).not.toBeVisible()
+    expect(screen.getByRole('button', { name: 'Mostra i fattori' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+  })
+})

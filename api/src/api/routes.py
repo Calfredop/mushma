@@ -11,6 +11,7 @@ from api.grid.sources import data_dir
 from api.models import (
     CellDetailResponse,
     ComuniResponse,
+    FactorsResponse,
     HotspotsResponse,
     OutlookResponse,
     PlausibleSpeciesResponse,
@@ -72,6 +73,27 @@ def get_scores(
     target_date = date or today_rome()
     try:
         result = repository.get_scores(species, target_date)
+    except DateOutOfRange as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    response.headers["Cache-Control"] = cache_control_for_date(target_date)
+    return result
+
+
+@router.get(
+    "/factors",
+    response_model=FactorsResponse,
+    summary="Analysis mode: every factor behind one species' conditions score, per woodland cell",
+    responses={404: {"description": "no factors stored for that day"}},
+)
+def get_factors(
+    repository: Repository,
+    response: Response,
+    species: Annotated[Species, Query()],
+    date: Annotated[Date | None, Query(description="defaults to today, Europe/Rome")] = None,
+) -> FactorsResponse:
+    target_date = date or today_rome()
+    try:
+        result = repository.get_factors(species, target_date)
     except DateOutOfRange as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     response.headers["Cache-Control"] = cache_control_for_date(target_date)
