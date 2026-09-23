@@ -228,9 +228,13 @@ with no top bar, and everything else floats on it or sits in a sheet over it.
 - **Bottom.** The legend chip, then the time bar. In analysis mode (◈) the legend chip gives way
   to one horizontally scrolling row of glass factor chips, colour-dotted, with the opacity key
   ("frena → favorevole") as a small chip at its start.
-- **Sheet.** An overlay on the full-screen map with three snap points: peek (wordmark and
-  search), half (a chosen spot opens here) and full (a sliver of map stays visible; focusing the
-  search goes here). Map padding keeps the chosen spot visible above it.
+- **Sheet.** An overlay on the full-screen map, in the strong glass tint with rounded top
+  corners (`--radius-sheet`, 20px) like a mobile app's sheet, with three snap points: peek
+  (wordmark and search), half (a chosen spot opens here) and full (a 40px sliver of map stays
+  visible; focusing the search goes here). The time bar and the attribution ride on its top edge
+  up to half; past half it covers them, and the species pill and cluster fade out under it. Map
+  padding keeps a chosen spot visible above it: a tapped place only moves if the sheet would
+  hide it.
 
 At 900px and up the map is full-bleed and the panel is a floating inset glass card, 400px wide
 and rounded: wordmark, ⓘ and search in its header, then hot places, and the spot forecast and

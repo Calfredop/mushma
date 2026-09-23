@@ -112,10 +112,16 @@ describe('the phone shell', () => {
     mockGeolocation(43.85, 11.73)
     render(<App />)
 
+    const sheet = screen.getByRole('complementary')
+    expect(sheet).toHaveAttribute('data-snap', 'peek')
     await userEvent.click(
       screen.getByRole('combobox', { name: 'Cerca un luogo in Toscana' }),
     )
+    // The search comes up full, so its list has room.
+    expect(sheet).toHaveAttribute('data-snap', 'full')
     await userEvent.click(screen.getByRole('option', { name: /^La mia posizione/ }))
+    // A chosen spot opens at half, over the map.
+    expect(sheet).toHaveAttribute('data-snap', 'half')
 
     expect(mapProp('camera')).toMatchObject({ lat: 43.85, lon: 11.73, zoom: 12 })
     expect(mapProp('spot-point')).toMatchObject({ point: [11.73, 43.85] })

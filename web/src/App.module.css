@@ -1,20 +1,30 @@
-/* Mobile first: a full-bleed map with glass controls on it and a sheet below it; from 900px a
+/* Mobile first: a full-screen map with glass controls on it and a sheet over it; from 900px a
    left panel. No top bar: the wordmark and the search live at the top of the sheet. */
 
 .app {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  grid-template-areas: 'map' 'sheet';
+  position: relative;
   height: 100dvh;
   overflow: hidden;
   /* Not scrollable at all, unlike hidden: scrollIntoView and focus can't push it sideways. */
   overflow: clip;
 }
 
+/* The sheet (Sheet.tsx) sets --sheet-lift, how far up the bottom controls ride with it, and
+   --sheet-cover, how much of the top of the map it covers (0 to 1). */
 .mapArea {
-  grid-area: map;
-  position: relative;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
+}
+
+/* The top controls fade as the sheet comes up over them, and are gone at full. */
+.species,
+.cluster,
+.status {
+  opacity: calc(1 - var(--sheet-cover, 0));
+}
+
+.app[data-sheet='full'] :is(.species, .cluster, .status) {
+  visibility: hidden;
 }
 
 /* The top of the map: the species pill on the left, the button cluster on the right. The pill
@@ -120,12 +130,14 @@
   text-decoration: underline;
 }
 
-/* The bottom of the map: the legend chip (or the factor chips), then the time bar. */
+/* The bottom of the map: the legend chip (or the factor chips), then the time bar, riding on
+   the sheet. */
 .bottom {
   position: absolute;
   left: calc(var(--safe-left) + var(--space-3));
   right: calc(var(--safe-right) + var(--space-3));
   bottom: calc(var(--space-3) + 1.25rem); /* room for the map attribution */
+  transform: translateY(calc(-1 * var(--sheet-lift, 0px)));
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
@@ -163,62 +175,16 @@
   min-width: 0;
 }
 
-.sheet {
-  grid-area: sheet;
-  position: relative;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  /* Peek: the handle, the wordmark and the search. */
-  max-height: calc(6.625rem + var(--safe-bottom));
-  padding-bottom: var(--safe-bottom);
-  background: var(--lichene);
-  box-shadow: var(--shadow-sheet);
-  transition: max-height 260ms var(--ease);
+/* The map's attribution rides on the sheet too, under the time bar. */
+.mapArea :global(.maplibregl-ctrl-bottom-right) {
+  transform: translateY(calc(-1 * var(--sheet-lift, 0px)));
 }
 
-.app[data-sheet='open'] .sheet {
-  max-height: 62dvh;
-}
-
-/* A short map above an open sheet keeps only the controls that change it. */
+/* A sheet above half open keeps only the controls that change the map. */
 @media (max-width: 899px) {
-  .app[data-sheet='open'] .legend {
+  .app:not([data-sheet='peek']) .legend {
     display: none;
   }
-}
-
-.handle {
-  flex: none;
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 1.25rem;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--felce);
-}
-
-.handle svg {
-  position: absolute;
-  right: var(--space-3);
-  top: 0.25rem;
-}
-
-.grip {
-  width: 2.5rem;
-  height: 4px;
-  border-radius: 999px;
-  background: rgb(28 33 29 / 22%);
-}
-
-.sheetHeader {
-  flex: none;
-  display: grid;
-  gap: var(--space-2);
-  padding: 0 var(--space-4) var(--space-3);
 }
 
 .brand {
@@ -258,16 +224,6 @@
   color: var(--carta);
 }
 
-.sheetBody {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 0 var(--space-4) var(--space-4);
-}
-
-.app[data-sheet='closed'] .sheetBody {
-  overflow: hidden;
-}
-
 .intro {
   margin: 0 0 var(--space-4);
   color: var(--humus);
@@ -305,35 +261,25 @@
 
 @media (min-width: 900px) {
   .app {
+    display: grid;
     grid-template-columns: var(--panel-width) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
     grid-template-areas: 'sheet map';
   }
 
-  .sheet,
-  .app[data-sheet='open'] .sheet,
-  .app[data-sheet='closed'] .sheet {
-    max-height: none;
-    padding-bottom: 0;
-    box-shadow: 1px 0 0 var(--rule);
+  .mapArea {
+    position: relative;
+    inset: auto;
+    grid-area: map;
+    min-height: 0;
   }
 
-  .sheetHeader {
-    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
-  }
-
-  .sheetHeader > :last-child {
-    margin-right: var(--space-2);
+  .sheet {
+    grid-area: sheet;
   }
 
   .wordmark {
     font-size: var(--text-wordmark);
-  }
-
-  .sheetBody,
-  .app[data-sheet='closed'] .sheetBody {
-    overflow-y: auto;
-    padding: var(--space-2) var(--space-5) var(--space-5);
   }
 
   .species {

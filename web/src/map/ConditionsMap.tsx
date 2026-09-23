@@ -21,6 +21,7 @@ import type { CameraRequest } from '../state/AppState'
 import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
 import styles from './ConditionsMap.module.css'
+import { inView, type MapPadding, mergePadding } from './padding'
 import {
   type ActiveIndicator,
   ANALYSIS_CELL_LAYERS,
@@ -70,7 +71,6 @@ function registerPmtiles() {
 
 const CLICK_TOLERANCE_PX = 10
 
-/** Keeps fitted features clear of the species bar (top) and legend and dates (bottom). */
 /** Relief under the score cells. Added after the first paint, so it never delays it. */
 function addRelief(map: MapLibreMap) {
   if (!TERRAIN_URL || map.getSource('terrain')) return
@@ -79,7 +79,8 @@ function addRelief(map: MapLibreMap) {
   map.addLayer(relief.layer, map.getLayer('cells-dot') ? 'cells-dot' : DATA_LAYERS_BEFORE)
 }
 
-function overlayPadding(map: MapLibreMap) {
+/** Keeps fitted features clear of the species bar (top) and legend and dates (bottom). */
+function overlayPadding(map: MapLibreMap): MapPadding {
   const height = map.getContainer().clientHeight
   return {
     top: Math.min(80, height * 0.2),
@@ -107,6 +108,7 @@ function createMap(
   lang: Language,
   locale: Record<string, string>,
   region: MapRegion,
+  padding: MapPadding | undefined,
   callbacks: { current: MapCallbacks },
 ): MapLibreMap {
   registerPmtiles()
@@ -117,7 +119,10 @@ function createMap(
       region.bounds,
     ),
     bounds: region.bounds,
-    fitBoundsOptions: { padding: 24 },
+    // The region opens in the part of the map nothing covers.
+    fitBoundsOptions: {
+      padding: mergePadding({ top: 24, bottom: 24, left: 24, right: 24 }, padding),
+    },
     maxBounds: region.maxBounds,
     minZoom: region.minZoom,
     maxZoom: region.maxZoom,
@@ -197,6 +202,8 @@ interface Props {
   lang: Language
   /** Defaults to the default region. Read once, at map creation. */
   region?: MapRegion
+  /** What covers the map's edges (the sheet, the controls): camera moves keep clear of it. */
+  padding?: MapPadding
   onCellClick: (cellId: string, lat: number, lon: number) => void
   onPointClick: (lat: number, lon: number) => void
   onHotspotClick: (hotspot: Hotspot) => void
@@ -224,6 +231,7 @@ export function ConditionsMap({
   userPosition,
   lang,
   region = REGION,
+  padding,
   onCellClick,
   onPointClick,
   onHotspotClick,
@@ -243,6 +251,11 @@ export function ConditionsMap({
   const initialLang = useRef(lang)
   const initialLocale = useRef(mapLocale(t))
   const initialRegion = useRef(region)
+  const paddingRef = useRef(padding)
+
+  useEffect(() => {
+    paddingRef.current = padding
+  }, [padding])
 
   useEffect(() => {
     callbacks.current = {
@@ -268,6 +281,7 @@ export function ConditionsMap({
           initialLang.current,
           initialLocale.current,
           initialRegion.current,
+          paddingRef.current,
           callbacks,
         )
         mapRef.current = map
@@ -416,18 +430,24 @@ export function ConditionsMap({
     return () => void marker.remove()
   }, [userPosition, ready, t])
 
-  // Camera requests (search, GPS, hot places, a tap on a phone). Declared before
-  // the spot effect so a framed spot-and-cell view wins over the fly-to.
+  // Camera requests (search, GPS, hot places, a tap). Declared before the spot effect so a
+  // framed spot-and-cell view wins over the fly-to. The padding keeps the place clear of what
+  // covers the map, such as the phone's sheet.
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready || !camera) return
     const center: [number, number] = [camera.lon, camera.lat]
+    const pad = paddingRef.current
     if (camera.zoom === undefined) {
-      map.easeTo({ center, duration: prefersReducedMotion() ? 0 : 400 })
+      // No zoom: only reveal it. A tapped place already in the clear stays where it is.
+      const container = map.getContainer()
+      const size = { width: container.clientWidth, height: container.clientHeight }
+      if (inView(map.project(center), size, pad)) return
+      map.easeTo({ center, padding: pad, duration: prefersReducedMotion() ? 0 : 400 })
     } else if (prefersReducedMotion()) {
-      map.jumpTo({ center, zoom: camera.zoom })
+      map.jumpTo({ center, zoom: camera.zoom, padding: pad })
     } else {
-      map.flyTo({ center, zoom: camera.zoom, duration: 1400 })
+      map.flyTo({ center, zoom: camera.zoom, padding: pad, duration: 1400 })
     }
   }, [camera, ready])
 
@@ -471,7 +491,7 @@ export function ConditionsMap({
     })
     if (far && spot.cell) {
       map.fitBounds(boundsAround(spot.point, spot.cell), {
-        padding: overlayPadding(map),
+        padding: mergePadding(overlayPadding(map), paddingRef.current),
         maxZoom: 12,
         animate: !prefersReducedMotion(),
       })

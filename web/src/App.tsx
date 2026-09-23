@@ -12,6 +12,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react'
+import { LazyMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { track } from './analytics'
 import {
@@ -36,13 +37,14 @@ import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import { ChevronIcon, LayersIcon, LocateIcon } from './components/icons'
+import { LayersIcon, LocateIcon } from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
 import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
 import { PanelBoundary } from './components/PanelBoundary'
 import { Legend } from './components/Legend'
 import { PlaceSearch } from './components/PlaceSearch'
+import { Sheet, type SheetLayout } from './components/Sheet'
 import { SpeciesSwitcher } from './components/SpeciesSwitcher'
 import { TimeBar } from './components/TimeBar'
 import { ViewTabs } from './components/ViewTabs'
@@ -62,6 +64,7 @@ import { usePlayback } from './hooks/usePlayback'
 import { currentLanguage, intlLocale, type Language } from './i18n'
 import './i18n'
 import { type AnalysisView, ConditionsMap } from './map/ConditionsMap'
+import type { MapPadding } from './map/padding'
 import { CreditsPage } from './pages/CreditsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { PrivacyPage } from './pages/PrivacyPage'
@@ -80,6 +83,7 @@ import {
   setDocumentRobots,
 } from './seo/head'
 import { structuredData } from './seo/structuredData'
+import { type Snap, visibleAt } from './sheet/snaps'
 import { AppStateProvider, type CameraRequest } from './state/AppState'
 import { useAppState } from './state/useAppState'
 import type { Spot, SpeciesOrCombined } from './state/urlState'
@@ -106,6 +110,14 @@ const SPOT_ZOOM = 12
 const HOTSPOT_ZOOM = 9.5
 const COMUNE_ZOOM = 10.5
 
+/** Motion's animation features come after first paint (PRD → Mobile performance). */
+const loadMotionFeatures = () =>
+  import('./motionFeatures').then((module) => module.default)
+
+// What covers a phone's map besides the sheet: the species pill and cluster on top (under the
+// safe-area inset), the cluster down the right, the time bar riding on the sheet.
+const PHONE_CHROME = { top: 72, right: 68, left: 16, bottom: 96 }
+
 function useOnline(): boolean {
   return useSyncExternalStore(
     (onChange) => onlineManager.subscribe(onChange),
@@ -120,7 +132,10 @@ function MapScreen() {
   const { navigate } = app
   const desktop = useMediaQuery('(min-width: 900px)')
 
-  const [sheetOpen, setSheetOpen] = useState(app.spot !== null)
+  // The phone sheet: a chosen spot opens at half.
+  const [snap, setSnap] = useState<Snap>(app.spot ? 'half' : 'peek')
+  const [sheetLayout, setSheetLayout] = useState<SheetLayout | null>(null)
+  const mapAreaRef = useRef<HTMLElement>(null)
   const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
   const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
   // A key, not a translated string, so it follows a language switch.
@@ -271,7 +286,7 @@ function MapScreen() {
     ) => {
       track({ name: 'spot-open', data: { method } })
       selectSpot(spot, camera)
-      setSheetOpen(true)
+      setSnap('half')
       setLocateError(null)
     },
     [selectSpot],
@@ -338,6 +353,19 @@ function MapScreen() {
       zoom: SPOT_ZOOM,
     })
 
+  // On a phone the map runs under the sheet: camera moves keep a place clear of it, as it is
+  // or at half, where a chosen spot opens (full leaves too little map to aim at).
+  const mapPadding = useMemo<MapPadding | undefined>(() => {
+    if (desktop || !sheetLayout) return undefined
+    return {
+      top: sheetLayout.safeTop + PHONE_CHROME.top,
+      right: PHONE_CHROME.right,
+      left: PHONE_CHROME.left,
+      bottom:
+        visibleAt(snap === 'full' ? 'half' : snap, sheetLayout) + PHONE_CHROME.bottom,
+    }
+  }, [desktop, sheetLayout, snap])
+
   const infoMenuActions = {
     onDisclaimer: () => setDisclaimerOpen(true),
     onCookies: () => setCookieBannerOpen(true),
@@ -371,168 +399,159 @@ function MapScreen() {
             : locateError && t(`locate.${locateError}`)
 
   return (
-    <div className={styles.app} data-sheet={sheetOpen ? 'open' : 'closed'}>
-      <main className={styles.mapArea}>
-        <ConditionsMap
-          cells={analysis ? undefined : mapCells}
-          scale={seasonMode ? 'goodDays' : 'score'}
-          analysis={analysisView}
-          selectedCellId={selectedCellId}
-          sightings={app.sightingsVisible ? sightings.totals : undefined}
-          hotspots={
-            !seasonMode && app.view === 'now' ? hotspots.data?.hotspots : undefined
-          }
-          camera={app.camera}
-          spotPoint={
-            app.spot?.kind === 'point'
-              ? {
-                  point: [app.spot.lon, app.spot.lat],
-                  cell: spotForecast.data
-                    ? [spotForecast.data.lon, spotForecast.data.lat]
-                    : undefined,
-                }
-              : null
-          }
-          userPosition={userPosition}
-          lang={language}
-          region={app.region}
-          // On a phone the sheet opens and the map shrinks around its centre:
-          // centre on the tap so the chosen spot stays in view.
-          onCellClick={(cellId, lat, lon) =>
-            openSpot({ kind: 'cell', cellId }, 'map', desktop ? undefined : { lat, lon })
-          }
-          onPointClick={(lat, lon) => {
-            if (!inBounds(lat, lon, app.region.bounds)) return
-            openSpot(
-              { kind: 'point', lat, lon },
-              'map',
-              desktop ? undefined : { lat, lon },
-            )
-          }}
-          onHotspotClick={onHotspot}
-        />
-        <div className={styles.species}>
-          <SpeciesSwitcher
-            value={app.species}
-            onChange={handleSpeciesChange}
-            noCombined={analysis}
+    <LazyMotion features={loadMotionFeatures} strict>
+      <div className={styles.app} data-sheet={desktop ? undefined : snap}>
+        <main ref={mapAreaRef} className={styles.mapArea}>
+          <ConditionsMap
+            cells={analysis ? undefined : mapCells}
+            scale={seasonMode ? 'goodDays' : 'score'}
+            analysis={analysisView}
+            selectedCellId={selectedCellId}
+            sightings={app.sightingsVisible ? sightings.totals : undefined}
+            hotspots={
+              !seasonMode && app.view === 'now' ? hotspots.data?.hotspots : undefined
+            }
+            camera={app.camera}
+            spotPoint={
+              app.spot?.kind === 'point'
+                ? {
+                    point: [app.spot.lon, app.spot.lat],
+                    cell: spotForecast.data
+                      ? [spotForecast.data.lon, spotForecast.data.lat]
+                      : undefined,
+                  }
+                : null
+            }
+            userPosition={userPosition}
+            lang={language}
+            region={app.region}
+            padding={mapPadding}
+            // No zoom: the map only moves if the sheet opening over it would hide the tap.
+            onCellClick={(cellId, lat, lon) =>
+              openSpot({ kind: 'cell', cellId }, 'map', { lat, lon })
+            }
+            onPointClick={(lat, lon) => {
+              if (!inBounds(lat, lon, app.region.bounds)) return
+              openSpot({ kind: 'point', lat, lon }, 'map', { lat, lon })
+            }}
+            onHotspotClick={onHotspot}
           />
-        </div>
-        <div className={styles.cluster}>
-          <button
-            type="button"
-            className={styles.fab}
-            aria-label={t('analysis.toggle')}
-            title={t('analysis.toggle')}
-            aria-pressed={analysis}
-            onClick={() => app.setMode(analysis ? 'map' : 'analysis')}
-          >
-            <LayersIcon />
-          </button>
-          <button
-            type="button"
-            className={styles.fab}
-            aria-label={t('locate.center')}
-            title={t('locate.center')}
-            aria-busy={centerLocate.locating}
-            onClick={centerLocate.locate}
-          >
-            <LocateIcon />
-          </button>
-          {!desktop && (
-            <InfoMenu placement="left" className={styles.fab} {...infoMenuActions} />
-          )}
-        </div>
-        {status && (
-          <p className={styles.status} role="status">
-            {status}
-            {layer.isError && !scoresUnavailable && online && (
-              <button type="button" onClick={() => void layer.refetch()}>
-                {t('map.retry')}
-              </button>
-            )}
-          </p>
-        )}
-        <div className={styles.bottom}>
-          <div className={styles.legend}>
-            {analysis ? (
-              <IndicatorPanel
-                layout={desktop ? 'panel' : 'row'}
-                chips={servedFactors}
-                active={app.indicators}
-                onToggle={app.toggleIndicator}
-                note={servedFactors ? undefined : analysisNote}
-                showSightings={app.sightingsVisible}
-              />
-            ) : (
-              <Legend
-                showSightings={app.sightingsVisible}
-                season={app.season}
-                collapsible={!desktop}
-              />
-            )}
-          </div>
-          <div className={styles.dates}>
-            <TimeBar
-              today={app.today}
-              date={app.date}
-              window={DATE_WINDOW}
-              historyStart={HISTORY_START}
-              season={app.season}
-              seasons={seasonYears}
-              onDate={handleDateChange}
-              onSeason={app.setSeason}
-              playback={
-                analysis
-                  ? {
-                      playing: playback.playing,
-                      onToggle: playback.toggle,
-                      onTouch: playback.pause,
-                    }
-                  : undefined
-              }
+          <div className={styles.species}>
+            <SpeciesSwitcher
+              value={app.species}
+              onChange={handleSpeciesChange}
+              noCombined={analysis}
             />
           </div>
-        </div>
-      </main>
-
-      <aside
-        className={styles.sheet}
-        aria-label={t(app.spot ? 'spot.title' : `views.${app.view}`)}
-      >
-        {!desktop && (
-          <button
-            type="button"
-            className={styles.handle}
-            aria-expanded={sheetOpen}
-            aria-label={t(sheetOpen ? 'sheet.collapse' : 'sheet.expand')}
-            onClick={() => setSheetOpen((open) => !open)}
-          >
-            <span className={styles.grip} />
-            <ChevronIcon direction={sheetOpen ? 'down' : 'up'} />
-          </button>
-        )}
-        <div className={styles.sheetHeader}>
-          <div className={styles.brand}>
-            <h1 className={styles.wordmark}>{t('app.name')}</h1>
-            {desktop && (
-              <InfoMenu
-                placement="below"
-                className={styles.headerButton}
-                {...infoMenuActions}
-              />
+          <div className={styles.cluster}>
+            <button
+              type="button"
+              className={styles.fab}
+              aria-label={t('analysis.toggle')}
+              title={t('analysis.toggle')}
+              aria-pressed={analysis}
+              onClick={() => app.setMode(analysis ? 'map' : 'analysis')}
+            >
+              <LayersIcon />
+            </button>
+            <button
+              type="button"
+              className={styles.fab}
+              aria-label={t('locate.center')}
+              title={t('locate.center')}
+              aria-busy={centerLocate.locating}
+              onClick={centerLocate.locate}
+            >
+              <LocateIcon />
+            </button>
+            {!desktop && (
+              <InfoMenu placement="left" className={styles.fab} {...infoMenuActions} />
             )}
           </div>
-          <PlaceSearch
-            onSelect={onPlace}
-            onLocate={spotLocate.locate}
-            locating={spotLocate.locating}
-            // A phone: the sheet opens, so the list has room.
-            onFocus={() => setSheetOpen(true)}
-            bounds={app.region.bounds}
-          />
-        </div>
-        <div className={styles.sheetBody}>
+          {status && (
+            <p className={styles.status} role="status">
+              {status}
+              {layer.isError && !scoresUnavailable && online && (
+                <button type="button" onClick={() => void layer.refetch()}>
+                  {t('map.retry')}
+                </button>
+              )}
+            </p>
+          )}
+          <div className={styles.bottom}>
+            <div className={styles.legend}>
+              {analysis ? (
+                <IndicatorPanel
+                  layout={desktop ? 'panel' : 'row'}
+                  chips={servedFactors}
+                  active={app.indicators}
+                  onToggle={app.toggleIndicator}
+                  note={servedFactors ? undefined : analysisNote}
+                  showSightings={app.sightingsVisible}
+                />
+              ) : (
+                <Legend
+                  showSightings={app.sightingsVisible}
+                  season={app.season}
+                  collapsible={!desktop}
+                />
+              )}
+            </div>
+            <div className={styles.dates}>
+              <TimeBar
+                today={app.today}
+                date={app.date}
+                window={DATE_WINDOW}
+                historyStart={HISTORY_START}
+                season={app.season}
+                seasons={seasonYears}
+                onDate={handleDateChange}
+                onSeason={app.setSeason}
+                playback={
+                  analysis
+                    ? {
+                        playing: playback.playing,
+                        onToggle: playback.toggle,
+                        onTouch: playback.pause,
+                      }
+                    : undefined
+                }
+              />
+            </div>
+          </div>
+        </main>
+
+        <Sheet
+          mode={desktop ? 'panel' : 'sheet'}
+          className={styles.sheet}
+          snap={snap}
+          onSnap={setSnap}
+          onGeometry={setSheetLayout}
+          stage={mapAreaRef}
+          label={t(app.spot ? 'spot.title' : `views.${app.view}`)}
+          header={
+            <>
+              <div className={styles.brand}>
+                <h1 className={styles.wordmark}>{t('app.name')}</h1>
+                {desktop && (
+                  <InfoMenu
+                    placement="below"
+                    className={styles.headerButton}
+                    {...infoMenuActions}
+                  />
+                )}
+              </div>
+              <PlaceSearch
+                onSelect={onPlace}
+                onLocate={spotLocate.locate}
+                locating={spotLocate.locating}
+                // A phone: the sheet comes up full, so the list has room above the keyboard.
+                onFocus={() => setSnap('full')}
+                bounds={app.region.bounds}
+              />
+            </>
+          }
+        >
           {app.spot ? (
             <SpotPanel
               key={JSON.stringify(app.spot)}
@@ -560,7 +579,7 @@ function MapScreen() {
                 onChange={(view) => {
                   track({ name: 'view-switch', data: { view } })
                   app.setView(view)
-                  setSheetOpen(true)
+                  setSnap((current) => (current === 'peek' ? 'half' : current))
                 }}
               />
               <div
@@ -664,40 +683,43 @@ function MapScreen() {
               </button>
             </p>
           </footer>
-        </div>
-      </aside>
+        </Sheet>
 
-      {app.route.kind === 'static' && app.route.page === 'credits' && (
-        <CreditsPage
-          backHref={regionPath(app.region.slug)}
-          onBack={() => navigate(regionPath(app.region.slug))}
+        {app.route.kind === 'static' && app.route.page === 'credits' && (
+          <CreditsPage
+            backHref={regionPath(app.region.slug)}
+            onBack={() => navigate(regionPath(app.region.slug))}
+          />
+        )}
+        {app.route.kind === 'static' && app.route.page === 'terms' && (
+          <TermsPage
+            backHref={regionPath(app.region.slug)}
+            onBack={() => navigate(regionPath(app.region.slug))}
+            onDisclaimerClick={() => setDisclaimerOpen(true)}
+            onPrivacyClick={() => navigate('/privacy')}
+          />
+        )}
+        {app.route.kind === 'static' && app.route.page === 'privacy' && (
+          <PrivacyPage
+            backHref={regionPath(app.region.slug)}
+            onBack={() => navigate(regionPath(app.region.slug))}
+            onDisclaimerClick={() => setDisclaimerOpen(true)}
+          />
+        )}
+        <DisclaimerDialog
+          open={disclaimerOpen}
+          onClose={() => setDisclaimerOpen(false)}
         />
-      )}
-      {app.route.kind === 'static' && app.route.page === 'terms' && (
-        <TermsPage
-          backHref={regionPath(app.region.slug)}
-          onBack={() => navigate(regionPath(app.region.slug))}
-          onDisclaimerClick={() => setDisclaimerOpen(true)}
-          onPrivacyClick={() => navigate('/privacy')}
+        <CookieBanner
+          open={cookieBannerOpen}
+          onClose={() => setCookieBannerOpen(false)}
+          onPrivacyClick={() => {
+            setCookieBannerOpen(false)
+            navigate('/privacy')
+          }}
         />
-      )}
-      {app.route.kind === 'static' && app.route.page === 'privacy' && (
-        <PrivacyPage
-          backHref={regionPath(app.region.slug)}
-          onBack={() => navigate(regionPath(app.region.slug))}
-          onDisclaimerClick={() => setDisclaimerOpen(true)}
-        />
-      )}
-      <DisclaimerDialog open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
-      <CookieBanner
-        open={cookieBannerOpen}
-        onClose={() => setCookieBannerOpen(false)}
-        onPrivacyClick={() => {
-          setCookieBannerOpen(false)
-          navigate('/privacy')
-        }}
-      />
-    </div>
+      </div>
+    </LazyMotion>
   )
 }
 

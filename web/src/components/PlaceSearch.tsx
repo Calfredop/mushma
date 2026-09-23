@@ -12,8 +12,6 @@ const MIN_QUERY = 3
 
 interface Props {
   onSelect: (place: Place) => void
-  autoFocus?: boolean
-  onDismiss?: () => void
   /** Defaults to the default region's bounds. */
   bounds?: [[number, number], [number, number]]
   /** "La mia posizione": first in the list whenever the field has focus. */
@@ -27,8 +25,6 @@ type Option = { kind: 'locate' } | { kind: 'place'; place: Place }
 
 export function PlaceSearch({
   onSelect,
-  autoFocus,
-  onDismiss,
   bounds = REGION.bounds,
   onLocate,
   locating = false,
@@ -92,7 +88,6 @@ export function PlaceSearch({
           enterKeyHint="search"
           placeholder={t('search.placeholder')}
           value={text}
-          autoFocus={autoFocus}
           onFocus={() => {
             setFocused(true)
             setActive(0)
@@ -115,19 +110,16 @@ export function PlaceSearch({
               choose(options[active])
             } else if (event.key === 'Escape') {
               if (text) setText('')
-              else {
-                event.currentTarget.blur()
-                onDismiss?.()
-              }
+              else event.currentTarget.blur()
             }
           }}
         />
-        {(text || onDismiss) && (
+        {text && (
           <button
             type="button"
             className={styles.clear}
             aria-label={t('search.clear')}
-            onClick={() => (text ? setText('') : onDismiss?.())}
+            onClick={() => setText('')}
           >
             <CloseIcon />
           </button>
