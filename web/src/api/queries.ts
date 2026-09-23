@@ -1,5 +1,10 @@
 /** TanStack Query hooks over the typed API client. The frontend only reads. */
-import { type UseQueryResult, useQueries, useQuery } from '@tanstack/react-query'
+import {
+  queryOptions,
+  type UseQueryResult,
+  useQueries,
+  useQuery,
+} from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { sightingsByCell } from '../map/geojson'
 import {
@@ -14,6 +19,9 @@ import { apiClient } from './client'
 import type { components } from './schema'
 
 export type ScoresResponse = components['schemas']['ScoresResponse']
+export type FactorsResponse = components['schemas']['FactorsResponse']
+export type FactorChip = components['schemas']['FactorChip']
+export type CellFactors = components['schemas']['CellFactors']
 export type CellDetailResponse = components['schemas']['CellDetailResponse']
 export type HotspotsResponse = components['schemas']['HotspotsResponse']
 export type Hotspot = components['schemas']['Hotspot']
@@ -78,6 +86,33 @@ export function useScores(
         .then(unwrap<ScoresResponse>('/scores')),
     staleTime: staleTimeFor(date, today),
     placeholderData: (previous) => previous,
+  })
+}
+
+/** Analysis mode: every factor behind one species' score, per cell, for one day. Shared by
+ * `useFactors` and the play button's prefetch, so both fill the same cache entry. */
+export function factorsQuery(species: Species, date: IsoDate, today: IsoDate) {
+  return queryOptions({
+    queryKey: ['factors', species, date],
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/factors', { params: { query: { species, date } }, signal })
+        .then(unwrap<FactorsResponse>('/factors')),
+    staleTime: staleTimeFor(date, today),
+  })
+}
+
+export function useFactors(
+  species: Species,
+  date: IsoDate,
+  today: IsoDate,
+  enabled = true,
+) {
+  return useQuery({
+    ...factorsQuery(species, date, today),
+    enabled,
+    // The last day stays drawn while the next loads, but never another species' factors.
+    placeholderData: (previous) => (previous?.species === species ? previous : undefined),
   })
 }
 

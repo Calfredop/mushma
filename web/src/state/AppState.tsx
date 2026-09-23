@@ -10,13 +10,18 @@ import {
 import { DATE_WINDOW, HISTORY_START, REGION } from '../config'
 import { type IsoDate, todayInRome } from '../time/days'
 import {
+  keepIndicators,
+  type Mode,
   parseUrlState,
   rollToday,
   serializeUrlState,
   type SpeciesOrCombined,
   type Spot,
+  toggleIndicator,
   type UrlState,
   type View,
+  withMode,
+  withSpecies,
 } from './urlState'
 
 /** A one-shot request for the map camera, e.g. after a search or GPS fix. */
@@ -45,6 +50,10 @@ export interface AppStateValue extends UrlState {
   camera: CameraRequest | null
   sightingsVisible: boolean
   setSightingsVisible: (visible: boolean) => void
+  setMode: (mode: Mode) => void
+  toggleIndicator: (id: string) => void
+  /** Once the species' indicators are known: drop any it doesn't have. */
+  keepIndicators: (available: readonly string[]) => void
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -100,7 +109,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, [state, today])
 
   const setSpecies = useCallback(
-    (species: SpeciesOrCombined) => setState((s) => ({ ...s, species })),
+    (species: SpeciesOrCombined) => setState((s) => withSpecies(s, species)),
+    [],
+  )
+  const setMode = useCallback((mode: Mode) => setState((s) => withMode(s, mode)), [])
+  const toggle = useCallback((id: string) => setState((s) => toggleIndicator(s, id)), [])
+  const keep = useCallback(
+    (available: readonly string[]) => setState((s) => keepIndicators(s, available)),
     [],
   )
   const setDate = useCallback(
@@ -146,6 +161,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       camera,
       sightingsVisible,
       setSightingsVisible,
+      setMode,
+      toggleIndicator: toggle,
+      keepIndicators: keep,
     }),
     [
       state,
@@ -160,6 +178,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       flyTo,
       camera,
       sightingsVisible,
+      setMode,
+      toggle,
+      keep,
     ],
   )
 

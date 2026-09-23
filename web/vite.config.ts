@@ -109,7 +109,7 @@ function vendorMaplibre(): Plugin {
 /**
  * Offline caching (PRD → PWA, M7): the app shell and fonts are precached (generateSW's own
  * build manifest, below); everything else is cached as it's used, never speculatively:
- * - API responses (scores, spot forecasts, hotspots, comuni, history, outlook, status): the
+ * - API responses (scores, factors, spot forecasts, hotspots, comuni, history, outlook, status): the
  *   read-only GET routes the API serves, matched by path regardless of `VITE_API_BASE_URL`
  *   being a same-origin proxy/rewrite or an absolute cross-origin URL. NetworkFirst, so a
  *   forager with signal always gets today's numbers; a short timeout falls back to whatever
@@ -121,7 +121,7 @@ function vendorMaplibre(): Plugin {
  *   caching those and the map still works, just without that tile offline.
  */
 const API_ROUTE_RE =
-  /\/(scores|spot|cells\/[^/?]+|hotspots|sightings|comuni|history\/[^/?]+|outlook|status)(\?|$)/
+  /\/(scores|factors|spot|cells\/[^/?]+|hotspots|sightings|comuni|history\/[^/?]+|outlook|status)(\?|$)/
 
 function tileOrigin(url: string | undefined): string | undefined {
   if (!url) return undefined

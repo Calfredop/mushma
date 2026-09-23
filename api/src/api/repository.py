@@ -8,6 +8,7 @@ from typing import Protocol
 from api.models import (
     CellDetailResponse,
     ComuniResponse,
+    FactorsResponse,
     HotspotsResponse,
     OutlookResponse,
     PlausibleSpeciesResponse,
@@ -60,6 +61,10 @@ class ScoresUnavailable(Exception):
 class ScoresRepository(Protocol):
     def get_scores(self, species: SpeciesOrCombined, target_date: date) -> ScoresResponse:
         """Raises DateOutOfRange if target_date isn't in the served window."""
+
+    def get_factors(self, species: Species, target_date: date) -> FactorsResponse:
+        """Each factor's value per woodland cell, from the rule file that wins the cell that day.
+        Raises DateOutOfRange, with the stored range, for a day with no factor rows."""
 
     def get_cell_detail(self, cell_id: str) -> CellDetailResponse:
         """Raises CellNotFound if cell_id doesn't exist."""

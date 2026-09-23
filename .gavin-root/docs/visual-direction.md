@@ -68,6 +68,87 @@ still shows where the woodland is.
 Text on a score swatch: Humus on classes 1–3 (14.2, 10.3 and 6.4:1), white on classes 4–5 (5.2 and
 10.8:1).
 
+## Analysis mode
+
+Card `feat-analysis-mode`. An "Analisi / Analysis" toggle beside the legend swaps the score colours for
+the factors behind them. Each factor of the species' rules is a chip, and each chip that is on draws
+its own layer in its own colour. A cell's opacity is the factor's 0–1 value: opaque is favourable,
+faint is holding the score back. The measurement behind a value (mm, °C…) stays in the "why" panel.
+
+### Families
+
+Chips come in six families of related hues, so a glance tells rain from cold from terrain. Within a
+family each factor has its own colour, mostly a lightness step. A rule id with a window in its name
+shares the colour of the concept it names (`water_balance_60d` is the water balance, `drought_14d`
+the drought), since no species has both. An unknown factor draws in a neutral grey, `#7A827C`. The
+mapping lives in `web/src/score/indicators.ts`.
+
+| family | factor | hex | OKLCH |
+|---|---|---|---|
+| Rain and moisture (teal) | rain_trigger | `#268C9F` | 0.59 0.093 212 |
+| | rain_30d | `#2FA8A3` | 0.67 0.103 191 |
+| | rain_frequency | `#60BCD4` | 0.75 0.094 218 |
+| | water_balance, water_balance_60d | `#92C8B2` | 0.79 0.064 168 |
+| | drought, drought_14d | `#537B6D` | 0.55 0.050 171 |
+| | soil_moisture | `#599576` | 0.62 0.080 160 |
+| | early_season_wetness | `#72ADB6` | 0.71 0.063 207 |
+| | waterlogging | `#55866C` | 0.58 0.067 160 |
+| Temperature (orange) | air_temperature | `#EF8332` | 0.72 0.160 53 |
+| | soil_temperature | `#DA6210` | 0.64 0.170 47 |
+| | heat | `#F8A650` | 0.79 0.140 64 |
+| | heat_spike | `#CA3707` | 0.56 0.190 35 |
+| Drying (yellow) | drying | `#F4D03D` | 0.86 0.160 95 |
+| | evaporative_demand | `#E3B409` | 0.79 0.160 89 |
+| Cold (violet) | frost | `#A476E6` | 0.66 0.166 301 |
+| | hard_frost | `#764DD6` | 0.54 0.200 292 |
+| | cold_nights | `#C593DF` | 0.74 0.119 313 |
+| | snow | `#C0BCFD` | 0.82 0.091 287 |
+| Terrain and woodland (muted olive) | habitat | `#49553B` | 0.43 0.044 128 |
+| | altitude | `#473C25` | 0.36 0.039 84 |
+| | slope | `#756A3F` | 0.52 0.062 95 |
+| | sun_exposure | `#9DA06C` | 0.69 0.072 111 |
+| | lithology | `#645850` | 0.47 0.020 55 |
+| | soil_ph | `#6C8970` | 0.60 0.050 148 |
+| Season (plum) | season | `#5C0E59` | 0.34 0.140 330 |
+
+Water keeps to teal so it never reads as Lago, which still means selection. Terrain is muted so the
+weather families carry the colour. Season is the darkest colour on the map, a plum no other family
+comes near.
+
+### Checks
+
+Same method as the score scale: the Machado et al. (2009) full-severity simulation in linear sRGB,
+distances in OKLab (ΔE OK). Each figure is the worst over normal vision, protanopia, deuteranopia and
+tritanopia. The colours were hill-climbed inside each family's hue and lightness bounds to raise the
+worst of these figures.
+
+| check | worst ΔE OK |
+|---|---|
+| family anchors (rain_trigger, air_temperature, drying, frost, habitat, season), pairwise | 0.104 |
+| any enabled factor against Lago `#1F56A0` | 0.083 (drought, habitat) |
+| enabled factors within a family | 0.069 (terrain) |
+| any two chips one species can show (porcini 13, ovoli 11, gallinacci 16) | 0.060 |
+| a full-value cell at the cap against the basemap land | 0.083 (drying) |
+
+Factors no rule enables yet (soil_moisture, early_season_wetness, waterlogging, lithology, soil_ph)
+have colours but are held to the family look only. Check them properly when one is switched on.
+
+### Stacking and the opacity cap
+
+Any number of chips can be on, stacked in the order they were turned on (the last on top). With
+plain `value × cap` per layer the top layer would hide the rest: three layers at 0.6 leave the
+bottom one 10 % of the blend. So each layer instead gets an equal share of the cap. With `n` layers
+on, the layer `i` places below the top (0 for the top one) has opacity `value × s / (1 − i·s)`,
+where `s = 0.75 / n`. Every indicator then weighs `0.75 / n` in the blend, all of them together
+cover at most 0.75 (the cap), and one indicator alone is plain `value × 0.75`.
+
+At full value, the blend of any two family colours differs from either colour alone by at least ΔE
+0.065 for normal vision and 0.036 under every simulation. Three differ by at least 0.054 for normal
+vision. Under a colour-vision deficiency, 4 of the 20 family triples blend close to one of their own
+colours (worst 0.006: air temperature, drying and habitat). Mixing three colours in a dichromat's
+two-dimensional colour space can land on any one of them, so no palette avoids this. The chip panel
+always says which layers are on.
+
 ## Type
 
 Self-hosted with Fontsource (no third-party font requests, and M7 can cache them offline).

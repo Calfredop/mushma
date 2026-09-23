@@ -14,14 +14,17 @@ import duckdb
 import pandas as pd
 
 from api.live.breakdown import reconstruct_breakdown
+from api.live.factors import factor_chips, winner_values
 from api.live.hotspots import cluster_hotspots
 from api.live.timeviews import TimeViews
 from api.model.rules import RuleSet, load_rules
 from api.model.store import ScoreStore
 from api.models import (
     CellDetailResponse,
+    CellFactors,
     ComuniResponse,
     DayScore,
+    FactorsResponse,
     GridCellScore,
     Hotspot,
     HotspotsResponse,
@@ -108,6 +111,40 @@ class LiveRepository:
             for r in merged.itertuples()
         ]
         return ScoresResponse(species=species, date=target_date, cells=cells)
+
+    def _factors_bounds(
+        self, con: duckdb.DuckDBPyConnection, keys: list[str]
+    ) -> tuple[date, date] | None:
+        bounds = [b for key in keys if (b := self._date_bounds(con, key, "factors"))]
+        if not bounds:
+            return None
+        return min(lo for lo, _ in bounds), max(hi for _, hi in bounds)
+
+    def get_factors(self, species: Species, target_date: date) -> FactorsResponse:
+        con = duckdb.connect()
+        keys = self.rules.groups.get(species, [])
+        factor_rows = {}
+        for key in keys:
+            rows = self.scores.read(con, key, target_date, target_date, tier="factors").df()
+            if not rows.empty:
+                factor_rows[key] = rows
+        winners = self.scores.read(con, species, target_date, target_date).df()
+        if not factor_rows or winners.empty:
+            lo, hi = self._factors_bounds(con, keys) or (target_date, target_date)
+            raise DateOutOfRange(target_date, lo, hi)
+
+        chips = factor_chips(self.rules, species)
+        values = winner_values(winners[["cell_id", "source_key"]], factor_rows, chips)
+        merged = values.merge(self.cells[["cell_id", "lon", "lat"]], on="cell_id", how="inner")
+        ids = [chip.id for chip in chips]
+        matrix = merged[ids].astype(object).where(merged[ids].notna(), None).to_numpy().tolist()
+        cells = [
+            CellFactors(cell_id=cell_id, lon=float(lon), lat=float(lat), values=row)
+            for cell_id, lon, lat, row in zip(
+                merged["cell_id"], merged["lon"], merged["lat"], matrix, strict=True
+            )
+        ]
+        return FactorsResponse(species=species, date=target_date, factors=chips, cells=cells)
 
     def _forecast(self, cell_row: pd.Series) -> CellDetailResponse:
         cell_id = cell_row["cell_id"]

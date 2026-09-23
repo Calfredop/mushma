@@ -42,3 +42,36 @@ test('the time bar stays in the map and nothing scrolls the app sideways', async
     expect(centerBox.x + centerBox.width).toBeLessThanOrEqual(mapBox.x + mapBox.width)
   }
 })
+
+test.describe('a 360 px phone in analysis mode', () => {
+  test.use({ viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true })
+
+  test('the factor panel sits between the species bar and the date strip', async ({
+    page,
+  }) => {
+    await page.goto('/?mode=analysis&f=rain_trigger')
+    await page.getByRole('button', { name: 'Ho capito' }).click()
+
+    const panel = page.getByRole('region', { name: "Fattori dell'indice" })
+    const toggle = page.getByRole('button', { name: 'Analisi' })
+    const strip = page.getByRole('radiogroup', { name: 'Giorno' })
+    const species = page.getByRole('radiogroup', { name: 'Specie' })
+    await expect(panel.getByRole('button', { name: 'Pioggia di innesco' })).toBeVisible()
+    await expect(strip).toBeVisible()
+
+    const box = async (locator: typeof panel) => (await locator.boundingBox())!
+    const [panelBox, toggleBox, stripBox, speciesBox] = [
+      await box(panel),
+      await box(toggle),
+      await box(strip),
+      await box(species),
+    ]
+    // Nothing covers the date strip, and the toggle stays under the species bar.
+    expect(panelBox.y + panelBox.height).toBeLessThanOrEqual(stripBox.y)
+    expect(toggleBox.y).toBeGreaterThanOrEqual(speciesBox.y + speciesBox.height)
+    expect(panelBox.x).toBeGreaterThanOrEqual(0)
+    expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(360)
+    const app = page.getByRole('main').locator('xpath=..')
+    expect(await app.evaluate((el) => el.scrollLeft)).toBe(0)
+  })
+})

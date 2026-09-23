@@ -2,7 +2,7 @@
 privacy) and AGENTS.md -> Conventions (Score wording, Rules are data)."""
 
 from datetime import date, datetime
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -158,6 +158,39 @@ class ScoresResponse(BaseModel):
     species: SpeciesOrCombined
     date: date
     cells: list[GridCellScore]
+
+
+class FactorChip(BaseModel):
+    """One indicator analysis mode can put on the map: an enabled factor of the species' rules,
+    named like its row in the "why this score" breakdown."""
+
+    id: str = Field(description="the factor id, as `key` in the breakdown")
+    i18n_key: str
+    role: Literal["gate", "driver", "stopper"]
+
+
+class CellFactors(BaseModel):
+    cell_id: str
+    lon: float
+    lat: float
+    values: list[Annotated[float, Field(ge=0, le=1)] | None] = Field(
+        description="each factor's 0-1 value, in `factors` order, rounded to 3 decimals: 1 is "
+        "favourable, 0 holds the score back. From the rule file that wins the cell that day (the "
+        "one the breakdown explains); null where that rule file lacks the factor"
+    )
+
+
+class FactorsResponse(BaseModel):
+    """Analysis mode: every factor behind a species' conditions score, per woodland cell, for one
+    day. Only the days the daily job keeps the breakdown for (today -6 to +7) are stored."""
+
+    species: Species
+    date: date
+    factors: list[FactorChip] = Field(
+        description="the union of the enabled factors over the species' rule files, in breakdown "
+        "order (gates, drivers, stoppers)"
+    )
+    cells: list[CellFactors]
 
 
 class StatusResponse(BaseModel):

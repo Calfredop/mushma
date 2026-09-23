@@ -99,3 +99,24 @@ export const OfflineIcon = () => (
     <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
   </Icon>
 )
+
+export const PlayIcon = () => (
+  <Icon>
+    <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />
+  </Icon>
+)
+
+export const PauseIcon = () => (
+  <Icon>
+    <path d="M8.5 5.5v13M15.5 5.5v13" strokeWidth="3" />
+  </Icon>
+)
+
+/** Stacked sheets: the factors drawn as layers. */
+export const LayersIcon = () => (
+  <Icon>
+    <path d="m12 4 8.5 4.5L12 13 3.5 8.5z" />
+    <path d="m3.5 12.5 8.5 4.5 8.5-4.5" />
+    <path d="m3.5 16.5 8.5 4.5 8.5-4.5" />
+  </Icon>
+)

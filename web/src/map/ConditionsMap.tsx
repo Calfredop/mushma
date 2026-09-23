@@ -21,15 +21,36 @@ import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
 import styles from './ConditionsMap.module.css'
 import {
+  type ActiveIndicator,
+  ANALYSIS_CELL_LAYERS,
+  ANALYSIS_LAYERS_BEFORE,
+  analysisLayers,
   CELL_LAYERS,
   type CellScale,
   cellColor,
   EMPTY_COLLECTION as EMPTY,
   withDataLayers,
 } from './dataLayers'
-import { cellsToPoints, cellsToSquares, sightingsToPoints } from './geojson'
+import {
+  cellsToPoints,
+  cellsToSquares,
+  factorCellsToPoints,
+  factorCellsToSquares,
+  sightingsToPoints,
+} from './geojson'
 
 type GridCellScore = components['schemas']['GridCellScore']
+type CellFactors = components['schemas']['CellFactors']
+
+/** Analysis mode: the factors behind the score instead of the score. */
+export interface AnalysisView {
+  /** The day's factor rows, or undefined while they load or on a day without factors. */
+  cells: CellFactors[] | undefined
+  /** The response's factor ids, in the order of each cell's `values`. */
+  ids: readonly string[]
+  /** The indicators to draw, bottom to top. */
+  active: readonly ActiveIndicator[]
+}
 
 declare global {
   interface Window {
@@ -74,6 +95,8 @@ interface MapCallbacks {
   onCellClick: (cellId: string, lat: number, lon: number) => void
   onPointClick: (lat: number, lon: number) => void
   onReady: () => void
+  /** What a tap can land on, the square layer first: it follows the mode. */
+  cellLayers: string[]
 }
 
 function createMap(
@@ -116,15 +139,16 @@ function createMap(
 
   const pickCell = (event: MapMouseEvent) => {
     const { x, y } = event.point
+    const layers = callbacks.current.cellLayers
     const features = map.queryRenderedFeatures(
       [
         [x - CLICK_TOLERANCE_PX, y - CLICK_TOLERANCE_PX],
         [x + CLICK_TOLERANCE_PX, y + CLICK_TOLERANCE_PX],
       ],
-      { layers: CELL_LAYERS },
+      { layers },
     )
     // Inside a square wins; otherwise the nearest dot.
-    const inside = map.queryRenderedFeatures(event.point, { layers: ['cells-fill'] })[0]
+    const inside = map.queryRenderedFeatures(event.point, { layers: [layers[0]] })[0]
     if (inside) return String(inside.properties.cell_id)
     let best: { id: string; distance: number } | undefined
     for (const feature of features) {
@@ -155,6 +179,8 @@ interface Props {
   cells: GridCellScore[] | undefined
   /** What `cells[].score` holds: a day's conditions score (default) or a season's good days. */
   scale?: CellScale
+  /** Analysis mode, drawn instead of `cells`; null or omitted for the scores. */
+  analysis?: AnalysisView | null
   selectedCellId: string | null
   /** Sighting totals per cell, or undefined to hide the overlay. */
   sightings: Map<string, number> | undefined
@@ -183,6 +209,7 @@ function mapLocale(t: TFunction): Record<string, string> {
 export function ConditionsMap({
   cells,
   scale = 'score',
+  analysis = null,
   selectedCellId,
   sightings,
   hotspots,
@@ -198,11 +225,13 @@ export function ConditionsMap({
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const [ready, setReady] = useState(false)
+  const inAnalysis = analysis !== null
   const callbacks = useRef({
     onCellClick,
     onPointClick,
     onHotspotClick,
     onReady: () => setReady(true),
+    cellLayers: inAnalysis ? ANALYSIS_CELL_LAYERS : CELL_LAYERS,
   })
   const initialLang = useRef(lang)
   const initialLocale = useRef(mapLocale(t))
@@ -213,6 +242,7 @@ export function ConditionsMap({
       onPointClick,
       onHotspotClick,
       onReady: () => setReady(true),
+      cellLayers: inAnalysis ? ANALYSIS_CELL_LAYERS : CELL_LAYERS,
     }
   })
 
@@ -240,17 +270,26 @@ export function ConditionsMap({
     }
   }, [])
 
-  // Scores.
+  // Scores, or in analysis mode the factors: both on the same cell sources.
+  const factorCells = analysis?.cells
+  const factorIds = analysis?.ids
+  const drawn = inAnalysis ? factorCells : cells
   const firstPaintMarked = useRef(false)
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    const data = cells ?? []
-    map.getSource<GeoJSONSource>('cells-points')?.setData(cellsToPoints(data))
-    map
-      .getSource<GeoJSONSource>('cells-squares')
-      ?.setData(cellsToSquares(data, CELL_SIZE_KM))
-    if (cells && !firstPaintMarked.current) {
+    const points = map.getSource<GeoJSONSource>('cells-points')
+    const squares = map.getSource<GeoJSONSource>('cells-squares')
+    if (inAnalysis) {
+      const data = factorCells ?? []
+      points?.setData(factorCellsToPoints(data, factorIds ?? []))
+      squares?.setData(factorCellsToSquares(data, factorIds ?? [], CELL_SIZE_KM))
+    } else {
+      const data = cells ?? []
+      points?.setData(cellsToPoints(data))
+      squares?.setData(cellsToSquares(data, CELL_SIZE_KM))
+    }
+    if (drawn && !firstPaintMarked.current) {
       firstPaintMarked.current = true
       // First map paint: basemap and score cells drawn (PRD → Mobile performance).
       map.once('idle', () => {
@@ -258,7 +297,38 @@ export function ConditionsMap({
         addRelief(map)
       })
     }
-  }, [cells, ready])
+  }, [cells, inAnalysis, factorCells, factorIds, drawn, ready])
+
+  // Analysis mode hides the score colours; its base layers show where the woodland is and take
+  // the taps.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready) return
+    for (const id of CELL_LAYERS) {
+      map.setLayoutProperty(id, 'visibility', inAnalysis ? 'none' : 'visible')
+    }
+    for (const id of ANALYSIS_CELL_LAYERS) {
+      map.setLayoutProperty(id, 'visibility', inAnalysis ? 'visible' : 'none')
+    }
+  }, [inAnalysis, ready])
+
+  // The indicators that are on, one dot and one square layer each, rebuilt when the set changes.
+  const indicatorsKey = JSON.stringify(analysis?.active ?? [])
+  const indicatorLayers = useRef<string[]>([])
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready) return
+    for (const id of indicatorLayers.current) {
+      if (map.getLayer(id)) map.removeLayer(id)
+    }
+    indicatorLayers.current = []
+    if (!inAnalysis) return
+    const active = JSON.parse(indicatorsKey) as ActiveIndicator[]
+    for (const layer of analysisLayers(active)) {
+      map.addLayer(layer, ANALYSIS_LAYERS_BEFORE)
+      indicatorLayers.current.push(layer.id)
+    }
+  }, [indicatorsKey, inAnalysis, ready])
 
   // Colour scale: a day's score, or a season's good days.
   useEffect(() => {
@@ -288,11 +358,11 @@ export function ConditionsMap({
     const visible = sightings !== undefined
     map
       .getSource<GeoJSONSource>('sightings')
-      ?.setData(visible ? sightingsToPoints(sightings, cells ?? []) : EMPTY)
+      ?.setData(visible ? sightingsToPoints(sightings, drawn ?? []) : EMPTY)
     for (const id of ['sightings-circle', 'sightings-count']) {
       map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none')
     }
-  }, [sightings, cells, ready])
+  }, [sightings, drawn, ready])
 
   // Hot places, as numbered markers linked to the list.
   useEffect(() => {

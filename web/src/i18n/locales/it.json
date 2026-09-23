@@ -221,6 +221,33 @@
     "sun_exposure": "Esposizione al sole",
     "slope": "Pendenza"
   },
+  "analysis": {
+    "toggle": "Analisi",
+    "title": "Fattori dell'indice",
+    "collapse": "Nascondi i fattori",
+    "expand": "Mostra i fattori",
+    "family": {
+      "water": "Pioggia e umidità",
+      "warmth": "Temperatura",
+      "drying": "Aria secca",
+      "cold": "Freddo",
+      "terrain": "Terreno e bosco",
+      "season": "Stagione",
+      "other": "Altri"
+    },
+    "name": {
+      "hard_frost": "Gelate forti"
+    },
+    "keyLow": "Frena l'indice",
+    "keyHigh": "Più favorevole",
+    "loading": "Caricamento dei fattori…",
+    "loadError": "Impossibile caricare i fattori.",
+    "unavailable": "Gli indicatori sono conservati solo per gli ultimi 7 giorni e per la previsione.",
+    "noneOn": "Accendi un fattore per vederlo sulla mappa.",
+    "noCombined": "Non disponibile in Analisi: scegli una specie",
+    "play": "Riproduci i giorni",
+    "pause": "Metti in pausa"
+  },
   "hotspots": {
     "title": "Zone migliori",
     "subtitle": "{{species}} · {{date}}",

@@ -3,6 +3,8 @@ import {
   cellSquare,
   cellsToPoints,
   cellsToSquares,
+  factorCellsToPoints,
+  factorCellsToSquares,
   sightingsByCell,
   sightingsToPoints,
 } from './geojson'
@@ -75,5 +77,36 @@ describe('sightings', () => {
         properties: { cell_id: 'b', count: 3 },
       },
     ])
+  })
+})
+
+describe('factor cells to GeoJSON', () => {
+  const ids = ['season', 'rain_trigger', 'cold_nights']
+  const factorCells = [
+    { cell_id: 'a', lon: 11, lat: 43.5, values: [1, 0.25, null] },
+    { cell_id: 'b', lon: 10.5, lat: 44, values: [0, null, 0.5] },
+  ]
+
+  it('puts each factor value under its id, and leaves out the ones the winner lacks', () => {
+    const points = factorCellsToPoints(factorCells, ids)
+    expect(points.features[0]).toEqual({
+      type: 'Feature',
+      id: 'a',
+      geometry: { type: 'Point', coordinates: [11, 43.5] },
+      properties: { cell_id: 'a', season: 1, rain_trigger: 0.25 },
+    })
+    expect(points.features[1].properties).toEqual({
+      cell_id: 'b',
+      season: 0,
+      cold_nights: 0.5,
+    })
+  })
+
+  it('draws the same properties on the squares', () => {
+    const squares = factorCellsToSquares(factorCells, ids)
+    expect(squares.features[1].geometry.type).toBe('Polygon')
+    expect(squares.features.map((f) => f.properties)).toEqual(
+      factorCellsToPoints(factorCells, ids).features.map((f) => f.properties),
+    )
   })
 })

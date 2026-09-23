@@ -98,6 +98,47 @@
         "title": "CellDetailResponse",
         "type": "object"
       },
+      "CellFactors": {
+        "properties": {
+          "cell_id": {
+            "title": "Cell Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "values": {
+            "description": "each factor's 0-1 value, in `factors` order, rounded to 3 decimals: 1 is favourable, 0 holds the score back. From the rule file that wins the cell that day (the one the breakdown explains); null where that rule file lacks the factor",
+            "items": {
+              "anyOf": [
+                {
+                  "maximum": 1.0,
+                  "minimum": 0.0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "cell_id",
+          "lon",
+          "lat",
+          "values"
+        ],
+        "title": "CellFactors",
+        "type": "object"
+      },
       "CellSeason": {
         "properties": {
           "cell_id": {
@@ -396,6 +437,36 @@
         "title": "FactorBreakdown",
         "type": "object"
       },
+      "FactorChip": {
+        "description": "One indicator analysis mode can put on the map: an enabled factor of the species' rules,\nnamed like its row in the \"why this score\" breakdown.",
+        "properties": {
+          "i18n_key": {
+            "title": "I18N Key",
+            "type": "string"
+          },
+          "id": {
+            "description": "the factor id, as `key` in the breakdown",
+            "title": "Id",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "gate",
+              "driver",
+              "stopper"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "i18n_key",
+          "role"
+        ],
+        "title": "FactorChip",
+        "type": "object"
+      },
       "FactorRule": {
         "description": "What a rule asked of the measurement (`config/species/*.yaml`), so the copy can say what it\nwanted. Which fields are set follows `kind`: a season window or habitat has none of them.",
         "properties": {
@@ -627,6 +698,48 @@
           "trapezoid"
         ],
         "title": "FactorWhere",
+        "type": "object"
+      },
+      "FactorsResponse": {
+        "description": "Analysis mode: every factor behind a species' conditions score, per woodland cell, for one\nday. Only the days the daily job keeps the breakdown for (today -6 to +7) are stored.",
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/CellFactors"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "factors": {
+            "description": "the union of the enabled factors over the species' rule files, in breakdown order (gates, drivers, stoppers)",
+            "items": {
+              "$ref": "#/components/schemas/FactorChip"
+            },
+            "title": "Factors",
+            "type": "array"
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci"
+            ],
+            "title": "Species",
+            "type": "string"
+          }
+        },
+        "required": [
+          "species",
+          "date",
+          "factors",
+          "cells"
+        ],
+        "title": "FactorsResponse",
         "type": "object"
       },
       "GridCellScore": {
@@ -1808,6 +1921,72 @@
           }
         },
         "summary": "Comuni with woodland, for the season and outlook views"
+      }
+    },
+    "/factors": {
+      "get": {
+        "operationId": "get_factors_factors_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "species",
+            "required": true,
+            "schema": {
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci"
+              ],
+              "title": "Species",
+              "type": "string"
+            }
+          },
+          {
+            "description": "defaults to today, Europe/Rome",
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "defaults to today, Europe/Rome",
+              "title": "Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FactorsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "no factors stored for that day"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Analysis mode: every factor behind one species' conditions score, per woodland cell"
       }
     },
     "/health": {

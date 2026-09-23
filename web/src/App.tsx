@@ -1,4 +1,9 @@
-import { onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  onlineManager,
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from '@tanstack/react-query'
 import {
   useCallback,
   useEffect,
@@ -11,9 +16,11 @@ import { useTranslation } from 'react-i18next'
 import {
   ApiError,
   type DateRange,
+  factorsQuery,
   type Hotspot,
   isClientError,
   useComuni,
+  useFactors,
   useHotspots,
   useOutlook,
   usePlausibleSpecies,
@@ -27,7 +34,14 @@ import {
 import styles from './App.module.css'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import { ChevronIcon, InfoIcon, LocateIcon, SearchIcon } from './components/icons'
+import {
+  ChevronIcon,
+  InfoIcon,
+  LayersIcon,
+  LocateIcon,
+  SearchIcon,
+} from './components/icons'
+import { IndicatorPanel } from './components/IndicatorPanel'
 import { InstallBanner } from './components/InstallBanner'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { PanelBoundary } from './components/PanelBoundary'
@@ -49,17 +63,25 @@ import type { Place } from './geo/photon'
 import { type LocateError, useLocate } from './hooks/useLocate'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { usePath } from './hooks/usePath'
+import { usePlayback } from './hooks/usePlayback'
 import { intlLocale, type Language } from './i18n'
 import './i18n'
-import { ConditionsMap } from './map/ConditionsMap'
+import { type AnalysisView, ConditionsMap } from './map/ConditionsMap'
 import { CreditsPage } from './pages/CreditsPage'
 import { HotPlaces } from './panels/HotPlaces'
 import { OutlookPanel } from './panels/OutlookPanel'
 import { SeasonsPanel } from './panels/SeasonsPanel'
 import { SpotPanel } from './panels/SpotPanel'
+import { indicatorOf } from './score/indicators'
 import { AppStateProvider } from './state/AppState'
 import { useAppState } from './state/useAppState'
-import { addDays, daysBetween, formatDayMonth } from './time/days'
+import {
+  addDays,
+  dateWindow,
+  daysBetween,
+  formatDayMonth,
+  type IsoDate,
+} from './time/days'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -104,7 +126,12 @@ function MapScreen() {
   // What the map shows: a day (the date strip or a replayed past day), or a whole season.
   const seasonMode = app.season !== null
   const inStrip = daysBetween(app.today, app.date) >= -DATE_WINDOW.pastDays
-  const scores = useScores(app.species, app.date, app.today, !seasonMode)
+  // Analysis mode: the factors behind a species' score. They are only kept for the strip's days.
+  const analysis = app.mode === 'analysis'
+  const factorDay = !seasonMode && inStrip
+  const factorSpecies = app.species === 'combined' ? 'porcini' : app.species
+  const scores = useScores(app.species, app.date, app.today, !seasonMode && !analysis)
+  const factors = useFactors(factorSpecies, app.date, app.today, analysis && factorDay)
   const seasonMap = useSeasonMap(app.season, app.species)
   const hotspots = useHotspots(
     app.species,
@@ -162,6 +189,44 @@ function MapScreen() {
   )
   const mapCells = seasonMode ? seasonCells : scores.data?.cells
   const seasonYears = seasons.data?.seasons.map((s) => s.year) ?? []
+
+  // Once a species' factors are known, the indicators it doesn't have come off.
+  const { keepIndicators } = app
+  const servedFactors = factorDay ? factors.data?.factors : undefined
+  useEffect(() => {
+    if (analysis && servedFactors) keepIndicators(servedFactors.map((f) => f.id))
+  }, [analysis, servedFactors, keepIndicators])
+  const activeIndicators = useMemo(
+    () => app.indicators.map((id) => ({ id, color: indicatorOf(id).color })),
+    [app.indicators],
+  )
+  const factorIds = useMemo(() => servedFactors?.map((f) => f.id) ?? [], [servedFactors])
+  const factorCells = factorDay ? factors.data?.cells : undefined
+  const analysisView = useMemo<AnalysisView | null>(
+    () =>
+      analysis ? { cells: factorCells, ids: factorIds, active: activeIndicators } : null,
+    [analysis, factorCells, factorIds, activeIndicators],
+  )
+
+  // Play: a day a second through the strip, the next days fetched ahead.
+  const queryClient = useQueryClient()
+  const stripDays = useMemo(
+    () => dateWindow(app.today, DATE_WINDOW).map(({ date }) => date),
+    [app.today],
+  )
+  const { today } = app
+  const prefetchFactors = useCallback(
+    (date: IsoDate) =>
+      void queryClient.prefetchQuery(factorsQuery(factorSpecies, date, today)),
+    [queryClient, factorSpecies, today],
+  )
+  const playback = usePlayback({
+    days: stripDays,
+    date: app.date,
+    onDate: app.setDate,
+    prefetch: prefetchFactors,
+    enabled: analysis && factorDay,
+  })
 
   const { selectSpot, flyTo, setComune } = app
   const chooseComune = useCallback(
@@ -246,19 +311,31 @@ function MapScreen() {
     />
   )
 
-  const layer = seasonMode ? seasonMap : scores
+  const layer = analysis ? factors : seasonMode ? seasonMap : scores
   const scoresUnavailable = layer.isError && isClientError(layer.error)
+  // In analysis mode: why nothing is drawn, if nothing is.
+  const analysisNote = !factorDay
+    ? t('analysis.unavailable')
+    : factors.isError
+      ? t(scoresUnavailable ? 'analysis.unavailable' : 'analysis.loadError')
+      : factors.isPending
+        ? t('analysis.loading')
+        : app.indicators.length === 0
+          ? t('analysis.noneOn')
+          : undefined
   const status = locating
     ? t('locate.locating')
     : !online
       ? t('errors.offline')
-      : layer.isError
-        ? seasonMode
-          ? t(scoresUnavailable ? 'season.noData' : 'map.loadError')
-          : t(scoresUnavailable ? 'map.noData' : 'map.loadError')
-        : layer.isPending || layer.isPlaceholderData
-          ? t(seasonMode ? 'season.loading' : 'map.loading')
-          : locateError && t(`locate.${locateError}`)
+      : analysis
+        ? (analysisNote ?? (locateError && t(`locate.${locateError}`)))
+        : layer.isError
+          ? seasonMode
+            ? t(scoresUnavailable ? 'season.noData' : 'map.loadError')
+            : t(scoresUnavailable ? 'map.noData' : 'map.loadError')
+          : layer.isPending || layer.isPlaceholderData
+            ? t(seasonMode ? 'season.loading' : 'map.loading')
+            : locateError && t(`locate.${locateError}`)
 
   return (
     <div className={styles.app} data-sheet={sheetOpen ? 'open' : 'closed'}>
@@ -300,8 +377,9 @@ function MapScreen() {
 
       <main className={styles.mapArea}>
         <ConditionsMap
-          cells={mapCells}
+          cells={analysis ? undefined : mapCells}
           scale={seasonMode ? 'goodDays' : 'score'}
+          analysis={analysisView}
           selectedCellId={selectedCellId}
           sightings={app.sightingsVisible ? sightings.totals : undefined}
           hotspots={
@@ -332,7 +410,11 @@ function MapScreen() {
           onHotspotClick={onHotspot}
         />
         <div className={styles.species}>
-          <SpeciesSwitcher value={app.species} onChange={app.setSpecies} />
+          <SpeciesSwitcher
+            value={app.species}
+            onChange={app.setSpecies}
+            noCombined={analysis}
+          />
         </div>
         {status && (
           <p className={styles.status} role="status">
@@ -346,7 +428,26 @@ function MapScreen() {
         )}
         <div className={styles.bottom}>
           <div className={styles.legend}>
-            <Legend showSightings={app.sightingsVisible} season={app.season} />
+            <button
+              type="button"
+              className={styles.modeToggle}
+              aria-pressed={analysis}
+              onClick={() => app.setMode(analysis ? 'map' : 'analysis')}
+            >
+              <LayersIcon />
+              {t('analysis.toggle')}
+            </button>
+            {analysis ? (
+              <IndicatorPanel
+                chips={servedFactors}
+                active={app.indicators}
+                onToggle={app.toggleIndicator}
+                note={servedFactors ? undefined : analysisNote}
+                showSightings={app.sightingsVisible}
+              />
+            ) : (
+              <Legend showSightings={app.sightingsVisible} season={app.season} />
+            )}
           </div>
           <button
             type="button"
@@ -367,6 +468,15 @@ function MapScreen() {
               seasons={seasonYears}
               onDate={app.setDate}
               onSeason={app.setSeason}
+              playback={
+                analysis
+                  ? {
+                      playing: playback.playing,
+                      onToggle: playback.toggle,
+                      onTouch: playback.pause,
+                    }
+                  : undefined
+              }
             />
           </div>
         </div>

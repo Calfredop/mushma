@@ -221,6 +221,33 @@
     "sun_exposure": "Sun exposure",
     "slope": "Slope"
   },
+  "analysis": {
+    "toggle": "Analysis",
+    "title": "Factors behind the score",
+    "collapse": "Hide the factors",
+    "expand": "Show the factors",
+    "family": {
+      "water": "Rain and moisture",
+      "warmth": "Temperature",
+      "drying": "Drying",
+      "cold": "Cold",
+      "terrain": "Terrain and woodland",
+      "season": "Season",
+      "other": "Other"
+    },
+    "name": {
+      "hard_frost": "Hard frost"
+    },
+    "keyLow": "Holds the score back",
+    "keyHigh": "More favourable",
+    "loading": "Loading the factors…",
+    "loadError": "Couldn't load the factors.",
+    "unavailable": "Indicators are only kept for the last 7 days and the forecast.",
+    "noneOn": "Turn on a factor to see it on the map.",
+    "noCombined": "Not available in Analysis: pick a species",
+    "play": "Play the days",
+    "pause": "Pause"
+  },
   "hotspots": {
     "title": "Hot places",
     "subtitle": "{{species}} · {{date}}",
