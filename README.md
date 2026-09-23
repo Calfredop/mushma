@@ -1,5 +1,8 @@
 # mushma
 
+**Live at [mappafunghi.app](https://mappafunghi.app)**, where the app goes by
+*Mappa Funghi*.
+
 Estimates where and when wild edible mushrooms (porcini, ovoli, gallinacci)
 are likely to be fruiting in **Tuscany**, from transparent per-species rules
 over weather, habitat and terrain, validated against public sightings. Built
@@ -10,9 +13,9 @@ and "why this score" transparency matter as much as the map itself. See
 mushma never identifies mushrooms or says one is safe to eat — it forecasts
 *conditions* only.
 
-| | |
-|---|---|
-| ![The conditions map: a species switcher, a date strip from six days ago to a week ahead, and scored woodland areas](.github/assets/map.png) | ![A spot forecast: one place's score per species, today and the next 7 days, as a bar per day](.github/assets/spot.png) |
+| | | |
+|---|---|---|
+| ![The conditions map on a phone: a species switcher, glass map controls, a date strip from six days ago to a week ahead, and scored woodland cells with numbered hot places](.github/assets/map.png) | ![A spot forecast: one place's score per species, today and the next 7 days, as a bar per day](.github/assets/spot.png) | ![Analysis mode: the rain factors behind the porcini score drawn as their own map layers, with factor chips and a play button over the date strip](.github/assets/analysis.png) |
 
 ## How it works
 
@@ -33,11 +36,13 @@ one YAML file per species, every threshold and window carrying a cited
 source. Weather comes from Open-Meteo (ERA5-Land reanalysis history, ECMWF
 IFS forecast), downscaled from a coarse model grid to each cell by elevation.
 Reanalysis rain is scaled up with elevation before scoring, because it runs dry
-in the hills against Tuscany's rain gauges. Each species carries a growth
-clock: warm, humid days after a rain bring the flush forward and cold or dry
-ones hold it back, so the rain lag is counted in growth days rather than
-calendar days. And every cell's temperatures and drying are shifted by how much
-sun its slope and aspect get compared with flat ground.
+in the hills against Tuscany's rain gauges. Porcini's 30-day rain is scored
+against the cell's own normal for the time of year, so an ordinary month no
+longer earns full credit. Each species carries a growth clock: warm, humid
+days after a rain bring the flush forward and cold or dry ones hold it back,
+so the rain lag is counted in growth days rather than calendar days. And every
+cell's temperatures and drying are shifted by how much sun its slope and
+aspect get compared with flat ground.
 Habitat, altitude and soil come from a static grid built once from Regione
 Toscana, ISPRA, Copernicus and SoilGrids sources (see
 [Credits](#credits--sources) below and the app's own Data and credits page).
@@ -52,7 +57,10 @@ In the app, that becomes three views:
   breakdown. A floating button centres the map on your position without
   opening a spot. The hot places list ranks clusters of high-scoring cells,
   labelled by comune and nearest named place, with recent public sightings per
-  cell.
+  cell. **Analysis mode** (the layers button) swaps the score colours for the
+  factors behind them: each factor in the species' rules is a chip, each chip
+  that is on draws its own layer with the factor's 0–1 value as opacity, and a
+  play button steps through the date strip's 14 days.
 - **Seasons.** Every stored season for Tuscany or one comune — good days, rain
   and temperature against normal, sightings — compared with each other and
   replayed on the map day by day, plus which species the area's woodland can
@@ -62,7 +70,18 @@ In the app, that becomes three views:
 
 It is an installable PWA that caches the latest forecast for the woods, shows
 when the data was last updated and warns when today's numbers are not in yet,
-runs in Italian and English, and credits every source on its own page.
+runs in Italian and English, and credits every source on its own page. On a
+phone the map fills the screen, with glass controls over it and a bottom sheet
+for search, spots and the other views. On a desktop the panel is a floating
+card that folds away. The ⓘ menu holds the disclaimer, credits, terms, privacy,
+cookie preferences, the code on GitHub and the language switch. The texts
+explain scores in plain words, not model jargon.
+
+Every region and species has its own URL (`/toscana`, `/toscana/porcini`,
+`/toscana/ovoli`, `/toscana/gallinacci`; `/` redirects to `/toscana`). Each is
+prerendered with its own title, description, link-preview card and JSON-LD, and
+an `llms.txt` briefs LLMs on what the site is and is not. Analytics are
+self-hosted Umami, off until you accept cookies, and never see a location.
 
 ## Validation
 
@@ -75,19 +94,31 @@ weather rules have to beat are in
 
 Train/hold-out seasons and the backtest method were frozen **before any score
 was compared against a sighting** (2016–2023 train, 2024–2025 hold-out,
-2026 reported once it ends). Tuning against the train seasons and the final
-hold-out numbers are still in progress as of this write-up — that document is
-the live source of truth; this section will carry its headline numbers once
-they land.
+2026 reported once it ends). The hold-out has been used once so far, to judge
+the rain-driver tuning below. The full tuned-model results are still to come,
+and that document is the live source of truth for them.
 
-Two findings so far, both written up there. The rain drivers reach full credit
-in an ordinary September (one ~30 mm event ten days earlier plus ~80 mm in a
-month), so they cannot yet tell a good year from an average one; tuning them
-on the train seasons is an open card. And the growth clock with the terrain
-factors moves porcini's effort-weighted timing AUC on the train seasons from
-0.56 to 0.62, the first porcini interval clear of chance — though with 16–23
-sightings per species none of the differences is outside its bootstrap
-interval, so they stay on as priors, not results.
+Findings so far, all written up there:
+
+- **Growth clock and terrain.** Together they move porcini's effort-weighted
+  timing AUC on the train seasons from 0.56 to 0.62. That is the first porcini
+  interval clear of chance.
+- **Rain drivers.** They reached full credit in an ordinary September (one
+  ~30 mm event ten days earlier plus ~80 mm in a month), so they could not tell
+  a good year from an average one. A search written down before any train
+  season was scored kept one change: porcini's 30-day rain is now scored as a
+  share of the cell's own normal (nothing at 50 %, full credit from 125 %). It
+  held on the 2024–2025 hold-out: porcini's timing AUC went from 0.58 to 0.60.
+  On a saturated mid-September day, the share of woodland cells where that
+  factor gives full credit fell from 77 % to 18 %. A doubled ovoli rain trigger
+  won on the train seasons but lost on the hold-out, so it was not shipped.
+- **Still open.** Within 20 km on a given day, habitat alone ranks the finder's
+  cell higher than the full model does, in every group. So the weather and
+  terrain lines don't yet help pick the exact spot; that is for a later card.
+
+There are 16–23 sightings per species in the train seasons and 6–19 in the
+hold-out. At those numbers, no model change's gain is outside its bootstrap
+interval, so the changes stay on as priors, not results.
 
 ## Layout
 
@@ -120,7 +151,8 @@ pnpm test            # Vitest (unit + components, includes the i18n missing-key 
 pnpm run test:e2e    # Playwright smoke test: map → spot → why (starts the fixture API itself)
 pnpm run lint        # ESLint (also rejects hardcoded UI strings)
 pnpm run format:check
-pnpm run build       # type-check + production build
+pnpm run build       # type-check + production build, with the prerendered SEO files
+pnpm run generate:og # re-render the link-preview cards in public/og/ (commit them)
 pnpm run perf        # first-map-paint check on a throttled phone profile (local only)
 pnpm run tunnel      # dev server + a public URL for it (see Tunnel below)
 ```
@@ -165,9 +197,17 @@ The dev server serves them at `/basemap/`. Without them, leave
 `VITE_BASEMAP_URL` and `VITE_TERRAIN_URL` empty and the map draws a plain land
 fill. `pnpm run test:e2e` always runs that way.
 
-`.gavin-root/docs/visual-direction.md` has the palette, the score colour scale
-and the type choices. `.gavin-root/docs/perf-first-map-paint.md` has the
-performance method and results.
+**SEO.** `pnpm run build` writes one prerendered HTML per route in
+`src/routes.ts`, with its own title, description, canonical, Open Graph tags,
+JSON-LD and intro text (`src/seo/`). It also writes `sitemap.xml`,
+`robots.txt`, `llms.txt` and a noindex `404.html`. The client keeps the head in
+step as you navigate. The one-time Search Console and Bing setup is under
+Deploying below.
+
+`.gavin-root/docs/visual-direction.md` has the palette, the score colour scale,
+the analysis-mode factor colours, the glass surfaces and the type choices.
+`.gavin-root/docs/perf-first-map-paint.md` has the performance method and
+results.
 
 `web/src/api/schema.ts` is a TypeScript client generated from `api/openapi.json`
 (the API's contract). After changing any `api/` route or response model, run
@@ -273,7 +313,9 @@ rescale (reanalysis rain × 1.28 + 0.29 per km of elevation, fitted to the SIR T
 terrain microclimate (each cell's temperatures and ET0 shifted by its clear-sky sun ratio, computed
 from slope and aspect in `api.model.terrain`) and the frozen backtest split. Each species file adds
 its growth clock: a cardinal-temperature curve on topsoil temperature, slowed by dry air, that
-counts the rain lag in growth days instead of calendar days.
+counts the rain lag in growth days instead of calendar days. A rain window can also be scored as a
+percentage of the cell's own daily normal (`percent_of_normal`); porcini's `rain_30d` is, so
+scoring refuses to start until the normals are built (see Time views below).
 
 ```sh
 cd api
@@ -351,7 +393,8 @@ GitHub Actions (`.github/workflows/ci.yml`) lints and tests both `web/` and
 
 ## Deploying
 
-Production is **mappafunghi.app**. Everything runs on free tiers except the API server:
+Production is **[mappafunghi.app](https://mappafunghi.app)**. Everything runs on free tiers except
+the API server:
 
 | Piece | Where | Cost |
 |---|---|---|
