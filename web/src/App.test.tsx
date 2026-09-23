@@ -4,6 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { getConsent, setConsent } from './consent'
 
+const track = vi.fn()
+vi.mock('./analytics', () => ({ track: (event: unknown) => track(event) }))
+
 // WebGL doesn't run in jsdom: the stub shows what the app asks of the map.
 vi.mock('./map/ConditionsMap', () => ({
   ConditionsMap: (props: Record<string, unknown>) => (
@@ -49,6 +52,7 @@ beforeEach(() => localStorage.setItem('mushma.disclaimer.v2', 'accepted'))
 afterEach(() => {
   localStorage.clear()
   Reflect.deleteProperty(navigator, 'geolocation')
+  track.mockClear()
 })
 
 describe('centre on my position', () => {
@@ -96,11 +100,15 @@ describe('routing', () => {
     expect(window.location.pathname).toBe('/toscana')
   })
 
-  it('navigates to the species path when the switcher is used', async () => {
+  it('navigates to the species path when the switcher is used, and tracks the switch', async () => {
     window.history.replaceState(null, '', '/toscana')
     render(<App />)
     await userEvent.click(screen.getByRole('radio', { name: 'Porcini' }))
     expect(window.location.pathname).toBe('/toscana/porcini')
+    expect(track).toHaveBeenCalledWith({
+      name: 'species-switch',
+      data: { species: 'porcini' },
+    })
   })
 
   it('keeps the title, description and canonical in step with the route', async () => {

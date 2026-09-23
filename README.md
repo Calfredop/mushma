@@ -357,6 +357,7 @@ Production is **mappafunghi.app**. Everything runs on free tiers except the API 
 | `web/` at `mappafunghi.app` (`www` redirects to it) | Vercel, Hobby | €0 |
 | Basemap tiles at `tiles.mappafunghi.app` | Cloudflare R2 + the Protomaps Worker | €0 (free tier) |
 | `api/` and the daily job at `api.mappafunghi.app` | Hetzner CX23 `mushma-prod-01`, Falkenstein | ~€7.31/month incl. VAT |
+| Analytics (self-hosted Umami) at `m.mappafunghi.app` | Same Hetzner box | included above |
 
 Fly.io, which M1 chose, was dropped at deploy time: a Fly volume attaches to one machine only, so
 the scheduled job machine could never share its stores with the API machine.
@@ -371,6 +372,16 @@ variables (Production and Preview):
 
 They are baked in at build time, so changing one needs a redeploy. `mappafunghi.app` and
 `www.mappafunghi.app` are CNAMEs to Vercel on Cloudflare, "DNS only" (not proxied).
+
+Three more (`web/.env.example`) are set for **Production only**, never Preview:
+
+- `VITE_UMAMI_SRC=https://m.mappafunghi.app/widget.js`
+- `VITE_UMAMI_WEBSITE_ID=<from Umami, below>`
+- `VITE_UMAMI_DOMAINS=mappafunghi.app`
+
+A Preview deployment is still a production `vite build` (`import.meta.env.PROD` is true there
+too), so leaving these unset on Preview — not a code check — is what keeps analytics out of
+preview and local builds (`web/src/analytics.ts`, `feat-umami-integration.md`).
 
 **Basemap → R2 + Worker.** The two extracts from `web/scripts/extract-basemap.sh` live in the R2
 bucket `mushma-tiles`; the [Protomaps Cloudflare Worker](https://docs.protomaps.com/deploy/cloudflare)
@@ -413,10 +424,32 @@ First setup on the server:
 ```sh
 git clone https://github.com/Calfredop/mushma.git /opt/mushma
 cd /opt/mushma/deploy && cp .env.example .env    # then edit it
+cp umami.env.example umami.env                  # then edit it (below)
 docker compose up -d --build
 cp mushma-daily.service mushma-daily.timer /etc/systemd/system/
 systemctl daemon-reload && systemctl enable --now mushma-daily.timer
 ```
+
+**Analytics → Umami, same box.** `umami` and `umami-db` (Postgres — disposable, never backed up)
+run in the same `deploy/compose.yaml`, behind the same Caddy at `m.mappafunghi.app`
+(`deploy/Caddyfile`; the DNS record is "DNS only", like `api.`). `deploy/umami.env` (from
+`deploy/umami.env.example`) holds `APP_SECRET` and the Postgres credentials — generate fresh ones
+with `openssl rand -hex 32` / `openssl rand -hex 16`, never reuse the example's placeholders.
+First run only, once the stack is up:
+
+1. Log in at `https://m.mappafunghi.app` as `admin` / `umami`, and **immediately** change that
+   password (Settings → Profile) — give the new one to whoever needs it in chat, never write it
+   to a file.
+2. Add a website: name "Mappa Funghi", domain `mappafunghi.app`. Copy its **Website ID** into
+   `VITE_UMAMI_WEBSITE_ID` on Vercel (Production only, above) and redeploy.
+
+`feat-umami-integration.md` has why: consent-gated, no location ever reaches it (a before-send
+guard strips every query string and collapses the path to `/` or `/credits`), and the tracker
+script and collect endpoint are renamed (`TRACKER_SCRIPT_NAME=/widget.js`,
+`COLLECT_API_ENDPOINT=/api/hub` in `deploy/compose.yaml`) so generic blocklists miss them. Keep
+`TRACKER_SCRIPT_NAME` at the server root: nested under a subdirectory (e.g. `/js/widget.js`),
+Umami 3.4.0 resolves `COLLECT_API_ENDPOINT` relative to it instead of the site root, and every
+send 404s silently.
 
 The timer runs the daily job at 05:00 Europe/Rome as a one-off container of the API image, then
 restarts the API. `journalctl -u mushma-daily` has its JSON step log, `systemctl list-timers

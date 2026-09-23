@@ -8,3 +8,11 @@ api.mappafunghi.app {
 	header X-Robots-Tag noindex
 	reverse_proxy api:8000
 }
+
+# m.mappafunghi.app is also "DNS only" on Cloudflare, for the same reason. The frontend's
+# before-send guard strips query strings before anything reaches Umami (feat-umami-integration.md);
+# nothing here belongs in a search index either.
+m.mappafunghi.app {
+	header X-Robots-Tag noindex
+	reverse_proxy umami:3000
+}
