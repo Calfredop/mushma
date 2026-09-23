@@ -3,6 +3,8 @@
   inset: 0;
   z-index: 30;
   overflow-y: auto;
+  /* Clear of the status bar (and iOS's blur under it) and the home indicator at rest. */
+  padding: var(--safe-top-clear) var(--safe-right) var(--safe-bottom) var(--safe-left);
   background: var(--lichene);
 }
 

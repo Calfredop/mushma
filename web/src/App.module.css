@@ -29,10 +29,11 @@
 }
 
 /* The top of the map: the species pill on the left, the button cluster on the right. The pill
-   stops short of the cluster's column, so the two never overlap. */
+   stops short of the cluster's column, so the two never overlap. Both start under the inset and
+   any system blur below it (--safe-top-clear). */
 .species {
   position: absolute;
-  top: calc(var(--safe-top) + var(--space-3));
+  top: calc(var(--safe-top-clear) + var(--space-3));
   left: calc(var(--safe-left) + var(--space-3));
   right: calc(var(--safe-right) + var(--space-3) + var(--tap) + var(--space-2));
   display: flex;
@@ -47,7 +48,7 @@
 .cluster {
   composes: glass from global;
   position: absolute;
-  top: calc(var(--safe-top) + var(--space-3));
+  top: calc(var(--safe-top-clear) + var(--space-3));
   right: calc(var(--safe-right) + var(--space-3));
   display: flex;
   flex-direction: column;
@@ -103,7 +104,7 @@
 /* Under the species pill, clear of the cluster. */
 .status {
   position: absolute;
-  top: calc(var(--safe-top) + var(--space-3) + 3.125rem + var(--space-2));
+  top: calc(var(--safe-top-clear) + var(--space-3) + 3.125rem + var(--space-2));
   left: calc(var(--safe-left) + var(--space-3));
   display: flex;
   align-items: center;
@@ -309,10 +310,11 @@
 }
 
 /* From 900px the map is full-bleed too, and the panel (Sheet.module.css) floats on its left:
-   the map's controls keep clear of it, and the bottom ones reclaim its corner when it folds. */
+   the map's controls keep clear of it, and the bottom ones reclaim its corner when it folds.
+   The safe-area insets count here too: an iPad's installed app, a large iPhone on its side. */
 @media (min-width: 900px) {
   .app {
-    --panel-inset: calc(var(--panel-width) + 2 * var(--space-4));
+    --panel-inset: calc(var(--safe-left) + var(--panel-width) + 2 * var(--space-4));
   }
 
   .wordmark {
@@ -325,32 +327,39 @@
   }
 
   .species {
-    top: var(--space-4);
+    top: calc(var(--safe-top-clear) + var(--space-4));
     left: var(--panel-inset);
-    right: calc(var(--space-4) + var(--tap) + var(--space-2));
+    right: calc(var(--safe-right) + var(--space-4) + var(--tap) + var(--space-2));
   }
 
   .cluster {
-    top: var(--space-4);
-    right: var(--space-4);
+    top: calc(var(--safe-top-clear) + var(--space-4));
+    right: calc(var(--safe-right) + var(--space-4));
   }
 
   .status {
-    top: 4.25rem;
+    top: calc(var(--safe-top-clear) + 4.25rem);
     left: calc(var(--panel-inset) + (100% - var(--panel-inset)) / 2);
-    max-width: calc(100% - var(--panel-inset) - 2 * (var(--tap) + var(--space-4)));
+    max-width: calc(
+      100% - var(--panel-inset) - 2 * (var(--safe-right) + var(--tap) + var(--space-4))
+    );
     transform: translateX(-50%);
   }
 
   .bottom {
     left: var(--panel-inset);
-    right: var(--space-4);
-    bottom: calc(var(--space-4) + 1rem);
+    right: calc(var(--safe-right) + var(--space-4));
+    bottom: calc(var(--safe-bottom) + var(--space-4) + 1rem);
     grid-template-columns: auto minmax(0, 1fr);
   }
 
   .app[data-panel='collapsed'] .bottom {
-    left: var(--space-4);
+    left: calc(var(--safe-left) + var(--space-4));
+  }
+
+  .mapArea :global(.maplibregl-ctrl-bottom-right) {
+    right: var(--safe-right);
+    bottom: var(--safe-bottom);
   }
 
   .legend {

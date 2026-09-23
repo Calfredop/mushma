@@ -40,7 +40,11 @@ function position(button: HTMLElement, placement: Props['placement']): CSSProper
   const box = button.getBoundingClientRect()
   const right = window.innerWidth - (placement === 'left' ? box.left - GAP : box.right)
   const top = placement === 'left' ? box.top : box.bottom + GAP
-  return { top, right, maxHeight: `calc(100dvh - ${top}px - ${GAP}px)` }
+  return {
+    top,
+    right,
+    maxHeight: `calc(100dvh - ${top}px - ${GAP}px - var(--safe-bottom))`,
+  }
 }
 
 const plainClick = (event: MouseEvent) =>

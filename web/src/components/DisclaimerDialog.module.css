@@ -1,6 +1,8 @@
+/* Centred in what the status bar (and iOS's blur under it) and the home indicator leave. */
 .dialog {
-  width: min(32rem, calc(100vw - 2rem));
-  max-height: calc(100dvh - 2rem);
+  inset: var(--safe-top-clear) var(--safe-right) var(--safe-bottom) var(--safe-left);
+  width: min(32rem, calc(100vw - var(--safe-left) - var(--safe-right) - 2rem));
+  max-height: calc(100dvh - var(--safe-top-clear) - var(--safe-bottom) - 2rem);
   padding: 0;
   border: 0;
   border-radius: var(--radius-l);

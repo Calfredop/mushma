@@ -30,8 +30,9 @@ import { ChevronIcon } from './icons'
 import styles from './Sheet.module.css'
 
 export interface SheetLayout extends SheetGeometry {
-  /** The top safe-area inset, for the map padding under the species pill. */
-  safeTop: number
+  /** Where the top is clear (the safe-area inset, and any system blur below it), for the map
+   *  padding under the species pill. */
+  clearTop: number
 }
 
 interface Props {
@@ -116,7 +117,7 @@ function PhoneSheet({
   const rootRef = useRef<HTMLElement>(null)
   const headRef = useRef<HTMLDivElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
-  const safeTopRef = useRef<HTMLDivElement>(null)
+  const clearTopRef = useRef<HTMLDivElement>(null)
   const safeBottomRef = useRef<HTMLDivElement>(null)
   const [layout, setLayout] = useState<SheetLayout | null>(null)
   const y = useMotionValue(0)
@@ -145,7 +146,7 @@ function PhoneSheet({
           peek: head.offsetHeight + (safeBottomRef.current?.offsetHeight ?? 0),
           viewport: window.innerHeight,
         }),
-        safeTop: safeTopRef.current?.offsetHeight ?? 0,
+        clearTop: clearTopRef.current?.offsetHeight ?? 0,
       }
       setLayout((previous) =>
         previous && JSON.stringify(previous) === JSON.stringify(next) ? previous : next,
@@ -392,7 +393,7 @@ function PhoneSheet({
       >
         {children}
       </div>
-      <div ref={safeTopRef} className={styles.safeTop} data-part="safe-top" />
+      <div ref={clearTopRef} className={styles.clearTop} data-part="clear-top" />
       <div ref={safeBottomRef} className={styles.safeBottom} data-part="safe-bottom" />
     </m.aside>
   )

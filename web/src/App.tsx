@@ -117,7 +117,8 @@ const loadMotionFeatures = () =>
   import('./motionFeatures').then((module) => module.default)
 
 // What covers a phone's map besides the sheet: the species pill and cluster on top (under the
-// safe-area inset), the cluster down the right, the time bar riding on the sheet.
+// clear top: the safe-area inset and any system blur), the cluster down the right, the time
+// bar riding on the sheet.
 const PHONE_CHROME = { top: 72, right: 68, left: 16, bottom: 96 }
 // On a desktop: the species pill on top, the cluster and zoom on the right, the time bar below,
 // and the floating panel (--panel-width, inset --space-4) on the left while it is open.
@@ -383,7 +384,7 @@ function MapScreen() {
     }
     if (!sheetLayout) return undefined
     return {
-      top: sheetLayout.safeTop + PHONE_CHROME.top,
+      top: sheetLayout.clearTop + PHONE_CHROME.top,
       right: PHONE_CHROME.right,
       left: PHONE_CHROME.left,
       bottom:
