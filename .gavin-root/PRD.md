@@ -227,6 +227,14 @@ All seven milestones below are v1; there is no smaller cut.
   caching. One catch for M7: the Cache API can't store `206` range responses,
   so cache the Worker's z/x/y responses or per-area extracts, never raw
   PMTiles range requests.
+- **Analytics: self-hosted Umami.** Decided in the `feat-umami-integration`
+  card. Umami + Postgres run on the same Hetzner box as the API, behind Caddy
+  at `m.mappafunghi.app`, so usage (which species and views people use, how
+  they find a spot, PWA installs) is visible without adding cost or handing
+  visitor data to a third party. It loads only once a visitor accepts the
+  cookie banner, and only in production (never previews, dev or the tunnel);
+  Principles → Analytics never receives a location has what it's allowed to
+  record.
 
 ### Candidate data sources
 
@@ -255,6 +263,12 @@ BY 4.0, per-dataset GBIF licenses, Copernicus). Show credits in the app.
 - **Sightings privacy.** Public sightings are shown as counts per 1 km cell,
   never as exact coordinates, and records the source obscured are never
   re-sharpened. The app must not become a map of anyone's spots.
+- **Analytics never receives a location.** The URL can carry a tapped point
+  or cell at ~1 m precision (`?at=`, `?cell=`); analytics (self-hosted Umami,
+  Architecture) never sees it. Every pageview and event goes through a guard
+  that strips query strings and collapses the path before it's sent, so
+  species, view, date and search-vs-GPS-vs-map usage are visible, but never
+  where anyone tapped, searched or stood.
 
 ## Constraints
 
