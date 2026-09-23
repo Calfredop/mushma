@@ -1,7 +1,7 @@
 ---
 kind: task
 title: [bug] Spot and cell forecasts 500 between midnight and the daily job
-status: In Progress
+status: Done
 priority: high
 complexity: simple
 ---
