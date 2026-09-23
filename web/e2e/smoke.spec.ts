@@ -80,6 +80,8 @@ test('map → spot forecast → why this score', async ({ page }) => {
 test('seasons on the map, a replayed day, and the outlook', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Ho capito' }).click()
+  // The cookie banner covers the sheet's buttons on a phone.
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
 
   // The outlook needs a single species: the combined default has none.
   await page.getByRole('radio', { name: 'Porcini' }).click()
@@ -114,6 +116,8 @@ test('analysis mode: two factors on the map, played through the days', async ({
 }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Ho capito' }).click()
+  // The cookie banner covers the play button on a phone.
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
 
   // The toggle beside the legend: rain_trigger comes on, and Tutte can't be picked, so the
   // path moves from the region ("Tutti") to porcini.
