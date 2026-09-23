@@ -37,7 +37,7 @@ import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import { ChevronIcon, LayersIcon, LocateIcon } from './components/icons'
+import { ChevronIcon, GitHubIcon, LayersIcon, LocateIcon } from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
 import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
@@ -53,6 +53,7 @@ import {
   HISTORY_START,
   HOTSPOT_LIMIT,
   REPLAY_SIGHTINGS_DAYS,
+  REPO_URL,
   SIGHTINGS_WINDOW_DAYS,
 } from './config'
 import { getConsent } from './consent'
@@ -122,6 +123,13 @@ const PHONE_CHROME = { top: 72, right: 68, left: 16, bottom: 96 }
 // and the floating panel (--panel-width, inset --space-4) on the left while it is open.
 const DESKTOP_CHROME = { top: 82, right: 76, bottom: 100, left: 16 }
 const PANEL_INSET = 16 + 400 + 16
+
+/** The footer's pages, by short name: one row of links, even on a 360px phone. */
+const FOOTER_PAGES = [
+  { path: '/credits', label: 'footer.credits' },
+  { path: '/terms', label: 'footer.terms' },
+  { path: '/privacy', label: 'footer.privacy' },
+] as const
 
 function useOnline(): boolean {
   return useSyncExternalStore(
@@ -697,41 +705,36 @@ function MapScreen() {
               updatedAt={dataStatus.data?.updated_at ?? undefined}
             />
             <p>{t('disclaimer.short')}</p>
-            <p className={styles.links}>
-              <a
-                href="/credits"
-                onClick={(event) => {
-                  event.preventDefault()
-                  navigate('/credits')
-                }}
-              >
-                {t('nav.credits')}
-              </a>
-              <a
-                href="/terms"
-                onClick={(event) => {
-                  event.preventDefault()
-                  navigate('/terms')
-                }}
-              >
-                {t('nav.terms')}
-              </a>
-              <a
-                href="/privacy"
-                onClick={(event) => {
-                  event.preventDefault()
-                  navigate('/privacy')
-                }}
-              >
-                {t('nav.privacy')}
-              </a>
+            <nav className={styles.links} aria-label={t('footer.links')}>
+              {FOOTER_PAGES.map(({ path, label }) => (
+                <a
+                  key={path}
+                  href={path}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    navigate(path)
+                  }}
+                >
+                  {t(label)}
+                </a>
+              ))}
               <button type="button" onClick={() => setDisclaimerOpen(true)}>
-                {t('nav.disclaimer')}
+                {t('footer.disclaimer')}
               </button>
               <button type="button" onClick={() => setCookieBannerOpen(true)}>
-                {t('nav.cookies')}
+                {t('footer.cookies')}
               </button>
-            </p>
+              <a
+                className={styles.github}
+                href={REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('nav.github')}
+                title={t('nav.github')}
+              >
+                <GitHubIcon />
+              </a>
+            </nav>
           </footer>
         </Sheet>
 

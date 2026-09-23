@@ -20,6 +20,14 @@
   "menu": {
     "button": "Info e impostazioni"
   },
+  "footer": {
+    "links": "Link utili",
+    "credits": "Crediti",
+    "terms": "Termini",
+    "privacy": "Privacy",
+    "disclaimer": "Avvertenze",
+    "cookies": "Cookie"
+  },
   "pwa": {
     "installBanner": "Installa Mappa Funghi per un accesso rapido e la mappa anche offline nel bosco.",
     "install": "Installa",

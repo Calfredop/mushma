@@ -20,6 +20,14 @@
   "menu": {
     "button": "Info and settings"
   },
+  "footer": {
+    "links": "Useful links",
+    "credits": "Credits",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "disclaimer": "Disclaimer",
+    "cookies": "Cookies"
+  },
   "pwa": {
     "installBanner": "Install Mappa Funghi for quick access and offline maps in the woods.",
     "install": "Install",

@@ -269,21 +269,42 @@
   margin: 0 0 var(--space-2);
 }
 
+/* One row of small links, each a whole tap target tall and never broken across lines. */
 .links {
   display: flex;
-  gap: var(--space-4);
+  flex-wrap: wrap;
+  align-items: center;
+  /* With each link's own padding, 12px between words: all six fit 336px (360px phone). */
+  column-gap: var(--space-1);
+  margin: 0 calc(-1 * var(--space-1));
 }
 
 .links a,
 .links button {
-  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-1);
   border: 0;
   background: none;
   color: var(--humus);
-  font-size: inherit;
+  font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+.links .github {
+  justify-content: center;
+  min-width: var(--tap);
+  margin-left: auto;
+  color: var(--felce);
+}
+
+.links .github svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* From 900px the map is full-bleed too, and the panel (Sheet.module.css) floats on its left:

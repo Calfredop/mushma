@@ -182,6 +182,34 @@ for (const [width, height] of [
       expect(await app.evaluate((el) => el.scrollLeft)).toBe(0)
       expect(await page.evaluate(() => document.scrollingElement!.scrollLeft)).toBe(0)
     })
+
+    test('the footer keeps its links on one row, none broken across lines', async ({
+      page,
+    }) => {
+      await page.goto('/')
+      await page.getByRole('button', { name: 'Ho capito' }).click()
+      await page.getByRole('button', { name: 'Rifiuta' }).click()
+      await page.getByRole('button', { name: 'Espandi il pannello' }).click()
+      await page.getByRole('button', { name: 'Espandi il pannello' }).click()
+      const links = page.getByRole('navigation', { name: 'Link utili' })
+      await links.scrollIntoViewIfNeeded()
+
+      const items = await links.evaluate((nav) =>
+        [...nav.children].map((item) => ({
+          lines: item.getClientRects().length,
+          top: Math.round(item.getBoundingClientRect().top),
+          right: item.getBoundingClientRect().right,
+          height: item.getBoundingClientRect().height,
+        })),
+      )
+      expect(items).toHaveLength(6)
+      for (const item of items) {
+        expect(item.lines).toBe(1)
+        expect(item.height).toBeGreaterThanOrEqual(44)
+        expect(item.right).toBeLessThanOrEqual(width)
+      }
+      expect(new Set(items.map((item) => item.top)).size).toBe(1)
+    })
   })
 }
 

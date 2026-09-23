@@ -146,6 +146,32 @@ describe('the phone shell', () => {
     expect(track).toHaveBeenCalledWith({ name: 'spot-open', data: { method: 'gps' } })
   })
 
+  it('ends the sheet with a compact footer: status, disclaimer, one row of links and GitHub', () => {
+    render(<App />)
+    const footer = screen.getByRole('contentinfo')
+    expect(
+      within(footer).getByText(/Solo condizioni, nessuna garanzia/),
+    ).toBeInTheDocument()
+    const links = within(footer).getByRole('navigation', { name: 'Link utili' })
+    expect(
+      within(links)
+        .getAllByRole('link')
+        .concat(within(links).getAllByRole('button'))
+        .map((item) => item.getAttribute('aria-label') ?? item.textContent),
+    ).toEqual([
+      'Crediti',
+      'Termini',
+      'Privacy',
+      'Codice su GitHub',
+      'Avvertenze',
+      'Cookie',
+    ])
+    expect(within(links).getByRole('link', { name: 'Codice su GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/Calfredop/mushma',
+    )
+  })
+
   it('opens the disclaimer and the pages from the ⓘ menu', async () => {
     render(<App />)
     await userEvent.click(screen.getByRole('button', { name: 'Info e impostazioni' }))
@@ -297,7 +323,8 @@ describe('routing', () => {
     render(<App />)
     await screen.findByTestId('map')
 
-    await userEvent.click(screen.getByRole('link', { name: 'Termini e condizioni' }))
+    const footer = within(screen.getByRole('navigation', { name: 'Link utili' }))
+    await userEvent.click(footer.getByRole('link', { name: 'Termini' }))
     expect(window.location.pathname).toBe('/terms')
     expect(
       screen.getByRole('heading', { name: 'Termini e condizioni' }),
@@ -306,7 +333,11 @@ describe('routing', () => {
     await userEvent.click(screen.getByRole('link', { name: 'Torna alla mappa' }))
     expect(window.location.pathname).toBe('/toscana')
 
-    await userEvent.click(screen.getByRole('link', { name: 'Privacy' }))
+    await userEvent.click(
+      within(screen.getByRole('navigation', { name: 'Link utili' })).getByRole('link', {
+        name: 'Privacy',
+      }),
+    )
     expect(window.location.pathname).toBe('/privacy')
     expect(
       screen.getByRole('heading', { name: 'Informativa sulla privacy' }),
@@ -345,7 +376,7 @@ describe('cookie banner', () => {
     render(<App />)
     await screen.findByTestId('map')
 
-    await userEvent.click(screen.getByRole('button', { name: 'Preferenze sui cookie' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Cookie' }))
     expect(screen.getByRole('button', { name: 'Accetta' })).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Accetta' }))
