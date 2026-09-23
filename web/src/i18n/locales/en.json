@@ -317,6 +317,31 @@
     "ovoli": "The map shows, cell by cell, the conditions index for ovoli in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs from June to November, mostly in autumn. The index runs from 0 to 1 and isn't a probability.",
     "gallinacci": "The map shows, cell by cell, the conditions index for gallinacci in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn. The index runs from 0 to 1 and isn't a probability."
   },
+  "structuredData": {
+    "appDescription": "Mappa Funghi estimates every day, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in Tuscany, with a 7-day outlook and the factors behind every score. It forecasts conditions only: it doesn't identify mushrooms and never says whether a mushroom is safe to eat.",
+    "browserRequirements": "Requires JavaScript and WebGL",
+    "features": {
+      "map": "A map of the conditions score for every 1 km woodland cell",
+      "spot": "Today's score and a 7-day outlook for a point, a searched place or your location",
+      "why": "The factors behind every score: rain, temperatures, woodland, elevation and aspect",
+      "hotspots": "Today's best areas and recent public sightings, counted per cell",
+      "seasons": "Past seasons day by day, next to the sightings recorded at the time",
+      "outlook": "The season's outlook, with rain and temperature compared with normal",
+      "offline": "Installable as an app and usable without signal"
+    },
+    "dataset": {
+      "region": "Conditions score for porcini, ovoli and gallinacci in Tuscany",
+      "porcini": "Conditions score for porcini in Tuscany",
+      "ovoli": "Conditions score for ovoli in Tuscany",
+      "gallinacci": "Conditions score for gallinacci in Tuscany"
+    },
+    "score": {
+      "name": "Conditions score",
+      "description": "How much the weather, woodland and terrain favour mushroom growth in a 1 km woodland cell on a given day, from 0 (unfavourable) to 1 (ideal). It is an index, not a probability of finding any."
+    },
+    "method": "Per-species rules, each with a cited source, applied every day to the weather (ERA5-Land reanalysis and ECMWF IFS forecasts, adjusted to each cell's elevation), woodland type and terrain of each cell; checked against public GBIF and iNaturalist sightings.",
+    "country": "Italy"
+  },
   "views": {
     "label": "What to show",
     "now": "Now",

@@ -100,6 +100,17 @@ export interface SiteRoute {
   seoKey: string
 }
 
+/**
+ * The route's link-preview card: `/og/<region>.png`, or `/og/<region>-<species>.png` for a
+ * species page. A page with no region (credits) reuses the default region's.
+ */
+export function ogImagePath(route: Pick<SiteRoute, 'region' | 'species'>): string {
+  const region = route.region ?? DEFAULT_REGION_SLUG
+  const name =
+    route.species && route.species !== 'combined' ? `${region}-${route.species}` : region
+  return `/og/${name}.png`
+}
+
 export const ROUTES: SiteRoute[] = [
   ...Object.values(REGIONS).flatMap((region) => [
     {
@@ -122,3 +133,15 @@ export const ROUTES: SiteRoute[] = [
     seoKey: page,
   })),
 ]
+
+/** The canonical route a path matched, or undefined for a 404. */
+export function siteRouteFor(match: RouteMatch): SiteRoute | undefined {
+  if (match.kind === 'not-found') return undefined
+  const path =
+    match.kind === 'static'
+      ? `/${match.page}`
+      : match.species === 'combined'
+        ? regionPath(match.region.slug)
+        : speciesPath(match.region.slug, match.species)
+  return ROUTES.find((route) => route.path === path)
+}

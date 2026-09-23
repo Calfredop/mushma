@@ -73,17 +73,29 @@ describe('renderRouteHtml', () => {
     expect(html).toContain(`<meta name="twitter:image" content="${head.image}">`)
   })
 
-  it('embeds valid WebApplication JSON-LD', () => {
+  it("embeds the page's JSON-LD graph, in Italian", () => {
     const html = renderRouteHtml(TEMPLATE, head)
-    const match = /<script type="application\/ld\+json">(.*?)<\/script>/s.exec(html)
-    expect(match).not.toBeNull()
-    const jsonLd = JSON.parse(match![1])
-    expect(jsonLd).toMatchObject({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      url: head.url,
-      inLanguage: 'it',
-    })
+    const scripts = [
+      ...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs),
+    ]
+    expect(scripts).toHaveLength(1)
+    const jsonLd = JSON.parse(scripts[0][1])
+    expect(jsonLd).toEqual(head.jsonLd)
+    expect(jsonLd['@context']).toBe('https://schema.org')
+    expect(jsonLd['@graph']).toContainEqual(
+      expect.objectContaining({ '@type': 'WebPage', url: head.url, inLanguage: 'it' }),
+    )
+    expect(jsonLd['@graph']).toContainEqual(
+      expect.objectContaining({ '@type': 'WebApplication' }),
+    )
+  })
+
+  it('gives every route a JSON-LD graph that describes that same page', () => {
+    for (const routeHead of routeHeads()) {
+      expect(routeHead.jsonLd['@graph']).toContainEqual(
+        expect.objectContaining({ '@type': 'WebPage', url: routeHead.url }),
+      )
+    }
   })
 
   it('keeps the rest of the built document intact', () => {
@@ -100,6 +112,7 @@ describe('renderRouteHtml', () => {
       description: '<script>alert(1)</script>',
       image: 'https://mappafunghi.app/og/x.png',
       intro: undefined,
+      jsonLd: { '@context': 'https://schema.org', '@graph': [] },
     })
     expect(html).not.toContain('<script>alert(1)</script>')
     expect(html).toContain('Fun &amp; Games &quot;quoted&quot;')
@@ -146,6 +159,7 @@ describe('renderRouteHtml intro copy', () => {
       description: 'x',
       image: 'https://mappafunghi.app/og/x.png',
       intro: '<b>bold</b> & "quoted"',
+      jsonLd: { '@context': 'https://schema.org', '@graph': [] },
     })
     expect(html).toContain('<p>&lt;b&gt;bold&lt;/b&gt; &amp; &quot;quoted&quot;</p>')
   })

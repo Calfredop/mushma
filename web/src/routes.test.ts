@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   matchPath,
   regionPath,
+  ogImagePath,
   resolveLocation,
   ROUTES,
+  siteRouteFor,
   speciesPath,
   STATIC_PAGES,
 } from './routes'
@@ -114,5 +116,28 @@ describe('ROUTES', () => {
   it('has no duplicate paths', () => {
     const paths = ROUTES.map((r) => r.path)
     expect(new Set(paths).size).toBe(paths.length)
+  })
+})
+
+describe('siteRouteFor', () => {
+  it('finds the canonical route a path matched, and none for a 404', () => {
+    expect(siteRouteFor(matchPath('/toscana'))?.path).toBe('/toscana')
+    expect(siteRouteFor(matchPath('/toscana/porcini'))?.path).toBe('/toscana/porcini')
+    expect(siteRouteFor(matchPath('/toscana/porcini/'))?.path).toBe('/toscana/porcini')
+    expect(siteRouteFor(matchPath('/credits'))?.path).toBe('/credits')
+    expect(siteRouteFor(matchPath('/lombardia'))).toBeUndefined()
+  })
+})
+
+describe('ogImagePath', () => {
+  it('is the region card, or the region-species card on a species page', () => {
+    expect(ogImagePath({ region: 'toscana', species: 'combined' })).toBe(
+      '/og/toscana.png',
+    )
+    expect(ogImagePath({ region: 'toscana', species: 'ovoli' })).toBe(
+      '/og/toscana-ovoli.png',
+    )
+    // A page with no region (credits) reuses the default region's card.
+    expect(ogImagePath({ region: null, species: null })).toBe('/og/toscana.png')
   })
 })

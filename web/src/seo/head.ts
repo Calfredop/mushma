@@ -1,10 +1,11 @@
 /**
- * Keeps the live document's `<title>`, meta description, canonical link and robots tag in
- * step with client-side navigation. The prerendered files (`./prerender.ts`) carry the
- * Italian-only indexed copy; this mirrors it for the current UI language and route.
+ * Keeps the live document's `<title>`, meta description, canonical link, robots tag and
+ * JSON-LD in step with client-side navigation. The prerendered files (`./prerender.ts`) carry
+ * the Italian-only indexed copy; this mirrors it for the current UI language and route.
  */
 import type { RouteMatch, StaticPage } from '../routes'
 import type { Species } from '../state/urlState'
+import { serializeJsonLd } from './structuredData'
 
 export type SeoKey = 'region' | Species | StaticPage
 
@@ -45,4 +46,18 @@ export function setDocumentCanonical(url: string | undefined): void {
   const el = existing ?? document.head.appendChild(document.createElement('link'))
   el.setAttribute('rel', 'canonical')
   el.setAttribute('href', url)
+}
+
+/** Replaces the page's JSON-LD (the prerendered one included) with `doc`, or removes it. */
+export function setDocumentJsonLd(doc: object | undefined): void {
+  const existing = document.head.querySelector<HTMLScriptElement>(
+    'script[type="application/ld+json"]',
+  )
+  if (!doc) {
+    existing?.remove()
+    return
+  }
+  const el = existing ?? document.head.appendChild(document.createElement('script'))
+  el.type = 'application/ld+json'
+  el.textContent = serializeJsonLd(doc)
 }

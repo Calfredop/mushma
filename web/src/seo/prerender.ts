@@ -1,6 +1,6 @@
 /**
  * Turns the built `dist/index.html` into one prerendered file per route: its own title, meta
- * description, canonical, Open Graph + Twitter card tags and `WebApplication` JSON-LD.
+ * description, canonical, Open Graph + Twitter card tags and JSON-LD graph (`./structuredData`).
  *
  * Pure string transforms, so they're cheap to unit test directly; the prerender plugin in
  * `vite.config.ts` does the file I/O and imports only this module (not the rest of the app),
@@ -8,7 +8,8 @@
  */
 import it from '../i18n/locales/it.json' with { type: 'json' }
 import { DEFAULT_REGION_SLUG } from '../regions.js'
-import { regionPath, ROUTES, SITE_URL, type SiteRoute } from '../routes.js'
+import { ogImagePath, regionPath, ROUTES, SITE_URL, type SiteRoute } from '../routes.js'
+import { type JsonLdDocument, serializeJsonLd, structuredData } from './structuredData.js'
 
 interface SeoCopy {
   title: string
@@ -26,14 +27,8 @@ export interface RouteHead {
   image: string
   /** Visible lede paragraph (item: "Visible intro copy"); undefined for pages with none. */
   intro: string | undefined
-}
-
-/** `/og/<region>.png`, or `/og/<region>-<species>.png` for a species page (item 9). */
-function ogImagePath(route: SiteRoute): string {
-  const region = route.region ?? DEFAULT_REGION_SLUG
-  const name =
-    route.species && route.species !== 'combined' ? `${region}-${route.species}` : region
-  return `/og/${name}.png`
+  /** The page's schema.org graph, in Italian like the rest of the indexed copy. */
+  jsonLd: JsonLdDocument
 }
 
 export function routeHeads(routes: SiteRoute[] = ROUTES): RouteHead[] {
@@ -47,6 +42,7 @@ export function routeHeads(routes: SiteRoute[] = ROUTES): RouteHead[] {
       description: copy.description,
       image: `${SITE_URL}${ogImagePath(route)}`,
       intro: INTRO_COPY[route.seoKey],
+      jsonLd: structuredData(route, 'it'),
     }
   })
 }
@@ -61,22 +57,6 @@ const HTML_ESCAPES: Record<string, string> = {
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (ch) => HTML_ESCAPES[ch])
-}
-
-function webApplicationJsonLd(head: RouteHead): string {
-  const json = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'Mappa Funghi',
-    description: head.description,
-    url: head.url,
-    image: head.image,
-    inLanguage: 'it',
-    applicationCategory: 'UtilitiesApplication',
-    operatingSystem: 'Any',
-  })
-  // The copy is ours, so this can't happen today; kept so it stays true if that changes.
-  return json.replace(/<\/script/gi, '<\\/script')
 }
 
 const TITLE_TAG = /<title>[\s\S]*?<\/title>/
@@ -108,7 +88,7 @@ export function renderRouteHtml(template: string, head: RouteHead): string {
     `<meta name="twitter:title" content="${escapeHtml(head.title)}">`,
     `<meta name="twitter:description" content="${escapeHtml(head.description)}">`,
     `<meta name="twitter:image" content="${head.image}">`,
-    `<script type="application/ld+json">${webApplicationJsonLd(head)}</script>`,
+    `<script type="application/ld+json">${serializeJsonLd(head.jsonLd)}</script>`,
   ].join('\n    ')
 
   let html = template

@@ -83,7 +83,7 @@ describe('routing', () => {
     window.history.replaceState(null, '', '/')
     document.head
       .querySelectorAll(
-        'meta[name="description"], meta[name="robots"], link[rel="canonical"]',
+        'meta[name="description"], meta[name="robots"], link[rel="canonical"], script[type="application/ld+json"]',
       )
       .forEach((el) => el.remove())
   })
@@ -118,6 +118,31 @@ describe('routing', () => {
       document.head.querySelector('meta[name="description"]')?.getAttribute('content'),
     ).toBeTruthy()
     expect(document.head.querySelector('meta[name="robots"]')).toBeNull()
+  })
+
+  it('keeps the JSON-LD graph in step with the route, and drops it on a 404', async () => {
+    const webPageUrl = () => {
+      const script = document.head.querySelector('script[type="application/ld+json"]')
+      if (!script) return null
+      const graph = JSON.parse(script.textContent!)['@graph'] as Record<string, unknown>[]
+      return graph.find((node) => node['@type'] === 'WebPage')?.url
+    }
+    window.history.replaceState(null, '', '/toscana')
+    const { unmount } = render(<App />)
+    await screen.findByTestId('map')
+    expect(webPageUrl()).toBe('https://mappafunghi.app/toscana')
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Porcini' }))
+    expect(webPageUrl()).toBe('https://mappafunghi.app/toscana/porcini')
+    expect(
+      document.head.querySelectorAll('script[type="application/ld+json"]'),
+    ).toHaveLength(1)
+    unmount()
+
+    window.history.replaceState(null, '', '/lombardia')
+    render(<App />)
+    expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
+    expect(webPageUrl()).toBeNull()
   })
 
   it('shows the not-found page for an unknown region, with a link back to the map', async () => {

@@ -23,10 +23,10 @@ export const REGION = REGIONS[DEFAULT_REGION_SLUG]
 export const DATE_WINDOW: DateWindowSize = { pastDays: 6, forecastDays: 7 }
 
 /**
- * The first day a past date can be replayed from: the weather history starts in 2016
- * (.gavin-root/docs/weather-ingest.md). A day the API has no scores for says so on the map.
+ * The first day a past date can be replayed from: the region's history start. A day the API
+ * has no scores for says so on the map.
  */
-export const HISTORY_START = '2016-01-01'
+export const HISTORY_START = REGION.historyStart
 
 /** "Recent" sightings on the map overlay. */
 export const SIGHTINGS_WINDOW_DAYS = 90

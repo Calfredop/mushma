@@ -18,6 +18,13 @@ export interface RegionDefinition {
   species: Species[]
   /** The API's region id. The API is Tuscany-only for now; unused until a second region ships. */
   apiRegionId: string
+  /** Wikidata item id, e.g. `Q1273`: the region's `sameAs` in the pages' JSON-LD. */
+  wikidata: string
+  /**
+   * The first day with scores: the weather history starts in 2016
+   * (.gavin-root/docs/weather-ingest.md).
+   */
+  historyStart: string
 }
 
 /**
@@ -40,6 +47,8 @@ export const REGIONS: Record<string, RegionDefinition> = {
     maxZoom: 15,
     species: [...SPECIES],
     apiRegionId: 'tuscany',
+    wikidata: 'Q1273',
+    historyStart: '2016-01-01',
   },
 }
 

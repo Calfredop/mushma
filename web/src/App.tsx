@@ -47,7 +47,7 @@ import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
 import { type LocateError, useLocate } from './hooks/useLocate'
 import { useMediaQuery } from './hooks/useMediaQuery'
-import { intlLocale, type Language } from './i18n'
+import { currentLanguage, intlLocale, type Language } from './i18n'
 import './i18n'
 import { ConditionsMap } from './map/ConditionsMap'
 import { CreditsPage } from './pages/CreditsPage'
@@ -56,13 +56,15 @@ import { HotPlaces } from './panels/HotPlaces'
 import { OutlookPanel } from './panels/OutlookPanel'
 import { SeasonsPanel } from './panels/SeasonsPanel'
 import { SpotPanel } from './panels/SpotPanel'
-import { regionPath, SITE_URL } from './routes'
+import { regionPath, SITE_URL, siteRouteFor } from './routes'
 import {
   seoKeyForRoute,
   setDocumentCanonical,
   setDocumentDescription,
+  setDocumentJsonLd,
   setDocumentRobots,
 } from './seo/head'
+import { structuredData } from './seo/structuredData'
 import { AppStateProvider } from './state/AppState'
 import { useAppState } from './state/useAppState'
 import { addDays, daysBetween, formatDayMonth } from './time/days'
@@ -533,6 +535,8 @@ function Root() {
     setDocumentDescription(key ? t(`seo.${key}.description`) : undefined)
     setDocumentCanonical(key ? `${SITE_URL}${app.path}` : undefined)
     setDocumentRobots(key === null)
+    const siteRoute = siteRouteFor(app.route)
+    setDocumentJsonLd(siteRoute && structuredData(siteRoute, currentLanguage()))
   }, [app.route, app.path, t, i18n.resolvedLanguage])
 
   return app.route.kind === 'not-found' ? <NotFoundPage /> : <MapScreen />

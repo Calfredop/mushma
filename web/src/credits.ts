@@ -5,7 +5,9 @@
  * the source of truth for names, homepages and licences. Names, URLs and
  * licence identifiers are proper nouns; what each one is used for is translated.
  */
-import type en from './i18n/locales/en.json'
+// A value import only for its type: `import type` can't carry the JSON import attribute, which
+// the build's config loader needs now that the prerendered JSON-LD reads these credits.
+import en from './i18n/locales/en.json' with { type: 'json' }
 
 export interface Credit {
   name: string

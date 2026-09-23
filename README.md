@@ -468,6 +468,15 @@ something to wait on here.
      https://mappafunghi.app/toscana` returns, and is not flagged as a duplicate of `/`
      (the 308 redirect should register as the canonical signal on its own).
    - An unknown path (e.g. `https://mappafunghi.app/x`) inspects as a real 404, not indexed.
+   - **Structured data**: run `/toscana` and `/toscana/porcini` through Google's
+     [Rich Results Test](https://search.google.com/test/rich-results) and the
+     [Schema Markup Validator](https://validator.schema.org/). Each page carries one JSON-LD
+     graph (`web/src/seo/structuredData.ts`): the Dataset, the breadcrumb (species pages) and
+     the Taxon and place links should parse with no errors. Google flags the `WebApplication`
+     as not eligible for a Software App rich result, because that result needs user ratings the
+     app doesn't have. That's expected: the node is there to describe the app to search engines
+     and LLMs, not to earn stars. Search Console's **Datasets** report then lists the four
+     conditions-score datasets.
 
 ## Monitoring
 

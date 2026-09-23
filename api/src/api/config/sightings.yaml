@@ -6,6 +6,7 @@
 # (`uv run python -m api.sightings.ingest resolve-taxa`) on 2026-09-17 and pinned here so a later
 # backbone change can't silently re-target a rule. Boletus aestivalis is a synonym of B. reticulatus
 # in the GBIF backbone (usageKey 5954691 for both), so the porcini group has four keys, not five.
+# web/src/taxa.ts mirrors these taxa for the pages' JSON-LD; its test fails when the two drift.
 species:
   porcini:
     common_name: {it: Porcini, en: Porcini}
