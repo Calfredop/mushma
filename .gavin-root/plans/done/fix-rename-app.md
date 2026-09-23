@@ -1,4 +1,5 @@
 ---
+status: Done
 complexity: simple
 kind: task
 title: [fix] rename app

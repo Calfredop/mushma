@@ -2,7 +2,7 @@
 order: 7168
 kind: task
 title: [feat] disclaimer
-status: To Do
+status: Done
 ---
 Make disclaimer more verbose, taking in account concpets like:
 - Terreno pericoloso
