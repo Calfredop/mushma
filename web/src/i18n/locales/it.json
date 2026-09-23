@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "mushma",
-    "documentTitle": "mushma · condizioni per porcini, ovoli e gallinacci in Toscana",
+    "name": "Mappa Funghi",
+    "documentTitle": "Mappa Funghi · condizioni per porcini, ovoli e gallinacci in Toscana",
     "region": "Toscana"
   },
   "language": {
@@ -15,7 +15,7 @@
     "backToMap": "Torna alla mappa"
   },
   "pwa": {
-    "installBanner": "Installa mushma per un accesso rapido e la mappa anche offline nel bosco.",
+    "installBanner": "Installa Mappa Funghi per un accesso rapido e la mappa anche offline nel bosco.",
     "install": "Installa",
     "dismiss": "Non ora"
   },
@@ -96,7 +96,7 @@
     "locating": "Cerco la tua posizione…",
     "denied": "La posizione è disattivata. Consentila nelle impostazioni del browser oppure cerca un luogo.",
     "unavailable": "Non riesco a trovare la tua posizione. Riprova oppure cerca un luogo.",
-    "outside": "Sei fuori dalla Toscana: per ora mushma copre solo la Toscana."
+    "outside": "Sei fuori dalla Toscana: per ora Mappa Funghi copre solo la Toscana."
   },
   "spot": {
     "title": "Previsione del punto",
@@ -251,15 +251,15 @@
   },
   "disclaimer": {
     "title": "Solo condizioni, mai commestibilità",
-    "body1": "mushma stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare.",
+    "body1": "Mappa Funghi stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare.",
     "body2": "L'indice delle condizioni va da 0 a 1 e non è una probabilità. Oltre qualche giorno è una tendenza, non una certezza.",
     "body3": "Prima di consumare qualsiasi fungo raccolto, fallo controllare gratuitamente all'ispettorato micologico della tua ASL.",
     "accept": "Ho capito",
-    "short": "Solo condizioni: mushma non riconosce funghi e non ne valuta la commestibilità."
+    "short": "Solo condizioni: Mappa Funghi non riconosce funghi e non ne valuta la commestibilità."
   },
   "credits": {
     "title": "Dati e crediti",
-    "intro": "mushma usa solo dati pubblici e software libero. Grazie a chi li rende disponibili.",
+    "intro": "Mappa Funghi usa solo dati pubblici e software libero. Grazie a chi li rende disponibili.",
     "dataTitle": "Dati",
     "softwareTitle": "Mappa e software",
     "license": "Licenza: {{license}}",

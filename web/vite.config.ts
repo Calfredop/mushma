@@ -142,8 +142,8 @@ function pwaPlugin(env: Record<string, string>): Plugin[] {
     registerType: 'autoUpdate',
     includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
     manifest: {
-      name: 'mushma',
-      short_name: 'mushma',
+      name: 'Mappa Funghi',
+      short_name: 'Mappa Funghi',
       description:
         'Fruiting-conditions scores for porcini, ovoli and gallinacci in Tuscany.',
       lang: 'it',

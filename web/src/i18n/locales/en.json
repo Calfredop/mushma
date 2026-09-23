@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "mushma",
-    "documentTitle": "mushma · porcini, ovoli and gallinacci conditions in Tuscany",
+    "name": "Mappa Funghi",
+    "documentTitle": "Mappa Funghi · porcini, ovoli and gallinacci conditions in Tuscany",
     "region": "Tuscany"
   },
   "language": {
@@ -15,7 +15,7 @@
     "backToMap": "Back to the map"
   },
   "pwa": {
-    "installBanner": "Install mushma for quick access and offline maps in the woods.",
+    "installBanner": "Install Mappa Funghi for quick access and offline maps in the woods.",
     "install": "Install",
     "dismiss": "Not now"
   },
@@ -96,7 +96,7 @@
     "locating": "Finding your location…",
     "denied": "Location access is off. Allow it in your browser settings, or search a place instead.",
     "unavailable": "Couldn't find your location. Try again, or search a place.",
-    "outside": "You're outside Tuscany: mushma only covers Tuscany for now."
+    "outside": "You're outside Tuscany: Mappa Funghi only covers Tuscany for now."
   },
   "spot": {
     "title": "Spot forecast",
@@ -251,15 +251,15 @@
   },
   "disclaimer": {
     "title": "Conditions only, never edibility",
-    "body1": "mushma estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat.",
+    "body1": "Mappa Funghi estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat.",
     "body2": "The conditions score runs from 0 to 1 and is not a probability. More than a few days ahead it is a trend, not a certainty.",
     "body3": "Before eating any mushroom you pick, have it checked for free by your local ASL mycological inspectorate.",
     "accept": "Got it",
-    "short": "Conditions only: mushma doesn't identify mushrooms or judge whether they are edible."
+    "short": "Conditions only: Mappa Funghi doesn't identify mushrooms or judge whether they are edible."
   },
   "credits": {
     "title": "Data and credits",
-    "intro": "mushma uses only public data and open-source software. Thanks to everyone who makes them available.",
+    "intro": "Mappa Funghi uses only public data and open-source software. Thanks to everyone who makes them available.",
     "dataTitle": "Data",
     "softwareTitle": "Map and software",
     "license": "License: {{license}}",
