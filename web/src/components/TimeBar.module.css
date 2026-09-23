@@ -19,10 +19,8 @@
 .calendar,
 .bar,
 .picker {
+  composes: glass from global;
   border-radius: var(--radius-l);
-  background: rgb(248 250 246 / 94%);
-  box-shadow: var(--shadow-float);
-  backdrop-filter: blur(6px);
 }
 
 .calendar {
@@ -65,7 +63,7 @@
 .bar[data-mode] {
   box-shadow:
     inset 4px 0 0 var(--humus),
-    var(--shadow-float);
+    var(--glass-shadow);
   padding-left: 8px;
 }
 

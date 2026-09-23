@@ -37,3 +37,6 @@ web/data/
 # playwright
 web/playwright-report/
 web/test-results/
+
+# review screenshots (UI cards save them here)
+web/screenshots/

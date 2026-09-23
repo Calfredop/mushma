@@ -1,61 +1,85 @@
-/* Mobile first: top bar, full-bleed map, bottom sheet. From 900px: a left panel. */
+/* Mobile first: a full-bleed map with glass controls on it and a sheet below it; from 900px a
+   left panel. No top bar: the wordmark and the search live at the top of the sheet. */
 
 .app {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas: 'top' 'map' 'sheet';
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: 'map' 'sheet';
   height: 100dvh;
   overflow: hidden;
   /* Not scrollable at all, unlike hidden: scrollIntoView and focus can't push it sideways. */
   overflow: clip;
 }
 
-.topbar {
-  grid-area: top;
+.mapArea {
+  grid-area: map;
   position: relative;
-  z-index: 10;
+  min-height: 0;
+}
+
+/* The top of the map: the species pill on the left, the button cluster on the right. The pill
+   stops short of the cluster's column, so the two never overlap. */
+.species {
+  position: absolute;
+  top: calc(var(--safe-top) + var(--space-3));
+  left: calc(var(--safe-left) + var(--space-3));
+  right: calc(var(--safe-right) + var(--space-3) + var(--tap) + var(--space-2));
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  min-height: 3.5rem;
-  padding: 0 var(--space-2) 0 var(--space-4);
-  background: var(--lichene);
-  border-bottom: 1px solid var(--rule);
+  pointer-events: none;
 }
 
-.wordmark {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--text-wordmark);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.01em;
+.species > * {
+  pointer-events: auto;
 }
 
-.actions {
+/* ◈ analysis, ◎ locate, ⓘ menu: one glass capsule, a hairline between its buttons. */
+.cluster {
+  composes: glass from global;
+  position: absolute;
+  top: calc(var(--safe-top) + var(--space-3));
+  right: calc(var(--safe-right) + var(--space-3));
   display: flex;
-  align-items: center;
-  gap: 2px;
+  flex-direction: column;
+  border-radius: var(--radius-l);
+  overflow: hidden;
 }
 
-.iconButton {
+.fab {
   display: grid;
   place-items: center;
   width: var(--tap);
   height: var(--tap);
+  padding: 0;
   border: 0;
-  border-radius: 50%;
   background: transparent;
   color: var(--humus);
+  transition: background-color 120ms var(--ease);
 }
 
-.iconButton:hover {
-  background: rgb(28 33 29 / 6%);
+.fab + .fab {
+  border-top: 1px solid var(--glass-rule);
 }
 
-.iconButton[aria-busy='true'] {
+.fab:hover {
+  background: var(--glass-hover);
+}
+
+/* The capsule clips anything outside its buttons: the ring goes inside. */
+.fab:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--lago);
+}
+
+.fab[aria-pressed='true'],
+.fab[aria-expanded='true'] {
+  background: var(--humus);
+  color: var(--carta);
+}
+
+.fab[aria-busy='true'] {
   color: var(--lago);
+}
+
+.fab[aria-busy='true'] svg {
   animation: pulse 1s ease-in-out infinite alternate;
 }
 
@@ -65,51 +89,22 @@
   }
 }
 
-.searchOverlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  padding: 0 var(--space-2);
-  background: var(--lichene);
-}
-
-.searchOverlay > * {
-  flex: 1;
-}
-
-.mapArea {
-  grid-area: map;
-  position: relative;
-  min-height: 0;
-}
-
-.species {
-  position: absolute;
-  top: var(--space-3);
-  left: var(--space-3);
-  right: var(--space-3);
-  display: flex;
-  pointer-events: none;
-}
-
-.species > * {
-  pointer-events: auto;
-}
-
+/* Under the species pill, clear of the cluster. */
 .status {
   position: absolute;
-  top: 4.25rem;
-  left: 50%;
+  top: calc(var(--safe-top) + var(--space-3) + 3.125rem + var(--space-2));
+  left: calc(var(--safe-left) + var(--space-3));
   display: flex;
   align-items: center;
   gap: var(--space-3);
   width: max-content;
-  max-width: calc(100% - 2rem);
+  max-width: calc(
+    100% - var(--safe-left) - var(--safe-right) - 2 * var(--space-3) - var(--tap) -
+      var(--space-2)
+  );
   margin: 0;
   padding: var(--space-2) var(--space-4);
-  transform: translateX(-50%);
-  border-radius: 999px;
+  border-radius: var(--radius-l);
   background: var(--humus);
   color: var(--carta);
   font-size: var(--text-caption);
@@ -125,91 +120,39 @@
   text-decoration: underline;
 }
 
+/* The bottom of the map: the legend chip (or the factor chips), then the time bar. */
 .bottom {
   position: absolute;
-  left: var(--space-3);
-  right: var(--space-3);
+  left: calc(var(--safe-left) + var(--space-3));
+  right: calc(var(--safe-right) + var(--space-3));
   bottom: calc(var(--space-3) + 1.25rem); /* room for the map attribution */
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
   justify-items: start;
   align-items: end;
   pointer-events: none;
 }
 
-.bottom > * {
+.legend {
+  justify-self: stretch;
+  display: grid;
+  justify-items: start;
+  min-width: 0;
+}
+
+.legend > *,
+.dates > * {
   pointer-events: auto;
   max-width: 100%;
 }
 
-.legend {
-  grid-area: 1 / 1;
-  display: grid;
-  justify-items: start;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-/* Analysis mode: the factors behind the score instead of the score. */
-.modeToggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 2.25rem;
-  padding: 0 var(--space-3) 0 var(--space-2);
-  border: 0;
-  border-radius: 999px;
-  background: rgb(248 250 246 / 94%);
-  color: var(--humus);
-  box-shadow: var(--shadow-float);
-  backdrop-filter: blur(6px);
-  font-size: var(--text-caption);
-  font-weight: 650;
-}
-
-.modeToggle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.modeToggle:hover {
-  background: var(--carta);
-}
-
-.modeToggle[aria-pressed='true'] {
-  background: var(--humus);
-  color: var(--carta);
-}
-
-/* Placed by name, so it keeps its corner when the legend is hidden. */
-.center {
-  grid-area: 1 / 2;
-  display: grid;
-  place-items: center;
-  width: var(--tap);
-  height: var(--tap);
-  border: 0;
-  border-radius: 50%;
-  background: rgb(248 250 246 / 94%);
-  color: var(--humus);
-  box-shadow: var(--shadow-float);
-}
-
-.center:hover {
-  background: var(--carta);
-}
-
-.center[aria-busy='true'] {
-  color: var(--lago);
-}
-
-.center[aria-busy='true'] svg {
-  animation: pulse 1s ease-in-out infinite alternate;
+/* The factor row takes the whole width and scrolls inside it. */
+.legend > section:has([data-part='row']) {
+  justify-self: stretch;
 }
 
 .dates {
-  grid-area: 2 / 1 / auto / -1;
   justify-self: stretch;
   display: flex;
   min-width: 0;
@@ -226,14 +169,16 @@
   z-index: 5;
   display: flex;
   flex-direction: column;
-  max-height: 4.75rem;
+  /* Peek: the handle, the wordmark and the search. */
+  max-height: calc(6.625rem + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
   background: var(--lichene);
   box-shadow: var(--shadow-sheet);
   transition: max-height 260ms var(--ease);
 }
 
 .app[data-sheet='open'] .sheet {
-  max-height: 58dvh;
+  max-height: 62dvh;
 }
 
 /* A short map above an open sheet keeps only the controls that change it. */
@@ -269,6 +214,50 @@
   background: rgb(28 33 29 / 22%);
 }
 
+.sheetHeader {
+  flex: none;
+  display: grid;
+  gap: var(--space-2);
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.wordmark {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-species);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.headerButton {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--humus);
+}
+
+.headerButton:hover {
+  background: var(--glass-hover);
+}
+
+.headerButton[aria-expanded='true'] {
+  background: var(--humus);
+  color: var(--carta);
+}
+
 .sheetBody {
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -277,10 +266,6 @@
 
 .app[data-sheet='closed'] .sheetBody {
   overflow: hidden;
-}
-
-.desktopSearch {
-  margin-bottom: var(--space-4);
 }
 
 .intro {
@@ -321,20 +306,28 @@
 @media (min-width: 900px) {
   .app {
     grid-template-columns: var(--panel-width) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas: 'top map' 'sheet map';
-  }
-
-  .topbar {
-    border-bottom: 0;
-    padding: var(--space-3) var(--space-3) var(--space-2) var(--space-5);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: 'sheet map';
   }
 
   .sheet,
   .app[data-sheet='open'] .sheet,
   .app[data-sheet='closed'] .sheet {
     max-height: none;
+    padding-bottom: 0;
     box-shadow: 1px 0 0 var(--rule);
+  }
+
+  .sheetHeader {
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+  }
+
+  .sheetHeader > :last-child {
+    margin-right: var(--space-2);
+  }
+
+  .wordmark {
+    font-size: var(--text-wordmark);
   }
 
   .sheetBody,
@@ -344,8 +337,21 @@
   }
 
   .species {
-    left: var(--space-4);
     top: var(--space-4);
+    left: var(--space-4);
+    right: calc(var(--space-4) + var(--tap) + var(--space-2));
+  }
+
+  .cluster {
+    top: var(--space-4);
+    right: var(--space-4);
+  }
+
+  .status {
+    top: 4.25rem;
+    left: 50%;
+    max-width: calc(100% - 2 * (var(--space-4) + var(--tap) + var(--space-2)));
+    transform: translateX(-50%);
   }
 
   .bottom {
@@ -355,16 +361,14 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 
+  .legend {
+    grid-area: 1 / 1;
+    justify-self: start;
+  }
+
   .dates {
     grid-area: 1 / 2;
     justify-self: center;
-  }
-
-  /* Out of the row, so the time bar has all of it: above its end, under the zoom buttons. */
-  .center {
-    position: absolute;
-    right: calc(var(--space-3) - var(--space-4));
-    bottom: calc(100% + var(--space-2));
   }
 
   /* Its natural width, so it centres where it fits (about 1416px and up); narrower, it shrinks

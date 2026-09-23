@@ -57,9 +57,46 @@
   --shadow-float: 0 1px 2px rgb(28 33 29 / 18%), 0 4px 14px rgb(28 33 29 / 10%);
   --focus-ring: 0 0 0 2px var(--carta), 0 0 0 4px var(--lago);
 
+  /* Glass: every control that floats over the map. Lichene at low alpha over a blurred,
+     saturated map, a 1px inner highlight on top and a hairline all round, and a soft shadow.
+     The strong tint is for surfaces that hold reading (the sheet, the panel, menus). */
+  --glass-tint: rgb(237 240 234 / 66%);
+  --glass-tint-strong: rgb(237 240 234 / 86%);
+  --glass-filter: blur(18px) saturate(170%);
+  --glass-hover: rgb(28 33 29 / 7%);
+  --glass-highlight:
+    inset 0 1px 0 rgb(255 255 255 / 60%), inset 0 0 0 1px rgb(28 33 29 / 9%);
+  --glass-shadow:
+    var(--glass-highlight), 0 1px 2px rgb(28 33 29 / 12%), 0 6px 20px rgb(28 33 29 / 12%);
+  /* A hairline between buttons that share one glass capsule. */
+  --glass-rule: rgb(28 33 29 / 11%);
+
   --panel-width: 400px;
   --tap: 44px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Room for notches, rounded corners and the home indicator (viewport-fit=cover). */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* Opaque glass: where the backdrop can't be blurred, or the visitor asks for less
+   transparency, the tint alone would leave text over a busy map. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-tint: var(--carta);
+    --glass-tint-strong: var(--lichene);
+    --glass-filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-tint: var(--carta);
+    --glass-tint-strong: var(--lichene);
+    --glass-filter: none;
+  }
 }
 
 @media (min-width: 900px) {

@@ -36,16 +36,10 @@ import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import {
-  ChevronIcon,
-  InfoIcon,
-  LayersIcon,
-  LocateIcon,
-  SearchIcon,
-} from './components/icons'
+import { ChevronIcon, LayersIcon, LocateIcon } from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
+import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
-import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { PanelBoundary } from './components/PanelBoundary'
 import { Legend } from './components/Legend'
 import { PlaceSearch } from './components/PlaceSearch'
@@ -127,7 +121,6 @@ function MapScreen() {
   const desktop = useMediaQuery('(min-width: 900px)')
 
   const [sheetOpen, setSheetOpen] = useState(app.spot !== null)
-  const [searchOpen, setSearchOpen] = useState(false)
   const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
   const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
   // A key, not a translated string, so it follows a language switch.
@@ -279,13 +272,13 @@ function MapScreen() {
       track({ name: 'spot-open', data: { method } })
       selectSpot(spot, camera)
       setSheetOpen(true)
-      setSearchOpen(false)
       setLocateError(null)
     },
     [selectSpot],
   )
 
-  // The top bar opens the forecast where you stand; the button on the map only goes there.
+  // "La mia posizione" in the search opens the forecast where you stand; the button on the map
+  // only goes there.
   const spotLocate = useLocate({
     onLocated: useCallback(
       (lat: number, lon: number) => {
@@ -345,14 +338,11 @@ function MapScreen() {
       zoom: SPOT_ZOOM,
     })
 
-  const search = (
-    <PlaceSearch
-      onSelect={onPlace}
-      autoFocus={!desktop}
-      onDismiss={desktop ? undefined : () => setSearchOpen(false)}
-      bounds={app.region.bounds}
-    />
-  )
+  const infoMenuActions = {
+    onDisclaimer: () => setDisclaimerOpen(true),
+    onCookies: () => setCookieBannerOpen(true),
+    onNavigate: navigate,
+  }
 
   const layer = analysis ? factors : seasonMode ? seasonMap : scores
   const scoresUnavailable = layer.isError && isClientError(layer.error)
@@ -382,42 +372,6 @@ function MapScreen() {
 
   return (
     <div className={styles.app} data-sheet={sheetOpen ? 'open' : 'closed'}>
-      <header className={styles.topbar}>
-        <h1 className={styles.wordmark}>{t('app.name')}</h1>
-        <div className={styles.actions}>
-          {!desktop && (
-            <button
-              type="button"
-              className={styles.iconButton}
-              aria-label={t('search.open')}
-              aria-expanded={searchOpen}
-              onClick={() => setSearchOpen((open) => !open)}
-            >
-              <SearchIcon />
-            </button>
-          )}
-          <button
-            type="button"
-            className={styles.iconButton}
-            aria-label={t('locate.button')}
-            aria-busy={spotLocate.locating}
-            onClick={spotLocate.locate}
-          >
-            <LocateIcon />
-          </button>
-          <LanguageSwitcher />
-          <button
-            type="button"
-            className={styles.iconButton}
-            aria-label={t('nav.disclaimer')}
-            onClick={() => setDisclaimerOpen(true)}
-          >
-            <InfoIcon />
-          </button>
-        </div>
-        {!desktop && searchOpen && <div className={styles.searchOverlay}>{search}</div>}
-      </header>
-
       <main className={styles.mapArea}>
         <ConditionsMap
           cells={analysis ? undefined : mapCells}
@@ -464,6 +418,31 @@ function MapScreen() {
             noCombined={analysis}
           />
         </div>
+        <div className={styles.cluster}>
+          <button
+            type="button"
+            className={styles.fab}
+            aria-label={t('analysis.toggle')}
+            title={t('analysis.toggle')}
+            aria-pressed={analysis}
+            onClick={() => app.setMode(analysis ? 'map' : 'analysis')}
+          >
+            <LayersIcon />
+          </button>
+          <button
+            type="button"
+            className={styles.fab}
+            aria-label={t('locate.center')}
+            title={t('locate.center')}
+            aria-busy={centerLocate.locating}
+            onClick={centerLocate.locate}
+          >
+            <LocateIcon />
+          </button>
+          {!desktop && (
+            <InfoMenu placement="left" className={styles.fab} {...infoMenuActions} />
+          )}
+        </div>
         {status && (
           <p className={styles.status} role="status">
             {status}
@@ -476,17 +455,9 @@ function MapScreen() {
         )}
         <div className={styles.bottom}>
           <div className={styles.legend}>
-            <button
-              type="button"
-              className={styles.modeToggle}
-              aria-pressed={analysis}
-              onClick={() => app.setMode(analysis ? 'map' : 'analysis')}
-            >
-              <LayersIcon />
-              {t('analysis.toggle')}
-            </button>
             {analysis ? (
               <IndicatorPanel
+                layout={desktop ? 'panel' : 'row'}
                 chips={servedFactors}
                 active={app.indicators}
                 onToggle={app.toggleIndicator}
@@ -494,18 +465,13 @@ function MapScreen() {
                 showSightings={app.sightingsVisible}
               />
             ) : (
-              <Legend showSightings={app.sightingsVisible} season={app.season} />
+              <Legend
+                showSightings={app.sightingsVisible}
+                season={app.season}
+                collapsible={!desktop}
+              />
             )}
           </div>
-          <button
-            type="button"
-            className={styles.center}
-            aria-label={t('locate.center')}
-            aria-busy={centerLocate.locating}
-            onClick={centerLocate.locate}
-          >
-            <LocateIcon />
-          </button>
           <div className={styles.dates}>
             <TimeBar
               today={app.today}
@@ -546,8 +512,27 @@ function MapScreen() {
             <ChevronIcon direction={sheetOpen ? 'down' : 'up'} />
           </button>
         )}
+        <div className={styles.sheetHeader}>
+          <div className={styles.brand}>
+            <h1 className={styles.wordmark}>{t('app.name')}</h1>
+            {desktop && (
+              <InfoMenu
+                placement="below"
+                className={styles.headerButton}
+                {...infoMenuActions}
+              />
+            )}
+          </div>
+          <PlaceSearch
+            onSelect={onPlace}
+            onLocate={spotLocate.locate}
+            locating={spotLocate.locating}
+            // A phone: the sheet opens, so the list has room.
+            onFocus={() => setSheetOpen(true)}
+            bounds={app.region.bounds}
+          />
+        </div>
         <div className={styles.sheetBody}>
-          {desktop && <div className={styles.desktopSearch}>{search}</div>}
           {app.spot ? (
             <SpotPanel
               key={JSON.stringify(app.spot)}

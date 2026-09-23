@@ -44,6 +44,15 @@ a {
   color: var(--lago);
 }
 
+/* Glass (tokens.css): one declaration set, so every floating control reads as one material.
+   Components opt in with `composes: glass from global`. */
+.glass {
+  background: var(--glass-tint);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

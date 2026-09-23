@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
@@ -82,6 +82,59 @@ describe('centre on my position', () => {
     expect(await screen.findByText(/fuori dalla Toscana/i)).toBeInTheDocument()
     expect(mapProp('camera')).toBeNull()
     expect(mapProp('user-position')).toBeNull()
+  })
+})
+
+describe('the phone shell', () => {
+  it('has no top bar: the wordmark and the search are in the sheet', async () => {
+    render(<App />)
+    const sheet = screen.getByRole('complementary')
+    expect(
+      within(sheet).getByRole('heading', { level: 1, name: 'Mappa Funghi' }),
+    ).toBeInTheDocument()
+    expect(
+      within(sheet).getByRole('combobox', { name: 'Cerca un luogo in Toscana' }),
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+  })
+
+  it('has one locate button, and it only centres the map', () => {
+    render(<App />)
+    expect(
+      screen.getAllByRole('button', { name: /posizione/ }).map((b) => b.textContent),
+    ).toEqual([''])
+    expect(
+      screen.getByRole('button', { name: 'Centra sulla mia posizione' }),
+    ).toBeInTheDocument()
+  })
+
+  it('opens the spot forecast where you are from "La mia posizione" in the search', async () => {
+    mockGeolocation(43.85, 11.73)
+    render(<App />)
+
+    await userEvent.click(
+      screen.getByRole('combobox', { name: 'Cerca un luogo in Toscana' }),
+    )
+    await userEvent.click(screen.getByRole('option', { name: /^La mia posizione/ }))
+
+    expect(mapProp('camera')).toMatchObject({ lat: 43.85, lon: 11.73, zoom: 12 })
+    expect(mapProp('spot-point')).toMatchObject({ point: [11.73, 43.85] })
+    expect(mapProp('user-position')).toEqual({ lat: 43.85, lon: 11.73 })
+    expect(track).toHaveBeenCalledWith({ name: 'spot-open', data: { method: 'gps' } })
+  })
+
+  it('opens the disclaimer and the pages from the ⓘ menu', async () => {
+    render(<App />)
+    await userEvent.click(screen.getByRole('button', { name: 'Info e impostazioni' }))
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Avvertenze' }))
+    expect(
+      screen.getByRole('dialog', { name: 'Prima di usare la mappa' }),
+    ).toHaveAttribute('open')
+    await userEvent.click(screen.getByRole('button', { name: 'Ho capito' }))
+
+    await userEvent.click(screen.getByRole('button', { name: 'Info e impostazioni' }))
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Dati e crediti' }))
+    expect(window.location.pathname).toBe('/credits')
   })
 })
 
@@ -240,9 +293,8 @@ describe('analysis mode', () => {
   it('swaps the legend for the factors, turns on rain_trigger and leaves Tutte', async () => {
     window.history.replaceState(null, '', '/toscana')
     render(<App />)
-    expect(
-      screen.getByRole('heading', { name: 'Indice delle condizioni' }),
-    ).toBeInTheDocument()
+    // A phone: the legend is one chip.
+    expect(screen.getByRole('button', { name: 'Legenda' })).toBeInTheDocument()
 
     const toggle = screen.getByRole('button', { name: 'Analisi' })
     expect(toggle).toHaveAttribute('aria-pressed', 'false')
@@ -255,8 +307,9 @@ describe('analysis mode', () => {
     expect(screen.getByRole('radio', { name: 'Porcini' })).toBeChecked()
     expect(screen.getByRole('radio', { name: 'Tutte' })).toBeDisabled()
     expect(
-      screen.getByRole('heading', { name: "Fattori dell'indice" }),
+      screen.getByRole('region', { name: "Fattori dell'indice" }),
     ).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Legenda' })).toBeNull()
     expect(mapProp('analysis')).toMatchObject({
       active: [{ id: 'rain_trigger', color: '#268C9F' }],
     })

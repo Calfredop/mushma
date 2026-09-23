@@ -14,6 +14,8 @@ interface Props {
   /** Said instead of the chips when there are none to show (loading, a day without factors). */
   note?: string
   showSightings?: boolean
+  /** A floating panel grouped by family (default), or a phone's one scrolling row of chips. */
+  layout?: 'panel' | 'row'
 }
 
 /** Analysis mode's legend: every factor as a chip, grouped by family, and the opacity key. */
@@ -23,6 +25,7 @@ export function IndicatorPanel({
   onToggle,
   note,
   showSightings = false,
+  layout = 'panel',
 }: Props) {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(true)
@@ -38,6 +41,47 @@ export function IndicatorPanel({
     family,
     chips: (chips ?? []).filter((chip) => indicatorOf(chip.id).family === family),
   })).filter((group) => group.chips.length > 0)
+
+  const chipButton = (chip: FactorChip) => (
+    <button
+      key={chip.id}
+      type="button"
+      className={styles.chip}
+      aria-pressed={active.includes(chip.id)}
+      style={{ '--chip': indicatorOf(chip.id).color } as CSSProperties}
+      onClick={() => onToggle(chip.id)}
+    >
+      <span className={styles.swatch} aria-hidden="true" />
+      {label(chip)}
+    </button>
+  )
+
+  if (layout === 'row') {
+    const ordered = groups.flatMap((group) => group.chips)
+    return (
+      <section className={styles.rowPanel} aria-labelledby="indicators-title">
+        <h2 id="indicators-title" className="visually-hidden">
+          {t('analysis.title')}
+        </h2>
+        <div className={styles.row} data-part="row">
+          <p className={styles.keyChip}>
+            {t('analysis.keyLowShort')}
+            <span className={styles.ramp} aria-hidden="true" />
+            {t('analysis.keyHighShort')}
+          </p>
+          {ordered.length === 0
+            ? note && <p className={styles.keyChip}>{note}</p>
+            : ordered.map(chipButton)}
+          {showSightings && (
+            <p className={styles.keyChip}>
+              <span className={styles.ring} aria-hidden="true" />
+              {t('legend.sightings')}
+            </p>
+          )}
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className={styles.panel} aria-labelledby="indicators-title">
@@ -63,19 +107,7 @@ export function IndicatorPanel({
           <div className={styles.groups}>
             {groups.map((group) => (
               <FamilyGroup key={group.family} family={group.family}>
-                {group.chips.map((chip) => (
-                  <button
-                    key={chip.id}
-                    type="button"
-                    className={styles.chip}
-                    aria-pressed={active.includes(chip.id)}
-                    style={{ '--chip': indicatorOf(chip.id).color } as CSSProperties}
-                    onClick={() => onToggle(chip.id)}
-                  >
-                    <span className={styles.swatch} aria-hidden="true" />
-                    {label(chip)}
-                  </button>
-                ))}
+                {group.chips.map(chipButton)}
               </FamilyGroup>
             ))}
           </div>

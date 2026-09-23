@@ -14,7 +14,11 @@
     "backToMap": "Back to the map",
     "terms": "Terms and conditions",
     "privacy": "Privacy",
-    "cookies": "Cookie preferences"
+    "cookies": "Cookie preferences",
+    "github": "Source on GitHub"
+  },
+  "menu": {
+    "button": "Info and settings"
   },
   "pwa": {
     "installBanner": "Install Mappa Funghi for quick access and offline maps in the woods.",
@@ -57,7 +61,8 @@
     "title": "Conditions score",
     "forecast": "Forecast",
     "observed": "Observed data",
-    "sightings": "Sightings per cell"
+    "sightings": "Sightings per cell",
+    "toggle": "Legend"
   },
   "date": {
     "label": "Day",
@@ -84,16 +89,16 @@
     "userPosition": "Your position"
   },
   "search": {
-    "open": "Search a place",
     "label": "Search a place in Tuscany",
     "placeholder": "Village, mountain, locality…",
     "noResults": "No places found in Tuscany",
     "error": "Search isn't responding. Try again shortly.",
     "clear": "Clear search",
-    "attribution": "Search: Photon, data © OpenStreetMap"
+    "attribution": "Search: Photon, data © OpenStreetMap",
+    "myLocation": "My location",
+    "myLocationHint": "Open the forecast where you are"
   },
   "locate": {
-    "button": "Use my location",
     "center": "Center on my position",
     "locating": "Finding your location…",
     "denied": "Location access is off. Allow it in your browser settings, or search a place instead.",
@@ -248,7 +253,9 @@
     "noneOn": "Turn on a factor to see it on the map.",
     "noCombined": "Not available in Analysis: pick a species",
     "play": "Play the days",
-    "pause": "Pause"
+    "pause": "Pause",
+    "keyLowShort": "holds back",
+    "keyHighShort": "favourable"
   },
   "hotspots": {
     "title": "Hot places",

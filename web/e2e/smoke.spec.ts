@@ -87,7 +87,9 @@ test('seasons on the map, a replayed day, and the outlook', async ({ page }) => 
   await page.getByRole('radio', { name: 'Porcini' }).click()
   await expect(page).toHaveURL(/\/toscana\/porcini$/)
 
-  // Past seasons: pick one and it goes on the map as good days per cell.
+  // Past seasons: pick one and it goes on the map as good days per cell. The view tabs are
+  // under the sheet's peek (wordmark and search): open it first.
+  await page.getByRole('button', { name: 'Espandi il pannello' }).click()
   await page.getByRole('tab', { name: 'Stagioni' }).click()
   await expect(page.getByRole('heading', { name: 'Stagioni', level: 2 })).toBeVisible()
   const lastYear = String(new Date().getFullYear() - 1)
@@ -119,8 +121,8 @@ test('analysis mode: two factors on the map, played through the days', async ({
   // The cookie banner covers the play button on a phone.
   await page.getByRole('button', { name: 'Rifiuta' }).click()
 
-  // The toggle beside the legend: rain_trigger comes on, and Tutte can't be picked, so the
-  // path moves from the region ("Tutti") to porcini.
+  // The ◈ button in the map's cluster: rain_trigger comes on, and Tutte can't be picked, so
+  // the path moves from the region ("Tutti") to porcini.
   await page.getByRole('button', { name: 'Analisi' }).click()
   await expect(page).toHaveURL(/\/toscana\/porcini\?mode=analysis&f=rain_trigger$/)
   await expect(page.getByRole('radio', { name: 'Tutte' })).toBeDisabled()

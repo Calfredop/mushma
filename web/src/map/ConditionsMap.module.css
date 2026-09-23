@@ -11,14 +11,13 @@
 
 .zoom {
   position: absolute;
-  right: var(--space-3);
+  right: var(--space-4);
   top: 50%;
   display: none;
   flex-direction: column;
   transform: translateY(-50%);
-  border-radius: var(--radius-m);
-  background: rgb(248 250 246 / 94%);
-  box-shadow: var(--shadow-float);
+  composes: glass from global;
+  border-radius: var(--radius-l);
   overflow: hidden;
 }
 
@@ -33,11 +32,11 @@
 }
 
 .zoom button + button {
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--glass-rule);
 }
 
 .zoom button:hover {
-  background: rgb(28 33 29 / 6%);
+  background: var(--glass-hover);
 }
 
 @media (min-width: 900px) and (hover: hover) {
@@ -103,7 +102,9 @@
 .wrapper :global(.maplibregl-ctrl-attrib) {
   font-family: var(--font-ui);
   font-size: 0.6875rem;
-  background: rgb(248 250 246 / 90%);
+  background: var(--glass-tint);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
 }
 
 .wrapper :global(.maplibregl-ctrl-attrib a) {

@@ -44,3 +44,6 @@ export const CELL_SIZE_KM = 1
  * without a false warning, while still catching a genuinely missed run by the next morning.
  */
 export const STALE_DATA_HOURS = 30
+
+/** The source code, linked from the ⓘ menu and the footer. */
+export const REPO_URL = 'https://github.com/Calfredop/mushma'

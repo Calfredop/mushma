@@ -96,4 +96,66 @@ describe('IndicatorPanel', () => {
       'false',
     )
   })
+
+  describe('as a row, on a phone', () => {
+    it('lines the chips up with the opacity key first, and no family headings', () => {
+      render(
+        <IndicatorPanel
+          layout="row"
+          chips={chips}
+          active={['frost']}
+          onToggle={() => {}}
+        />,
+      )
+      const region = screen.getByRole('region', { name: "Fattori dell'indice" })
+      expect(within(region).queryAllByRole('group')).toEqual([])
+      expect(within(region).queryByRole('heading', { level: 3 })).toBeNull()
+      expect(
+        region.querySelector('[data-part="row"]')?.firstElementChild,
+      ).toHaveTextContent(/^frena.*favorevole$/)
+      // Family order, as in the panel, so related colours sit together.
+      expect(
+        within(region)
+          .getAllByRole('button')
+          .map((b) => b.textContent),
+      ).toEqual([
+        'Pioggia di innesco',
+        'Bilancio idrico',
+        'Temperatura del suolo',
+        'Gelate',
+        'Gelate forti',
+        'Tipo di bosco',
+        'Pendenza',
+        'Stagione',
+        'mystery',
+      ])
+      expect(screen.getByRole('button', { name: 'Gelate' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+    })
+
+    it('toggles a chip, and has nothing to fold', async () => {
+      const onToggle = vi.fn()
+      render(
+        <IndicatorPanel layout="row" chips={chips} active={[]} onToggle={onToggle} />,
+      )
+      expect(screen.queryByRole('button', { name: 'Nascondi i fattori' })).toBeNull()
+      await userEvent.click(screen.getByRole('button', { name: 'Pendenza' }))
+      expect(onToggle).toHaveBeenCalledWith('slope')
+    })
+
+    it('says why there are no chips', () => {
+      render(
+        <IndicatorPanel
+          layout="row"
+          chips={undefined}
+          active={[]}
+          onToggle={() => {}}
+          note="Caricamento dei fattori…"
+        />,
+      )
+      expect(screen.getByText('Caricamento dei fattori…')).toBeVisible()
+    })
+  })
 })

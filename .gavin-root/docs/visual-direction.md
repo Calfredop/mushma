@@ -30,7 +30,7 @@ for later.
 
 | name | hex | role |
 |---|---|---|
-| Lichene | `#EDF0EA` | paper: panels, sheet, top bar (cool grey-green, not cream) |
+| Lichene | `#EDF0EA` | paper: panels, the sheet, and the tint of glass (cool grey-green, not cream) |
 | Carta | `#F8FAF6` | raised surface: cards, inputs |
 | Humus | `#1C211D` | ink: text, icons, hatch strokes |
 | Felce | `#5B675E` | secondary text, rules, inactive controls (5.2:1 on Lichene) |
@@ -70,8 +70,8 @@ Text on a score swatch: Humus on classes 1–3 (14.2, 10.3 and 6.4:1), white on 
 
 ## Analysis mode
 
-Card `feat-analysis-mode`. An "Analisi / Analysis" toggle beside the legend swaps the score colours for
-the factors behind them. Each factor of the species' rules is a chip, and each chip that is on draws
+Card `feat-analysis-mode`. The ◈ "Analisi / Analysis" button in the map's cluster swaps the score
+colours for the factors behind them. Each factor of the species' rules is a chip, and each chip that is on draws
 its own layer in its own colour. A cell's opacity is the factor's 0–1 value: opaque is favourable,
 faint is holding the score back. The measurement behind a value (mm, °C…) stays in the "why" panel.
 
@@ -165,32 +165,98 @@ naming convention rather than decorating.
 
 Scale (rem, mobile → desktop): 0.8125 caption · 0.9375 body · 1.0625 lead · 1.375 species · 1.75 wordmark.
 
+## Glass
+
+Card `ui-optimizations`. Every control that floats over the map, on a phone and on a desktop,
+is one material: **glass**. The species pill, the button cluster, the legend chip, the factor
+chips, the time bar, the zoom buttons, the ⓘ menu and the attribution all use it, and the sheet
+and the desktop panel use its strong tint. It is CSS only (no SVG refraction) and lives as tokens
+in `web/src/styles/tokens.css`, applied through the global `.glass` class
+(`composes: glass from global` in a CSS module).
+
+| token | value | role |
+|---|---|---|
+| `--glass-tint` | Lichene at 66 % | the fill of a control |
+| `--glass-tint-strong` | Lichene at 86 % | surfaces that are read: the ⓘ menu, the sheet, the panel |
+| `--glass-filter` | `blur(18px) saturate(170%)` | the map behind, blurred and a little richer |
+| `--glass-highlight` | 1px white inner line on top, a 9 % Humus hairline all round | the edge that tells glass from paper |
+| `--glass-shadow` | the highlight plus a soft two-step shadow | lifts the control off the map |
+| `--glass-hover` | Humus at 7 % | hover on anything inside glass |
+| `--glass-rule` | Humus at 11 % | the hairline between buttons that share a capsule |
+
+The palette and the score scale don't change: glass is Lichene, and a pressed control is still
+solid Humus with Carta text.
+
+**Fallback.** Where `backdrop-filter` is unsupported, or under
+`prefers-reduced-transparency: reduce`, the tokens turn opaque (`--glass-tint` is Carta,
+`--glass-tint-strong` Lichene, no filter), so text never sits over a busy map through a thin tint.
+
+**Nesting.** A `backdrop-filter`, `filter`, `mask` or `opacity` below 1 on an element makes it
+the backdrop root of its descendants: glass inside it blurs only that element, not the map. So
+glass never sits inside glass (the ⓘ menu is portalled to the body instead of living in the
+cluster), and a container of glass chips never gets a mask or an opacity fade.
+
 ## Layout
 
-Mobile first: the map is full-bleed and everything else is a sheet over it.
+Mobile first, in the shape of Apple Maps: the map is full-bleed under the safe-area insets,
+with no top bar, and everything else floats on it or sits in a sheet over it.
 
 ```
 ┌──────────────────────────────┐
-│ mushma        🔍  ◎   IT·EN  │  top bar (Lichene, 90% opaque)
-│ [Porcini][Ovoli][Gallin.][Tutti]  species switcher
-│                              │
+│ (Porcini|Ovoli|Gallin.|Tutte) ◈ │  species pill · glass cluster: ◈ analysis
+│                             ◎ │                                ◎ locate
+│                             ⓘ │                                ⓘ menu
 │            MAP               │
 │                              │
-│  ▭▭▭▭▭ legend                │
+│ (▭▭▭▭▭ Legenda ⌃)             │  legend: one chip, opens to the full key
+│ [📅][11 12 13 14 ▨15 ▨16 ▨17] │  time bar, forecast days hatched
 ├──────────────────────────────┤
-│ 11 12 13 14 15 16 17 ▨18 ▨19 │  date strip, forecast hatched
-├──────────────────────────────┤
-│ ═══  Hot places now      ▴   │  bottom sheet (peek → half → full)
+│            ═══               │  sheet: peek → half → full
+│ Mappa Funghi                 │  the wordmark
+│ [🔍 Paese, monte, località…] │  the search
 └──────────────────────────────┘
 ```
 
-At 900 px and up the sheet becomes a 400 px left panel (search, hot places, then the spot forecast
-and why once a place is chosen). The map fills the rest, with the date strip along its bottom edge.
+- **Top.** The species pill sits top-left and stops short of the cluster's column, so at 360px
+  the two never overlap (the pill compacts to 14px text below 420px). The cluster is one glass
+  capsule of 44px buttons with hairlines between them.
+- **◎** only centres the map and draws your dot. The forecast where you stand comes from the
+  search: focusing it lists "La mia posizione" first.
+- **ⓘ** opens a glass menu: Avvertenze, Dati e crediti, Termini, Privacy, Preferenze cookie,
+  GitHub and the IT/EN switch. The footer keeps the same links in one compact row, so crawlers
+  still find them.
+- **Bottom.** The legend chip, then the time bar. In analysis mode (◈) the legend chip gives way
+  to one horizontally scrolling row of glass factor chips, colour-dotted, with the opacity key
+  ("frena → favorevole") as a small chip at its start.
+- **Sheet.** An overlay on the full-screen map with three snap points: peek (wordmark and
+  search), half (a chosen spot opens here) and full (a sliver of map stays visible; focusing the
+  search goes here). Map padding keeps the chosen spot visible above it.
+
+At 900px and up the map is full-bleed and the panel is a floating inset glass card, 400px wide
+and rounded: wordmark, ⓘ and search in its header, then hot places, and the spot forecast and
+why once a place is chosen. A toggle collapses it to its header row, and the browser remembers
+that. The cluster keeps ◈ and ◎ at the map's top right, the zoom buttons sit on the right edge,
+the grouped factor panel replaces the legend at the bottom left, and the date strip runs along
+the bottom.
+
+Tap targets are at least 44px (`--tap`) everywhere, and at 360px nothing scrolls the page
+sideways and no control sits over another.
 
 ## Motion
 
-Little of it: the sheet slides and the map `flyTo`s to a chosen place. With `prefers-reduced-motion`,
-the sheet appears in place and the map `jumpTo`s.
+Little of it, and all of it can be switched off.
+
+- **The sheet** is dragged by its handle and header and snaps to the nearest of its three points,
+  with the gesture's velocity deciding ties, on a spring (motion's `motion/react`, loaded through
+  `LazyMotion` so first paint keeps its budget). The body only takes the gesture over once it is
+  scrolled to the top. The handle is also a button that steps through the snaps, for keyboards
+  and screen readers.
+- **The map** `flyTo`s a chosen place, with padding for whatever covers it (the sheet, the
+  panel).
+- **Popovers** (the ⓘ menu) fade and scale in over 160ms from their button's corner.
+
+With `prefers-reduced-motion` the sheet snaps without a spring, popovers appear in place, and the
+map `jumpTo`s.
 
 ## Copy
 

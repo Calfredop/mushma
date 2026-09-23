@@ -14,7 +14,11 @@
     "backToMap": "Torna alla mappa",
     "terms": "Termini e condizioni",
     "privacy": "Privacy",
-    "cookies": "Preferenze sui cookie"
+    "cookies": "Preferenze sui cookie",
+    "github": "Codice su GitHub"
+  },
+  "menu": {
+    "button": "Info e impostazioni"
   },
   "pwa": {
     "installBanner": "Installa Mappa Funghi per un accesso rapido e la mappa anche offline nel bosco.",
@@ -57,7 +61,8 @@
     "title": "Indice delle condizioni",
     "forecast": "Previsione",
     "observed": "Dati osservati",
-    "sightings": "Avvistamenti per cella"
+    "sightings": "Avvistamenti per cella",
+    "toggle": "Legenda"
   },
   "date": {
     "label": "Giorno",
@@ -84,16 +89,16 @@
     "userPosition": "La tua posizione"
   },
   "search": {
-    "open": "Cerca un luogo",
     "label": "Cerca un luogo in Toscana",
     "placeholder": "Paese, monte, località…",
     "noResults": "Nessun luogo trovato in Toscana",
     "error": "La ricerca non risponde. Riprova tra poco.",
     "clear": "Cancella la ricerca",
-    "attribution": "Ricerca: Photon, dati © OpenStreetMap"
+    "attribution": "Ricerca: Photon, dati © OpenStreetMap",
+    "myLocation": "La mia posizione",
+    "myLocationHint": "Apri la previsione dove sei"
   },
   "locate": {
-    "button": "Usa la mia posizione",
     "center": "Centra sulla mia posizione",
     "locating": "Cerco la tua posizione…",
     "denied": "La posizione è disattivata. Consentila nelle impostazioni del browser oppure cerca un luogo.",
@@ -248,7 +253,9 @@
     "noneOn": "Accendi un fattore per vederlo sulla mappa.",
     "noCombined": "Non disponibile in Analisi: scegli una specie",
     "play": "Riproduci i giorni",
-    "pause": "Metti in pausa"
+    "pause": "Metti in pausa",
+    "keyLowShort": "frena",
+    "keyHighShort": "favorevole"
   },
   "hotspots": {
     "title": "Zone migliori",

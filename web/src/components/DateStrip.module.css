@@ -5,10 +5,8 @@
   overflow-x: auto;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
+  composes: glass from global;
   border-radius: var(--radius-l);
-  background: rgb(248 250 246 / 94%);
-  box-shadow: var(--shadow-float);
-  backdrop-filter: blur(6px);
 }
 
 .strip::-webkit-scrollbar {

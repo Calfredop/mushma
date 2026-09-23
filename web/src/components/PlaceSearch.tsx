@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { REGION } from '../config'
 import { type Place, searchPlaces } from '../geo/photon'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import type { Language } from '../i18n'
-import { CloseIcon, SearchIcon } from './icons'
+import { CloseIcon, LocateIcon, SearchIcon } from './icons'
 import styles from './PlaceSearch.module.css'
 
 const MIN_QUERY = 3
@@ -16,18 +16,30 @@ interface Props {
   onDismiss?: () => void
   /** Defaults to the default region's bounds. */
   bounds?: [[number, number], [number, number]]
+  /** "La mia posizione": first in the list whenever the field has focus. */
+  onLocate?: () => void
+  /** A GPS fix is on its way. */
+  locating?: boolean
+  onFocus?: () => void
 }
+
+type Option = { kind: 'locate' } | { kind: 'place'; place: Place }
 
 export function PlaceSearch({
   onSelect,
   autoFocus,
   onDismiss,
   bounds = REGION.bounds,
+  onLocate,
+  locating = false,
+  onFocus,
 }: Props) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
   const id = useId()
+  const inputRef = useRef<HTMLInputElement>(null)
   const [text, setText] = useState('')
+  const [focused, setFocused] = useState(false)
   const [activeIndex, setActive] = useState(0)
   const query = useDebouncedValue(text.trim(), 350)
   const enabled = query.length >= MIN_QUERY
@@ -41,13 +53,23 @@ export function PlaceSearch({
   })
 
   const places = enabled ? (results.data ?? []) : []
-  const open = enabled && (places.length > 0 || results.isSuccess || results.isError)
+  const options: Option[] = [
+    ...(onLocate ? [{ kind: 'locate' as const }] : []),
+    ...places.map((place) => ({ kind: 'place' as const, place })),
+  ]
+  const open =
+    focused &&
+    (onLocate !== undefined ||
+      (enabled && (places.length > 0 || results.isSuccess || results.isError)))
   // Clamped on read: results can arrive, shrink or change after an arrow key.
-  const active = Math.max(0, Math.min(activeIndex, places.length - 1))
+  const active = Math.max(0, Math.min(activeIndex, options.length - 1))
 
-  const choose = (place: Place) => {
+  // Chosen: the field lets go, so the list and a phone's keyboard close.
+  const choose = (option: Option) => {
     setText('')
-    onSelect(place)
+    inputRef.current?.blur()
+    if (option.kind === 'locate') onLocate?.()
+    else onSelect(option.place)
   }
 
   return (
@@ -58,18 +80,25 @@ export function PlaceSearch({
           {t('search.label')}
         </label>
         <input
+          ref={inputRef}
           id={`${id}-input`}
           type="search"
           role="combobox"
           aria-expanded={open}
           aria-controls={`${id}-results`}
           aria-autocomplete="list"
-          aria-activedescendant={open && places[active] ? `${id}-${active}` : undefined}
+          aria-activedescendant={open && options[active] ? `${id}-${active}` : undefined}
           autoComplete="off"
           enterKeyHint="search"
           placeholder={t('search.placeholder')}
           value={text}
           autoFocus={autoFocus}
+          onFocus={() => {
+            setFocused(true)
+            setActive(0)
+            onFocus?.()
+          }}
+          onBlur={() => setFocused(false)}
           onChange={(event) => {
             setText(event.target.value)
             setActive(0)
@@ -77,16 +106,19 @@ export function PlaceSearch({
           onKeyDown={(event) => {
             if (event.key === 'ArrowDown') {
               event.preventDefault()
-              setActive(Math.min(active + 1, places.length - 1))
+              setActive(Math.min(active + 1, options.length - 1))
             } else if (event.key === 'ArrowUp') {
               event.preventDefault()
               setActive(Math.max(active - 1, 0))
-            } else if (event.key === 'Enter' && places[active]) {
+            } else if (event.key === 'Enter' && open && options[active]) {
               event.preventDefault()
-              choose(places[active])
+              choose(options[active])
             } else if (event.key === 'Escape') {
               if (text) setText('')
-              else onDismiss?.()
+              else {
+                event.currentTarget.blur()
+                onDismiss?.()
+              }
             }
           }}
         />
@@ -110,30 +142,46 @@ export function PlaceSearch({
             aria-label={t('search.label')}
             className={styles.results}
           >
-            {places.map((place, index) => (
+            {options.map((option, index) => (
               <li
-                key={place.id}
+                key={option.kind === 'locate' ? 'locate' : option.place.id}
                 id={`${id}-${index}`}
                 role="option"
                 aria-selected={index === active}
+                aria-busy={option.kind === 'locate' ? locating : undefined}
                 className={styles.result}
+                data-kind={option.kind}
                 onMouseDown={(event) => event.preventDefault()}
-                onClick={() => choose(place)}
+                onClick={() => choose(option)}
               >
-                <span className={styles.name}>{place.name}</span>
-                {place.detail && <span className={styles.detail}>{place.detail}</span>}
+                {option.kind === 'locate' ? (
+                  <>
+                    <LocateIcon />
+                    <span className={styles.name}>{t('search.myLocation')}</span>
+                    <span className={styles.detail}>
+                      {t(locating ? 'locate.locating' : 'search.myLocationHint')}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className={styles.name}>{option.place.name}</span>
+                    {option.place.detail && (
+                      <span className={styles.detail}>{option.place.detail}</span>
+                    )}
+                  </>
+                )}
               </li>
             ))}
           </ul>
-          {results.isSuccess && places.length === 0 && (
+          {enabled && results.isSuccess && places.length === 0 && (
             <p className={styles.message}>{t('search.noResults')}</p>
           )}
-          {results.isError && (
+          {enabled && results.isError && (
             <p className={styles.message} role="alert">
               {t('search.error')}
             </p>
           )}
-          <p className={styles.attribution}>{t('search.attribution')}</p>
+          {enabled && <p className={styles.attribution}>{t('search.attribution')}</p>}
         </div>
       )}
     </div>

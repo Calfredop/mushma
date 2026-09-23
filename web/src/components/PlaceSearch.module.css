@@ -80,6 +80,28 @@
   background: rgb(31 86 160 / 9%);
 }
 
+/* "La mia posizione": the GPS mark beside its two lines. */
+.result[data-kind='locate'] {
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-3);
+  align-items: center;
+  color: var(--lago);
+}
+
+.result[data-kind='locate'] svg {
+  grid-row: span 2;
+}
+
+.result[data-kind='locate'][aria-busy='true'] svg {
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.4;
+  }
+}
+
 .name {
   font-weight: 600;
 }
