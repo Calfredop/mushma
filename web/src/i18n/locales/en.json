@@ -342,6 +342,13 @@
     "method": "Per-species rules, each with a cited source, applied every day to the weather (ERA5-Land reanalysis and ECMWF IFS forecasts, adjusted to each cell's elevation), woodland type and terrain of each cell; checked against public GBIF and iNaturalist sightings.",
     "country": "Italy"
   },
+  "llms": {
+    "methodTitle": "How it is computed",
+    "liveData": "Today's scores are only on the interactive map, which needs JavaScript: the pages and this file describe what the map shows, not today's values.",
+    "privacy": "Public sightings are only shown as counts per 1 km cell, never as coordinates.",
+    "featuresIntro": "What the app does:",
+    "mapsTitle": "Maps"
+  },
   "views": {
     "label": "What to show",
     "now": "Now",

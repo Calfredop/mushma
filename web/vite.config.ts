@@ -11,6 +11,7 @@ import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { type Connect, defineConfig, loadEnv, type Plugin, type UserConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { buildLlmsTxt } from './src/seo/llmsTxt.js'
 import { renderNotFoundHtml, renderRouteHtml, routeHeads } from './src/seo/prerender.js'
 import { buildRobotsTxt, buildSitemapXml } from './src/seo/sitemap.js'
 
@@ -118,9 +119,10 @@ function vendorMaplibre(): Plugin {
 /**
  * Writes one prerendered HTML per route (`src/routes.ts` → `ROUTES`) from the built
  * `dist/index.html`: its own title, meta description, canonical, Open Graph + Twitter tags
- * and JSON-LD (`src/seo/prerender.ts`). `closeBundle` is the last build hook, so every other
- * plugin (PWA's manifest link and registerSW script included) has already written its output
- * by the time this reads the template.
+ * and JSON-LD (`src/seo/prerender.ts`), plus `sitemap.xml`, `robots.txt`, `llms.txt` and
+ * `404.html`. `closeBundle` is the last build hook, so every other plugin (PWA's manifest link
+ * and registerSW script included) has already written its output by the time this reads the
+ * template.
  */
 function prerenderRoutes(): Plugin {
   return {
@@ -137,6 +139,7 @@ function prerenderRoutes(): Plugin {
       }
       writeFileSync(resolve(outDir, 'sitemap.xml'), buildSitemapXml(heads))
       writeFileSync(resolve(outDir, 'robots.txt'), buildRobotsTxt())
+      writeFileSync(resolve(outDir, 'llms.txt'), buildLlmsTxt())
       writeFileSync(resolve(outDir, '404.html'), renderNotFoundHtml(template))
     },
   }
@@ -211,6 +214,9 @@ function pwaPlugin(env: Record<string, string>): Plugin[] {
     },
     workbox: {
       navigateFallback: '/index.html',
+      // Opening robots.txt, sitemap.xml or llms.txt in a browser is a navigation too: let it
+      // reach the file instead of the app shell.
+      navigateFallbackDenylist: [/\.(txt|xml)$/],
       // The basemap/terrain extracts are 100+ MB and never part of the build; only the app
       // shell (JS/CSS/fonts) is precached here.
       globPatterns: ['**/*.{js,css,html,woff2}'],

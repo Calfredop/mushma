@@ -477,6 +477,10 @@ something to wait on here.
      app doesn't have. That's expected: the node is there to describe the app to search engines
      and LLMs, not to earn stars. Search Console's **Datasets** report then lists the four
      conditions-score datasets.
+   - **`llms.txt`**: `curl -si https://mappafunghi.app/llms.txt` returns 200,
+     `text/plain; charset=utf-8`, and the Markdown briefing for LLMs built by
+     `web/src/seo/llmsTxt.ts` (what the site is, the conditions-only and not-a-probability
+     rules, every page and data source).
 
 ## Monitoring
 

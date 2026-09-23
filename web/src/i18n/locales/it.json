@@ -342,6 +342,13 @@
     "method": "Regole per specie, ognuna con la sua fonte, applicate ogni giorno al meteo (rianalisi ERA5-Land e previsioni ECMWF IFS, portate alla quota di ogni cella), al tipo di bosco e al terreno di ogni cella; verificate sugli avvistamenti pubblici di GBIF e iNaturalist.",
     "country": "Italia"
   },
+  "llms": {
+    "methodTitle": "Come si calcola",
+    "liveData": "Gli indici del giorno si vedono solo sulla mappa interattiva, che richiede JavaScript: le pagine e questo file descrivono cosa mostra la mappa, non i valori di oggi.",
+    "privacy": "Gli avvistamenti pubblici sono mostrati solo come conteggi per cella da 1 km, mai come coordinate.",
+    "featuresIntro": "Cosa fa l'app:",
+    "mapsTitle": "Mappe"
+  },
   "views": {
     "label": "Cosa mostrare",
     "now": "Oggi",
