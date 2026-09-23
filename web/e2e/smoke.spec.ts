@@ -73,7 +73,9 @@ test('map → spot forecast → why this score', async ({ page }) => {
   await expect(why).toBeVisible()
   // The factors holding nothing back fold into one row; opening it shows them in place.
   await why
-    .getByRole('button', { name: /^(Altri \d+ fattori|Un altro fattore) a 1,00$/ })
+    .getByRole('button', {
+      name: /^(Altri \d+ fattori già ideali|Un altro fattore già ideale) \(1,00\)$/,
+    })
     .click()
   await expect(why.getByRole('meter', { name: 'Stagione' })).toBeVisible()
   await expect(why.getByRole('listitem')).not.toHaveCount(0)
@@ -81,7 +83,7 @@ test('map → spot forecast → why this score', async ({ page }) => {
   const forecastBar = page.getByRole('button', { name: /^Porcini, / }).nth(3)
   await forecastBar.click()
   await expect(forecastBar).toHaveAttribute('aria-pressed', 'true')
-  await expect(why.getByText(/Questo giorno è una previsione/)).toBeVisible()
+  await expect(why.getByText(/Questo giorno deve ancora arrivare/)).toBeVisible()
 })
 
 test('seasons on the map, a replayed day, and the outlook', async ({ page }) => {
@@ -116,7 +118,9 @@ test('seasons on the map, a replayed day, and the outlook', async ({ page }) => 
 
   // The outlook: an outlook, never a forecast.
   await page.getByRole('tab', { name: 'Prospettive' }).click()
-  await expect(page.getByText('Prospettiva, non previsione')).toBeVisible()
+  await expect(
+    page.getByText("Un'indicazione di massima, non una previsione"),
+  ).toBeVisible()
   await expect(page.getByText('La stagione finora')).toBeVisible()
 })
 

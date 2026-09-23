@@ -58,7 +58,9 @@ describe('SpotPanel', () => {
     )
     const why = screen.getByRole('region', { name: 'Perché questo indice' })
     expect(within(why).getByText('Gallinacci · sabato 19 settembre')).toBeInTheDocument()
-    expect(within(why).getByText(/Questo giorno è una previsione/)).toBeInTheDocument()
+    expect(
+      within(why).getByText(/Questo giorno deve ancora arrivare/),
+    ).toBeInTheDocument()
   })
 
   it('explains the best species when "All" is selected, and notes a distant nearest cell', () => {

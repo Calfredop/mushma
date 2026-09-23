@@ -122,7 +122,7 @@ describe('the phone shell', () => {
     await userEvent.click(more)
     expect(more).toHaveAttribute('aria-expanded', 'true')
     expect(full).toBeVisible()
-    expect(full).toHaveTextContent(/non è una probabilità/)
+    expect(full).toHaveTextContent(/indice delle condizioni da 0 a 1/)
   })
 
   it('has one locate button, and it only centres the map', () => {

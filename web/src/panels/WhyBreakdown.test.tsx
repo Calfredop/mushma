@@ -71,8 +71,10 @@ describe('WhyBreakdown', () => {
         )}
       />,
     )
-    expect(screen.getByText('Bloccato da: Stagione e Quota')).toBeInTheDocument()
-    expect(screen.getByText(/Questo giorno è una previsione/)).toBeInTheDocument()
+    expect(
+      screen.getByText("L'indice è zero a causa di: Stagione e Quota"),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Questo giorno deve ancora arrivare/)).toBeInTheDocument()
   })
 
   it('falls back to a readable label for a factor it has no translation for', () => {
@@ -113,7 +115,7 @@ describe('WhyBreakdown fold', () => {
     expect(screen.getAllByRole('meter').map((m) => m.getAttribute('aria-label'))).toEqual(
       ['Pioggia degli ultimi 30 giorni', 'Gelate'],
     )
-    const fold = screen.getByRole('button', { name: 'Altri 3 fattori a 1,00' })
+    const fold = screen.getByRole('button', { name: 'Altri 3 fattori già ideali (1,00)' })
     expect(fold).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByRole('meter', { name: 'Stagione' })).toBeNull()
 
@@ -139,7 +141,9 @@ describe('WhyBreakdown fold', () => {
         )}
       />,
     )
-    expect(screen.getByRole('button', { name: 'Un altro fattore a 1,00' })).toBeVisible()
+    expect(
+      screen.getByRole('button', { name: 'Un altro fattore già ideale (1,00)' }),
+    ).toBeVisible()
   })
 
   it('folds nothing when the score is blocked', () => {
@@ -414,11 +418,9 @@ describe('WhyBreakdown details', () => {
     expect(row).toHaveTextContent(
       '42 mm di pioggia in 3 giorni fino a sabato 12 settembre (6 giorni prima).',
     )
+    expect(row).toHaveTextContent('Ideale da 30 mm in su; sfavorevole fino a 10 mm.')
     expect(row).toHaveTextContent(
-      'La regola dà credito pieno da 30 mm in su; nullo fino a 10 mm.',
-    )
-    expect(row).toHaveTextContent(
-      'Distanza dal giorno valutato: credito pieno da 10 a 16 giorni; nullo fino a 6 giorni e da 24 giorni in su.',
+      'Tempo dalla pioggia: ideale da 10 a 16 giorni; sfavorevole fino a 6 giorni e da 24 giorni in su.',
     )
   })
 
@@ -432,13 +434,13 @@ describe('WhyBreakdown details', () => {
       '42 mm di pioggia in 3 giorni fino a domenica 6 settembre (12 giorni prima).',
     )
     expect(row).toHaveTextContent(
-      "Il caldo e l'umidità dell'aria da allora ne fanno 8 giorni di crescita, al 70% del ritmo normale: il caldo accelera la crescita, il freddo o l'aria secca la rallentano.",
+      "Con il caldo e l'umidità da allora, quei 12 giorni valgono 8 giorni di crescita (crescita al 70% del ritmo normale): il caldo la accelera, il freddo o l'aria secca la rallentano.",
     )
     expect(row).toHaveTextContent(
-      'Crescita dalla pioggia: credito pieno da 10 a 16 giorni di crescita; nullo fino a 6 giorni di crescita e da 24 giorni di crescita in su.',
+      'Crescita dalla pioggia: ideale da 10 a 16 giorni di crescita; sfavorevole fino a 6 giorni di crescita e da 24 giorni di crescita in su.',
     )
-    expect(row).not.toHaveTextContent('Distanza dal giorno valutato')
-    expect(screen.getByText(/corrette per il versante/)).toBeInTheDocument()
+    expect(row).not.toHaveTextContent('Tempo dalla pioggia')
+    expect(screen.getByText(/tengono conto del versante/)).toBeInTheDocument()
   })
 
   it('shows the sun on the slope on the day, and where the rule applies', async () => {
@@ -455,14 +457,12 @@ describe('WhyBreakdown details', () => {
     expect(sun).toHaveTextContent(
       'Sole su questo versante, rispetto al terreno piano, in questo giorno: 114%.',
     )
+    expect(sun).toHaveTextContent('Ideale fino a 95%; sfavorevole da 120% in su.')
     expect(sun).toHaveTextContent(
-      'La regola dà credito pieno fino a 95%; nullo da 120% in su.',
-    )
-    expect(sun).toHaveTextContent(
-      'Vale a quota fino a 900 m; per niente da 1100 m in su.',
+      'Questo fattore conta in pieno a quota fino a 900 m; per niente da 1100 m in su.',
     )
     expect(rowOf('Pendenza')).toHaveTextContent('Per questa cella: 20°.')
-    expect(rowOf('Pendenza')).not.toHaveTextContent('Vale a')
+    expect(rowOf('Pendenza')).not.toHaveTextContent('conta in pieno')
   })
 
   it("shows a gate's attribute and its band", async () => {
@@ -473,7 +473,7 @@ describe('WhyBreakdown details', () => {
     const row = rowOf('Quota')
     expect(row).toHaveTextContent('Per questa cella: 640 m.')
     expect(row).toHaveTextContent(
-      'La regola dà credito pieno da 700 a 1600 m; nullo fino a 200 m e da 1900 m in su.',
+      'Ideale da 700 a 1600 m; sfavorevole fino a 200 m e da 1900 m in su.',
     )
   })
 
@@ -483,7 +483,7 @@ describe('WhyBreakdown details', () => {
     const row = rowOf('Gelate')
     expect(row).toHaveTextContent('2 giorni su 7 con temperatura minima ≤ 0 °C.')
     expect(row).toHaveTextContent(
-      'La regola dà credito pieno fino a 1 giorno; nullo da 2 giorni in su.',
+      'Ideale fino a 1 giorno; sfavorevole da 2 giorni in su.',
     )
   })
 
@@ -499,7 +499,7 @@ describe('WhyBreakdown details', () => {
     const row = rowOf("Temperatura dell'aria")
     expect(row).toHaveTextContent("Temperatura dell'aria, media su 20 giorni: 14,2 °C.")
     expect(row).toHaveTextContent(
-      'La regola dà credito pieno da 10 a 17 °C; nullo fino a 6 °C e da 22 °C in su.',
+      'Ideale da 10 a 17 °C; sfavorevole fino a 6 °C e da 22 °C in su.',
     )
   })
 
@@ -511,12 +511,8 @@ describe('WhyBreakdown details', () => {
       screen.getByRole('button', { name: 'Pioggia degli ultimi 30 giorni' }),
     )
     const row = rowOf('Pioggia degli ultimi 30 giorni')
-    expect(row).toHaveTextContent(
-      'Pioggia, rispetto alla norma di questa cella su 30 giorni: 97%.',
-    )
-    expect(row).toHaveTextContent(
-      'La regola dà credito pieno da 125% in su; nullo fino a 50%.',
-    )
+    expect(row).toHaveTextContent('Pioggia, rispetto al solito qui su 30 giorni: 97%.')
+    expect(row).toHaveTextContent('Ideale da 125% in su; sfavorevole fino a 50%.')
   })
 
   it('gives season and habitat a plain line with no numbers', async () => {
@@ -527,11 +523,13 @@ describe('WhyBreakdown details', () => {
         day={day([season, habitat], 0.8)}
       />,
     )
-    await user.click(screen.getByRole('button', { name: 'Un altro fattore a 1,00' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Un altro fattore già ideale (1,00)' }),
+    )
     await user.click(screen.getByRole('button', { name: 'Stagione' }))
     await user.click(screen.getByRole('button', { name: 'Tipo di bosco' }))
     expect(rowOf('Stagione')).toHaveTextContent(
-      "Il periodo dell'anno in cui questa specie di solito fruttifica",
+      "Il periodo dell'anno in cui questa specie di solito nasce",
     )
     expect(rowOf('Tipo di bosco')).toHaveTextContent(
       'Quanto il tipo di bosco di questa cella si adatta alla specie',
@@ -557,14 +555,14 @@ describe('WhyBreakdown details', () => {
       />,
     )
     await user.click(screen.getByRole('button', { name: 'Pioggia di innesco' }))
-    await user.click(screen.getByRole('button', { name: 'Un altro fattore a 1,00' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Un altro fattore già ideale (1,00)' }),
+    )
     await user.click(screen.getByRole('button', { name: 'Gelate' }))
     expect(rowOf('Pioggia di innesco')).toHaveTextContent(
       'Misura non disponibile per questo giorno.',
     )
-    expect(rowOf('Pioggia di innesco')).toHaveTextContent(
-      'La regola dà credito pieno da 30 mm in su',
-    )
+    expect(rowOf('Pioggia di innesco')).toHaveTextContent('Ideale da 30 mm in su')
     expect(rowOf('Gelate')).toHaveTextContent(
       'Nessun dettaglio disponibile per questo fattore.',
     )
@@ -653,7 +651,7 @@ describe('WhyBreakdown details', () => {
         day={day([altitude, rainTrigger], 0.5)}
       />,
     )
-    const note = /stima del modello meteo/
+    const note = /viene da un modello meteo/
     expect(screen.queryByText(note)).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Quota' }))
     expect(screen.queryByText(note)).not.toBeInTheDocument()
@@ -671,8 +669,6 @@ describe('WhyBreakdown details', () => {
     expect(row).toHaveTextContent(
       '42 mm of rain in 3 days up to Saturday 12 September (6 days before).',
     )
-    expect(row).toHaveTextContent(
-      'The rule gives full credit from 30 mm up; none up to 10 mm.',
-    )
+    expect(row).toHaveTextContent('Ideal from 30 mm up; unfavourable up to 10 mm.')
   })
 })

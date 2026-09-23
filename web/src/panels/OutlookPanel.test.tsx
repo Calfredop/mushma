@@ -19,7 +19,9 @@ const props = {
 describe('OutlookPanel', () => {
   it('is labelled an outlook, not a forecast', () => {
     render(<OutlookPanel {...props} />)
-    expect(screen.getByText('Prospettiva, non previsione')).toBeInTheDocument()
+    expect(
+      screen.getByText("Un'indicazione di massima, non una previsione"),
+    ).toBeInTheDocument()
   })
 
   it('compares the season so far with past seasons and normal weather', () => {
@@ -44,8 +46,8 @@ describe('OutlookPanel', () => {
 
   it('quotes the rain lead and the bands from the API', () => {
     render(<OutlookPanel {...props} />)
-    expect(screen.getByText(/di 10–16 giorni prima/)).toHaveTextContent(
-      'Dal 125% del normale in su',
+    expect(screen.getByText(/10–16 giorni dopo la pioggia/)).toHaveTextContent(
+      'Con almeno il 125% della pioggia normale',
     )
   })
 
@@ -99,7 +101,9 @@ describe('OutlookPanel periods', () => {
         }}
       />,
     )
-    expect(screen.getByRole('list', { name: 'Specie plausibili' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('list', { name: 'Specie adatte alla zona' }),
+    ).toBeInTheDocument()
   })
 
   it("never shows the zone picked before as this one's species", () => {
@@ -115,8 +119,8 @@ describe('OutlookPanel periods', () => {
       />,
     )
     expect(
-      screen.queryByRole('list', { name: 'Specie plausibili' }),
+      screen.queryByRole('list', { name: 'Specie adatte alla zona' }),
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Carico le specie plausibili…')).toBeInTheDocument()
+    expect(screen.getByText('Carico le specie adatte alla zona…')).toBeInTheDocument()
   })
 })

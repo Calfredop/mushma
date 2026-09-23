@@ -54,7 +54,7 @@
     },
     "combined": {
       "name": "Tutte",
-      "latin": "La specie più favorita in ogni cella"
+      "latin": "La specie con le condizioni migliori in ogni cella"
     }
   },
   "score": {
@@ -63,7 +63,7 @@
     "valueLabel": "Indice delle condizioni {{value}} su 1",
     "low": "Sfavorevoli",
     "high": "Favorevoli",
-    "note": "Un indice da 0 a 1 di quanto sono favorevoli meteo e bosco. Non è una probabilità."
+    "note": "Da 0 a 1: quanto meteo e bosco sono adatti ai funghi. Misura le condizioni, non le tue possibilità di trovarne."
   },
   "legend": {
     "title": "Indice delle condizioni",
@@ -131,16 +131,16 @@
     "favourable": "Favorevole",
     "holdsBack": "Frena",
     "holdsBackValue": "frena del {{percent}}%",
-    "blocked": "Bloccato da: {{factors}}",
+    "blocked": "L'indice è zero a causa di: {{factors}}",
     "nothingHolding": "Nessun fattore frena l'indice in questo giorno.",
-    "forecastNote": "Questo giorno è una previsione: più è lontano, più l'indice dipende dalle previsioni meteo. Pesa di più la pioggia già caduta.",
-    "explain": "Ogni fattore va da 0 (sfavorevole) a 1 (ideale). A destra, quanta parte di ciò che tiene basso l'indice dipende da quel fattore.",
+    "forecastNote": "Questo giorno deve ancora arrivare: l'indice si basa in parte sulle previsioni del tempo, e più il giorno è lontano, meno è sicuro. Conta soprattutto la pioggia già caduta, che è già misurata.",
+    "explain": "Ogni barra dà un voto a un fattore, da 0 (sfavorevole) a 1 (ideale). Le percentuali a destra dicono quali fattori tengono basso l'indice: più è alta la percentuale, più quel fattore pesa.",
     "unknownFactor": "Altro fattore ({{key}})",
     "detail": {
       "showAll": "Mostra tutti i dettagli",
       "notMeasured": "Misura non disponibile per questo giorno.",
       "none": "Nessun dettaglio disponibile per questo fattore.",
-      "season": "Il periodo dell'anno in cui questa specie di solito fruttifica; fuori stagione l'indice è zero.",
+      "season": "Il periodo dell'anno in cui questa specie di solito nasce; fuori stagione l'indice è zero.",
       "habitat": "Quanto il tipo di bosco di questa cella si adatta alla specie.",
       "static": "Per questa cella: {{value}}.",
       "rain_one": "{{amount}} di pioggia in {{count}} giorno{{until}}.",
@@ -158,17 +158,18 @@
       "sameDay": "lo stesso giorno",
       "days_one": "{{count}} giorno",
       "days_other": "{{count}} giorni",
-      "rule": "La regola dà credito pieno {{full}}.",
-      "ruleZero": "La regola dà credito pieno {{full}}; nullo {{zero}}.",
-      "lagRule": "Distanza dal giorno valutato: credito pieno {{full}}.",
-      "lagRuleZero": "Distanza dal giorno valutato: credito pieno {{full}}; nullo {{zero}}.",
-      "growth": "Il caldo e l'umidità dell'aria da allora ne fanno {{growth}}, al {{pace}} del ritmo normale: il caldo accelera la crescita, il freddo o l'aria secca la rallentano.",
+      "rule": "Ideale {{full}}.",
+      "ruleZero": "Ideale {{full}}; sfavorevole {{zero}}.",
+      "lagRule": "Tempo dalla pioggia: ideale {{full}}.",
+      "lagRuleZero": "Tempo dalla pioggia: ideale {{full}}; sfavorevole {{zero}}.",
+      "growth_one": "Con il caldo e l'umidità da allora, quel giorno vale {{growth}} (crescita al {{pace}} del ritmo normale): il caldo la accelera, il freddo o l'aria secca la rallentano.",
+      "growth_other": "Con il caldo e l'umidità da allora, quei {{count}} giorni valgono {{growth}} (crescita al {{pace}} del ritmo normale): il caldo la accelera, il freddo o l'aria secca la rallentano.",
       "growthDays_one": "{{count}} giorno di crescita",
       "growthDays_other": "{{count}} giorni di crescita",
-      "growthLagRule": "Crescita dalla pioggia: credito pieno {{full}}.",
-      "growthLagRuleZero": "Crescita dalla pioggia: credito pieno {{full}}; nullo {{zero}}.",
-      "where": "Vale a {{variable}} {{full}}.",
-      "whereZero": "Vale a {{variable}} {{full}}; per niente {{zero}}.",
+      "growthLagRule": "Crescita dalla pioggia: ideale {{full}}.",
+      "growthLagRuleZero": "Crescita dalla pioggia: ideale {{full}}; sfavorevole {{zero}}.",
+      "where": "Questo fattore conta in pieno a {{variable}} {{full}}.",
+      "whereZero": "Questo fattore conta in pieno a {{variable}} {{full}}; per niente {{zero}}.",
       "full": {
         "between": "da {{from}} a {{to}}",
         "at": "a {{value}}",
@@ -182,11 +183,11 @@
         "above": "oltre {{value}}"
       },
       "aggregate": {
-        "sum": "somma",
+        "sum": "totale",
         "mean": "media",
         "min": "minimo",
         "max": "massimo",
-        "percent_of_normal": "rispetto alla norma di questa cella"
+        "percent_of_normal": "rispetto al solito qui"
       },
       "variable": {
         "precipitation_sum": "pioggia",
@@ -194,12 +195,12 @@
         "temperature_2m_min": "temperatura minima",
         "temperature_2m_max": "temperatura massima",
         "temperature_2m_mean": "temperatura dell'aria",
-        "temperature_2m_max_anomaly_30d": "scarto della temperatura massima dalla media dei 30 giorni precedenti",
-        "soil_temperature_0_to_7cm_mean": "temperatura del suolo (0–7 cm)",
-        "soil_moisture_0_to_7cm_mean": "umidità del suolo (0–7 cm)",
-        "soil_moisture_7_to_28cm_mean": "umidità del suolo (7–28 cm)",
-        "et0_fao_evapotranspiration": "evaporazione potenziale (ET0)",
-        "vapour_pressure_deficit_max": "deficit di pressione di vapore massimo",
+        "temperature_2m_max_anomaly_30d": "temperatura massima rispetto alla media dei 30 giorni prima",
+        "soil_temperature_0_to_7cm_mean": "temperatura del suolo (primi 7 cm)",
+        "soil_moisture_0_to_7cm_mean": "umidità del suolo (primi 7 cm)",
+        "soil_moisture_7_to_28cm_mean": "umidità del suolo (da 7 a 28 cm di profondità)",
+        "et0_fao_evapotranspiration": "acqua che sole e vento possono far evaporare (ET0)",
+        "vapour_pressure_deficit_max": "picco giornaliero di secchezza dell'aria (deficit di pressione di vapore)",
         "water_balance": "bilancio idrico (pioggia meno evaporazione)",
         "elevation_m": "quota",
         "soil_ph": "pH del suolo",
@@ -207,11 +208,11 @@
         "sun_exposure_pct": "sole su questo versante, rispetto al terreno piano",
         "slope_deg": "pendenza media"
       },
-      "rainNote": "La pioggia è la stima del modello meteo, corretta al rialzo (di più in quota) per avvicinarla a quella dei pluviometri; i giorni di previsione non hanno questa correzione.",
-      "terrainNote": "Temperature ed evaporazione sono corrette per il versante di questa cella: i versanti più soleggiati del terreno piano sono più caldi e si asciugano prima, quelli più in ombra sono più freschi."
+      "rainNote": "La pioggia viene da un modello meteo, che di solito ne segna meno di quella misurata dai pluviometri, soprattutto in collina e in montagna: la correggiamo al rialzo per avvicinarla a loro. I giorni di previsione non sono corretti.",
+      "terrainNote": "Temperature ed evaporazione tengono conto del versante di questa cella: i versanti che prendono più sole del terreno piano sono più caldi e si asciugano prima, quelli più in ombra restano più freschi."
     },
-    "fold_one": "Un altro fattore a {{value}}",
-    "fold_other": "Altri {{count}} fattori a {{value}}"
+    "fold_one": "Un altro fattore già ideale ({{value}})",
+    "fold_other": "Altri {{count}} fattori già ideali ({{value}})"
   },
   "factor": {
     "season": "Stagione",
@@ -259,7 +260,7 @@
     "keyHigh": "Più favorevole",
     "loading": "Caricamento dei fattori…",
     "loadError": "Impossibile caricare i fattori.",
-    "unavailable": "Gli indicatori sono conservati solo per gli ultimi 7 giorni e per la previsione.",
+    "unavailable": "I fattori sono disponibili solo per gli ultimi 7 giorni e per i giorni di previsione.",
     "noneOn": "Accendi un fattore per vederlo sulla mappa.",
     "noCombined": "Non disponibile in Analisi: scegli una specie",
     "play": "Riproduci i giorni",
@@ -303,8 +304,8 @@
         "body": "Mappa Funghi stima se meteo e bosco favoriscono la crescita di porcini, ovoli e gallinacci. Non dice dove sono i funghi, non li riconosce e non dice mai se un fungo si può mangiare."
       },
       "score": {
-        "title": "Un indice, non una probabilità",
-        "body": "L'indice delle condizioni va da 0 a 1 e non è una probabilità. Oltre qualche giorno è una tendenza, non una certezza."
+        "title": "Cosa vuol dire l'indice",
+        "body": "L'indice delle condizioni va da 0 a 1: più è vicino a 1, più meteo e bosco sono adatti ai funghi. Misura le condizioni, non le tue possibilità di trovarne. Per i prossimi giorni si basa sulle previsioni del tempo: più guardi avanti, più può cambiare."
       },
       "terrain": {
         "title": "Terreno pericoloso",
@@ -477,10 +478,10 @@
     }
   },
   "intro": {
-    "region": "La mappa mostra, cella per cella, l'indice delle condizioni di porcini, ovoli e gallinacci in Toscana: quanto il meteo e il bosco favoriscono la loro crescita, non dove si trovano i funghi. Qui vedi la specie più favorita in ogni cella; scegli una specie per la sua stagione e il dettaglio dei fattori. L'indice va da 0 a 1 e non è una probabilità.",
-    "porcini": "La mappa mostra, cella per cella, l'indice delle condizioni per i porcini in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va principalmente da fine estate all'autunno. L'indice va da 0 a 1 e non è una probabilità.",
-    "ovoli": "La mappa mostra, cella per cella, l'indice delle condizioni per gli ovoli in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va da giugno a novembre, soprattutto in autunno. L'indice va da 0 a 1 e non è una probabilità.",
-    "gallinacci": "La mappa mostra, cella per cella, l'indice delle condizioni per i gallinacci in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione è quasi tutto l'anno, con i picchi in primavera e in autunno. L'indice va da 0 a 1 e non è una probabilità."
+    "region": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per porcini, ovoli e gallinacci: più è alto, più meteo e bosco sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. Qui ogni cella mostra la specie con le condizioni migliori; scegli una specie per vedere la sua stagione e cosa pesa sul suo indice.",
+    "porcini": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i porcini: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va soprattutto da fine estate all'autunno.",
+    "ovoli": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per gli ovoli: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va da giugno a novembre, soprattutto in autunno.",
+    "gallinacci": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i gallinacci: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione dura quasi tutto l'anno, con i picchi in primavera e in autunno."
   },
   "lede": {
     "region": "Condizioni per i funghi, cella per cella.",
@@ -557,13 +558,13 @@
     "comune": "{{name}} ({{province}})"
   },
   "plausible": {
-    "title": "Specie plausibili",
-    "note": "Quanta parte del bosco della zona ha tipo e quota adatti a ogni specie, meteo a parte. Un gruppo conta il bosco adatto ad almeno una delle sue specie: le righe sotto non si sommano.",
-    "loading": "Carico le specie plausibili…",
-    "loadError": "Non riesco a caricare le specie plausibili.",
+    "title": "Specie adatte alla zona",
+    "note": "Quanta parte dei boschi della zona ha gli alberi e la quota giusti per ogni specie, meteo a parte. Per una specie con più tipi, come i porcini, la sua riga conta il bosco adatto ad almeno uno: per questo le righe sotto non si sommano.",
+    "loading": "Carico le specie adatte alla zona…",
+    "loadError": "Non riesco a caricare le specie adatte alla zona.",
     "none": "In questa zona nessuna delle tre specie trova bosco adatto.",
     "seasonTitle": "Giorni favorevoli per specie",
-    "seasonNote": "Un gruppo conta i giorni favorevoli ad almeno una delle sue specie, perciò le righe sotto non si sommano."
+    "seasonNote": "Per una specie con più tipi, come i porcini, la sua riga conta i giorni favorevoli ad almeno uno: per questo le righe sotto non si sommano."
   },
   "seasons": {
     "title": "Stagioni",
@@ -571,14 +572,14 @@
     "loading": "Carico le stagioni…",
     "loadError": "Non riesco a caricare le stagioni.",
     "empty": "Per questa zona non c'è ancora nessuna stagione calcolata.",
-    "intro": "Giorni favorevoli: i giorni in cui una cella di bosco tipica della zona ha avuto un indice delle condizioni di almeno {{threshold}}.",
+    "intro": "Un giorno favorevole è un giorno con indice delle condizioni di almeno {{threshold}}. I conteggi sono una media sulle celle di bosco della zona, così zone piccole e grandi si possono confrontare.",
     "columns": {
       "year": "Anno",
       "goodDays": "Giorni favorevoli",
       "rain": "Pioggia",
       "temperature": "Temp."
     },
-    "typical": "Tipico: la mediana delle stagioni {{years}}",
+    "typical": "Tipico: il valore di mezzo delle stagioni {{years}} (metà sopra, metà sotto)",
     "pickHint": "Tocca una stagione per vederla sulla mappa.",
     "rowLabel": "{{year}}: {{days}} giorni favorevoli",
     "rowLabelSoFar": "{{year}}: {{days}} giorni favorevoli finora",
@@ -604,7 +605,7 @@
     "weatherNote": "Pioggia e temperatura dal {{start}} al {{end}}, rispetto alla media {{years}}.",
     "months": "Mese per mese",
     "monthLabel": "{{month}}: {{days}} giorni favorevoli, pioggia al {{rain}} del normale, temperatura {{delta}} °C rispetto al normale",
-    "monthKey": "Barre: giorni favorevoli. Sotto: pioggia rispetto al normale e scarto di temperatura.",
+    "monthKey": "Barre: giorni favorevoli. Sotto: la pioggia rispetto al normale e di quanto ha fatto più caldo o più freddo del normale.",
     "bestComuni": "Comuni con più giorni favorevoli",
     "showComune": "Guarda le stagioni di {{name}}",
     "comuneDays": "{{days}} giorni"
@@ -616,7 +617,7 @@
   },
   "outlook": {
     "title": "Prospettive",
-    "badge": "Prospettiva, non previsione",
+    "badge": "Un'indicazione di massima, non una previsione",
     "subtitle": "{{species}} · {{area}}",
     "pickSpecies": "Le prospettive sono per una specie alla volta. Scegline una:",
     "loading": "Carico le prospettive…",
@@ -634,9 +635,9 @@
     "periodsTitle": "Le prossime settimane",
     "outOfSeason": "Niente da guardare avanti: per i {{species}} la stagione va {{window}}.",
     "howTitle": "Come leggere le prospettive",
-    "how1": "Per ogni periodo contiamo in quante stagioni passate ({{years}}) almeno il {{share}} del bosco della zona ha avuto giorni favorevoli negli stessi giorni. È un conteggio, non una probabilità.",
-    "how2": "Il segno guarda la pioggia che precede il periodo: i {{species}} rispondono alla pioggia di {{min}}–{{max}} giorni prima. Dal {{wetter}} del normale in su il periodo è più favorevole del solito, dal {{drier}} in giù meno.",
-    "how3": "Per i giorni passati e i prossimi 7 usiamo il meteo osservato e previsto; oltre, le tendenze a lungo termine di ECMWF, che dicono solo se un'area sarà più piovosa o più secca del normale.",
+    "how1": "Per ogni periodo guardiamo le stagioni passate ({{years}}) e contiamo quante volte in quelle date almeno il {{share}} del bosco della zona ha avuto giorni favorevoli. Dice come va di solito quel periodo, non cosa succederà quest'anno.",
+    "how2": "Meglio o peggio del solito dipende dalla pioggia subito prima di ogni periodo, perché i {{species}} di solito nascono {{min}}–{{max}} giorni dopo la pioggia. Con almeno il {{wetter}} della pioggia normale il periodo è segnato più favorevole del solito; con il {{drier}} o meno, meno favorevole.",
+    "how3": "Per i giorni passati e i prossimi 7 usiamo il meteo registrato e previsto. Più avanti usiamo le tendenze a lungo termine dell'ECMWF, il centro meteo europeo, che dicono solo se una zona sarà più piovosa o più secca del normale.",
     "issued": "Tendenze a lungo termine aggiornate il {{date}} (ECMWF, via Open-Meteo).",
     "monthPeriod": "{{month}}",
     "weekPeriod": "{{start}} – {{end}}",

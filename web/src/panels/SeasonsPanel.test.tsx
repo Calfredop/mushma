@@ -39,7 +39,9 @@ describe('SeasonsPanel', () => {
     )
     expect(rows[1]).toHaveAccessibleName(/^2025: 62 giorni favorevoli, tipico 50/)
     expect(
-      screen.getByText('Tipico: la mediana delle stagioni 2022–2025'),
+      screen.getByText(
+        'Tipico: il valore di mezzo delle stagioni 2022–2025 (metà sopra, metà sotto)',
+      ),
     ).toBeInTheDocument()
   })
 
@@ -109,7 +111,9 @@ describe('SeasonsPanel', () => {
         }}
       />,
     )
-    expect(screen.getByRole('list', { name: 'Specie plausibili' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('list', { name: 'Specie adatte alla zona' }),
+    ).toBeInTheDocument()
     const byDays = screen.getByRole('list', { name: 'Giorni favorevoli per specie' })
     const lines = within(byDays)
       .getAllByRole('listitem')
@@ -138,7 +142,7 @@ describe('SeasonsPanel', () => {
         }}
       />,
     )
-    expect(screen.queryByText('Specie plausibili')).not.toBeInTheDocument()
+    expect(screen.queryByText('Specie adatte alla zona')).not.toBeInTheDocument()
     expect(screen.queryByText('Giorni favorevoli per specie')).not.toBeInTheDocument()
   })
 })

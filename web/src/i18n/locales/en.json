@@ -54,7 +54,7 @@
     },
     "combined": {
       "name": "All",
-      "latin": "The best-favoured species in each cell"
+      "latin": "The species with the best conditions in each cell"
     }
   },
   "score": {
@@ -63,7 +63,7 @@
     "valueLabel": "Conditions score {{value}} out of 1",
     "low": "Unfavourable",
     "high": "Favourable",
-    "note": "A 0 to 1 index of how favourable the weather and woodland are. It is not a probability."
+    "note": "From 0 to 1: how well the weather and woods suit mushrooms. It rates the conditions, not your chances of finding any."
   },
   "legend": {
     "title": "Conditions score",
@@ -131,16 +131,16 @@
     "favourable": "Favourable",
     "holdsBack": "Holds back",
     "holdsBackValue": "holds back {{percent}}%",
-    "blocked": "Blocked by: {{factors}}",
+    "blocked": "The score is zero because of: {{factors}}",
     "nothingHolding": "Nothing is holding the score back on this day.",
-    "forecastNote": "This day is a forecast: the further ahead, the more the score rests on the weather forecast. Rain that has already fallen weighs the most.",
-    "explain": "Each factor runs from 0 (unfavourable) to 1 (ideal). On the right, how much of what keeps the score down comes from that factor.",
+    "forecastNote": "This day is still to come: the score partly rests on the weather forecast, and the further ahead the day, the less certain it is. Rain that has already fallen counts the most, and that is already measured.",
+    "explain": "Each bar rates one factor, from 0 (unfavourable) to 1 (ideal). The percentages on the right show which factors keep the score down: the higher the percentage, the more that factor weighs.",
     "unknownFactor": "Other factor ({{key}})",
     "detail": {
       "showAll": "Show all details",
       "notMeasured": "No measurement available for this day.",
       "none": "No detail available for this factor.",
-      "season": "The time of year this species usually fruits; out of season the score is zero.",
+      "season": "The time of year this species usually comes up; out of season the score is zero.",
       "habitat": "How well this cell's woodland type suits the species.",
       "static": "For this cell: {{value}}.",
       "rain_one": "{{amount}} of rain in {{count}} day{{until}}.",
@@ -158,17 +158,18 @@
       "sameDay": "the same day",
       "days_one": "{{count}} day",
       "days_other": "{{count}} days",
-      "rule": "The rule gives full credit {{full}}.",
-      "ruleZero": "The rule gives full credit {{full}}; none {{zero}}.",
-      "lagRule": "Distance from the scored day: full credit {{full}}.",
-      "lagRuleZero": "Distance from the scored day: full credit {{full}}; none {{zero}}.",
-      "growth": "Warmth and air humidity since then make that {{growth}}, at {{pace}} of the usual pace: warmth speeds growth up, cold or dry air slows it down.",
+      "rule": "Ideal {{full}}.",
+      "ruleZero": "Ideal {{full}}; unfavourable {{zero}}.",
+      "lagRule": "Time since the rain: ideal {{full}}.",
+      "lagRuleZero": "Time since the rain: ideal {{full}}; unfavourable {{zero}}.",
+      "growth_one": "With the warmth and humidity since then, that day counts as {{growth}} (growth at {{pace}} of its normal speed): warmth speeds it up, cold or dry air slows it down.",
+      "growth_other": "With the warmth and humidity since then, those {{count}} days count as {{growth}} (growth at {{pace}} of its normal speed): warmth speeds it up, cold or dry air slows it down.",
       "growthDays_one": "{{count}} day of growth",
       "growthDays_other": "{{count}} days of growth",
-      "growthLagRule": "Growth since the rain: full credit {{full}}.",
-      "growthLagRuleZero": "Growth since the rain: full credit {{full}}; none {{zero}}.",
-      "where": "It applies at {{variable}} {{full}}.",
-      "whereZero": "It applies at {{variable}} {{full}}; not at all {{zero}}.",
+      "growthLagRule": "Growth since the rain: ideal {{full}}.",
+      "growthLagRuleZero": "Growth since the rain: ideal {{full}}; unfavourable {{zero}}.",
+      "where": "This factor counts fully at {{variable}} {{full}}.",
+      "whereZero": "This factor counts fully at {{variable}} {{full}}; not at all {{zero}}.",
       "full": {
         "between": "from {{from}} to {{to}}",
         "at": "at {{value}}",
@@ -183,10 +184,10 @@
       },
       "aggregate": {
         "sum": "total",
-        "mean": "mean",
+        "mean": "average",
         "min": "lowest",
         "max": "highest",
-        "percent_of_normal": "compared with this cell's normal"
+        "percent_of_normal": "compared with normal here"
       },
       "variable": {
         "precipitation_sum": "rain",
@@ -194,24 +195,24 @@
         "temperature_2m_min": "minimum temperature",
         "temperature_2m_max": "maximum temperature",
         "temperature_2m_mean": "air temperature",
-        "temperature_2m_max_anomaly_30d": "departure of the maximum temperature from the previous 30-day mean",
-        "soil_temperature_0_to_7cm_mean": "soil temperature (0–7 cm)",
-        "soil_moisture_0_to_7cm_mean": "soil moisture (0–7 cm)",
-        "soil_moisture_7_to_28cm_mean": "soil moisture (7–28 cm)",
-        "et0_fao_evapotranspiration": "potential evaporation (ET0)",
-        "vapour_pressure_deficit_max": "maximum vapour pressure deficit",
+        "temperature_2m_max_anomaly_30d": "maximum temperature compared with the previous 30 days' average",
+        "soil_temperature_0_to_7cm_mean": "soil temperature (top 7 cm)",
+        "soil_moisture_0_to_7cm_mean": "soil moisture (top 7 cm)",
+        "soil_moisture_7_to_28cm_mean": "soil moisture (7 to 28 cm deep)",
+        "et0_fao_evapotranspiration": "water that sun and wind can evaporate (ET0)",
+        "vapour_pressure_deficit_max": "daily peak of air dryness (vapour pressure deficit)",
         "water_balance": "water balance (rain minus evaporation)",
         "elevation_m": "altitude",
         "soil_ph": "soil pH",
-        "lithology_calcareous": "calcareous bedrock",
+        "lithology_calcareous": "limestone bedrock",
         "sun_exposure_pct": "sun on this slope, compared with flat ground",
-        "slope_deg": "mean slope"
+        "slope_deg": "average slope"
       },
-      "rainNote": "Rain is the weather model's estimate, adjusted upward (more at altitude) to match rain gauges; forecast days have no such adjustment.",
-      "terrainNote": "Temperatures and drying are adjusted to this cell's slope: slopes that get more sun than flat ground are warmer and dry out faster, shadier ones are cooler."
+      "rainNote": "Rain comes from a weather model, which usually shows less than rain gauges measure, especially in the hills and mountains: we raise it to bring it closer to them. Forecast days are not adjusted.",
+      "terrainNote": "Temperatures and drying take this cell's slope into account: slopes that get more sun than flat ground are warmer and dry out faster, shadier ones stay cooler."
     },
-    "fold_one": "One more factor at {{value}}",
-    "fold_other": "{{count}} more factors at {{value}}"
+    "fold_one": "One more factor already ideal ({{value}})",
+    "fold_other": "{{count}} more factors already ideal ({{value}})"
   },
   "factor": {
     "season": "Season",
@@ -259,7 +260,7 @@
     "keyHigh": "More favourable",
     "loading": "Loading the factors…",
     "loadError": "Couldn't load the factors.",
-    "unavailable": "Indicators are only kept for the last 7 days and the forecast.",
+    "unavailable": "Factors are only available for the last 7 days and the forecast days.",
     "noneOn": "Turn on a factor to see it on the map.",
     "noCombined": "Not available in Analysis: pick a species",
     "play": "Play the days",
@@ -303,8 +304,8 @@
         "body": "Mappa Funghi estimates whether the weather and woodland favour porcini, ovoli and gallinacci fruiting. It doesn't say where mushrooms are, doesn't identify them, and never says whether a mushroom is safe to eat."
       },
       "score": {
-        "title": "An index, not a probability",
-        "body": "The conditions score runs from 0 to 1 and is not a probability. More than a few days ahead it is a trend, not a certainty."
+        "title": "What the score means",
+        "body": "The conditions score goes from 0 to 1: the closer to 1, the better the weather and woods suit mushrooms. It rates the conditions, not your chances of finding any. For the coming days it rests on the weather forecast, so the further ahead you look, the more it can change."
       },
       "terrain": {
         "title": "Dangerous terrain",
@@ -355,7 +356,7 @@
       "geocoding": "Place search",
       "mapLibrary": "Map rendering",
       "fonts": "Typefaces",
-      "seasonal": "Long-range tendencies for the seasonal outlook"
+      "seasonal": "Long-range trends for the seasonal outlook"
     }
   },
   "terms": {
@@ -477,10 +478,10 @@
     }
   },
   "intro": {
-    "region": "The map shows, cell by cell, the conditions index for porcini, ovoli and gallinacci in Tuscany: how much the weather and woodland favour their growth, not where the mushrooms are. This view shows the most favoured species per cell; pick a species for its season and its factor detail. The index runs from 0 to 1 and isn't a probability.",
-    "porcini": "The map shows, cell by cell, the conditions index for porcini in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs mainly from late summer through autumn. The index runs from 0 to 1 and isn't a probability.",
-    "ovoli": "The map shows, cell by cell, the conditions index for ovoli in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs from June to November, mostly in autumn. The index runs from 0 to 1 and isn't a probability.",
-    "gallinacci": "The map shows, cell by cell, the conditions index for gallinacci in Tuscany: how much the weather, woodland and elevation favour their growth, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn. The index runs from 0 to 1 and isn't a probability."
+    "region": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for porcini, ovoli and gallinacci: the higher it is, the better the weather and woods suit them on that day. It shows where conditions are good, not where the mushrooms are. Here each cell shows the species with the best conditions; pick a species to see its season and what weighs on its score.",
+    "porcini": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for porcini: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs mainly from late summer through autumn.",
+    "ovoli": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for ovoli: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs from June to November, mostly in autumn.",
+    "gallinacci": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for gallinacci: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn."
   },
   "lede": {
     "region": "Conditions for mushrooms, cell by cell.",
@@ -557,13 +558,13 @@
     "comune": "{{name}} ({{province}})"
   },
   "plausible": {
-    "title": "Plausible species",
-    "note": "How much of the area's woodland has the forest type and altitude each species needs, weather aside. A group counts woodland that suits any of its taxa, so the lines beneath it don't add up.",
-    "loading": "Loading the plausible species…",
-    "loadError": "Couldn't load the plausible species.",
+    "title": "Species suited to the area",
+    "note": "How much of the area's woodland has the right trees and altitude for each species, whatever the weather. For a species with several types, like porcini, its line counts woodland that suits at least one type, so the lines beneath it don't add up to it.",
+    "loading": "Loading the species suited to the area…",
+    "loadError": "Couldn't load the species suited to the area.",
     "none": "None of the three species finds suitable woodland here.",
     "seasonTitle": "Good days by species",
-    "seasonNote": "A group counts the days that were good for any of its taxa, so the lines beneath it don't add up."
+    "seasonNote": "For a species with several types, like porcini, its line counts days that were good for at least one type, so the lines beneath it don't add up to it."
   },
   "seasons": {
     "title": "Seasons",
@@ -571,20 +572,20 @@
     "loading": "Loading seasons…",
     "loadError": "Couldn't load the seasons.",
     "empty": "No season has been worked out for this area yet.",
-    "intro": "Good days: the days a typical woodland cell here had a conditions score of at least {{threshold}}.",
+    "intro": "A good day is a day with a conditions score of at least {{threshold}}. The counts are an average over the area's woodland cells, so small and large areas compare fairly.",
     "columns": {
       "year": "Year",
       "goodDays": "Good days",
       "rain": "Rain",
       "temperature": "Temp."
     },
-    "typical": "Typical: the median of the {{years}} seasons",
+    "typical": "Typical: the middle value of the {{years}} seasons (half above, half below)",
     "pickHint": "Tap a season to see it on the map.",
     "rowLabel": "{{year}}: {{days}} good days",
     "rowLabelSoFar": "{{year}}: {{days}} good days so far",
     "rowTypical": "typical {{typical}}",
     "rainLabel": "rain at {{percent}} of normal",
-    "tempLabel": "temperature {{delta}} °C against normal",
+    "tempLabel": "temperature {{delta}} °C compared with normal",
     "soFar": "so far",
     "detailTitle": "{{year}} · {{area}}",
     "partial": "Season under way: data up to {{date}}.",
@@ -597,14 +598,14 @@
     "rain": "Rain",
     "rainValue": "{{mm}} mm, {{percent}} of normal",
     "temperature": "Temperature",
-    "temperatureValue": "{{delta}} °C against normal",
+    "temperatureValue": "{{delta}} °C compared with normal",
     "sightings": "Sightings",
     "sightingsValue_one": "{{count}} public sighting",
     "sightingsValue_other": "{{count}} public sightings",
-    "weatherNote": "Rain and temperature from {{start}} to {{end}}, against the {{years}} average.",
+    "weatherNote": "Rain and temperature from {{start}} to {{end}}, compared with the {{years}} average.",
     "months": "Month by month",
-    "monthLabel": "{{month}}: {{days}} good days, rain at {{rain}} of normal, temperature {{delta}} °C against normal",
-    "monthKey": "Bars: good days. Below: rain against normal and the temperature difference.",
+    "monthLabel": "{{month}}: {{days}} good days, rain at {{rain}} of normal, temperature {{delta}} °C compared with normal",
+    "monthKey": "Bars: good days. Below: rain compared with normal, and how much warmer or cooler than normal it was.",
     "bestComuni": "Comuni with the most good days",
     "showComune": "See the seasons of {{name}}",
     "comuneDays": "{{days}} days"
@@ -616,7 +617,7 @@
   },
   "outlook": {
     "title": "Outlook",
-    "badge": "An outlook, not a forecast",
+    "badge": "A rough guide, not a forecast",
     "subtitle": "{{species}} · {{area}}",
     "pickSpecies": "The outlook covers one species at a time. Pick one:",
     "loading": "Loading the outlook…",
@@ -628,16 +629,16 @@
     "rain": "Rain",
     "rainValue": "{{mm}} mm, {{percent}} of normal",
     "temperature": "Temperature",
-    "temperatureValue": "{{delta}} °C against normal",
+    "temperatureValue": "{{delta}} °C compared with normal",
     "soFarNote": "From {{start}} to {{end}}; observed weather up to {{weather}}.",
     "soFarNoteScores": "From {{start}} to {{end}}.",
     "periodsTitle": "The weeks ahead",
     "outOfSeason": "Nothing to look ahead to: the {{species}} season runs {{window}}.",
     "howTitle": "How to read the outlook",
-    "how1": "For each period we count in how many past seasons ({{years}}) at least {{share}} of the area's woodland had good days on the same dates. It is a count, not a probability.",
-    "how2": "The mark follows the rain before the period: {{species}} respond to rain {{min}}–{{max}} days earlier. From {{wetter}} of normal up the period reads better than usual, from {{drier}} down worse.",
-    "how3": "For past days and the next 7 we use observed and forecast weather; beyond that, ECMWF's long-range tendencies, which only say whether an area will be wetter or drier than normal.",
-    "issued": "Long-range tendencies updated {{date}} (ECMWF, via Open-Meteo).",
+    "how1": "For each period we look at the past seasons ({{years}}) and count how often at least {{share}} of the area's woodland had good days on those dates. It shows how that period usually goes, not what will happen this year.",
+    "how2": "Better or worse than usual depends on the rain just before each period, because {{species}} usually come up {{min}}–{{max}} days after rain. With at least {{wetter}} of the normal rain, the period is marked better than usual; with {{drier}} or less, worse.",
+    "how3": "For past days and the next 7 we use recorded and forecast weather. Further ahead we use long-range trends from ECMWF, the European weather centre, which only say whether an area will be wetter or drier than normal.",
+    "issued": "Long-range trends updated {{date}} (ECMWF, via Open-Meteo).",
     "monthPeriod": "{{month}}",
     "weekPeriod": "{{start}} – {{end}}",
     "pastSeasons": "good in {{good}} of {{years}} past seasons",
@@ -646,7 +647,7 @@
       "better": "better than usual",
       "usual": "as usual",
       "worse": "worse than usual",
-      "unknown": "no tendency available"
+      "unknown": "no trend available"
     },
     "leadRain": "Rain in the days before: {{percent}} of normal"
   }

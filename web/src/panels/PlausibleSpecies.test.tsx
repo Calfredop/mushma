@@ -14,7 +14,7 @@ const rows = (list: HTMLElement) =>
 describe('PlausibleSpecies', () => {
   it('ranks the species by how much of the zone suits them', () => {
     render(<PlausibleSpecies plausible={state} />)
-    const list = screen.getByRole('list', { name: 'Specie plausibili' })
+    const list = screen.getByRole('list', { name: 'Specie adatte alla zona' })
     expect(rows(list)).toEqual([
       'PorciniBoletus edulis e affini92%',
       'Boletus reticulatus85%',

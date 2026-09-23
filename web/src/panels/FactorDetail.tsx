@@ -156,6 +156,7 @@ export function FactorDetail({ factor, date, id }: Props) {
     if (factor.input == null || factor.growth_days == null || !factor.days_ago)
       return null
     return t('why.detail.growth', {
+      count: factor.days_ago,
       growth: quantity(Math.round(factor.growth_days), 'growth_days'),
       pace: percent.format(factor.growth_days / factor.days_ago),
     })
