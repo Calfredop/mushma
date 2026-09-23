@@ -128,13 +128,13 @@
   "why": {
     "title": "Why this score",
     "subtitle": "{{species}} · {{date}}",
-    "favourable": "How favourable",
-    "holdsBack": "How much it holds the score back",
+    "favourable": "Favourable",
+    "holdsBack": "Holds back",
     "holdsBackValue": "holds back {{percent}}%",
     "blocked": "Blocked by: {{factors}}",
     "nothingHolding": "Nothing is holding the score back on this day.",
     "forecastNote": "This day is a forecast: the further ahead, the more the score rests on the weather forecast. Rain that has already fallen weighs the most.",
-    "explain": "Each factor runs from 0 (unfavourable) to 1 (ideal). The bar on the right shows how much of what keeps the score down comes from that factor.",
+    "explain": "Each factor runs from 0 (unfavourable) to 1 (ideal). On the right, how much of what keeps the score down comes from that factor.",
     "unknownFactor": "Other factor ({{key}})",
     "detail": {
       "showAll": "Show all details",
@@ -209,7 +209,9 @@
       },
       "rainNote": "Rain is the weather model's estimate, adjusted upward (more at altitude) to match rain gauges; forecast days have no such adjustment.",
       "terrainNote": "Temperatures and drying are adjusted to this cell's slope: slopes that get more sun than flat ground are warmer and dry out faster, shadier ones are cooler."
-    }
+    },
+    "fold_one": "One more factor at {{value}}",
+    "fold_other": "{{count}} more factors at {{value}}"
   },
   "factor": {
     "season": "Season",

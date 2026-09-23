@@ -128,13 +128,13 @@
   "why": {
     "title": "Perché questo indice",
     "subtitle": "{{species}} · {{date}}",
-    "favourable": "Quanto è favorevole",
-    "holdsBack": "Quanto frena l'indice",
+    "favourable": "Favorevole",
+    "holdsBack": "Frena",
     "holdsBackValue": "frena del {{percent}}%",
     "blocked": "Bloccato da: {{factors}}",
     "nothingHolding": "Nessun fattore frena l'indice in questo giorno.",
     "forecastNote": "Questo giorno è una previsione: più è lontano, più l'indice dipende dalle previsioni meteo. Pesa di più la pioggia già caduta.",
-    "explain": "Ogni fattore va da 0 (sfavorevole) a 1 (ideale). La barra a destra mostra quanta parte di ciò che tiene basso l'indice dipende da quel fattore.",
+    "explain": "Ogni fattore va da 0 (sfavorevole) a 1 (ideale). A destra, quanta parte di ciò che tiene basso l'indice dipende da quel fattore.",
     "unknownFactor": "Altro fattore ({{key}})",
     "detail": {
       "showAll": "Mostra tutti i dettagli",
@@ -209,7 +209,9 @@
       },
       "rainNote": "La pioggia è la stima del modello meteo, corretta al rialzo (di più in quota) per avvicinarla a quella dei pluviometri; i giorni di previsione non hanno questa correzione.",
       "terrainNote": "Temperature ed evaporazione sono corrette per il versante di questa cella: i versanti più soleggiati del terreno piano sono più caldi e si asciugano prima, quelli più in ombra sono più freschi."
-    }
+    },
+    "fold_one": "Un altro fattore a {{value}}",
+    "fold_other": "Altri {{count}} fattori a {{value}}"
   },
   "factor": {
     "season": "Stagione",

@@ -38,19 +38,21 @@ describe('WhyBreakdown', () => {
       within(section).getByRole('img', { name: 'Indice delle condizioni 0,13 su 1' }),
     ).toBeInTheDocument()
 
+    // Season holds nothing back: it folds away below the factors that do.
     const rows = within(section).getAllByRole('listitem')
     expect(rows.map((row) => row.firstChild?.textContent)).toEqual([
-      'Stagione',
       'Pioggia degli ultimi 30 giorni',
       'Gelate',
     ])
-    expect(rows[0]).not.toHaveTextContent('frena')
-    expect(rows[1]).toHaveTextContent('frena del 33%')
-    expect(rows[2]).toHaveTextContent('frena del 67%')
-    expect(within(rows[2]).getByRole('meter', { name: 'Gelate' })).toHaveAttribute(
+    expect(rows[0]).toHaveTextContent('frena del 33%')
+    expect(rows[1]).toHaveTextContent('frena del 67%')
+    expect(within(rows[1]).getByRole('meter', { name: 'Gelate' })).toHaveAttribute(
       'aria-valuenow',
       '0.25',
     )
+    const folded = within(section).getAllByRole('listitem', { hidden: true })[2]
+    expect(folded.firstChild?.textContent).toBe('Stagione')
+    expect(folded).not.toHaveTextContent('frena')
     expect(screen.queryByText(/previsione/)).not.toBeInTheDocument()
   })
 
@@ -90,6 +92,100 @@ describe('WhyBreakdown', () => {
   })
 })
 
+describe('WhyBreakdown fold', () => {
+  const user = userEvent.setup()
+  beforeEach(() => localStorage.clear())
+
+  const mixed = day(
+    [
+      { key: 'season', value: 1, contribution: 1 },
+      { key: 'rain_30d', value: 0.5, contribution: 0.5 },
+      { key: 'altitude', value: 1, contribution: 1 },
+      { key: 'frost', value: 0.25, contribution: 0.25 },
+      { key: 'habitat', value: 1, contribution: 1 },
+    ],
+    0.125,
+  )
+
+  it('folds the factors holding nothing back into one row, until it is opened', async () => {
+    render(<WhyBreakdown species="porcini" isForecast={false} day={mixed} />)
+    // The factors that brake, in the API's order.
+    expect(screen.getAllByRole('meter').map((m) => m.getAttribute('aria-label'))).toEqual(
+      ['Pioggia degli ultimi 30 giorni', 'Gelate'],
+    )
+    const fold = screen.getByRole('button', { name: 'Altri 3 fattori a 1,00' })
+    expect(fold).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByRole('meter', { name: 'Stagione' })).toBeNull()
+
+    await user.click(fold)
+    expect(fold).toHaveAttribute('aria-expanded', 'true')
+    // Opened in place, under the fold, still in the API's order.
+    expect(screen.getAllByRole('meter').map((m) => m.getAttribute('aria-label'))).toEqual(
+      ['Pioggia degli ultimi 30 giorni', 'Gelate', 'Stagione', 'Quota', 'Tipo di bosco'],
+    )
+  })
+
+  it('counts a single one in the singular', () => {
+    render(
+      <WhyBreakdown
+        species="porcini"
+        isForecast={false}
+        day={day(
+          [
+            { key: 'season', value: 1, contribution: 1 },
+            { key: 'frost', value: 0.5, contribution: 0.5 },
+          ],
+          0.5,
+        )}
+      />,
+    )
+    expect(screen.getByRole('button', { name: 'Un altro fattore a 1,00' })).toBeVisible()
+  })
+
+  it('folds nothing when the score is blocked', () => {
+    render(
+      <WhyBreakdown
+        species="porcini"
+        isForecast={false}
+        day={day(
+          [
+            { key: 'season', value: 1, contribution: 1 },
+            { key: 'altitude', value: 0, contribution: 0 },
+            { key: 'frost', value: 0.5, contribution: 0.5 },
+          ],
+          0,
+        )}
+      />,
+    )
+    expect(screen.getAllByRole('meter')).toHaveLength(3)
+    expect(screen.queryByRole('button', { name: /fattor[ei] a 1,00/ })).toBeNull()
+  })
+
+  it('folds nothing when every factor brakes', () => {
+    render(
+      <WhyBreakdown
+        species="porcini"
+        isForecast={false}
+        day={day(
+          [
+            { key: 'rain_30d', value: 0.5, contribution: 0.5 },
+            { key: 'frost', value: 0.5, contribution: 0.5 },
+          ],
+          0.25,
+        )}
+      />,
+    )
+    expect(screen.getAllByRole('meter')).toHaveLength(2)
+    expect(screen.queryByRole('button', { name: /fattor[ei] a 1,00/ })).toBeNull()
+  })
+
+  it('shows every factor when all the details are on', async () => {
+    render(<WhyBreakdown species="porcini" isForecast={false} day={mixed} />)
+    await user.click(screen.getByRole('switch', { name: 'Mostra tutti i dettagli' }))
+    expect(screen.getAllByRole('meter')).toHaveLength(5)
+  })
+})
+
 describe('WhyBreakdown emphasis', () => {
   it('emphasises only factors that are at zero', () => {
     render(
@@ -124,10 +220,11 @@ describe('WhyBreakdown emphasis', () => {
         )}
       />,
     )
-    expect(screen.getAllByRole('listitem').map((row) => row.dataset.blocking)).toEqual([
-      'false',
-      'false',
-    ])
+    expect(
+      screen
+        .getAllByRole('listitem', { hidden: true })
+        .map((row) => row.dataset.blocking),
+    ).toEqual(['false', 'false'])
   })
 })
 
@@ -302,10 +399,9 @@ describe('WhyBreakdown details', () => {
     await user.click(button)
 
     expect(button).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('button', { name: 'Stagione' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    )
+    expect(
+      screen.getByRole('button', { name: 'Stagione', hidden: true }),
+    ).toHaveAttribute('aria-expanded', 'false')
     expect(screen.getByText(/di pioggia in 3 giorni/)).toBeInTheDocument()
   })
 
@@ -431,6 +527,7 @@ describe('WhyBreakdown details', () => {
         day={day([season, habitat], 0.8)}
       />,
     )
+    await user.click(screen.getByRole('button', { name: 'Un altro fattore a 1,00' }))
     await user.click(screen.getByRole('button', { name: 'Stagione' }))
     await user.click(screen.getByRole('button', { name: 'Tipo di bosco' }))
     expect(rowOf('Stagione')).toHaveTextContent(
@@ -460,6 +557,7 @@ describe('WhyBreakdown details', () => {
       />,
     )
     await user.click(screen.getByRole('button', { name: 'Pioggia di innesco' }))
+    await user.click(screen.getByRole('button', { name: 'Un altro fattore a 1,00' }))
     await user.click(screen.getByRole('button', { name: 'Gelate' }))
     expect(rowOf('Pioggia di innesco')).toHaveTextContent(
       'Misura non disponibile per questo giorno.',
@@ -514,11 +612,13 @@ describe('WhyBreakdown details', () => {
 
     await user.click(screen.getByRole('switch', { name: 'Mostra tutti i dettagli' }))
     for (const name of ['Stagione', 'Quota', 'Pioggia di innesco']) {
-      expect(screen.getByRole('button', { name })).toHaveAttribute(
+      expect(screen.getByRole('button', { name, hidden: true })).toHaveAttribute(
         'aria-expanded',
         'false',
       )
     }
+    // Off again, Season folds away again.
+    expect(screen.queryByRole('button', { name: 'Stagione' })).toBeNull()
     expect(localStorage.getItem('mushma.whyDetails')).toBe('0')
   })
 

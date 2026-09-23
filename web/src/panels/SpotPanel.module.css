@@ -42,29 +42,38 @@
   font-weight: 650;
 }
 
+/* One line for a species (name, binomial, today's chip), then its eight days. */
 .species {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-2) var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px var(--space-2);
   align-items: center;
-  padding: var(--space-3) 0;
+  padding: var(--space-2) 0 var(--space-1);
   border-top: 1px solid var(--rule);
 }
 
 .speciesName {
-  display: grid;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .common {
+  flex: none;
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: var(--text-subtitle);
   line-height: 1.2;
 }
 
 .latin {
+  min-width: 0;
+  overflow: hidden;
   color: var(--felce);
   font-size: var(--text-caption);
   font-style: italic;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bars {
@@ -76,7 +85,9 @@
 
 .bar {
   display: grid;
+  align-content: end;
   gap: 2px;
+  min-height: var(--tap);
   padding: 3px;
   border: 1px solid transparent;
   border-radius: var(--radius-s);
@@ -95,7 +106,7 @@
 .barTrack {
   position: relative;
   display: block;
-  height: 2.75rem;
+  height: 1.5rem;
   border-radius: 2px;
   background: rgb(28 33 29 / 6%);
   overflow: hidden;

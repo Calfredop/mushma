@@ -66,8 +66,15 @@ test('map → spot forecast → why this score', async ({ page }) => {
   await expect(page.getByRole('button', { name: /^Gallinacci, / })).toHaveCount(8)
 
   // Why this score: the factor list, then a forecast day.
+  // The spot opens at half; the why list is further down, so the sheet comes up full.
+  await page.getByRole('button', { name: 'Espandi il pannello' }).click()
+  await expect(page.getByRole('complementary')).toHaveAttribute('data-snap', 'full')
   const why = page.getByRole('region', { name: 'Perché questo indice' })
   await expect(why).toBeVisible()
+  // The factors holding nothing back fold into one row; opening it shows them in place.
+  await why
+    .getByRole('button', { name: /^(Altri \d+ fattori|Un altro fattore) a 1,00$/ })
+    .click()
   await expect(why.getByRole('meter', { name: 'Stagione' })).toBeVisible()
   await expect(why.getByRole('listitem')).not.toHaveCount(0)
 

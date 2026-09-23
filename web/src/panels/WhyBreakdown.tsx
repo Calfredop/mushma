@@ -25,6 +25,8 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
   const [showAll, setShowAll] = usePersistentFlag('mushma.whyDetails')
   // A row the visitor opened or closed on its own; the switch resets them all.
   const [overrides, setOverrides] = useState<Record<string, boolean>>({})
+  // The factors at full credit, folded into one row until it is opened.
+  const [foldOpen, setFoldOpen] = useState(false)
   const language = i18n.resolvedLanguage as Language
   const locale = intlLocale(language)
   const explanation = explainScore(day.factors)
@@ -53,6 +55,58 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
   )
   const terrainDetailOpen = explanation.factors.some(
     (f) => isOpen(f.key) && usesTerrain(f.rule),
+  )
+
+  // Fold the factors holding nothing back, when some others do. Not when the score is blocked
+  // (every other factor then has no share, whatever its value), nor when nothing holds it back
+  // (there would be nothing left beside the fold), nor with every detail on.
+  const idle = explanation.factors.filter((f) => f.impact === 0)
+  const folding =
+    explanation.blockedBy.length === 0 &&
+    !explanation.nothingHolding &&
+    idle.length > 0 &&
+    !showAll
+  const shown = folding
+    ? explanation.factors.filter((f) => f.impact > 0)
+    : explanation.factors
+
+  const row = (factor: (typeof explanation.factors)[number], hidden = false) => (
+    <li
+      key={factor.key}
+      id={`${detailIds}-row-${factor.key}`}
+      className={styles.factor}
+      data-blocking={explanation.blockedBy.includes(factor.key)}
+      hidden={hidden}
+    >
+      <button
+        type="button"
+        className={styles.name}
+        aria-expanded={isOpen(factor.key)}
+        aria-controls={isOpen(factor.key) ? `${detailIds}-${factor.key}` : undefined}
+        onClick={() => toggleRow(factor.key)}
+      >
+        {label(factor)}
+        <ChevronIcon direction={isOpen(factor.key) ? 'up' : 'down'} />
+      </button>
+      <span
+        className={styles.track}
+        role="meter"
+        aria-label={label(factor)}
+        aria-valuemin={0}
+        aria-valuemax={1}
+        aria-valuenow={Number(factor.value.toFixed(2))}
+      >
+        <span className={styles.valueFill} style={{ width: `${factor.value * 100}%` }} />
+      </span>
+      <span className={styles.value}>{number.format(factor.value)}</span>
+      <span className={styles.brake}>
+        {factor.impact > 0 &&
+          t('why.holdsBackValue', { percent: percent(factor.impact) })}
+      </span>
+      {isOpen(factor.key) && (
+        <FactorDetail factor={factor} date={day.date} id={`${detailIds}-${factor.key}`} />
+      )}
+    </li>
   )
 
   const blockedLabels = new Intl.ListFormat(locale, { type: 'conjunction' }).format(
@@ -98,64 +152,28 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
         </button>
       </div>
 
-      <div className={styles.columns} aria-hidden="true">
-        <span>{t('why.favourable')}</span>
-        <span>{t('why.holdsBack')}</span>
-      </div>
+      {/* One grid for every row, so the bars, values and brakes line up down the list. */}
       <ul className={styles.factors}>
-        {explanation.factors.map((factor) => (
-          <li
-            key={factor.key}
-            className={styles.factor}
-            data-blocking={explanation.blockedBy.includes(factor.key)}
-          >
+        <li role="presentation" className={styles.columns} aria-hidden="true">
+          <span>{t('why.favourable')}</span>
+          <span>{t('why.holdsBack')}</span>
+        </li>
+        {shown.map((factor) => row(factor))}
+        {folding && (
+          <li role="presentation" className={styles.foldRow}>
             <button
               type="button"
-              className={styles.name}
-              aria-expanded={isOpen(factor.key)}
-              aria-controls={
-                isOpen(factor.key) ? `${detailIds}-${factor.key}` : undefined
-              }
-              onClick={() => toggleRow(factor.key)}
+              className={styles.fold}
+              aria-expanded={foldOpen}
+              aria-controls={idle.map((f) => `${detailIds}-row-${f.key}`).join(' ')}
+              onClick={() => setFoldOpen((open) => !open)}
             >
-              {label(factor)}
-              <ChevronIcon direction={isOpen(factor.key) ? 'up' : 'down'} />
+              {t('why.fold', { count: idle.length, value: number.format(1) })}
+              <ChevronIcon direction={foldOpen ? 'up' : 'down'} />
             </button>
-            <span className={styles.impactText}>
-              {factor.impact > 0 &&
-                t('why.holdsBackValue', { percent: percent(factor.impact) })}
-            </span>
-            <span className={styles.valueCell}>
-              <span
-                className={styles.track}
-                role="meter"
-                aria-label={label(factor)}
-                aria-valuemin={0}
-                aria-valuemax={1}
-                aria-valuenow={Number(factor.value.toFixed(2))}
-              >
-                <span
-                  className={styles.valueFill}
-                  style={{ width: `${factor.value * 100}%` }}
-                />
-              </span>
-              <span className={styles.value}>{number.format(factor.value)}</span>
-            </span>
-            <span className={styles.track} aria-hidden="true">
-              <span
-                className={styles.impactFill}
-                style={{ width: `${factor.impact * 100}%` }}
-              />
-            </span>
-            {isOpen(factor.key) && (
-              <FactorDetail
-                factor={factor}
-                date={day.date}
-                id={`${detailIds}-${factor.key}`}
-              />
-            )}
           </li>
-        ))}
+        )}
+        {folding && idle.map((factor) => row(factor, !foldOpen))}
       </ul>
 
       {rainDetailOpen && <p className={panel.note}>{t('why.detail.rainNote')}</p>}

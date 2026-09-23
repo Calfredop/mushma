@@ -42,6 +42,9 @@
   --text-lead: 1.0625rem;
   --text-species: 1.375rem;
   --text-wordmark: 1.75rem;
+  /* A panel's headings (h2, h3): a step down the scale on a phone, where the sheet is short. */
+  --text-title: var(--text-lead);
+  --text-subtitle: var(--text-body);
 
   /* Space and shape */
   --space-1: 0.25rem;
@@ -107,5 +110,7 @@
     --text-body: 1rem;
     --text-species: 1.5rem;
     --text-wordmark: 2rem;
+    --text-title: var(--text-species);
+    --text-subtitle: var(--text-lead);
   }
 }
