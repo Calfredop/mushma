@@ -5,6 +5,8 @@
 .env
 .env.*
 !.env.example
+deploy/umami.env
+!deploy/umami.env.example
 
 # node / web
 node_modules/

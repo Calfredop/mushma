@@ -2,7 +2,13 @@ import { act, renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { usePwaInstall } from './usePwaInstall'
 
-afterEach(() => vi.unstubAllGlobals())
+const track = vi.fn()
+vi.mock('../analytics', () => ({ track: (event: unknown) => track(event) }))
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+  track.mockClear()
+})
 
 function beforeInstallPrompt() {
   const event = new Event('beforeinstallprompt', { cancelable: true }) as Event & {
@@ -33,6 +39,22 @@ describe('usePwaInstall', () => {
     await act(async () => result.current.install())
     expect(event.prompt).toHaveBeenCalled()
     expect(result.current.available).toBe(false)
+  })
+
+  it('tracks an accepted install', async () => {
+    const { result } = renderHook(() => usePwaInstall())
+    act(() => window.dispatchEvent(beforeInstallPrompt()))
+    await act(async () => result.current.install())
+    expect(track).toHaveBeenCalledWith({ name: 'pwa-install' })
+  })
+
+  it('does not track a dismissed prompt', async () => {
+    const { result } = renderHook(() => usePwaInstall())
+    const event = beforeInstallPrompt()
+    event.userChoice = Promise.resolve({ outcome: 'dismissed' })
+    act(() => window.dispatchEvent(event))
+    await act(async () => result.current.install())
+    expect(track).not.toHaveBeenCalled()
   })
 
   it('hides once the app reports it was installed', () => {

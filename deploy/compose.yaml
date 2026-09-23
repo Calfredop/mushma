@@ -1,11 +1,21 @@
-# Production stack on the Hetzner server (README.md -> Deploying): the API behind Caddy, which
-# gets and renews the api.mappafunghi.app certificate on its own. The repo is cloned at
-# /opt/mushma and the data stores live outside it, in /srv/mushma-data (the API's DATA_DIR).
+# Production stack on the Hetzner server (README.md -> Deploying): the API and Umami behind
+# Caddy, which gets and renews the api.mappafunghi.app and m.mappafunghi.app certificates on its
+# own. The repo is cloned at /opt/mushma and the data stores live outside it, in
+# /srv/mushma-data (the API's DATA_DIR); Umami's own Postgres data lives in the umami_db_data
+# volume below (feat-umami-integration.md: disposable, never backed up).
 #
 #   cd /opt/mushma/deploy && docker compose up -d --build
 #
 # The daily pipeline is not a service here: mushma-daily.timer runs it once a day as a one-off
 # container of the same image (`docker compose run --rm api python -m api.jobs.daily`).
+#
+# Umami's tracker script and collect endpoint are renamed (TRACKER_SCRIPT_NAME,
+# COLLECT_API_ENDPOINT below) so generic ad/tracker blocklists, which pattern-match on the
+# default `script.js` / `/api/send` and words like "umami" or "analytics", don't catch them.
+# web/src/analytics.ts's VITE_UMAMI_SRC must point at the same path. Both names must stay at the
+# server root (no subdirectory): tested locally, Umami 3.4.0 resolves COLLECT_API_ENDPOINT
+# relative to TRACKER_SCRIPT_NAME's own directory, not the site root, so a script nested under
+# e.g. `/js/widget.js` silently sends events to `/js/api/hub` (a 404) instead of `/api/hub`.
 services:
   api:
     build: ../api
@@ -16,6 +26,47 @@ services:
       DATA_DIR: /data
     volumes:
       - /srv/mushma-data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  umami:
+    image: ghcr.io/umami-software/umami:3.4.0
+    restart: unless-stopped
+    env_file: umami.env
+    environment:
+      DISABLE_TELEMETRY: 1
+      TRACKER_SCRIPT_NAME: /widget.js
+      COLLECT_API_ENDPOINT: /api/hub
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    mem_limit: 512m
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  umami-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    env_file: umami.env
+    volumes:
+      - umami_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    mem_limit: 256m
     logging:
       driver: json-file
       options:
@@ -42,3 +93,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  umami_db_data:

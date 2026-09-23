@@ -13,6 +13,7 @@ import {
   useSyncExternalStore,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { track } from './analytics'
 import {
   ApiError,
   type DateRange,
@@ -85,8 +86,9 @@ import {
   setDocumentRobots,
 } from './seo/head'
 import { structuredData } from './seo/structuredData'
-import { AppStateProvider } from './state/AppState'
+import { AppStateProvider, type CameraRequest } from './state/AppState'
 import { useAppState } from './state/useAppState'
+import type { Spot, SpeciesOrCombined } from './state/urlState'
 import {
   addDays,
   dateWindow,
@@ -241,7 +243,25 @@ function MapScreen() {
     enabled: analysis && factorDay,
   })
 
-  const { selectSpot, flyTo, setComune } = app
+  const { selectSpot, flyTo, setComune, setDate, setSpecies } = app
+  const handleSpeciesChange = useCallback(
+    (species: SpeciesOrCombined) => {
+      track({ name: 'species-switch', data: { species } })
+      setSpecies(species)
+    },
+    [setSpecies],
+  )
+  const handleDateChange = useCallback(
+    (date: IsoDate) => {
+      const offset = daysBetween(app.today, date)
+      track({
+        name: 'date-move',
+        data: { offset: offset < -DATE_WINDOW.pastDays ? 'replay' : offset },
+      })
+      setDate(date)
+    },
+    [app.today, setDate],
+  )
   const chooseComune = useCallback(
     (code: string | null) => {
       setComune(code)
@@ -251,8 +271,13 @@ function MapScreen() {
     [setComune, flyTo, comuni.data],
   )
   const openSpot = useCallback(
-    (...args: Parameters<typeof selectSpot>) => {
-      selectSpot(...args)
+    (
+      spot: Spot,
+      method: 'map' | 'search' | 'gps' | 'hotspot',
+      camera?: Omit<CameraRequest, 'id'>,
+    ) => {
+      track({ name: 'spot-open', data: { method } })
+      selectSpot(spot, camera)
       setSheetOpen(true)
       setSearchOpen(false)
       setLocateError(null)
@@ -265,7 +290,7 @@ function MapScreen() {
     onLocated: useCallback(
       (lat: number, lon: number) => {
         setUserPosition({ lat, lon })
-        openSpot({ kind: 'point', lat, lon }, { lat, lon, zoom: SPOT_ZOOM })
+        openSpot({ kind: 'point', lat, lon }, 'gps', { lat, lon, zoom: SPOT_ZOOM })
       },
       [openSpot],
     ),
@@ -308,15 +333,17 @@ function MapScreen() {
     app.spot?.kind === 'cell' ? app.spot.cellId : (spotForecast.data?.cell_id ?? null)
 
   const onHotspot = (hotspot: Hotspot) =>
-    openSpot(
-      { kind: 'cell', cellId: hotspot.cell_ids[0] },
-      { lat: hotspot.lat, lon: hotspot.lon, zoom: HOTSPOT_ZOOM },
-    )
+    openSpot({ kind: 'cell', cellId: hotspot.cell_ids[0] }, 'hotspot', {
+      lat: hotspot.lat,
+      lon: hotspot.lon,
+      zoom: HOTSPOT_ZOOM,
+    })
   const onPlace = (place: Place) =>
-    openSpot(
-      { kind: 'point', lat: place.lat, lon: place.lon },
-      { lat: place.lat, lon: place.lon, zoom: SPOT_ZOOM },
-    )
+    openSpot({ kind: 'point', lat: place.lat, lon: place.lon }, 'search', {
+      lat: place.lat,
+      lon: place.lon,
+      zoom: SPOT_ZOOM,
+    })
 
   const search = (
     <PlaceSearch
@@ -418,18 +445,22 @@ function MapScreen() {
           // On a phone the sheet opens and the map shrinks around its centre:
           // centre on the tap so the chosen spot stays in view.
           onCellClick={(cellId, lat, lon) =>
-            openSpot({ kind: 'cell', cellId }, desktop ? undefined : { lat, lon })
+            openSpot({ kind: 'cell', cellId }, 'map', desktop ? undefined : { lat, lon })
           }
           onPointClick={(lat, lon) => {
             if (!inBounds(lat, lon, app.region.bounds)) return
-            openSpot({ kind: 'point', lat, lon }, desktop ? undefined : { lat, lon })
+            openSpot(
+              { kind: 'point', lat, lon },
+              'map',
+              desktop ? undefined : { lat, lon },
+            )
           }}
           onHotspotClick={onHotspot}
         />
         <div className={styles.species}>
           <SpeciesSwitcher
             value={app.species}
-            onChange={app.setSpecies}
+            onChange={handleSpeciesChange}
             noCombined={analysis}
           />
         </div>
@@ -483,7 +514,7 @@ function MapScreen() {
               historyStart={HISTORY_START}
               season={app.season}
               seasons={seasonYears}
-              onDate={app.setDate}
+              onDate={handleDateChange}
               onSeason={app.setSeason}
               playback={
                 analysis
@@ -542,6 +573,7 @@ function MapScreen() {
                 value={app.view}
                 panelId="sheet-view"
                 onChange={(view) => {
+                  track({ name: 'view-switch', data: { view } })
                   app.setView(view)
                   setSheetOpen(true)
                 }}
@@ -580,7 +612,7 @@ function MapScreen() {
                       selected={app.season}
                       onSelect={app.setSeason}
                       seasonMap={seasonMap.data}
-                      onReplayDay={app.setDate}
+                      onReplayDay={handleDateChange}
                       sightingsVisible={app.sightingsVisible}
                       onSightingsVisibleChange={app.setSightingsVisible}
                       plausible={plausible}
@@ -589,7 +621,7 @@ function MapScreen() {
                   {app.view === 'outlook' && (
                     <OutlookPanel
                       species={app.species}
-                      onSpecies={app.setSpecies}
+                      onSpecies={handleSpeciesChange}
                       comuni={comuni.data?.comuni}
                       comune={app.comune}
                       onComune={chooseComune}

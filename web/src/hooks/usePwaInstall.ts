@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { track } from '../analytics'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -38,7 +39,11 @@ export function usePwaInstall(): { available: boolean; install: () => void } {
   const install = useCallback(() => {
     if (!deferred) return
     void deferred.prompt()
-    void deferred.userChoice.finally(() => setDeferred(null))
+    void deferred.userChoice
+      .then(({ outcome }) => {
+        if (outcome === 'accepted') track({ name: 'pwa-install' })
+      })
+      .finally(() => setDeferred(null))
   }, [deferred])
 
   return { available: !installed && deferred !== null, install }
