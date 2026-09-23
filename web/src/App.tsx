@@ -573,7 +573,7 @@ function MapScreen() {
             <>
               {app.route.kind === 'region' && (
                 <div className={styles.intro}>
-                  <p>{t(`intro.lead.${introKey}`)}</p>
+                  <p>{t(`lede.${introKey}`)}</p>
                   <button
                     type="button"
                     className={styles.more}
@@ -581,7 +581,7 @@ function MapScreen() {
                     aria-controls="intro-more"
                     onClick={() => setIntroOpen((open) => !open)}
                   >
-                    {t('intro.more')}
+                    {t('lede.more')}
                     <ChevronIcon direction={introOpen ? 'up' : 'down'} />
                   </button>
                   {/* Folded, not left out: it is what the page says to search engines too. */}

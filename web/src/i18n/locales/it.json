@@ -470,13 +470,13 @@
     "region": "La mappa mostra, cella per cella, l'indice delle condizioni di porcini, ovoli e gallinacci in Toscana: quanto il meteo e il bosco favoriscono la loro crescita, non dove si trovano i funghi. Qui vedi la specie più favorita in ogni cella; scegli una specie per la sua stagione e il dettaglio dei fattori. L'indice va da 0 a 1 e non è una probabilità.",
     "porcini": "La mappa mostra, cella per cella, l'indice delle condizioni per i porcini in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va principalmente da fine estate all'autunno. L'indice va da 0 a 1 e non è una probabilità.",
     "ovoli": "La mappa mostra, cella per cella, l'indice delle condizioni per gli ovoli in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione va da giugno a novembre, soprattutto in autunno. L'indice va da 0 a 1 e non è una probabilità.",
-    "gallinacci": "La mappa mostra, cella per cella, l'indice delle condizioni per i gallinacci in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione è quasi tutto l'anno, con i picchi in primavera e in autunno. L'indice va da 0 a 1 e non è una probabilità.",
-    "lead": {
-      "region": "Condizioni per i funghi, cella per cella.",
-      "porcini": "Condizioni per i porcini, cella per cella.",
-      "ovoli": "Condizioni per gli ovoli, cella per cella.",
-      "gallinacci": "Condizioni per i gallinacci, cella per cella."
-    },
+    "gallinacci": "La mappa mostra, cella per cella, l'indice delle condizioni per i gallinacci in Toscana: quanto favoriscono la crescita il meteo, il bosco e la quota, non dove si trovano i funghi. La stagione è quasi tutto l'anno, con i picchi in primavera e in autunno. L'indice va da 0 a 1 e non è una probabilità."
+  },
+  "lede": {
+    "region": "Condizioni per i funghi, cella per cella.",
+    "porcini": "Condizioni per i porcini, cella per cella.",
+    "ovoli": "Condizioni per gli ovoli, cella per cella.",
+    "gallinacci": "Condizioni per i gallinacci, cella per cella.",
     "more": "Come funziona"
   },
   "structuredData": {
