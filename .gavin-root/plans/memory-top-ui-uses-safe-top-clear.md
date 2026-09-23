@@ -1,4 +1,5 @@
 ---
+order: 2048
 kind: note
 title: Top-anchored UI starts at --safe-top-clear
 status: To Do

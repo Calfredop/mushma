@@ -1,5 +1,5 @@
 ---
-order: 2048
+order: 1024
 kind: note
 labels: memory
 title: MapLibre 6 must be served verbatim, not bundled
