@@ -258,15 +258,47 @@ skipped when the grid is not built, e.g. in CI. All 15 pass.
 - **M4/M5 · Map delivery.** GeoJSON of woodland cells is 274 KB gzipped. Scores can ship as a
   separate `{cell_id: score}` payload joined on `id`, so the geometry is cached once.
 - **Data refresh.** Delete a file under `api/data/raw/` to re-download it. UCS is updated roughly
-  every three years; point `year_column` at the new year.
+  every three years; point `class_column` at the new year.
 
 ### Adding a region
 
-1. Write `api/src/api/config/regions/<region>.yaml` with the ISTAT region code and bbox.
-2. For a region outside Tuscany, replace the `forest.groups` source: CLC IV level alone can supply
-   the groups by mapping 311x → broadleaf, 312x → conifer, 313x → mixed, 3231/3232 → macchia and
-   324/3241 → transitional.
-3. Run the build with `--region <region>`.
+1. Write `api/src/api/config/regions/<region>.yaml` with the ISTAT region code, bbox, and
+   (optionally) a regional forest source.
+2. **Forest groups.** Point `forest.groups` at a vector source declared in `sources.yaml`
+   (`source`, `class_column`, `classes` mapping land-cover codes → broadleaf / conifer /
+   mixed / macchia / transitional). Supported downloads: zip shapefile, GeoPackage, a named
+   layer inside a zip, ArcGIS REST, WFS. Legacy `year_column` is still accepted as an alias
+   for `class_column`. **Omit `forest.groups`** to derive groups from CLC IV alone (311x →
+   broadleaf, 312x → conifer, 313x → mixed, 3231/3232 → macchia, 324x → transitional).
+3. **Forest types.** `forest.types` names the CLC (or equivalent) source and, when needed,
+   `classes` mapping type codes → habitats. If `classes` is omitted, the shared CLC IV
+   defaults are used (`api.grid.forest.CLC_IV_DEFAULT_TYPES`).
+4. The build prints the region's forest area against the INFC 2015 "bosco" figure in
+   `api/src/api/config/infc2015.yaml` and warns when the difference exceeds ±10 %.
+5. National raw files (ISTAT boundaries and localities, DEM tiles, CLC pages by bbox) are
+   cached once under `$DATA_DIR/raw/` and reused across regions.
+6. Run the build with `--region <region>`.
+
+Example CLC-only neighbour (Umbria):
+
+```yaml
+forest:
+  types:
+    source: ispra_clc18_iv
+```
+
+Example with a regional land-cover map (Tuscany):
+
+```yaml
+forest:
+  groups:
+    source: rt_ucs
+    class_column: ucs19
+    classes: {"311": broadleaf, "312": conifer, "313": mixed, "323": macchia, "324": transitional}
+  types:
+    source: ispra_clc18_iv
+    classes: { ... CLC IV → habitat ... }
+```
 
 ## Sources and licences
 

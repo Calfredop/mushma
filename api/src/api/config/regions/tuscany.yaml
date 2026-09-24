@@ -22,7 +22,7 @@ boundary:
 forest:
   groups:
     source: rt_ucs
-    year_column: ucs19
+    class_column: ucs19
     classes:
       "311": broadleaf
       "312": conifer

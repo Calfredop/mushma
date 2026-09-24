@@ -1,0 +1,27 @@
+# INFC 2015 "bosco" area (ha) by region slug.
+# Source: Inventario Nazionale delle Foreste e dei serbatoi forestali di Carbonio,
+# tables released 2022 (inventarioforestale.org). Trentino-Alto Adige is the sum of
+# the autonomous provinces of Bolzano (339,270) and Trento (373,259).
+# National total 9,085,188 ha.
+
+bosco_ha:
+  piemonte: 890433
+  valle_d_aosta: 99243
+  lombardia: 621968
+  trentino_alto_adige: 712529
+  veneto: 416704
+  friuli_venezia_giulia: 332556
+  liguria: 343160
+  emilia_romagna: 584901
+  tuscany: 1035448
+  umbria: 390305
+  marche: 291767
+  lazio: 560236
+  abruzzo: 411588
+  molise: 153248
+  campania: 403927
+  puglia: 142349
+  basilicata: 288020
+  calabria: 495177
+  sicilia: 285489
+  sardegna: 626140

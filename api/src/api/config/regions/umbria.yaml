@@ -1,0 +1,25 @@
+# Umbria: CLC IV level alone (no regional forest map configured yet).
+# Groups come from CLC prefixes; types use the shared CLC IV defaults.
+id: umbria
+name: {it: Umbria, en: Umbria}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [11.89, 42.36, 13.27, 43.62]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+boundary:
+  source: istat_boundaries
+  region_code: 10
+
+# No forest.groups: the build derives broadleaf/conifer/mixed/macchia/transitional from CLC IV
+# codes (311x, 312x, 313x, 3231/3232, 324x). Types use the shared CLC IV defaults.
+forest:
+  types:
+    source: ispra_clc18_iv
+
+soil:
+  source: soilgrids

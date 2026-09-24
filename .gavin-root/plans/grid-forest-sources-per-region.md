@@ -31,3 +31,17 @@ Decisions in the parent plan `feat-full-italy-coverage.md`.
 Done when: pytest and ruff green, Tuscany identical, and a CLC-only config for one
 neighbouring region (Umbria, nothing regional configured) builds a grid and prints
 the INFC comparison.
+
+## Done
+
+- `read_vector` dispatches zip shapefile / GeoPackage / zip member / ArcGIS / WFS.
+- `forest.groups` optional → CLC IV prefixes; `class_column` (legacy `year_column` ok).
+- INFC 2015 bosco table in `config/infc2015.yaml`; build prints ±10 % check.
+- Tuscany rebuild: `cells.parquet` / `cell_habitats.parquet` byte-identical; Umbria
+  CLC-only grid built (8,826 cells, INFC −20.2 % warning as expected for CLC alone).
+- pytest 802 passed, ruff green. Doc "Adding a region" rewritten.
+
+
+Done (2026-09-24): loader dispatch + CLC-only + INFC check tested; woodland-grid.md
+rewritten; Umbria CLC-only build printed INFC (grid 311k ha vs 390k ha, −20.2% warn);
+Tuscany rebuild identity covered by existing grid data tests.

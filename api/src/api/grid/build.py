@@ -4,34 +4,33 @@
 
 Fetches every source into ``$DATA_DIR/raw/`` (once), computes the cell layers and writes
 ``$DATA_DIR/grid/<region>/`` (see ``api.grid.store``). Safe to re-run; delete a raw file to
-re-download it.
+re-download it. National downloads (ISTAT, DEM tiles, CLC pages by bbox) are shared across
+regions under ``$DATA_DIR/raw/``.
 """
 
 import argparse
 import json
 import time
-import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-import pyogrio
 
 from api.grid import forest, terrain
 from api.grid.cells import generate_grid
 from api.grid.habitats import Vocabulary, load_vocabulary
+from api.grid.infc import load_infc_bosco
 from api.grid.places import assign_comuni, nearest_place, read_comuni, read_istat_localities
 from api.grid.region import RegionConfig, load_region
 from api.grid.soil import TOPSOIL_LAYERS, soil_ph_for_cells
 from api.grid.sources import (
     copernicus_dem_tiles,
     data_dir,
-    extract_7z,
     fetch,
-    fetch_arcgis_features,
     load_sources,
     read_region_boundary,
+    read_vector,
     soilgrids_url,
 )
 from api.grid.store import write_grid, write_map_geojson
@@ -66,13 +65,35 @@ MAP_PROPERTIES = ["dominant_habitat", "elevation_m"]
 PLACE_SEARCH_MARGIN_DEG = 0.1
 
 
+def forest_group_column(groups_config: dict) -> str:
+    """Class column on the groups source: ``class_column``, or legacy ``year_column``."""
+    if "class_column" in groups_config:
+        return str(groups_config["class_column"])
+    if "year_column" in groups_config:
+        return str(groups_config["year_column"])
+    raise KeyError("forest.groups needs class_column (or legacy year_column)")
+
+
 def forest_classes(
     region: RegionConfig, vocabulary: Vocabulary
 ) -> tuple[dict[str, str], dict[str, str]]:
-    """The region's land-cover code -> group and forest-type code -> habitat mappings, checked."""
-    config = region.extra["forest"]
-    groups = {str(k): v for k, v in config["groups"]["classes"].items()}
-    types = {str(k): v for k, v in config["types"]["classes"].items()}
+    """The region's land-cover code -> group and forest-type code -> habitat mappings, checked.
+
+    When ``forest.groups`` is omitted, groups are derived from CLC IV prefixes (311x → broadleaf,
+    …) and types default to ``CLC_IV_DEFAULT_TYPES`` unless ``forest.types.classes`` is set.
+    """
+    config = region.extra.get("forest") or {}
+    types_config = config.get("types") or {}
+    if "classes" in types_config:
+        types = {str(k): v for k, v in types_config["classes"].items()}
+    else:
+        types = dict(forest.CLC_IV_DEFAULT_TYPES)
+
+    if "groups" in config:
+        groups = {str(k): v for k, v in config["groups"]["classes"].items()}
+    else:
+        groups = forest.clc_group_classes(types)
+
     for code, group in groups.items():
         if group not in vocabulary.groups:
             raise ValueError(f"land-cover class {code} maps to unknown group {group!r}")
@@ -110,6 +131,7 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
     sources = load_sources()
     crs = region.grid.crs
     bbox = region.bbox_wgs84
+    forest_config = region.extra.get("forest") or {}
 
     def step(message: str) -> None:
         print(f"[{time.monotonic() - started:6.1f}s] {message}", flush=True)
@@ -120,32 +142,49 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
     boundary = read_region_boundary(limits, istat["regions"], region.boundary.region_code, crs)
     grid = generate_grid(boundary, region.grid.cell_size_m, crs)
 
-    step("forest groups (land cover)")
     group_classes, type_classes = forest_classes(region, vocabulary)
-    groups_config = region.extra["forest"]["groups"]
-    ucs = _read_rt_ucs(
-        sources["rt_ucs"].download or {},
-        raw / "rt_ucs",
-        groups_config["year_column"],
-        codes=list(group_classes),
-    )
-    ucs["group"] = ucs[groups_config["year_column"]].map(group_classes)
-    ucs = ucs[ucs["group"].notna()].to_crs(crs)
-    groups = forest.class_fractions(ucs, "group", grid)
+    types_source_id = (forest_config.get("types") or {}).get("source", "ispra_clc18_iv")
+    clc_download = sources[types_source_id].download or {}
+    clc_field = clc_download.get("field", "clc18")
 
-    step("forest types (CLC IV level)")
-    clc_download = sources["ispra_clc18_iv"].download or {}
-    pages = fetch_arcgis_features(
-        clc_download["arcgis_layer"],
-        bbox,
-        raw / "ispra_clc18_iv" / region.id,
-        out_fields=clc_download["field"],
-    )
-    clc = pd.concat([gpd.read_file(p) for p in pages], ignore_index=True).set_crs(
-        crs, allow_override=True
-    )
-    clc["habitat"] = clc[clc_download["field"]].astype(str).map(type_classes)
-    types = forest.class_fractions(clc[clc["habitat"].notna()], "habitat", grid)
+    if "groups" in forest_config:
+        step("forest groups (land cover)")
+        groups_config = forest_config["groups"]
+        groups_source_id = groups_config["source"]
+        class_col = forest_group_column(groups_config)
+        codes = list(group_classes)
+        listed = ", ".join(f"'{c}'" for c in codes)
+        cover = read_vector(
+            sources[groups_source_id].download or {},
+            raw / groups_source_id,
+            columns=[class_col],
+            where=f"{class_col} IN ({listed})",
+        )
+        cover["group"] = cover[class_col].astype(str).map(group_classes)
+        cover = cover[cover["group"].notna()].to_crs(crs)
+        groups = forest.class_fractions(cover, "group", grid)
+
+        step("forest types (CLC IV level)")
+        clc = read_vector(
+            clc_download,
+            raw / types_source_id / region.id,
+            bbox_wgs84=bbox,
+        )
+        clc["habitat"] = clc[clc_field].astype(str).map(type_classes)
+        types = forest.class_fractions(clc[clc["habitat"].notna()], "habitat", grid)
+        used_sources = [groups_source_id, types_source_id]
+    else:
+        step("forest groups and types (CLC IV level alone)")
+        clc = read_vector(
+            clc_download,
+            raw / types_source_id / region.id,
+            bbox_wgs84=bbox,
+        )
+        code = clc[clc_field].astype(str)
+        clc = clc.assign(group=code.map(group_classes), habitat=code.map(type_classes)).to_crs(crs)
+        groups = forest.class_fractions(clc[clc["group"].notna()], "group", grid)
+        types = forest.class_fractions(clc[clc["habitat"].notna()], "habitat", grid)
+        used_sources = [types_source_id]
 
     step("woodland mask and habitat composition")
     woodland_groups = tuple(g for g, spec in vocabulary.groups.items() if spec.woodland)
@@ -153,6 +192,18 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
     habitats, habitat_summary = forest.habitat_composition(
         grid, groups, types, vocabulary.group_of, fallback=vocabulary.fallback
     )
+
+    forest_ha = forest.forest_area_ha(mask, grid)
+    infc_ha = load_infc_bosco().get(region.id)
+    if infc_ha is not None:
+        delta, ok = forest.compare_infc_bosco(forest_ha, infc_ha)
+        status = "ok" if ok else f"WARNING outside ±{forest.INFC_TOLERANCE:.0%}"
+        step(
+            f"INFC 2015 bosco: grid {forest_ha:,.0f} ha vs inventory {infc_ha:,} ha "
+            f"({delta:+.1%}) — {status}"
+        )
+    else:
+        step(f"forest area {forest_ha:,.0f} ha (no INFC row for {region.id})")
 
     step("terrain (Copernicus DEM GLO-30)")
     tiles = [
@@ -191,14 +242,16 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
         grid, mask, habitat_summary, terrain_stats, soil, comune_labels, place_labels
     )
     out_dir = root / "grid" / region.id
-    used = [
+    used: list[str] = []
+    for source_id in (
         "istat_boundaries",
-        "rt_ucs",
-        "ispra_clc18_iv",
+        *used_sources,
         "copernicus_dem_glo30",
         "soilgrids",
         "istat_localities",
-    ]
+    ):
+        if source_id not in used:
+            used.append(source_id)
     meta = {
         "region": region.id,
         "built_at": datetime.now(UTC).isoformat(timespec="seconds"),
@@ -218,24 +271,6 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
     paths["map"] = write_map_geojson(cells, MAP_PROPERTIES, out_dir / "cells_wgs84.geojson")
     step(f"done: {len(cells)} cells, {int(cells['woodland'].sum())} woodland -> {out_dir}")
     return paths
-
-
-def _read_rt_ucs(
-    download: dict, folder: Path, year_column: str, codes: list[str]
-) -> gpd.GeoDataFrame:
-    archive = fetch(download["url"], folder / Path(download["url"]).name)
-    unpacked = folder / "unpacked"
-    if not (unpacked / ".extracted").exists():
-        with zipfile.ZipFile(archive) as zf:
-            inner = next(n for n in zf.namelist() if n.endswith(".7z"))
-            seven_zip = Path(zf.extract(inner, folder))
-        extract_7z(seven_zip, unpacked)
-        seven_zip.unlink()
-    shapefile = next(unpacked.rglob(download["shapefile"]))
-    listed = ", ".join(f"'{c}'" for c in codes)
-    return pyogrio.read_dataframe(
-        shapefile, columns=[year_column], where=f"{year_column} IN ({listed})"
-    )
 
 
 def main() -> None:

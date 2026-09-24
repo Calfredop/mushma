@@ -113,6 +113,68 @@ MIN_FOREST_KM2 = 0.25
 # Neighbourhood radii (in cells) searched for forest types when a cell has none of a group.
 TYPE_SEARCH_RADII = (0, 2, 5)
 WINDOW_SUM_TOLERANCE = 1e-9
+# Relative tolerance for the build's INFC 2015 bosco comparison (warn beyond this).
+INFC_TOLERANCE = 0.10
+
+# CLC 2018 IV level → habitat (broadleaf and conifer types). Mixed / macchia / transitional are
+# single-habitat groups and do not need a type split. Same mapping as tuscany.yaml forest.types.
+CLC_IV_DEFAULT_TYPES: dict[str, str] = {
+    "3111": "evergreen_oak",
+    "3112": "deciduous_oak",
+    "3113": "mixed_broadleaf",
+    "3114": "chestnut",
+    "3115": "beech",
+    "3116": "riparian",
+    "3117": "exotic_broadleaf",
+    "3121": "mediterranean_pine",
+    "3122": "mountain_pine",
+    "3123": "fir_spruce",
+    "3124": "other_conifer",
+    "3125": "other_conifer",
+}
+
+# Extra CLC codes that only feed the broad-group layer (no type split).
+_CLC_GROUP_ONLY_CODES = ("3131", "3132", "3231", "3232", "324", "3241")
+
+
+def clc_group_for_code(code: str) -> str | None:
+    """Broad group for a CLC IV forest code, or None when the code is not woodland."""
+    text = str(code)
+    if text.startswith("311"):
+        return "broadleaf"
+    if text.startswith("312"):
+        return "conifer"
+    if text.startswith("313"):
+        return "mixed"
+    if text in {"3231", "3232"}:
+        return "macchia"
+    if text.startswith("324"):
+        return "transitional"
+    return None
+
+
+def clc_group_classes(type_classes: dict[str, str] | None = None) -> dict[str, str]:
+    """CLC IV code → broad group for type classes plus mixed / macchia / transitional codes."""
+    codes = set(type_classes or CLC_IV_DEFAULT_TYPES) | set(_CLC_GROUP_ONLY_CODES)
+    return {code: group for code in codes if (group := clc_group_for_code(code)) is not None}
+
+
+def forest_area_ha(mask: pd.DataFrame, grid: pd.DataFrame) -> float:
+    """Forest area in hectares: Σ forest_fraction × region_fraction × 100 ha/cell."""
+    merged = grid[["cell_id", "region_fraction"]].merge(
+        mask[["cell_id", "forest_fraction"]], on="cell_id"
+    )
+    return float((merged["forest_fraction"] * merged["region_fraction"]).sum() * 100)
+
+
+def compare_infc_bosco(
+    forest_ha: float, expected_ha: float, tolerance: float = INFC_TOLERANCE
+) -> tuple[float, bool]:
+    """Relative delta vs INFC bosco and whether it is within ``tolerance``."""
+    if expected_ha <= 0:
+        raise ValueError(f"expected_ha must be positive, got {expected_ha}")
+    delta = (forest_ha - expected_ha) / expected_ha
+    return delta, abs(delta) <= tolerance + 1e-12
 
 
 def woodland_mask(
