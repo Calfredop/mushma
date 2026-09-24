@@ -66,8 +66,10 @@ def test_elevation_weights_hand_over_between_windows() -> None:
     value = evaluate(rule, here, w, _all_days(w)).value
     march, august = day_index(w, date(2024, 3, 15)), day_index(w, date(2024, 8, 15))
 
+    # March: only the lowland window is in season, so the handover cell (500 m) just gets its share.
     assert value[:, march].tolist() == [1, 0.5, 0]
-    assert value[:, august].tolist() == [1, 0.5, 1]
+    # August: both windows are in season, so the handover cell's shares add back up to 1.
+    assert value[:, august].tolist() == [1, 1, 1]
 
 
 def test_altitude_shift_delays_the_window_higher_up() -> None:

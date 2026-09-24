@@ -71,7 +71,7 @@ factors:
       GAL-02 + GAL-03. Lowland window wraps the year end and keeps summer in on purpose: moisture and heat
       rules make the summer gap, and rainy summers do fruit. Tuscan records: spring mode May-June, trough
       July-August, big mode October-November running into January. The appendix blends the two windows
-      linearly across 600-1000 m; this schema takes the max of the weighted windows, which is close.
+      linearly across 600-1000 m; this schema sums the weighted windows, which matches it.
 
   - id: season_two_flush
     role: gate

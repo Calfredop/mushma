@@ -174,6 +174,17 @@ BROKEN = {
         ),
         "31-09",
     ),
+    "elevation weights that do not sum to 1": (
+        lambda doc: _factor(doc, "season")["input"].update(
+            {
+                "windows": [
+                    dict(_factor(doc, "season")["input"]["windows"][0], elevation_weight=w)
+                    for w in ([None, None, 600, 1000], [None, None, 600, 1000])
+                ]
+            }
+        ),
+        "sum to 1",
+    ),
     "duplicate factor id": (
         lambda doc: doc["factors"].append(dict(_factor(doc, "frost"))),
         "duplicate",

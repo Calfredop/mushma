@@ -212,12 +212,49 @@ class SeasonWindow(_Strict):
         return None if t is None else check_trapezoid(t)
 
 
+def _trapezoid_value(t: Trapezoid, x: float) -> float:
+    """A single point's value of :func:`api.model.series.trapezoid`, reimplemented here (rather
+    than imported) because that module imports ``Trapezoid`` from this one."""
+    a, b, c, d = t
+    value = 1.0
+    if a is not None and b is not None:
+        lower = (x - a) / (b - a) if b > a else float(x >= b)
+        value = min(value, max(0.0, min(1.0, lower)))
+    if c is not None and d is not None:
+        upper = (d - x) / (d - c) if d > c else float(x <= c)
+        value = min(value, max(0.0, min(1.0, upper)))
+    return value
+
+
 class SeasonInput(_Strict):
     windows: Annotated[list[SeasonWindow], Field(min_length=1)]
 
+    @model_validator(mode="after")
+    def _elevation_weights_sum_to_one(self) -> "SeasonInput":
+        """``_season`` (api.model.factors) sums the elevation-weighted windows together, so once
+        two or more windows carry a weight, they must partition the elevation range: sum to 1
+        everywhere. A single weighted window is just a soft elevation gate on it and needs no
+        partner."""
+        weighted = [w.elevation_weight for w in self.windows if w.elevation_weight is not None]
+        if len(weighted) < 2:
+            return self
+        breakpoints = sorted({v for t in weighted for v in t if v is not None})
+        if not breakpoints:
+            return self
+        probes = [breakpoints[0] - 1.0, *breakpoints, breakpoints[-1] + 1.0]
+        for x in probes:
+            total = sum(_trapezoid_value(t, x) for t in weighted)
+            if abs(total - 1.0) > 1e-9:
+                raise ValueError(
+                    f"elevation_weight windows must sum to 1 at every elevation; got {total:g} "
+                    f"at {x:g} m"
+                )
+        return self
+
 
 class SeasonWindowFactor(_Factor):
-    """Max over windows of (day-of-year trapezoid x elevation weight)."""
+    """Sum over the windows that carry an elevation weight of (day-of-year trapezoid x elevation
+    weight), maxed with any windows that carry none."""
 
     kind: Literal["season_window"]
     input: SeasonInput

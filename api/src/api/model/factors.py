@@ -115,6 +115,7 @@ def _season(factor: SeasonWindowFactor, cells: Cells, weather: Weather, targets:
     doy = series.day_of_year(weather.dates[targets]).astype(float)[np.newaxis, :]
     elevation = cells.attributes["elevation_m"][:, np.newaxis]
     best = np.zeros((len(cells), doy.shape[1]))
+    blended = np.zeros((len(cells), doy.shape[1]))
     for window in factor.input.windows:
         t = doy
         if window.altitude_shift is not None:
@@ -123,9 +124,10 @@ def _season(factor: SeasonWindowFactor, cells: Cells, weather: Weather, targets:
         edges = _unwrapped(window.dates)
         inside = np.maximum.reduce([series.trapezoid(t + k * YEAR_DAYS, edges) for k in (-1, 0, 1)])
         if window.elevation_weight is not None:
-            inside = inside * series.trapezoid(elevation, window.elevation_weight)
-        best = np.maximum(best, inside)
-    return Evaluated(value=best)
+            blended = blended + inside * series.trapezoid(elevation, window.elevation_weight)
+        else:
+            best = np.maximum(best, inside)
+    return Evaluated(value=np.maximum(best, blended))
 
 
 def _habitat(factor: HabitatFactor, cells: Cells, weather: Weather, targets: slice):
