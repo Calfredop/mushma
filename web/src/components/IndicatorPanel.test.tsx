@@ -97,6 +97,44 @@ describe('IndicatorPanel', () => {
     )
   })
 
+  describe('the Bosco toggle', () => {
+    it('shows whether the forest layer is on, and toggles it', async () => {
+      const onToggleForest = vi.fn()
+      render(
+        <IndicatorPanel
+          chips={chips}
+          active={[]}
+          onToggle={() => {}}
+          forestOn
+          onToggleForest={onToggleForest}
+        />,
+      )
+      const bosco = screen.getByRole('button', { name: 'Bosco' })
+      expect(bosco).toHaveAttribute('aria-pressed', 'true')
+      await userEvent.click(bosco)
+      expect(onToggleForest).toHaveBeenCalledOnce()
+    })
+
+    it('is off by default, and shows no legend', () => {
+      render(<IndicatorPanel chips={chips} active={[]} onToggle={() => {}} />)
+      expect(screen.getByRole('button', { name: 'Bosco' })).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      )
+      expect(screen.queryByText('faggeta')).toBeNull()
+    })
+
+    it('lists every forest type by broad group once turned on', () => {
+      render(<IndicatorPanel chips={chips} active={[]} onToggle={() => {}} forestOn />)
+      const broadleaf = screen.getByRole('group', { name: 'Latifoglie' })
+      expect(within(broadleaf).getByText('faggeta')).toBeInTheDocument()
+      const conifer = screen.getByRole('group', { name: 'Conifere' })
+      expect(within(conifer).getByText('abetina')).toBeInTheDocument()
+      // Not toggle buttons: the layer is one on/off, not 14.
+      expect(within(broadleaf).queryByRole('button')).toBeNull()
+    })
+  })
+
   describe('as a row, on a phone', () => {
     it('lines the chips up with the opacity key first, and no family headings', () => {
       render(
@@ -119,6 +157,7 @@ describe('IndicatorPanel', () => {
           .getAllByRole('button')
           .map((b) => b.textContent),
       ).toEqual([
+        'Bosco',
         'Pioggia di innesco',
         'Bilancio idrico',
         'Temperatura del suolo',

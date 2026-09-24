@@ -259,12 +259,22 @@
       "macchia": "Mediterranean scrub",
       "transitional_woodland_shrub": "young woodland and scrub"
     },
+    "group": {
+      "broadleaf": "Broadleaf",
+      "conifer": "Conifer",
+      "mixed": "Mixed",
+      "macchia": "Scrub",
+      "transitional": "Young woodland"
+    },
     "share": "{{type}} {{share}}",
     "rest": "other types {{share}}",
     "fit": "{{type}} {{fit}}"
   },
   "analysis": {
     "toggle": "Analysis",
+    "forest": {
+      "toggle": "Woodland"
+    },
     "title": "Factors behind the score",
     "collapse": "Hide the factors",
     "expand": "Show the factors",

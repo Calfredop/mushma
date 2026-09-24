@@ -112,6 +112,29 @@
   background: var(--chip);
 }
 
+/* A reference swatch (the forest legend): always filled, not just when pressed. */
+.swatch.filled {
+  background: var(--chip);
+}
+
+/* The Bosco toggle chip's swatch: a strip of the 5 group colours, not one family's. */
+.forestSwatch {
+  display: flex;
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.forestSwatch span {
+  flex: 1;
+}
+
+.forestRow {
+  margin-bottom: var(--space-2);
+}
+
 .note {
   margin: var(--space-1) 0;
   color: var(--felce);

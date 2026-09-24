@@ -149,6 +149,60 @@ colours (worst 0.006: air temperature, drying and habitat). Mixing three colours
 two-dimensional colour space can land on any one of them, so no palette avoids this. The chip panel
 always says which layers are on.
 
+### Bosco layer
+
+Card `feat-forest-types-map`. A "Bosco" toggle, pinned at the start of the chip panel, draws each
+woodland cell's dominant forest type instead of, or underneath, the factor overlays: `GET
+/forest-types` (cached like `/comuni`; a cell's dominant habitat only, joined client-side onto the
+same cell sources analysis mode already builds). Unlike a factor, a forest type has no
+favourable/unfavourable direction, so there's no value × opacity blend: each cell draws at a fixed
+strength (0.85, just under the factor stack's 0.75 cap plus outline, so it reads as a base layer
+rather than another driver), and the layer sits *below* the indicator overlays (the same
+`factors-base-fill`/`factors-base-dot` layers that are transparent placeholders with the scores on).
+
+Fourteen habitats, five hue families by broad group (`api/src/api/config/habitats.yaml`):
+broadleaf and conifer each vary by lightness (green, darker for conifer); mixed, macchia and
+transitional are one swatch each, placed to clear both their neighbours and Lago.
+
+| group | habitat | hex | OKLCH |
+|---|---|---|---|
+| Broadleaf (green) | beech | `#A0C582` | 0.78 0.099 132 |
+| | chestnut | `#8AAF6C` | 0.71 0.101 132 |
+| | deciduous_oak | `#759958` | 0.64 0.100 132 |
+| | evergreen_oak | `#618443` | 0.57 0.101 132 |
+| | mixed_broadleaf | `#4D6F2F` | 0.50 0.100 132 |
+| | riparian | `#3A5B19` | 0.43 0.101 132 |
+| | exotic_broadleaf | `#284700` | 0.36 0.100 132 |
+| Conifer (darker, cooler green) | mediterranean_pine | `#38988E` | 0.62 0.090 186 |
+| | mountain_pine | `#00736B` | 0.50 0.088 186 |
+| | fir_spruce | `#004E48` | 0.38 0.067 186 |
+| | other_conifer | `#002B27` | 0.26 0.046 185 |
+| Mixed | mixed_broadleaf_conifer | `#223923` | 0.32 0.048 145 |
+| Macchia (warm) | macchia | `#8E3B1C` | 0.46 0.121 40 |
+| Transitional (pale) | transitional_woodland_shrub | `#D5D699` | 0.86 0.080 109 |
+
+Derived with the same method as the factor families: candidate hues placed by cartographic
+convention first (green for wooded groups, warm for macchia, pale for young regrowth, matching the
+IGM/CAI reference), then hill-climbed for lightness/chroma inside that window to clear Lago, the
+basemap and each other, checked with the Machado et al. (2009) full-severity CVD simulation,
+distances in OKLab (ΔE OK). The whole hue circle is already close to saturated by the six factor
+families above, so unlike them the Bosco palette doesn't try to also clear all 26 factor/UI
+colours -- it's a separate map "mode" mostly viewed alone or with one or two chips on, not stacked
+against all of them, and the chip panel still says what's on.
+
+| check | worst ΔE OK |
+|---|---|
+| any two habitats | 0.036 (exotic_broadleaf, macchia) |
+| any habitat against Lago `#1F56A0` | 0.055 (mountain_pine) |
+| any habitat against the basemap land | 0.067 (transitional_woodland_shrub) |
+| any habitat against Lichene (the panel surface) | 0.091 (transitional_woodland_shrub) |
+| any habitat against an existing factor/UI colour | 0.020 (chestnut, close to sun_exposure) |
+
+The legend groups the 14 types under their broad-group heading, reusing the same translated names
+as the "why" panel's forest mix (`forest.types.*`, card `feat-tipo-di-bosco`). On a phone the row
+layout keeps just the toggle chip; the full legend is desktop-panel only, where there's room, and a
+tap on a cell still gives its own mix (main types plus a share of "other types") either way.
+
 ## Type
 
 Self-hosted with Fontsource (no third-party font requests, and M7 can cache them offline).

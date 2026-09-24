@@ -81,11 +81,21 @@ export function cellsToSquares(
   }
 }
 
-function factorProperties(cell: CellFactors, ids: readonly string[]): FactorProperties {
+/** Bosco layer: a cell's dominant forest type, keyed by cell_id. Static -- doesn't vary by
+ * species or day, unlike the factor values, so it's merged in rather than fetched per cell row. */
+export type ForestTypesByCell = ReadonlyMap<string, string>
+
+function factorProperties(
+  cell: CellFactors,
+  ids: readonly string[],
+  forestTypes: ForestTypesByCell | undefined,
+): FactorProperties {
   const properties: FactorProperties = { cell_id: cell.cell_id }
   cell.values.forEach((value, i) => {
     if (value !== null && ids[i] !== undefined) properties[ids[i]] = value
   })
+  const forestType = forestTypes?.get(cell.cell_id)
+  if (forestType !== undefined) properties.forest_type = forestType
   return properties
 }
 
@@ -93,6 +103,7 @@ function factorProperties(cell: CellFactors, ids: readonly string[]): FactorProp
 export function factorCellsToPoints(
   cells: CellFactors[],
   ids: readonly string[],
+  forestTypes?: ForestTypesByCell,
 ): FeatureCollection<Point, FactorProperties> {
   return {
     type: 'FeatureCollection',
@@ -100,7 +111,7 @@ export function factorCellsToPoints(
       type: 'Feature',
       id: cell.cell_id,
       geometry: { type: 'Point', coordinates: [cell.lon, cell.lat] },
-      properties: factorProperties(cell, ids),
+      properties: factorProperties(cell, ids, forestTypes),
     })),
   }
 }
@@ -109,6 +120,7 @@ export function factorCellsToSquares(
   cells: CellFactors[],
   ids: readonly string[],
   sizeKm = 1,
+  forestTypes?: ForestTypesByCell,
 ): FeatureCollection<Polygon, FactorProperties> {
   return {
     type: 'FeatureCollection',
@@ -116,7 +128,7 @@ export function factorCellsToSquares(
       type: 'Feature',
       id: cell.cell_id,
       geometry: { type: 'Polygon', coordinates: cellSquare(cell.lon, cell.lat, sizeKm) },
-      properties: factorProperties(cell, ids),
+      properties: factorProperties(cell, ids, forestTypes),
     })),
   }
 }

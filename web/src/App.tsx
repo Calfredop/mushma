@@ -23,6 +23,7 @@ import {
   isClientError,
   useComuni,
   useFactors,
+  useForestTypeCells,
   useHotspots,
   useOutlook,
   usePlausibleSpecies,
@@ -172,6 +173,9 @@ function MapScreen() {
   const factorSpecies = app.species === 'combined' ? 'porcini' : app.species
   const scores = useScores(app.species, app.date, app.today, !seasonMode && !analysis)
   const factors = useFactors(factorSpecies, app.date, app.today, analysis && factorDay)
+  // The Bosco layer's forest types: static grid data, fetched once regardless of the toggle's
+  // own state, so switching it on never waits on a request.
+  const forestTypes = useForestTypeCells(analysis)
   const seasonMap = useSeasonMap(app.season, app.species)
   const hotspots = useHotspots(
     app.species,
@@ -242,10 +246,23 @@ function MapScreen() {
   )
   const factorIds = useMemo(() => servedFactors?.map((f) => f.id) ?? [], [servedFactors])
   const factorCells = factorDay ? factors.data?.cells : undefined
+  const forestByCellId = useMemo(
+    () =>
+      forestTypes.data &&
+      new Map(forestTypes.data.cells.map((c) => [c.cell_id, c.habitat])),
+    [forestTypes.data],
+  )
   const analysisView = useMemo<AnalysisView | null>(
     () =>
-      analysis ? { cells: factorCells, ids: factorIds, active: activeIndicators } : null,
-    [analysis, factorCells, factorIds, activeIndicators],
+      analysis
+        ? {
+            cells: factorCells,
+            ids: factorIds,
+            active: activeIndicators,
+            forestTypes: { byCellId: forestByCellId, on: app.forest },
+          }
+        : null,
+    [analysis, factorCells, factorIds, activeIndicators, forestByCellId, app.forest],
   )
 
   // Play: a day a second through the strip, the next days fetched ahead.
@@ -520,6 +537,8 @@ function MapScreen() {
                   onToggle={app.toggleIndicator}
                   note={servedFactors ? undefined : analysisNote}
                   showSightings={app.sightingsVisible}
+                  forestOn={app.forest}
+                  onToggleForest={app.toggleForestLayer}
                 />
               ) : (
                 <Legend

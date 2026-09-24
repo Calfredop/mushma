@@ -6,6 +6,7 @@ import {
   rollToday,
   serializeUrlState,
   speciesForMode,
+  toggleForestLayer,
   toggleIndicator,
   type UrlState,
   withMode,
@@ -24,6 +25,7 @@ describe('parseUrlState', () => {
       season: null,
       mode: 'map',
       indicators: [],
+      forest: false,
     })
   })
 
@@ -66,6 +68,7 @@ describe('serializeUrlState', () => {
           season: null,
           mode: 'map',
           indicators: [],
+          forest: false,
         },
         today,
       ),
@@ -81,6 +84,7 @@ describe('serializeUrlState', () => {
       season: null,
       mode: 'map',
       indicators: [],
+      forest: false,
     }
     const search = serializeUrlState(state, today)
     expect(search).toBe('?date=2026-09-12&at=43.12346%2C11.5')
@@ -191,6 +195,7 @@ describe('time views in the URL', () => {
       season: 2024,
       mode: 'map',
       indicators: [],
+      forest: false,
     }
     const search = serializeUrlState(state, today)
     expect(search).toBe('?date=2024-10-12&view=seasons&comune=046007&season=2024')
@@ -205,6 +210,7 @@ describe('time views in the URL', () => {
           season: null,
           mode: 'map',
           indicators: [],
+          forest: false,
         },
         today,
       ),
@@ -270,6 +276,21 @@ describe('analysis mode in the URL', () => {
     )
     expect(serializeUrlState({ ...state, mode: 'map' }, today)).toBe('')
   })
+
+  it('reads the Bosco toggle, only inside the mode', () => {
+    expect(parse('?mode=analysis&bosco=1').forest).toBe(true)
+    expect(parse('?mode=analysis').forest).toBe(false)
+    expect(parse('?bosco=1').forest).toBe(false)
+  })
+
+  it('round-trips bosco only when it is on and in the mode', () => {
+    const state: UrlState = { ...parse(''), mode: 'analysis', forest: true }
+    const search = serializeUrlState(state, today)
+    expect(search).toContain('bosco=1')
+    expect(parse(search)).toEqual(state)
+    expect(serializeUrlState({ ...state, forest: false }, today)).not.toContain('bosco')
+    expect(serializeUrlState({ ...state, mode: 'map' }, today)).toBe('')
+  })
 })
 
 describe('analysis mode transitions', () => {
@@ -317,5 +338,23 @@ describe('analysis mode transitions', () => {
     const on = toggleIndicator(inMode, 'drying')
     expect(on.indicators).toEqual(['rain_trigger', 'drying'])
     expect(toggleIndicator(on, 'rain_trigger').indicators).toEqual(['drying'])
+  })
+
+  it('the Bosco toggle flips independently of the indicators', () => {
+    const inMode = { ...base, mode: 'analysis' as const, indicators: ['rain_trigger'] }
+    const on = toggleForestLayer(inMode)
+    expect(on.forest).toBe(true)
+    expect(on.indicators).toEqual(['rain_trigger'])
+    expect(toggleForestLayer(on).forest).toBe(false)
+  })
+
+  it('keepIndicators never touches the Bosco toggle', () => {
+    const inMode = {
+      ...base,
+      mode: 'analysis' as const,
+      indicators: ['drying'],
+      forest: true,
+    }
+    expect(keepIndicators(inMode, ['rain_trigger']).forest).toBe(true)
   })
 })

@@ -27,6 +27,7 @@ import {
   speciesForMode,
   type SpeciesOrCombined,
   type Spot,
+  toggleForestLayer,
   toggleIndicator,
   type UrlState,
   type View,
@@ -84,6 +85,8 @@ export interface AppStateValue extends UrlState {
   toggleIndicator: (id: string) => void
   /** Once the species' indicators are known: drop any it doesn't have. */
   keepIndicators: (available: readonly string[]) => void
+  /** Analysis mode's Bosco toggle, independent of the indicators. */
+  toggleForestLayer: () => void
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -168,6 +171,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     (available: readonly string[]) => setState((s) => keepIndicators(s, available)),
     [],
   )
+  const toggleForest = useCallback(() => setState((s) => toggleForestLayer(s)), [])
   const setDate = useCallback(
     (date: IsoDate) => setState((s) => ({ ...s, date, season: null })),
     [],
@@ -219,6 +223,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setMode,
       toggleIndicator: toggle,
       keepIndicators: keep,
+      toggleForestLayer: toggleForest,
     }),
     [
       state,
@@ -241,6 +246,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setMode,
       toggle,
       keep,
+      toggleForest,
     ],
   )
 

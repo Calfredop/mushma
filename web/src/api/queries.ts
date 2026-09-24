@@ -42,6 +42,8 @@ export type StatusResponse = components['schemas']['StatusResponse']
 export type PlausibleSpeciesResponse = components['schemas']['PlausibleSpeciesResponse']
 export type SpeciesProfile = components['schemas']['SpeciesProfile']
 export type TaxonProfile = components['schemas']['TaxonProfile']
+export type ForestTypesResponse = components['schemas']['ForestTypesResponse']
+export type CellForestType = components['schemas']['CellForestType']
 
 export class ApiError extends Error {
   readonly status: number
@@ -228,6 +230,20 @@ export function useComuni(enabled: boolean) {
       apiClient
         .GET('/comuni', { signal })
         .then(unwrap<components['schemas']['ComuniResponse']>('/comuni')),
+    staleTime: 24 * 60 * MINUTE,
+  })
+}
+
+/** Analysis mode's Bosco layer: every woodland cell's dominant forest type. Static grid data --
+ * doesn't vary by species or day, so it's fetched once and kept, like `useComuni`. */
+export function useForestTypeCells(enabled: boolean) {
+  return useQuery({
+    queryKey: ['forest-types'],
+    enabled,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/forest-types', { signal })
+        .then(unwrap<ForestTypesResponse>('/forest-types')),
     staleTime: 24 * 60 * MINUTE,
   })
 }

@@ -55,6 +55,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/forest-types': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Analysis mode's Bosco layer: every woodland cell's dominant forest type */
+    get: operations['get_forest_types_forest_types_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/health': {
     parameters: {
       query?: never
@@ -291,6 +308,16 @@ export interface components {
        * @description each factor's 0-1 value, in `factors` order, rounded to 3 decimals: 1 is favourable, 0 holds the score back. From the rule file that wins the cell that day (the one the breakdown explains); null where that rule file lacks the factor
        */
       values: (number | null)[]
+    }
+    /** CellForestType */
+    CellForestType: {
+      /** Cell Id */
+      cell_id: string
+      /**
+       * Habitat
+       * @description the cell's dominant forest type, a habitat of `config/habitats.yaml`
+       */
+      habitat: string
     }
     /** CellSeason */
     CellSeason: {
@@ -546,6 +573,15 @@ export interface components {
        * @enum {string}
        */
       species: 'porcini' | 'ovoli' | 'gallinacci'
+    }
+    /**
+     * ForestTypesResponse
+     * @description Analysis mode's Bosco layer: every woodland cell's dominant forest type. Static grid data --
+     *     doesn't vary by species or day, so unlike `/scores` and `/factors` there's no date here.
+     */
+    ForestTypesResponse: {
+      /** Cells */
+      cells: components['schemas']['CellForestType'][]
     }
     /** GridCellScore */
     GridCellScore: {
@@ -1123,6 +1159,26 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_forest_types_forest_types_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ForestTypesResponse']
         }
       }
     }

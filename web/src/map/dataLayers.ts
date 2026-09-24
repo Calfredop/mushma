@@ -9,6 +9,7 @@ import type {
   SourceSpecification,
   StyleSpecification,
 } from 'maplibre-gl'
+import { FOREST_COLOR_BY_HABITAT, NEUTRAL_FOREST_COLOR } from '../score/forestColors'
 import { layerOpacities } from '../score/indicators'
 import { goodDaysStepExpression, scoreStepExpression } from '../score/scale'
 import { DATA_LAYERS_BEFORE, LABEL_FONT } from './basemap'
@@ -18,6 +19,40 @@ const HUMUS = '#1C211D'
 const CARTA = '#F8FAF6'
 const LICHENE = '#EDF0EA'
 const SCORE = scoreStepExpression(['get', 'score']) as ExpressionSpecification
+
+/** Bosco layer: each habitat's colour, categorical -- a cell's forest type has no
+ * favourable/unfavourable direction, so unlike the score or a factor this isn't a value×opacity
+ * blend, just a fixed fill. An unknown or missing forest_type draws in the neutral grey. */
+const FOREST_FILL = [
+  'match',
+  ['get', 'forest_type'],
+  ...Object.entries(FOREST_COLOR_BY_HABITAT).flatMap(([habitat, { color }]) => [
+    habitat,
+    color,
+  ]),
+  NEUTRAL_FOREST_COLOR,
+] as unknown as ExpressionSpecification
+
+/** The Bosco layer's opacity when it's on, fading out with the score/factor layers at the same
+ * zoom so the square geometry takes over from the dot the same way. Off is 0, set directly. */
+export const FOREST_DOT_OPACITY: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  9.5,
+  0.85,
+  10.5,
+  0,
+]
+export const FOREST_FILL_OPACITY: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  9,
+  0,
+  10.5,
+  0.85,
+]
 
 /** What the cells' `score` property holds: a day's conditions score, or a season's good days. */
 export type CellScale = 'score' | 'goodDays'
@@ -109,8 +144,10 @@ const CELL_LAYER_SPECS: LayerSpecification[] = [
       'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0, 10.5, 0.82],
     },
   },
-  // Analysis mode: where the woodland is (a faint ring per cell) and what a tap lands on, under
-  // the indicators. Hidden with the scores on.
+  // Analysis mode: where the woodland is (a faint ring per cell), what a tap lands on, and --
+  // when the Bosco toggle is on -- the cell's forest type, under the indicator overlays. Hidden
+  // with the scores on. Bosco off is plain 'circle-opacity'/'fill-opacity' 0 (ConditionsMap sets
+  // it), same colour underneath either way so toggling never needs a setData.
   {
     id: 'factors-base-dot',
     type: 'circle',
@@ -118,7 +155,8 @@ const CELL_LAYER_SPECS: LayerSpecification[] = [
     maxzoom: 11,
     layout: { visibility: 'none' },
     paint: {
-      'circle-color': 'rgba(0,0,0,0)',
+      'circle-color': FOREST_FILL,
+      'circle-opacity': 0,
       'circle-radius': CELL_DOT_RADIUS,
       'circle-stroke-color': HUMUS,
       'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.3, 10.5, 0],
@@ -131,7 +169,7 @@ const CELL_LAYER_SPECS: LayerSpecification[] = [
     source: 'cells-squares',
     minzoom: 9,
     layout: { visibility: 'none' },
-    paint: { 'fill-color': 'rgba(0,0,0,0)' },
+    paint: { 'fill-color': FOREST_FILL, 'fill-opacity': 0 },
   },
   {
     id: 'cells-outline',

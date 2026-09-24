@@ -41,6 +41,13 @@ export interface UrlState {
    * top). Kept while the mode is off, so turning it back on restores them.
    */
   indicators: string[]
+  /**
+   * Analysis mode's Bosco toggle: each cell's dominant forest type instead of, or alongside, the
+   * factor layers. Its own flag, not one more indicator -- it doesn't depend on species or day,
+   * so it isn't cleared or restored by `keepIndicators`. Kept while the mode is off, like the
+   * indicators, and defaults to off.
+   */
+  forest: boolean
 }
 
 export interface DateWindowSize {
@@ -164,6 +171,7 @@ export function parseUrlState(
     season: parseSeason(params.get('season'), view, today, historyStart),
     mode,
     indicators: mode === 'analysis' ? parseIndicators(params.get('f')) : [],
+    forest: mode === 'analysis' && params.get('bosco') === '1',
   }
 }
 
@@ -221,6 +229,11 @@ export function toggleIndicator<S extends UrlState>(state: S, id: string): S {
   return { ...state, indicators }
 }
 
+/** The Bosco toggle: independent of the indicators, so it can be on with any of them, or alone. */
+export function toggleForestLayer<S extends UrlState>(state: S): S {
+  return { ...state, forest: !state.forest }
+}
+
 function round(value: number): number {
   return Number(value.toFixed(POINT_DECIMALS))
 }
@@ -238,6 +251,7 @@ export function serializeUrlState(state: UrlState, today: IsoDate): string {
   if (state.mode === 'analysis') {
     params.set('mode', 'analysis')
     params.set('f', state.indicators.join(','))
+    if (state.forest) params.set('bosco', '1')
   }
   const search = params.toString()
   return search ? `?${search}` : ''

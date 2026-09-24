@@ -31,6 +31,8 @@ import {
   type CellScale,
   cellColor,
   EMPTY_COLLECTION as EMPTY,
+  FOREST_DOT_OPACITY,
+  FOREST_FILL_OPACITY,
   withDataLayers,
 } from './dataLayers'
 import {
@@ -38,6 +40,7 @@ import {
   cellsToSquares,
   factorCellsToPoints,
   factorCellsToSquares,
+  type ForestTypesByCell,
   sightingsToPoints,
 } from './geojson'
 
@@ -52,6 +55,10 @@ export interface AnalysisView {
   ids: readonly string[]
   /** The indicators to draw, bottom to top. */
   active: readonly ActiveIndicator[]
+  /** The Bosco toggle: each cell's dominant forest type, and whether it's drawn. Static --
+   * doesn't depend on species or day -- so it's merged onto the same cell sources regardless of
+   * which factors are on. */
+  forestTypes?: { byCellId: ForestTypesByCell | undefined; on: boolean }
 }
 
 declare global {
@@ -298,9 +305,12 @@ export function ConditionsMap({
     }
   }, [])
 
-  // Scores, or in analysis mode the factors: both on the same cell sources.
+  // Scores, or in analysis mode the factors: both on the same cell sources. The Bosco layer's
+  // forest types ride along on the same sources too (merged in by cell_id) since they're static
+  // grid data, not a species/day factor -- so toggling Bosco never needs its own setData.
   const factorCells = analysis?.cells
   const factorIds = analysis?.ids
+  const forestByCellId = analysis?.forestTypes?.byCellId
   const drawn = inAnalysis ? factorCells : cells
   const firstPaintMarked = useRef(false)
   useEffect(() => {
@@ -310,8 +320,10 @@ export function ConditionsMap({
     const squares = map.getSource<GeoJSONSource>('cells-squares')
     if (inAnalysis) {
       const data = factorCells ?? []
-      points?.setData(factorCellsToPoints(data, factorIds ?? []))
-      squares?.setData(factorCellsToSquares(data, factorIds ?? [], CELL_SIZE_KM))
+      points?.setData(factorCellsToPoints(data, factorIds ?? [], forestByCellId))
+      squares?.setData(
+        factorCellsToSquares(data, factorIds ?? [], CELL_SIZE_KM, forestByCellId),
+      )
     } else {
       const data = cells ?? []
       points?.setData(cellsToPoints(data))
@@ -325,7 +337,7 @@ export function ConditionsMap({
         addRelief(map)
       })
     }
-  }, [cells, inAnalysis, factorCells, factorIds, drawn, ready])
+  }, [cells, inAnalysis, factorCells, factorIds, forestByCellId, drawn, ready])
 
   // Analysis mode hides the score colours; its base layers show where the woodland is and take
   // the taps.
@@ -357,6 +369,24 @@ export function ConditionsMap({
       indicatorLayers.current.push(layer.id)
     }
   }, [indicatorsKey, inAnalysis, ready])
+
+  // Bosco layer: the base fill/dot's own colour is always the forest-type expression (set once,
+  // in dataLayers.ts); only the opacity toggles, so switching it on never needs a setData.
+  const forestOn = inAnalysis && (analysis?.forestTypes?.on ?? false)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready) return
+    map.setPaintProperty(
+      'factors-base-dot',
+      'circle-opacity',
+      forestOn ? FOREST_DOT_OPACITY : 0,
+    )
+    map.setPaintProperty(
+      'factors-base-fill',
+      'fill-opacity',
+      forestOn ? FOREST_FILL_OPACITY : 0,
+    )
+  }, [forestOn, ready])
 
   // Colour scale: a day's score, or a season's good days.
   useEffect(() => {

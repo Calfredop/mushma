@@ -259,12 +259,22 @@
       "macchia": "macchia mediterranea",
       "transitional_woodland_shrub": "bosco giovane e arbusteto"
     },
+    "group": {
+      "broadleaf": "Latifoglie",
+      "conifer": "Conifere",
+      "mixed": "Misto",
+      "macchia": "Macchia",
+      "transitional": "Boschi giovani"
+    },
     "share": "{{type}} {{share}}",
     "rest": "altri tipi {{share}}",
     "fit": "{{type}} {{fit}}"
   },
   "analysis": {
     "toggle": "Analisi",
+    "forest": {
+      "toggle": "Bosco"
+    },
     "title": "Fattori dell'indice",
     "collapse": "Nascondi i fattori",
     "expand": "Mostra i fattori",

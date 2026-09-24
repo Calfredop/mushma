@@ -109,4 +109,22 @@ describe('factor cells to GeoJSON', () => {
       factorCellsToPoints(factorCells, ids).features.map((f) => f.properties),
     )
   })
+
+  it('merges in a cell forest type by cell_id, when given one', () => {
+    const forestTypes = new Map([['a', 'beech']])
+    const points = factorCellsToPoints(factorCells, ids, forestTypes)
+    expect(points.features[0].properties).toEqual({
+      cell_id: 'a',
+      season: 1,
+      rain_trigger: 0.25,
+      forest_type: 'beech',
+    })
+    // Cell b has no entry in the map: no forest_type property, same as a factor the winner lacks.
+    expect(points.features[1].properties).not.toHaveProperty('forest_type')
+  })
+
+  it('leaves forest_type out when no lookup is given', () => {
+    const points = factorCellsToPoints(factorCells, ids)
+    expect(points.features[0].properties).not.toHaveProperty('forest_type')
+  })
 })
