@@ -69,26 +69,36 @@ factors:
     i18n_key: factor.habitat
     input:
       affinity:
-        beech: 0.9
-        fir_spruce: 0.8
-        chestnut: 0.8
-        mixed_broadleaf_conifer: 0.8
+        beech: 1.0
+        fir_spruce: 1.0
+        chestnut: 1.0
+        mixed_broadleaf_conifer: 0.6
         mountain_pine: 0.6
         other_conifer: 0.3
         mediterranean_pine: 0.3
         deciduous_oak: 0.3
         mixed_broadleaf: 0.3
-        transitional_woodland_shrub: 0.2
+        transitional_woodland_shrub: 0.3
         evergreen_oak: 0.1
-        macchia: 0.05
-        riparian: 0.05
-        exotic_broadleaf: 0.05
+        macchia: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
       default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
     confidence: plausible
-    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, beugelsdijk2008]
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, beugelsdijk2008, mushma_habitat_share_2026]
     derived: true
     data: available
-    notes: POR-H2. Beech, fir and chestnut per Italian sources; pines moderate.
+    notes: >-
+      POR-H2. Four levels (2026-09-24, mushma_habitat_share_2026): beech, fir and chestnut are the
+      Italian-source hosts ("mainly with beech, fir and chestnut", preferred over the Dutch phylogeny
+      paper's pine-only claim for this Tuscan file) -> host. Mixed broadleaf+conifer (a beech-fir mix,
+      both hosts, capped below host for dilution) and mountain pine (often Pinus sylvestris, "moderate")
+      stay secondary. Other conifer, Mediterranean pine, deciduous oak, mixed broadleaf and transitional
+      woodland/shrub are marginal: "many pines" and "also broadleaves" are named only generically, and the
+      mixed/transitional classes are diluted by design. Evergreen oak, macchia, riparian and exotic
+      broadleaf are non-host: this cool/humid taxon has no source support there. Saturated to full credit
+      from a host-weighted share of 0.30.
 
   - id: altitude
     role: gate

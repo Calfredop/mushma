@@ -134,7 +134,10 @@ def _habitat(factor: HabitatFactor, cells: Cells, weather: Weather, targets: sli
     affinity = np.array(
         [factor.input.affinity.get(h, factor.input.default) for h in cells.habitat_names]
     )
-    return Evaluated(value=_static(cells.habitat_fractions @ affinity, targets, weather))
+    share = cells.habitat_fractions @ affinity
+    if factor.response is not None:
+        share = series.trapezoid(share, factor.response.trapezoid)
+    return Evaluated(value=_static(share, targets, weather))
 
 
 def _static_band(factor: StaticBandFactor, cells: Cells, weather: Weather, targets: slice):

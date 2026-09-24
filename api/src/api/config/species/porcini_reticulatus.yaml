@@ -72,25 +72,34 @@ factors:
     input:
       affinity:
         chestnut: 1.0
-        deciduous_oak: 0.9
+        deciduous_oak: 1.0
+        beech: 0.6
+        fir_spruce: 0.6
+        mountain_pine: 0.6
+        mixed_broadleaf: 0.6
         mixed_broadleaf_conifer: 0.6
-        beech: 0.5
-        mixed_broadleaf: 0.5
-        evergreen_oak: 0.4
-        transitional_woodland_shrub: 0.4
-        fir_spruce: 0.3
-        mountain_pine: 0.3
-        macchia: 0.2
-        mediterranean_pine: 0.2
-        other_conifer: 0.2
-        riparian: 0.15
-        exotic_broadleaf: 0.05
+        transitional_woodland_shrub: 0.6
+        evergreen_oak: 0.3
+        mediterranean_pine: 0.1
+        other_conifer: 0.1
+        macchia: 0.1
+        riparian: 0.05
+        exotic_broadleaf: 0.0
       default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
     confidence: plausible
-    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, beugelsdijk2008, santolamazza2023]
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, beugelsdijk2008, santolamazza2023, mushma_habitat_share_2026]
     derived: true
     data: available
-    notes: POR-H3. Chestnut and oak mainly; rarer under beech, pine and fir.
+    notes: >-
+      POR-H3. Four levels (2026-09-24, mushma_habitat_share_2026): chestnut and deciduous oak are "mainly"
+      named -> host. "Rarer under beech, hazel, pine and fir" names four more documented but clearly less
+      typical hosts, so beech, fir/spruce, mountain pine and mixed broadleaf (via hazel) stay secondary;
+      mixed broadleaf+conifer and transitional woodland/shrub are also secondary because that mix is mostly
+      chestnut/oak (both hosts), diluted only by design, not by weak evidence. Evergreen oak is marginal
+      (only "oak" is named, not specifically holm oak). Mediterranean pine, other conifer and macchia are
+      non-host (the "pine" mention is read as mountain pine, IGP's eligible black/Scots pine); riparian and
+      exotic broadleaf are non-host. Saturated to full credit from a host-weighted share of 0.30.
 
   - id: altitude
     role: gate

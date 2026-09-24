@@ -343,4 +343,65 @@ woodland cells (59–88 % depending on the factor) for being merely typical, not
 which is what the card set out to fix. The change stays as a prior, same as slope and sun exposure
 did after the growth-clock card.
 
+## Habitat tiers and saturation (2026-09-24)
+
+Card `model-habitat-tiers`. The habitat gate is a multiplicative area-weighted mean affinity, capped at 1, so
+only the single top-ranked forest type in each species' smooth ranking ever scored full credit: a chestnut or
+fir cell scored 10-20 % under an otherwise identical beech cell for *B. edulis* for no ecological reason (a
+ranking says which trees are hosts, not a yield ratio between them). Decided with the human 2026-09-24, before
+any score was compared with a sighting (habitat affinities are in `backtest.frozen_factor_kinds`, set from the
+literature, never tuned on sightings; this backtest is only a before/after check):
+
+1. **Four levels**, not a smooth scale, for all 6 species keys: host 1.0 (a main host in the sources),
+   secondary 0.6 (documented, clearly less typical), marginal 0.3 (occasional, or a mixed/transitional class
+   where only some trees are hosts), non-host 0-0.1. See POR-H1..H4 (`porcini.md`), OVO-02 (`ovoli.md`) and
+   GAL-05 (`gallinacci.md`) for the per-key tables and sources.
+2. **Saturation.** `_habitat`'s existing `Σ fraction × affinity` already is a host-weighted share of the
+   cell's woods; it is now run through a `[0, 0.30, null, null]` trapezoid (new optional `response` field on
+   the `habitat` factor kind), so a cell reaches full credit once about 30 % of its woods are worth a host,
+   instead of needing to be entirely host wood. On the Tuscan grid (2026-09-24): 25 % of woodland cells have
+   no type covering 70 % of the woods, and among cells where ≥30 % of the woods (≈30 ha) is a top host, 28 %
+   of *B. edulis* cells (955/3,419), 24 % of ovoli cells (1,661/6,913) and 29 % of gallinacci cells (680/2,371)
+   still scored habitat < 0.8 under the smooth ranking and unsaturated mean.
+
+**Before/after** (`habitat-tiers-before` = prior rules, `habitat-tiers-after` = four levels + saturation, both
+`uv run python -m api.model.backtest run --seasons train`), objective = mean of `auc_local` and
+`auc_time_effort`, `model` variant:
+
+| group | objective before → after | `auc_local` | `auc_time_effort` |
+|---|---|---|---|
+| porcini (n=23) | 0.581 → 0.551 | 0.500 (0.41–0.59) → 0.433 (0.35–0.52) | 0.662 → 0.668 (unchanged direction) |
+| ovoli (n=16) | 0.515 → **0.566** | 0.441 (0.36–0.53) → **0.542** (0.46–0.62) | 0.589 (unchanged) |
+| gallinacci (n=16) | 0.602 → **0.498** | 0.701 (0.60–0.79) → **0.493** (0.40–0.59) | 0.504 (unchanged) |
+
+`auc_time_effort` is a timing-only background (the sighted cell against its own other days) and does not read
+habitat, so it barely moves; the whole swing is in `auc_local` (the sighted cell against other woodland within
+20 km the same day), where habitat differentiation matters. The `habitat` baseline alone shows the same
+pattern, more sharply (porcini 0.561→0.511, ovoli 0.470→**0.563**, gallinacci 0.759→**0.506**): saturation
+puts far more area at exactly 1.0 (habitat-baseline `auc_local`'s bootstrap interval narrows to near-zero width
+after, e.g. porcini 0.5059-0.5164), so once a cell clears the host-share threshold, habitat alone can no longer
+tell it apart from any other cell that also clears it — correct by design (a good host is the baseline, not a
+ranking), but it means habitat contributes less separating power than before wherever many nearby cells now
+tie at full credit.
+
+**Decision.** Adopted as drafted: the level and saturation design traces to the literature (host lists, plot
+counts), not to these sightings, and the PRD's habitat semantics ("a good host is the baseline") do not bend to
+which direction a 16-23-sighting sample moves. Two things are worth a closer look in a later card rather than
+reverting anything here:
+
+- **Gallinacci's `auc_local` drop is the largest effect and traces to `evergreen_oak`.** GAL-05's own notes
+  call it a "main host" of *C. alborufescens* and weight it above its 5/10 Tuscan-plot frequency, which is why
+  it moved to host (1.0) alongside chestnut (9/9 plots, the only forest type gallinacci sightings are
+  concentrated in per `species-ecology.md`). Elevating evergreen oak to the same tier as chestnut removes a
+  ranking signal the sightings currently rely on, even though the literature calls both hosts. Worth
+  re-reading GAL-05's segregate evidence once more gallinacci sightings exist.
+- **Porcini's smaller `auc_local` drop** likely has the same mechanism (secondary-tier `mixed_broadleaf_conifer`
+  and `mountain_pine` no longer separated from marginal types the way the old 0.8/0.6/0.5/0.3 smooth scale did),
+  diluted across 4 keys and a group max.
+- **Ovoli improved** on every local/regional metric, the cleanest case for the change: its Tuscan plot evidence
+  already concentrated on oak and chestnut with everything else clearly secondary or below, so requantising
+  did not blur a ranking signal the way it did for gallinacci.
+
+n is 16-23 presences per group; none of these deltas should be read as more than a hint pending more sightings.
+
 <!-- RESULTS, TARGETS AND SANITY CHECK FOLLOW -->

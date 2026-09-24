@@ -77,27 +77,35 @@ factors:
     input:
       affinity:
         deciduous_oak: 1.0
-        chestnut: 0.9
-        evergreen_oak: 0.8
-        macchia: 0.7
-        transitional_woodland_shrub: 0.5
-        mediterranean_pine: 0.4
-        mixed_broadleaf: 0.4
-        mixed_broadleaf_conifer: 0.4
-        beech: 0.2
-        other_conifer: 0.1
-        mountain_pine: 0.1
-        fir_spruce: 0.05
-        riparian: 0.05
-        exotic_broadleaf: 0.05
+        chestnut: 1.0
+        evergreen_oak: 1.0
+        macchia: 1.0
+        transitional_woodland_shrub: 0.6
+        mediterranean_pine: 0.6
+        mixed_broadleaf: 0.3
+        mixed_broadleaf_conifer: 0.3
+        beech: 0.1
+        other_conifer: 0.0
+        mountain_pine: 0.0
+        fir_spruce: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
       default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
     confidence: plausible
-    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, sardegna_foreste_aereus, beugelsdijk2008, oria_de_rueda2008]
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, sardegna_foreste_aereus, beugelsdijk2008, oria_de_rueda2008, mushma_habitat_share_2026]
     derived: true
     data: available
     notes: >-
-      POR-H4. Oak and chestnut; also holm oak, macchia with Cistus, Arbutus and Erica, and pines with an
-      Erica scoparia understorey.
+      POR-H4. Four levels (2026-09-24, mushma_habitat_share_2026): oak, chestnut and holm oak are named
+      hosts. Macchia is host too, not just dilution: this thermophilic taxon fruits directly in Cistus,
+      Arbutus and Erica scrub in several sources, with Spanish yield data (22.5 kg/ha), and macchia is not
+      one of the three classes design keeps below 1 (mixed broadleaf, mixed broadleaf+conifer, transitional
+      woodland/shrub). Transitional woodland/shrub (oak/chestnut/macchia regrowth) and Mediterranean pine
+      (documented pine-with-Erica-scoparia understorey) are secondary. Mixed broadleaf and mixed
+      broadleaf+conifer are marginal: hornbeam/hazel/ash and conifer components are not this taxon's hosts.
+      Beech, other conifer, mountain pine, fir/spruce, riparian and exotic broadleaf are non-host: cool or
+      wet ground this warm, dry taxon avoids. Saturated to full credit from a host-weighted share of 0.30.
 
   - id: altitude
     role: gate

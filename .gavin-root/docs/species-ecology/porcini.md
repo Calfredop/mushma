@@ -53,10 +53,10 @@ zero_after/above]`. Temperatures are °C, rain mm, lags days, dates `DD-MM` (Eur
 | POR-S3 | edu | season | Main crop late summer to first snow; summer fruiting rare and left to the temperature rule | `[01-07, 01-09, 15-11, 20-12]` (derived) | plausible | R1 R2 R3 R24 R26 R27 | available |
 | POR-S4 | pin | season | Two flushes: late spring and autumn (the earliest and latest of the four). Score = max of the two windows | spring `[01-05, 20-05, 30-06, 20-07]`; autumn `[15-08, 15-09, 15-11, 15-12]` (derived) | plausible (spring flush: low) | R1 R2 R24 R25 R26 R42 | available |
 | POR-S5 | all | season × altitude | Keep the date window broad and let temperature (lapse-rate-corrected) shift timing with altitude. Optional explicit shift: autumn window 1.5 d earlier per +100 m above 600 m | `shift_days = -0.015 × (elev_m − 600)`, autumn only (derived) | plausible (extrapolated from central/northern Europe) | R20 | derived |
-| POR-H1 | edu | habitat | Affinity per habitat key | beech 1.0, chestnut 0.9, fir_spruce 0.9, mixed_broadleaf_conifer 0.8, mountain_pine 0.5, deciduous_oak 0.5, mixed_broadleaf 0.4, other_conifer 0.3, evergreen_oak 0.2, mediterranean_pine 0.2, macchia 0.1, riparian 0.1, exotic_broadleaf 0.05, transitional_woodland_shrub 0.3 (derived) | plausible | R1 R2 R3 R24 R26 R27 R23 | available |
-| POR-H2 | pin | habitat | Affinity per habitat key | beech 0.9, fir_spruce 0.8, chestnut 0.8, mixed_broadleaf_conifer 0.8, mountain_pine 0.6, other_conifer 0.3, mediterranean_pine 0.3, deciduous_oak 0.3, mixed_broadleaf 0.3, evergreen_oak 0.1, macchia 0.05, riparian 0.05, exotic_broadleaf 0.05, transitional_woodland_shrub 0.2 (derived) | plausible | R1 R2 R24 R25 R26 R23 | available |
-| POR-H3 | ret | habitat | Affinity per habitat key | chestnut 1.0, deciduous_oak 0.9, mixed_broadleaf_conifer 0.6, beech 0.5, mixed_broadleaf 0.5, evergreen_oak 0.4, fir_spruce 0.3, mountain_pine 0.3, macchia 0.2, mediterranean_pine 0.2, other_conifer 0.2, riparian 0.15, exotic_broadleaf 0.05, transitional_woodland_shrub 0.4 (derived) | plausible | R1 R2 R24 R26 R23 R31 | available |
-| POR-H4 | aer | habitat | Affinity per habitat key | deciduous_oak 1.0, chestnut 0.9, evergreen_oak 0.8, macchia 0.7, mediterranean_pine 0.4, mixed_broadleaf 0.4, mixed_broadleaf_conifer 0.4, beech 0.2, other_conifer 0.1, mountain_pine 0.1, fir_spruce 0.05, riparian 0.05, exotic_broadleaf 0.05, transitional_woodland_shrub 0.5 (derived) | plausible | R1 R2 R24 R26 R27 R28 R23 R32 | available |
+| POR-H1 | edu | habitat, four levels (2026-09-24) | host 1.0 / secondary 0.6 / marginal 0.3 / non-host 0-0.1 per habitat key, saturated to full credit from a 0.30 host-weighted share | host: beech, chestnut, fir_spruce. secondary: mixed_broadleaf_conifer, mountain_pine. marginal: deciduous_oak, mixed_broadleaf, other_conifer, transitional_woodland_shrub. non-host: evergreen_oak 0.1, mediterranean_pine 0.1, macchia 0, riparian 0, exotic_broadleaf 0 (derived) | plausible | R1 R2 R3 R24 R26 R27 R23 mushma_habitat_share_2026 | available |
+| POR-H2 | pin | habitat, four levels (2026-09-24) | host 1.0 / secondary 0.6 / marginal 0.3 / non-host 0-0.1 per habitat key, saturated to full credit from a 0.30 host-weighted share | host: beech, fir_spruce, chestnut. secondary: mixed_broadleaf_conifer, mountain_pine. marginal: other_conifer, mediterranean_pine, deciduous_oak, mixed_broadleaf, transitional_woodland_shrub. non-host: evergreen_oak 0.1, macchia 0, riparian 0, exotic_broadleaf 0 (derived) | plausible | R1 R2 R24 R25 R26 R23 mushma_habitat_share_2026 | available |
+| POR-H3 | ret | habitat, four levels (2026-09-24) | host 1.0 / secondary 0.6 / marginal 0.3 / non-host 0-0.1 per habitat key, saturated to full credit from a 0.30 host-weighted share | host: chestnut, deciduous_oak. secondary: beech, fir_spruce, mountain_pine, mixed_broadleaf, mixed_broadleaf_conifer, transitional_woodland_shrub ("rarer under beech, hazel, pine and fir", and the mixed/transitional classes are mostly chestnut/oak). marginal: evergreen_oak. non-host: mediterranean_pine 0.1, other_conifer 0.1, macchia 0.1, riparian 0.05, exotic_broadleaf 0 (derived) | plausible | R1 R2 R24 R26 R23 R31 mushma_habitat_share_2026 | available |
+| POR-H4 | aer | habitat, four levels (2026-09-24) | host 1.0 / secondary 0.6 / marginal 0.3 / non-host 0-0.1 per habitat key, saturated to full credit from a 0.30 host-weighted share | host: deciduous_oak, chestnut, evergreen_oak, macchia (a genuine standalone habitat for this taxon, not just dilution). secondary: transitional_woodland_shrub, mediterranean_pine (documented pine-with-Erica-scoparia understorey). marginal: mixed_broadleaf, mixed_broadleaf_conifer. non-host: beech 0.1, other_conifer 0, mountain_pine 0, fir_spruce 0, riparian 0, exotic_broadleaf 0 (derived) | plausible | R1 R2 R24 R26 R27 R28 R23 R32 mushma_habitat_share_2026 | available |
 | POR-H5 | all | habitat (edge) | Open land (shrub, meadow, pasture) within 100 m of a qualifying wood counts as productive | buffer 100 m around woodland; affinity = neighbouring wood's × 0.5 (0.5 derived) | plausible | R1 R2 | derived |
 | POR-A1 | edu | altitude | Mid to high mountain; uncommon in low thermophilous woods | `[200, 700, 1600, 1900]` m (derived) | plausible | R3 R24 R25 R29 R1 | available |
 | POR-A2 | pin | altitude | Cool, humid mountain sites; the summer form also in mid-altitude chestnut | `[300, 800, 1600, 1900]` m (derived) | plausible | R1 R24 R25 R29 | available |
@@ -171,9 +171,20 @@ zero_after/above]`. Temperatures are °C, rain mm, lags days, dates `DD-MM` (Eur
   scrub on abandoned land). The IGP treats shrubland within 100 m of woods as productive [R1][R2], and
   much abandoned chestnut and oak land in Tuscany sits in this class. If the woodland mask drops it,
   apply H5 as a buffer instead.
-- `exotic_broadleaf` (robinia) gets 0.05 because no source links porcini to *Robinia*. That value rests on the general
-  knowledge that it is not an ectomycorrhizal host (not verified here).
-- All affinity numbers are **derived** from host rankings. Confidence **plausible**.
+- `exotic_broadleaf` (robinia) gets 0 for all four taxa because no source links porcini to *Robinia*. That rests on
+  the general knowledge that it is not an ectomycorrhizal host (not verified here).
+- **Four levels, not a smooth ranking (2026-09-24, `mushma_habitat_share_2026`).** The rankings above scale a host
+  list, not a yield ratio, and the smooth scale meant only the single top type in each list scored full credit: a
+  chestnut or fir cell for *B. edulis* scored 10-20 % under an otherwise identical beech cell for no ecological
+  reason. Every type named as a preferred/main host is now **host** (1.0); a type named but "rarer"/"moderate"/rare
+  in the source is **secondary** (0.6); an occasional mention, or a mixed/transitional class where only some of its
+  trees are hosts, is **marginal** (0.3); an unmentioned type is **non-host** (0-0.1). `mixed_broadleaf`,
+  `mixed_broadleaf_conifer` and `transitional_woodland_shrub` stay below 1.0 for every taxon *only* for dilution
+  (only some of their trees are hosts), never because the evidence is weak — POR-H1..H4 above name which host
+  components put each one at secondary vs marginal for that taxon. `macchia` is the one exception kept at host
+  (1.0) for *B. aereus*: it is a genuine standalone habitat for that taxon (Cistus/Arbutus/Erica scrub, yield
+  data), not a class diluted by non-host trees.
+- All affinity numbers are **derived** from host rankings, now requantised to four levels. Confidence **plausible**.
 
 ### Altitude and aspect
 

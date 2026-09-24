@@ -71,25 +71,36 @@ factors:
     input:
       affinity:
         beech: 1.0
-        chestnut: 0.9
-        fir_spruce: 0.9
-        mixed_broadleaf_conifer: 0.8
-        mountain_pine: 0.5
-        deciduous_oak: 0.5
-        mixed_broadleaf: 0.4
+        chestnut: 1.0
+        fir_spruce: 1.0
+        mixed_broadleaf_conifer: 0.6
+        mountain_pine: 0.6
+        deciduous_oak: 0.3
+        mixed_broadleaf: 0.3
         other_conifer: 0.3
         transitional_woodland_shrub: 0.3
-        evergreen_oak: 0.2
-        mediterranean_pine: 0.2
-        macchia: 0.1
-        riparian: 0.1
-        exotic_broadleaf: 0.05
+        evergreen_oak: 0.1
+        mediterranean_pine: 0.1
+        macchia: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
       default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
     confidence: plausible
-    source: [borgotaro_igp_rt, borgotaro_igp_2014, salerni2023_amiata, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, beugelsdijk2008]
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, salerni2023_amiata, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, beugelsdijk2008, mushma_habitat_share_2026]
     derived: true
     data: available
-    notes: POR-H1. Affinities scaled from host rankings in Italian sources; beech, fir and chestnut lead.
+    notes: >-
+      POR-H1. Four levels (2026-09-24, mushma_habitat_share_2026): beech, chestnut and fir/spruce are the
+      preferred hosts named directly ("chestnut, beech and Norway spruce preferred") -> host. Mixed
+      broadleaf+conifer (mostly a beech-fir mix, both hosts) and mountain pine (IGP-eligible black/Scots
+      pine, "moderate") stay secondary: the mixed class is capped below host for dilution, not for weak
+      evidence. Deciduous oak, mixed broadleaf (hornbeam/hazel eligible) and other conifer (Douglas fir
+      eligible) are marginal: each is a class where only some of the trees are hosts. Transitional
+      woodland/shrub is marginal for the same dilution reason. Evergreen oak, Mediterranean pine, macchia,
+      riparian and exotic broadleaf (robinia) are non-host: none are named for this taxon. Saturated to full
+      credit from a host-weighted share of 0.30 (`_habitat`'s response trapezoid), so a cell that is 30%
+      beech/chestnut/fir is no longer diluted by the rest of the woods.
 
   - id: altitude
     role: gate

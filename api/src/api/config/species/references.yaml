@@ -715,6 +715,30 @@ references:
     supports: per-taxon hosts and season; B. aereus at low elevations.
     cited_as:
     - porcini.md R26
+  mushma_habitat_share_2026:
+    citation: 'mushma habitat tiers and saturation: the smooth per-type affinity ranking was requantised to four levels
+      (host 1.0, secondary 0.6, marginal 0.3, non-host 0-0.1) so a good host is the baseline instead of only the top type
+      in each ranking, and the habitat factor''s area-weighted affinity share was saturated to full credit from a
+      host-weighted share of 0.30 so a cell with plenty of host wood is no longer diluted by the rest of the cell.
+      Decided 2026-09-24 on the Tuscan grid: 25% of woodland cells have no type covering 70% of the woods; among cells
+      where >=30% of the woods is a top host, 28% of B. edulis cells (955/3419), 24% of ovoli cells (1661/6913) and 29%
+      of gallinacci cells (680/2371) still scored habitat < 0.8 under the smooth ranking and unsaturated mean. See
+      .gavin-root/docs/model-v1-validation.md, Habitat tiers and saturation'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/model-v1-validation.md
+    kind: analysis
+    region: Tuscany
+    verified: verified
+    supports: 'the habitat factor''s four-level affinity tables and the 0.30 saturation trapezoid, all 6 species
+      keys. Train-season before/after backtest (objective = mean of auc_local and auc_time_effort, model
+      variant): ovoli improved 0.515 -> 0.566 (auc_local 0.441 -> 0.542), porcini eased 0.581 -> 0.551
+      (auc_local 0.500 -> 0.433), gallinacci fell 0.602 -> 0.498 (auc_local 0.701 -> 0.493, traced to
+      evergreen_oak moving to host tier). Adopted: the levels trace to the literature, not to these 16-23
+      presences per group; the gallinacci and porcini auc_local drops are noted for a later card.'
+    cited_as:
+    - porcini.md POR-H1..H4
+    - ovoli.md OVO-02
+    - gallinacci.md GAL-05
+    - model-v1-validation.md
   mushma_occurrence_check_2026:
     citation: 'mushma occurrence cross-check: GBIF occurrence and species APIs, iNaturalist observations and histogram
       APIs, and the Open-Meteo elevation API, queried 2026-09-17. Aggregates only (counts by month, elevation quantiles);

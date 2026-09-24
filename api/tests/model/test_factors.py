@@ -109,6 +109,22 @@ def test_habitat_is_the_fraction_weighted_affinity() -> None:
     assert result.value[:, 0] == pytest.approx([0.75, 0.18])
 
 
+def test_habitat_saturates_the_host_weighted_share_when_a_response_is_set() -> None:
+    rule = factor(
+        kind="habitat",
+        role="gate",
+        input={"affinity": {"beech": 1.0}, "default": 0.0},
+        response={"trapezoid": [0, 0.3, None, None]},
+    )
+    here = cells(3, habitats={"beech": [0.15, 0.3, 0.6]})
+    w = weather(days=2, rain=0.0)
+
+    result = evaluate(rule, here, w, slice(0, 2))
+
+    # Half the way to a 30 % host-weighted share, exactly at it, and past it: 0.5, full, full.
+    assert result.value[:, 0] == pytest.approx([0.5, 1.0, 1.0])
+
+
 def test_static_band_scores_a_cell_attribute_and_reports_it() -> None:
     rule = factor(
         kind="static_band",

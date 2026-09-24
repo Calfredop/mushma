@@ -54,7 +54,7 @@ is not in v1 (`missing`).
 | id | taxon | factor | rule (plain words) | parameters | confidence | sources | data |
 |---|---|---|---|---|---|---|---|
 | OVO-01 | A. caesarea | season window | Fruits from early summer, mostly Sept–early Nov in Tuscany; summer flushes are occasional and weather-limited | `season_trapezoid = [01-06, 01-09, 05-11, 30-11]`; autumn end shifts about −5 days per +100 m above 400 m (**derived**) | plausible | R1, R6, R7, R8, R14, R15, R21, R22 | derived |
-| OVO-02 | A. caesarea | habitat / host | Obligate ectomycorrhizal partner of Fagaceae: deciduous oaks and chestnut first, evergreen oaks next; no host in conifer or robinia stands | affinity table below (`deciduous_oak` 1.0, `chestnut` 0.9, `evergreen_oak` 0.7, …) (**derived** ranking) | strong (host genera) / plausible (numeric ranking) | R1, R2, R5, R6, R7, R8, R17, R19 | available |
+| OVO-02 | A. caesarea | habitat / host, four levels (2026-09-24) | Obligate ectomycorrhizal partner of Fagaceae: deciduous oaks and chestnut first, evergreen oaks next; no host in conifer or robinia stands | affinity table below: host 1.0 (`deciduous_oak`, `chestnut`) / secondary 0.6 (`evergreen_oak`, `transitional_woodland_shrub`) / marginal 0.3 (`macchia`, `mixed_broadleaf`, `mixed_broadleaf_conifer`) / non-host 0-0.1 (rest), saturated to full credit from a 0.30 host-weighted share (**derived** ranking) | strong (host genera) / plausible (numeric ranking) | R1, R2, R5, R6, R7, R8, R17, R19, mushma_habitat_share_2026 | available |
 | OVO-03 | A. caesarea | altitude | Sea level to mid-hills; thins out above ~750 m; practically absent above ~1100 m in Tuscany | `altitude_trapezoid_m = [0, 0, 750, 1100]` (**derived**) | plausible (well supported) | R1, R7, R14, R16, R17, R18, R21, R22 | derived |
 | OVO-04 | A. caesarea | aspect | Warmer, sunnier slopes favoured, mainly near the upper altitude limit | optional multiplier: 1.0 on S-facing (135–225°); 0.8 on N-facing (315–45°) where slope > 10° and elevation > 500 m (**derived**) | folklore | R6, R18, R23, R25 (counter-example R1) | derived |
 | OVO-05 | A. caesarea | rain trigger (amount) | A soaking rain event is needed; light showers do nothing | 3-day rain sum ramp: 0 at ≤ 10 mm, 1 at ≥ 30 mm (**derived**) | folklore | R23, R24 | derived |
@@ -167,23 +167,27 @@ is not in v1 (`missing`).
   oaks; open oak woods, clearings, cleared fruit-chestnut groves, often with *Erica
   scoparia/arborea* [R21].
 
-**Affinity per habitat key (derived ranking, 0–1)**
+**Affinity per habitat key, four levels (2026-09-24, `mushma_habitat_share_2026`): host 1.0 / secondary 0.6 /
+marginal 0.3 / non-host 0–0.1, requantised from the derived ranking below.** A good host is the baseline; only
+poor or unsuitable woods pull the score down, and the habitat factor now saturates to full credit once about 30 %
+of a cell's woods are worth a host, so a cell mostly in host wood is no longer diluted by the rest.
 
-| key | affinity | rationale |
+| key | level | rationale |
 |---|---|---|
-| `deciduous_oak` | **1.0** | Primary host group in Italy (*Q. cerris, Q. pubescens, Q. frainetto*) [R7, R17, R22]. Caveat: absent from the Tuscan calcicolous cerro/roverella plots [R2] (see OVO-17). |
-| `chestnut` | **0.9** | Repeatedly named co-primary host [R5, R6, R17, R19, R21]; the only Tuscan plot record is in chestnut coppice [R1]. Lore says it declines in abandoned groves [R21]. |
-| `evergreen_oak` | **0.7** | *Q. ilex* and *Q. suber* are confirmed hosts [R5, R7]. Tuscan plots: 0/4 [R1] and 1/10 [R2]. Dense leccete are shady; sugherete are open. The Maremma/Livorno sighting cluster sits in mosaics of cerrete, leccete and sugherete [R14] that the grid cannot separate. |
-| `mixed_broadleaf` | **0.35** | *Carpinus*, *Corylus* are listed hosts [R7]; ostrieti are often cool and calcareous. Scores depend on oak/chestnut admixture. |
-| `mixed_broadleaf_conifer` | **0.35** | Only through its oak/chestnut component. |
-| `macchia` | **0.4** | Often next to *Arbutus/Erica* [R6, R19, R21], but those are not documented hosts; the real host is scattered *Q. ilex/Q. suber*. May fall outside the woodland mask. |
-| `mediterranean_pine` | **0.15** | Coastal pinete often have an evergreen-oak understorey; no source names Mediterranean pines as a Tuscan host. |
-| `beech` | **0.1** | *Fagus* listed [R7, R8], but "not in beech woods" [R25] and "less in beech woods" [R6]. In Tuscany beech is mostly above the altitude band. |
-| `riparian` | **0.05** | No host. |
-| `exotic_broadleaf` (robinia) | **0.05** | No host; often replaces old chestnut, so remnant hosts are possible. |
-| `mountain_pine` | **0.05** | Conifers only "occasionally … in specific regions" [R7]; above the band. |
-| `other_conifer` | **0.05** | Same. |
-| `fir_spruce` | **0.0** | Not recorded in any Tuscan fir plot [R1, R2]; above the band. |
+| `deciduous_oak` | **host** | Primary host group in Italy (*Q. cerris, Q. pubescens, Q. frainetto*) [R7, R17, R22]. Caveat: absent from the Tuscan calcicolous cerro/roverella plots [R2] (see OVO-17). |
+| `chestnut` | **host** | Repeatedly named co-primary host [R5, R6, R17, R19, R21]; the only Tuscan plot record is in chestnut coppice [R1]. Lore says it declines in abandoned groves [R21]. |
+| `evergreen_oak` | **secondary** | *Q. ilex* and *Q. suber* are confirmed hosts [R5, R7], but Tuscan plots (0/4 [R1], 1/10 [R2]) show it is clearly less typical than oak/chestnut. Dense leccete are shady; sugherete are open. The Maremma/Livorno sighting cluster sits in mosaics of cerrete, leccete and sugherete [R14] that the grid cannot separate. |
+| `transitional_woodland_shrub` | **secondary** | Not in the source appendix, added in the merge: clearings, edges and heath with scattered oaks are repeatedly described as favoured [R6, R18, R21] — "open woodland/clearing/edge matters more than the host list suggests" (below). |
+| `macchia` | **marginal** | Often next to *Arbutus/Erica* [R6, R19, R21], but those are not documented hosts; the real host is scattered *Q. ilex/Q. suber* within it, so it is a dilution class like the mixed types below, not a host habitat in its own right. May fall outside the woodland mask. |
+| `mixed_broadleaf` | **marginal** | *Carpinus*, *Corylus* are listed hosts [R7]; ostrieti are often cool and calcareous. Only its oak/chestnut admixture is a host. |
+| `mixed_broadleaf_conifer` | **marginal** | Only through its oak/chestnut component. |
+| `mediterranean_pine` | **non-host (0.1)** | Coastal pinete often have an evergreen-oak understorey; no source names Mediterranean pines as a Tuscan host. |
+| `exotic_broadleaf` (robinia) | **non-host (0.05)** | No host; often replaces old chestnut, so remnant hosts are possible. |
+| `beech` | **non-host (0)** | *Fagus* listed [R7, R8], but "not in beech woods" [R25] and "less in beech woods" [R6]. In Tuscany beech is mostly above the altitude band. |
+| `riparian` | **non-host (0)** | No host. |
+| `mountain_pine` | **non-host (0)** | Conifers only "occasionally … in specific regions" [R7]; above the band. |
+| `other_conifer` | **non-host (0)** | Same. |
+| `fir_spruce` | **non-host (0)** | Not recorded in any Tuscan fir plot [R1, R2]; above the band. |
 
 **Vocabulary notes (proposals, not additions).**
 

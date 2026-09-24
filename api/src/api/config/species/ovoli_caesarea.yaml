@@ -76,28 +76,36 @@ factors:
     input:
       affinity:
         deciduous_oak: 1.0
-        chestnut: 0.9
-        evergreen_oak: 0.7
-        macchia: 0.4
-        transitional_woodland_shrub: 0.4
-        mixed_broadleaf: 0.35
-        mixed_broadleaf_conifer: 0.35
-        mediterranean_pine: 0.15
-        beech: 0.1
-        riparian: 0.05
+        chestnut: 1.0
+        evergreen_oak: 0.6
+        transitional_woodland_shrub: 0.6
+        macchia: 0.3
+        mixed_broadleaf: 0.3
+        mixed_broadleaf_conifer: 0.3
+        mediterranean_pine: 0.1
         exotic_broadleaf: 0.05
-        mountain_pine: 0.05
-        other_conifer: 0.05
+        beech: 0.0
+        riparian: 0.0
+        mountain_pine: 0.0
+        other_conifer: 0.0
         fir_spruce: 0.0
       default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
     confidence: strong
-    source: [iucn_caesarea2019, lagana2002_polish_bot, lagana1999_czech_mycol, daza2006, cano_cajigas2015, sardegna_foreste_caesarea, amint_caesarea, funghintoscana_blog_ovolo]
+    source: [iucn_caesarea2019, lagana2002_polish_bot, lagana1999_czech_mycol, daza2006, cano_cajigas2015, sardegna_foreste_caesarea, amint_caesarea, funghintoscana_blog_ovolo, mushma_habitat_share_2026]
     derived: true
     data: available
     notes: >-
-      OVO-02. Strong that Quercus and Castanea are the hosts; the numeric ranking is derived.
-      transitional_woodland_shrub 0.4 was added in the merge (not in the appendix): clearings, edges and
-      heath with scattered oaks are repeatedly described as favoured.
+      OVO-02. Four levels (2026-09-24, mushma_habitat_share_2026): strong that deciduous oak and chestnut
+      are the primary/co-primary hosts -> host. Evergreen oak (a confirmed host, but only 0/4 and 1/10 in
+      Tuscan plots) and transitional woodland/shrub (clearings and heath with scattered oaks, repeatedly
+      described as favoured) are secondary. Macchia is marginal, not host: the real host is scattered
+      Q. ilex/Q. suber within it, not the macchia itself, same reasoning as mixed broadleaf and mixed
+      broadleaf+conifer (only the oak/chestnut component is a host). Mediterranean pine and exotic broadleaf
+      (robinia, remnant hosts possible where it replaced chestnut) are non-host at 0.1/0.05; beech is
+      non-host at 0 (two sources say "not in beech woods", and it is mostly above the altitude band in
+      Tuscany), as are riparian, mountain pine, other conifer and fir/spruce (no Tuscan fir-plot record).
+      Saturated to full credit from a host-weighted share of 0.30.
 
   - id: altitude
     role: gate

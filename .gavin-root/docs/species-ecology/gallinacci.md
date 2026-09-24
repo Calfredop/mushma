@@ -118,7 +118,7 @@ available inputs, such as GDD, P−ET0 or percentiles) or **missing** in v1. A n
 | GAL-02 | s.l. | season (below 600 m) | A long, permissive window from spring to early winter. Let the moisture and heat rules make the summer gap, because rainy summers do produce fruiting. | `[15-04, 10-05, 15-12, 25-01]` (wraps past year end) **(derived)** | plausible | R1, R26, R28, R30, R31 | available |
 | GAL-03 | s.l. | season (above 1000 m) | One summer–autumn window. Blend GAL-02 and GAL-03 linearly between 600 and 1000 m. | `[01-06, 01-07, 15-10, 15-11]` **(derived)** | folklore→plausible | R26, R30, R31, R32 | available |
 | GAL-04 | s.l. | season, alternative | Two-flush variant, kept only to compare against GAL-02 in the backtest. | spring `[15-04, 10-05, 30-06, 31-07]`; autumn `[20-08, 20-09, 15-12, 25-01]` **(derived)** | folklore | R26, R28, R31 | available |
-| GAL-05 | s.l. | habitat | Affinity by forest class, with chestnut highest. | chestnut 1.0; evergreen_oak 0.7; beech 0.7; fir_spruce 0.6; mixed_broadleaf_conifer 0.6; deciduous_oak 0.5; mediterranean_pine 0.5; mountain_pine 0.4; mixed_broadleaf 0.3; macchia 0.3; other_conifer 0.2; riparian 0.1; exotic_broadleaf 0.0 **(derived)** | plausible (chestnut: strong) | R1, R2, R3, R17, R18, R19, R20, R28, R30, R31 | available |
+| GAL-05 | s.l. | habitat, four levels (2026-09-24) | Affinity by forest class, requantised to host/secondary/marginal/non-host, chestnut and evergreen oak highest, saturated to full credit from a 0.30 host-weighted share. | host 1.0: chestnut, evergreen_oak. secondary 0.6: beech, fir_spruce, mixed_broadleaf_conifer. marginal 0.3: deciduous_oak, mediterranean_pine, mountain_pine, mixed_broadleaf, macchia, other_conifer, transitional_woodland_shrub. non-host: riparian 0.1, exotic_broadleaf 0.0 **(derived)** | plausible (chestnut: strong) | R1, R2, R3, R17, R18, R19, R20, R28, R30, R31, mushma_habitat_share_2026 | available |
 | GAL-06 | s.l. | altitude | Full from the coast to about 1000 m, fading out towards the top of the beech belt. | `[0, 0, 1000, 1700]` m **(derived)** | plausible | R3, R26, R29, R31, R32 | available |
 | GAL-07 | s.l. | aspect (optional) | Below 600 m from June to September, give moister north- and east-facing slopes a slight edge, but flat and less-exposed ground is normal for Tuscan woodland and keeps full credit; only clearly sunny slopes lose it. | N/NE/E and flatter ×1.0 (normal terrain, full credit), S/SW/W ~×0.85 **(derived)** | folklore | R1 (moist-site preference), R32 | available |
 | GAL-08 | s.l. | antecedent rain (30 d) | Fruiting needs a wet month. Score rises with rainfall over the previous 30 days. | P30 ramp: 0 at ≤ 15 mm, 1 at ≥ 70 mm **(derived)** | plausible | R4, R5, R6, R8 | derived |
@@ -237,38 +237,42 @@ available inputs, such as GDD, P−ET0 or percentiles) or **missing** in v1. A n
     del M. Amiata", "Cerreta acidofila…", "Querceto acidofilo di roverella a cerro", "Pineta
     acidofila di pino nero" [R20].
 
-**Affinities (GAL-05, derived)**
+**Affinities (GAL-05), four levels (2026-09-24, `mushma_habitat_share_2026`): host 1.0 / secondary 0.6 /
+marginal 0.3 / non-host 0–0.1**, requantised from the ranking [R3] scaled below. A good host is now the
+baseline; only poor or unsuitable woods pull the score down, and the habitat factor saturates to full credit
+once about 30 % of a cell's woods are worth a host.
 
-Chestnut is the anchor at 1.0, and the other classes are scaled from [R3] where it gives numbers.
-
-- **chestnut 1.0**: 9/9 plots and the highest abundance [R3]; a calcifuge host [R17]; hosts for
+- **chestnut, host**: 9/9 plots and the highest abundance [R3]; a calcifuge host [R17]; hosts for
   *C. pallens* and *C. alborufescens* [R1, R28].
-- **evergreen_oak 0.7**: 5/10 plots [R3]. Main host of *C. alborufescens* and a common host of
-  *C. pallens* [R1]. It gets a higher weight than its plot frequency because it carries both the
-  acid-soil and the calcareous-soil segregates.
-- **beech 0.7**: well documented for *C. cibarius* s.str. and *C. pallens* [R1, R2, R31]. No
-  Tuscan plot numbers.
-- **fir_spruce 0.6**: 2/7 fir plots with fair abundance [R3]; *Abies* and *Picea* are hosts
+- **evergreen_oak, host**: 5/10 plots [R3]. Main host of *C. alborufescens* and a common host of
+  *C. pallens* [R1] — a "main host" reading that puts it at host despite the lower plot frequency;
+  it carries both the acid-soil and the calcareous-soil segregates.
+- **beech, secondary**: well documented for *C. cibarius* s.str. and *C. pallens* [R1, R2, R31], but no
+  Tuscan plot numbers back it the way chestnut and evergreen oak are backed.
+- **fir_spruce, secondary**: 2/7 fir plots with fair abundance [R3]; *Abies* and *Picea* are hosts
   [R2, R31].
-- **mixed_broadleaf_conifer 0.6**: mean of its parts.
-- **deciduous_oak 0.5**: *Q. cerris* and *Q. pubescens* hosts [R1], but only 1/4 calcicolous
-  plots [R3]. This class covers both acid-soil ("cerreta acidofila") and calcareous stands [R20],
-  so without a substrate layer it gets a middle value.
-- **mediterranean_pine 0.5**: *P. pinaster* host [R1, R28]; coastal pinewoods [R30]. 29/116 of
+- **mixed_broadleaf_conifer, secondary**: mean of its parts, both of which run secondary or better.
+- **deciduous_oak, marginal**: *Q. cerris* and *Q. pubescens* hosts [R1], but only 1/4 calcicolous
+  plots [R3]. This class covers both acid-soil ("cerreta acidofila") and calcareous stands [R20], so
+  without a substrate layer only part of it behaves like a host.
+- **mediterranean_pine, marginal**: *P. pinaster* host [R1, R28]; coastal pinewoods [R30]. 29/116 of
   Tuscan records sit below 100 m [R26], which is consistent with coastal woods but not checked
-  habitat by habitat. *P. pinea* and *P. halepensis* have no specific evidence.
-- **mountain_pine 0.4**: *P. sylvestris* is a host on acid soils [R1]. Tuscan black-pine
+  habitat by habitat. *P. pinea* and *P. halepensis* have no specific evidence, so only part of the
+  class is a documented host.
+- **mountain_pine, marginal**: *P. sylvestris* is a host on acid soils [R1]. Tuscan black-pine
   plantations are often on poor or calcareous soils, although an acidophilous black-pine type
   exists [R20]. No direct data.
-- **mixed_broadleaf 0.3**: *Carpinus* and *Corylus* hosts [R1, R2]; hop-hornbeam and ash woods
+- **mixed_broadleaf, marginal**: *Carpinus* and *Corylus* hosts [R1, R2]; hop-hornbeam and ash woods
   have no data.
-- **macchia 0.3**: *C. alborufescens* collected with *Q. pubescens*, *Viburnum tinus*, *Erica
+- **macchia, marginal**: *C. alborufescens* collected with *Q. pubescens*, *Viburnum tinus*, *Erica
   arborea* and *Rosmarinus* [R1], but only where a Fagaceae host is present. May fall outside the
   woodland mask.
-- **other_conifer 0.2**: *Pseudotsuga* is a genus-level host [R2]. Cypress plantations are not
+- **other_conifer, marginal**: *Pseudotsuga* is a genus-level host [R2]. Cypress plantations are not
   ectomycorrhizal hosts (general knowledge, not source-checked).
-- **riparian 0.1**: *Populus* is a genus-level host [R2], but these are wet sites.
-- **exotic_broadleaf (robinia) 0.0**: no ectomycorrhizal host (general knowledge, not source-checked). Its
+- **transitional_woodland_shrub, marginal**: not in the source appendix, added in the merge; no
+  specific rationale beyond the general dilution reasoning above (only some regrowth trees are hosts).
+- **riparian, non-host (0.1)**: *Populus* is a genus-level host [R2], but these are wet sites.
+- **exotic_broadleaf (robinia), non-host (0.0)**: no ectomycorrhizal host (general knowledge, not source-checked). Its
   nitrogen-rich soils also run against the low-nitrogen preference [R2].
 
 **Vocabulary suggestion.** No new habitat term is needed. The M2 woodland-grid card should

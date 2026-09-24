@@ -97,28 +97,37 @@ factors:
     input:
       affinity:
         chestnut: 1.0
-        evergreen_oak: 0.7
-        beech: 0.7
+        evergreen_oak: 1.0
+        beech: 0.6
         fir_spruce: 0.6
         mixed_broadleaf_conifer: 0.6
-        deciduous_oak: 0.5
-        mediterranean_pine: 0.5
-        mountain_pine: 0.4
+        deciduous_oak: 0.3
+        mediterranean_pine: 0.3
+        mountain_pine: 0.3
         mixed_broadleaf: 0.3
         macchia: 0.3
-        transitional_woodland_shrub: 0.2
-        other_conifer: 0.2
+        other_conifer: 0.3
+        transitional_woodland_shrub: 0.3
         riparian: 0.1
         exotic_broadleaf: 0.0
       default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
     confidence: plausible
-    source: [lagana1999_czech_mycol, olariaga2017, pilz2003, conedera2016_castanea, micoex2016_pallens, rt_tipi_forestali_p1, cacciatoridifunghi_finferli]
+    source: [lagana1999_czech_mycol, olariaga2017, pilz2003, conedera2016_castanea, micoex2016_pallens, rt_tipi_forestali_p1, cacciatoridifunghi_finferli, mushma_habitat_share_2026]
     derived: true
     data: available
     notes: >-
-      GAL-05. Chestnut is strong: present in 9/9 Tuscan chestnut coppice plots vs 5/10 evergreen oak, 2/7 fir
-      and 1/4 calcicolous oak. Chestnut avoids limestone, so it doubles as a soil-pH proxy.
-      transitional_woodland_shrub 0.2 was added in the merge (the appendix proposed no new term).
+      GAL-05. Four levels (2026-09-24, mushma_habitat_share_2026): chestnut is strong, present in 9/9
+      Tuscan chestnut coppice plots and a calcifuge host, doubling as a soil-pH proxy -> host. Evergreen oak
+      is also host: it is the main host of one segregate (C. alborufescens) and common for another
+      (C. pallens), so the notes already weight it above its 5/10 Tuscan plot frequency. Beech (documented,
+      but no Tuscan plot numbers), fir/spruce (2/7 plots) and mixed broadleaf+conifer (mean of host parts)
+      are secondary. Deciduous oak, Mediterranean pine, mountain pine, mixed broadleaf, macchia, other
+      conifer and transitional woodland/shrub are marginal: each is a class where only part of it is a
+      documented host (deciduous oak's 1/4 calcicolous plots, Mediterranean pine's P. pinaster only, macchia
+      only where a Fagaceae host is present, and so on). Riparian (Populus, a wet-site genus mention) is
+      non-host at 0.1; exotic broadleaf (robinia, no ectomycorrhizal host, nitrogen-rich soil) is non-host at
+      0. Saturated to full credit from a host-weighted share of 0.30.
 
   - id: altitude
     role: gate

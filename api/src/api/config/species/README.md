@@ -62,7 +62,7 @@ partial weather.
 | kind | input | value |
 |---|---|---|
 | `season_window` | one or more `DD-MM` trapezoids, optional `elevation_weight` and `altitude_shift` per window | Σ over windows that carry an `elevation_weight` of date membership × elevation weight (those weights must sum to 1 at every elevation — the loader rejects a file where they do not), maxed with any windows that carry none; windows may wrap the year end; 29 February counts as the 28th |
-| `habitat` | affinity 0–1 per habitat key | Σ over the cell's habitat fractions of fraction × affinity (`default` for unlisted habitats) |
+| `habitat` | affinity 0–1 per habitat key, optional `response` | the host-weighted share: Σ over the cell's habitat fractions of fraction × affinity (`default` for unlisted habitats); with a `response` trapezoid, that share is saturated (e.g. `[0, 0.3, null, null]` reaches full credit once 30 % of the woods are worth a host), so a cell need not be entirely host wood to score 1 |
 | `static_band` | a cell attribute (`elevation_m`, `soil_ph`, …) | trapezoid of the attribute |
 | `rain_event` | daily rain, `accumulation_days` | max over whole-day lags d of amount(rain summed over the days ending d days ago) × lag(d); a tie goes to the longest lag, so "30 mm, 12 days ago" names when the rain ended. With the species' growth clock, lag(d) reads the growth days since then instead of d (below) |
 | `window_aggregate` | a daily variable, `sum`/`mean`/`min`/`max` over `window_days` ending `offset_days` ago, or `percent_of_normal` (rain only) | trapezoid of the aggregate; `percent_of_normal` is the window's rain as a percentage of the cell's normal for the same days (below) |

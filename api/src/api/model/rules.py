@@ -266,10 +266,12 @@ class HabitatInput(_Strict):
 
 
 class HabitatFactor(_Factor):
-    """Sum over the cell's habitat fractions of fraction x affinity."""
+    """Sum over the cell's habitat fractions of fraction x affinity (the host-weighted share),
+    optionally saturated by a trapezoid so a high enough share reaches full credit."""
 
     kind: Literal["habitat"]
     input: HabitatInput
+    response: _TrapezoidResponse | None = None
 
 
 class StaticBandInput(_Strict):

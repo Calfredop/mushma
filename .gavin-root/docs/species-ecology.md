@@ -91,7 +91,7 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | factor | *B. edulis* | *B. reticulatus* (= *aestivalis*) | *B. aereus* | *B. pinophilus* | confidence |
 |---|---|---|---|---|---|
 | season (`DD-MM`) | 01-07 → 01-09 … 15-11 → 20-12 | 01-05 → 01-06 … 30-09 → 15-11 | ≥600 m: 15-06 → 01-08 … 30-09 → 31-10; ≤400 m: 01-07 → 01-09 … 15-11 → 15-12 | spring 01-05 → 20-05 … 30-06 → 20-07; autumn 15-08 → 15-09 … 15-11 → 15-12 | plausible |
-| top hosts | beech 1.0, chestnut 0.9, fir/spruce 0.9 | chestnut 1.0, deciduous oak 0.9 | deciduous oak 1.0, chestnut 0.9, evergreen oak 0.8, macchia 0.7 | beech 0.9, fir/spruce, chestnut, mixed 0.8 | plausible |
+| top hosts, four levels (2026-09-24) | host: beech, chestnut, fir/spruce | host: chestnut, deciduous oak | host: deciduous oak, chestnut, evergreen oak, macchia | host: beech, fir/spruce, chestnut | plausible |
 | altitude (m) | 200 → 700 … 1600 → 1900 | 0 → 150 … 1100 → 1500 | … 800 → 1250 | 300 → 800 … 1600 → 1900 | plausible |
 | rain trigger (driver, weight 2) | 3-day rain 10 → 30 mm; lag 6 → 10 … 16 → 24 days | same | same | same | strong (*edulis*) / plausible |
 | 30-day rain (driver) | 20 → 80 mm | same | same | same | strong (*edulis*) / plausible |
@@ -111,7 +111,7 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | factor | rule | confidence | scored |
 |---|---|---|---|
 | season | 01-06 → 01-09 … 05-11 → 30-11 | plausible | yes |
-| habitat | deciduous oak 1.0, chestnut 0.9, evergreen oak 0.7, macchia and transitional scrub 0.4; conifers ≈0 | strong (hosts) | yes |
+| habitat, four levels (2026-09-24) | host: deciduous oak, chestnut. secondary: evergreen oak, transitional scrub. marginal: macchia, mixed broadleaf(+conifer). non-host: conifers, beech, riparian | strong (hosts) | yes |
 | altitude | full to 750 m → 0 at 1100 m | plausible | yes |
 | rain trigger | 3-day rain 10 → 30 mm; lag 6 → 10 … 20 → 28 days (weight 1) | folklore | yes |
 | 30-day rain | 25 → 75 mm | plausible | yes |
@@ -130,7 +130,7 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | factor | rule | confidence | scored |
 |---|---|---|---|
 | season | ≤600 m: 15-04 → 10-05 … 15-12 → 25-01 (wraps the year); ≥1000 m: 01-06 → 01-07 … 15-10 → 15-11 | plausible | yes |
-| habitat | chestnut 1.0, evergreen oak and beech 0.7, fir/spruce and mixed 0.6, deciduous oak and Mediterranean pine 0.5 | plausible (chestnut strong) | yes |
+| habitat, four levels (2026-09-24) | host: chestnut, evergreen oak. secondary: beech, fir/spruce, mixed broadleaf+conifer. marginal: deciduous oak, Mediterranean pine, mountain pine, mixed broadleaf, macchia, other conifer, transitional scrub | plausible (chestnut strong) | yes |
 | altitude | full to 1000 m → 0 at 1700 m | plausible | yes |
 | 30-day rain | 15 → 70 mm | plausible | yes |
 | rain frequency | days with ≥5 mm in 20 days: 0 → 3 (floor 0.3, weight 0.5) | plausible | yes |
