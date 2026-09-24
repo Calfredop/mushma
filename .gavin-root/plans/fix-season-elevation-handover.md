@@ -35,6 +35,14 @@ Blend the elevation-weighted windows: **Σ weight × window** over the windows t
 - [x] `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`
 - [x] Re-run the grid check (peak season by elevation band for gallinacci and aereus → 1.00 everywhere in season)
 - [ ] Backtest before/after for gallinacci and the porcini group; note the result in `.gavin-root/docs/model-v1-validation.md`
+  - Blocked in this session: `api/data/grid`, `api/data/weather` and `api/data/sightings` are all
+    empty in this checkout (that store lives on the machine that seeds the Hetzner server, per the
+    root README's deploy section). `uv run python -m api.model.backtest` needs all three. In place
+    of it, re-ran the elevation-band grid check with the real gallinacci/aereus rules over a full
+    year at every elevation from 300–1100 m (synthetic cells, since no real grid was available):
+    every band now peaks at 1.0000 (see the commit). Run the real backtest on a machine with the
+    data stores and log train/holdout `auc_local`/`auc_time_effort` before vs. after for gallinacci
+    and porcini in `model-v1-validation.md`, then tick this box.
 
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
