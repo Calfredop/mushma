@@ -288,4 +288,59 @@ group on the train seasons (porcini 0.561 vs 0.498, ovoli 0.470 vs 0.428, gallin
 given day, the weather and terrain lines rank the finder's cell below where habitat alone would.
 The rain drivers were not the cause; that is for a later card.
 
+## Slope and sun exposure at full credit for normal terrain (2026-09-24)
+
+Card `model-terrain-full-credit`. `slope` (all 6 keys) moved from `[null, null, 15, 35]` to
+`[null, null, 25, 40]`, floor 0.8; `sun_exposure` for *B. edulis*/*B. pinophilus* (POR-A5) from
+`[null, null, 95, 120]` to `[null, null, 105, 125]`, floor 0.8; gallinacci (GAL-07) from
+`[null, null, 90, 110]` to `[null, null, 105, 120]`, floor 0.85. Both stoppers previously stopped
+full credit below what is typical Tuscan woodland terrain (median slope 16.6°, median sun ratio
+100 % of flat ground's on 15 Oct), which in practice penalised ordinary flat and north-facing
+cells relative to steep or shaded ones. The new trapezoids give full credit to about the woodland
+p90 and only reduce clearly steep or clearly sunny cells. Neither factor was tuned: `slope` is a
+`static_band`, frozen by `backtest.frozen_factor_kinds`; `sun_exposure` is folklore, set from the
+grid distribution and the cited sources, not by search.
+
+**Grid check** (`data/grid/tuscany/cells.parquet`, 10,778 woodland cells, production
+`series.trapezoid` + `with_floor`): slope held back (score < 1) 59.2 % → 13.2 % of cells, mean
+×0.962 → ×0.994. Sun ratio on 15 Oct, with the `where` elevation fade applied: edulis/pinophilus
+held back 69.8 % → 23.8 % (mean ×0.955 → ×0.989); gallinacci 66.5 % → 16.2 % (mean ×0.953 →
+×0.995).
+
+**How it was compared.** A second session was live-editing the same 6 species YAMLs in this
+checkout at the same time (a separate habitat-tiers card), so scoring the working tree directly
+would have mixed the two changes. Instead the rules were built in isolation: the species YAMLs at
+the last commit (`2b340f0`, before either session's edits) with only this card's `slope` and
+`sun_exposure` trapezoids reapplied on top, loaded via `load_rules(species_dir=...)`, scored
+against the same real cells/weather/sightings stores. Train (2016–2023, 55 presences: porcini 23,
+ovoli 16, gallinacci 16) and hold-out (2024–2025: porcini 19, ovoli 6, gallinacci 10), both scored
+once, before and after.
+
+**Objective** (mean of the pooled `auc_local` and `auc_time_effort`):
+
+| | porcini train | ovoli train | gallinacci train | porcini holdout | ovoli holdout | gallinacci holdout |
+|---|---|---|---|---|---|---|
+| before | 0.583 | 0.509 | 0.599 | 0.542 | 0.507 | 0.568 |
+| after | 0.581 | 0.515 | 0.602 | 0.532 | 0.497 | 0.575 |
+
+**The two metrics, before → after, with 90 % bootstrap intervals:**
+
+| group | role | `auc_local` | `auc_time_effort` |
+|---|---|---|---|
+| porcini | train | 0.499 (0.41–0.59) → 0.500 (0.41–0.59) | 0.668 (0.57–0.75) → 0.662 (0.57–0.75) |
+| ovoli | train | 0.428 (0.36–0.51) → 0.441 (0.36–0.53) | 0.589 (0.52–0.66) → 0.589 (0.52–0.66) |
+| gallinacci | train | 0.680 (0.57–0.78) → 0.701 (0.60–0.79) | 0.517 (0.42–0.62) → 0.504 (0.43–0.58) |
+| porcini | holdout | 0.480 (0.38–0.57) → 0.461 (0.36–0.56) | 0.604 (0.51–0.69) → 0.604 (0.51–0.69) |
+| ovoli | holdout | 0.523 (0.37–0.68) → 0.504 (0.34–0.67) | 0.490 (0.33–0.65) → 0.490 (0.33–0.65) |
+| gallinacci | holdout | 0.546 (0.40–0.70) → 0.597 (0.45–0.74) | 0.591 (0.51–0.69) → 0.554 (0.49–0.62) |
+
+**Reading.** No metric moves outside its own bootstrap interval, at 6–23 presences per group and
+role; this is a direction check, not a result, the same caveat as the growth-clock/terrain-lines
+card above. Gallinacci's `auc_local` moves the most (+0.021 train, +0.051 holdout), consistent
+with GAL-07 no longer discounting the many ordinary (flat/E/W, below-threshold) cells it used to.
+The grid check is the stronger evidence here: the prior trapezoids held back the large majority of
+woodland cells (59–88 % depending on the factor) for being merely typical, not steep or sunny,
+which is what the card set out to fix. The change stays as a prior, same as slope and sun exposure
+did after the growth-clock card.
+
 <!-- RESULTS, TARGETS AND SANITY CHECK FOLLOW -->

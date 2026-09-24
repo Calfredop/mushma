@@ -292,7 +292,7 @@ factors:
     kind: window_aggregate
     i18n_key: factor.sun_exposure
     input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
-    response: {trapezoid: [null, null, 95, 120]}
+    response: {trapezoid: [null, null, 105, 125]}
     floor: 0.8
     where: {attribute: elevation_m, trapezoid: [null, null, 900, 1100]}
     confidence: folklore
@@ -301,21 +301,24 @@ factors:
     data: derived
     notes: >-
       POR-A5. Below 1000 m, north-facing slopes keep moisture in hot spells and hold the
-      conifer hosts (N x1.0, E/W x0.9, S x0.8): x1 up to 95 % of flat ground's sun, x0.8 from
-      120 %, fading out between 900 and 1100 m. North aspect raised production in dry Pyrenean
-      pine (Bonet 2008), while a humid Turkish forest found north slopes worst for B. edulis
-      (Mumcu Küçüker 2019): the preference is kept to low altitude, where water limits
-      fruiting. Read on the day's sun ratio, the cell's sun as a percentage of flat ground's
-      (api.model.terrain), so it bites hardest in autumn, when the sun is low. The terrain
-      microclimate already makes sunny slopes warmer and drier for every rule; this line is
-      the species' own preference on top of that, kept soft.
+      conifer hosts (N x1.0, E/W x0.9, S x0.8), but flat, east- and west-facing ground is
+      normal for Tuscan woodland and scores full credit: only clearly sunny slopes lose it.
+      On 15 Oct the cell's sun ratio (its clear-sky sun as a % of flat ground's) runs p10 89
+      %, p25 95 %, median 100 %, p75 105 %, p90 111 % (2026-09-24): x1 up to 105 %, about the
+      p90, x0.8 from 125 %, fading out between 900 and 1100 m. North aspect raised production
+      in dry Pyrenean pine (Bonet 2008), while a humid Turkish forest found north slopes
+      worst for B. edulis (Mumcu Küçüker 2019): the preference is kept to low altitude, where
+      water limits fruiting. Read on the day's sun ratio, the cell's sun as a percentage of
+      flat ground's (api.model.terrain), so it bites hardest in autumn, when the sun is low.
+      The terrain microclimate already makes sunny slopes warmer and drier for every rule;
+      this line is the species' own preference on top of that, kept soft.
 
   - id: slope
     role: stopper
     kind: static_band
     i18n_key: factor.slope
     input: {attribute: slope_deg}
-    response: {trapezoid: [null, null, 15, 35]}
+    response: {trapezoid: [null, null, 25, 40]}
     floor: 0.8
     confidence: plausible
     source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
@@ -323,11 +326,14 @@ factors:
     data: available
     notes: >-
       Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
-      1979). Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B.
-      edulis yield was highest under about 11° in north-east Turkey (Mumcu Küçüker 2019); two
-      Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016), hence a soft rule
-      on the cell's mean slope: x1 up to 15°, x0.8 from 35°. It acts on the score only, never
-      on the rain, so the same water is not counted twice.
+      1979), but a 1 km cell's mean slope is not the slope of the exact spot the mushrooms
+      grow on: normal terrain for Tuscan woodland scores full credit, and only clearly
+      steep cells lose it. Woodland cells on the Tuscan grid run p10 10.2°, p25 12.6°, median
+      16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up to 25°, about the p90, x0.8 from 40°.
+      Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B. edulis
+      yield was highest under about 11° on plots in north-east Turkey (Mumcu Küçüker 2019);
+      two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts on
+      the score only, never on the rain, so the same water is not counted twice.
 
 known_gaps:
   - id: temperature_drop

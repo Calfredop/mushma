@@ -101,8 +101,8 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | snow (≥1 cm in 3 d) | ×0 | ×0 | ×0 | ×0 | plausible / folklore |
 | drying (days with ET0 ≥4, or ≥5 for the summer taxa) | ≥3 days in 7 → ×0.6 | ×0.6 | ×0.6 | ×0.6 | folklore |
 | growth clock (rain lag in growth days; topsoil `[t_min, t_opt, t_max]`, pace 1 at) | 0 / 18 / 30 °C, 15 °C; VPD 1.0 → 2.0 kPa halves the pace; up to 40 days back | 2 / 21 / 32 °C, 17 °C; VPD 1.5 → 3.0 kPa | same as *reticulatus* | same as *edulis* | folklore |
-| sun exposure (day's sun as % of flat ground's) | below 1000 m (fading 900 → 1100 m): ×1 to 95 % → ×0.8 from 120 % | ×0.9 to 80 % → ×1 from 95 % | same as *reticulatus* | same as *edulis* | folklore |
-| slope (cell mean) | ×1 to 15° → ×0.8 from 35° | same | same | same | plausible |
+| sun exposure (day's sun as % of flat ground's) | below 1000 m (fading 900 → 1100 m): ×1 to 105 % → ×0.8 from 125 % | ×0.9 to 80 % → ×1 from 95 % | same as *reticulatus* | same as *edulis* | folklore |
+| slope (cell mean) | ×1 to 25° → ×0.8 from 40° | same | same | same | plausible |
 | disabled alternatives | soil temperature, 30-day water balance, soil-moisture percentile, 60-day % of normal rain, 45-day drought | water balance | water balance | water balance | — |
 | known gaps | temperature-drop bonus, 100 m wood-edge buffer, stand age/thinning/litter/soil | temperature drop, wood edge, orchard age | wood edge, soil | wood edge, soil | — |
 
@@ -121,7 +121,7 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | frost | any Tmin ≤0 °C in 7 days → 0 | folklore | yes |
 | growth clock | rain lag in growth days: topsoil 5 / 22 / 34 °C, pace 1 at 18 °C; VPD 1.5 → 3.0 kPa halves the pace; up to 45 days back | folklore | yes |
 | sun exposure | above 500 m (fading in 400 → 600 m): ×0.8 to 80 % of flat ground's sun → ×1 from 100 % | folklore | yes |
-| slope | ×1 to 15° → ×0.8 from 35° | plausible | yes |
+| slope | ×1 to 25° → ×0.8 from 40° | plausible | yes |
 | air temperature · soil moisture 0–7 cm · waterlogging | alternatives | plausible / folklore | no |
 | gaps | spring rain (Mar–May % of normal), drying wind (gust + RH), siliceous substrate, canopy openness and management | — | — |
 
@@ -142,8 +142,8 @@ OVO-*, GAL-*) is in the appendices. "×" is a multiplier; trapezoids are `[zero,
 | frost / hard frost / snow | Tmin ≤−2 °C on 2 of 7 nights ×0.3; Tmin ≤−5 °C → 0; ≥5 cm snow in 10 days → 0 | folklore | yes |
 | drying | porcini rule at half effect (floor 0.8) | folklore | yes |
 | growth clock | rain lag in growth days: topsoil 0 / 18 / 30 °C, pace 1 at 15 °C; VPD 1.0 → 2.0 kPa halves the pace; up to 75 days back | folklore | yes |
-| sun exposure | below 600 m (fading 500 → 700 m): ×1 to 90 % of flat ground's sun → ×0.85 from 110 % (the source's June–September limit is not encoded) | folklore | yes |
-| slope | ×1 to 15° → ×0.8 from 35° | plausible | yes |
+| sun exposure | below 600 m (fading 500 → 700 m): ×1 to 105 % of flat ground's sun → ×0.85 from 120 % (the source's June–September limit is not encoded) | folklore | yes |
+| slope | ×1 to 25° → ×0.8 from 40° | plausible | yes |
 | two-flush season · air temperature · soil-moisture percentile · VPD heat | alternatives | — | no |
 | soil pH 3.5 → 4.0 … 6.0 → 7.8 (floor 0.3) · lithology (calcareous share, floor 0.4) | `data: missing` | plausible | no |
 | gaps | growing degree-days since 1 January, acidophilous forest sub-types, nitrogen/stand age/litter/texture | — | — |

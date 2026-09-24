@@ -258,7 +258,7 @@ factors:
     kind: static_band
     i18n_key: factor.slope
     input: {attribute: slope_deg}
-    response: {trapezoid: [null, null, 15, 35]}
+    response: {trapezoid: [null, null, 25, 40]}
     floor: 0.8
     confidence: plausible
     source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
@@ -266,11 +266,14 @@ factors:
     data: available
     notes: >-
       Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
-      1979). Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B.
-      edulis yield was highest under about 11° in north-east Turkey (Mumcu Küçüker 2019); two
-      Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016), hence a soft rule
-      on the cell's mean slope: x1 up to 15°, x0.8 from 35°. It acts on the score only, never
-      on the rain, so the same water is not counted twice.
+      1979), but a 1 km cell's mean slope is not the slope of the exact spot the mushrooms
+      grow on: normal terrain for Tuscan woodland scores full credit, and only clearly
+      steep cells lose it. Woodland cells on the Tuscan grid run p10 10.2°, p25 12.6°, median
+      16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up to 25°, about the p90, x0.8 from 40°.
+      Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B. edulis
+      yield was highest under about 11° on plots in north-east Turkey (Mumcu Küçüker 2019);
+      two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts on
+      the score only, never on the rain, so the same water is not counted twice.
 
 known_gaps:
   - id: temperature_drop
