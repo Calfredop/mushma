@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { DayScore } from '../api/queries'
+import type { DayScore, HabitatShare } from '../api/queries'
 import { ChevronIcon } from '../components/icons'
 import { ScoreChip } from '../components/ScoreChip'
 import { usePersistentFlag } from '../hooks/usePersistentFlag'
@@ -17,9 +17,11 @@ interface Props {
   species: Species
   day: DayScore
   isForecast: boolean
+  /** The cell's forest types, for the habitat factor's detail. */
+  habitats?: readonly HabitatShare[]
 }
 
-export function WhyBreakdown({ species, day, isForecast }: Props) {
+export function WhyBreakdown({ species, day, isForecast, habitats }: Props) {
   const { t, i18n } = useTranslation()
   const detailIds = useId()
   const [showAll, setShowAll] = usePersistentFlag('mushma.whyDetails')
@@ -104,7 +106,12 @@ export function WhyBreakdown({ species, day, isForecast }: Props) {
           t('why.holdsBackValue', { percent: percent(factor.impact) })}
       </span>
       {isOpen(factor.key) && (
-        <FactorDetail factor={factor} date={day.date} id={`${detailIds}-${factor.key}`} />
+        <FactorDetail
+          factor={factor}
+          date={day.date}
+          id={`${detailIds}-${factor.key}`}
+          habitats={habitats}
+        />
       )}
     </li>
   )

@@ -113,6 +113,11 @@ class TestSpotAndCells:
         assert cell.cell_id == cell_id
 
         for detail in (spot, cell):
+            # A woodland cell's forest types, largest first, sharing out its wooded area.
+            fractions = [share.fraction for share in detail.habitats]
+            assert fractions, "a woodland cell has at least one forest type"
+            assert fractions == sorted(fractions, reverse=True)
+            assert sum(fractions) == pytest.approx(1.0, abs=0.01)
             assert {forecast.species for forecast in detail.species} == {
                 "porcini",
                 "ovoli",

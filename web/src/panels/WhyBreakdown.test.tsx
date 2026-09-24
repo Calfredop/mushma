@@ -515,7 +515,7 @@ describe('WhyBreakdown details', () => {
     expect(row).toHaveTextContent('Ideale da 125% in su; sfavorevole fino a 50%.')
   })
 
-  it('gives season and habitat a plain line with no numbers', async () => {
+  it('gives season, and habitat without the cell’s forest types, a plain line with no numbers', async () => {
     render(
       <WhyBreakdown
         species="porcini"
@@ -538,6 +538,33 @@ describe('WhyBreakdown details', () => {
       const detail = within(rowOf(name)).getByTestId('factor-detail')
       expect(detail).not.toHaveTextContent(/\d/)
     }
+  })
+
+  it('names the cell’s forest types and how well each suits the species', async () => {
+    const fitted: FactorInput = {
+      ...habitat,
+      rule: { kind: 'habitat', affinity: { beech: 1, chestnut: 0.6, macchia: 0 } },
+    }
+    render(
+      <WhyBreakdown
+        species="porcini"
+        isForecast={false}
+        day={day([fitted], 0.8)}
+        habitats={[
+          { habitat: 'beech', fraction: 0.62 },
+          { habitat: 'chestnut', fraction: 0.3 },
+          { habitat: 'macchia', fraction: 0.08 },
+        ]}
+      />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Tipo di bosco' }))
+    const row = rowOf('Tipo di bosco')
+    expect(row).toHaveTextContent(
+      'Bosco di questa cella: faggeta 62%, castagneto 30% e altri tipi 8%.',
+    )
+    expect(row).toHaveTextContent(
+      'Quanto ogni tipo si adatta alla specie, da 0 a 1: faggeta 1,00 e castagneto 0,60.',
+    )
   })
 
   it('still renders when the day has no measurement or no rule', async () => {

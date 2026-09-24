@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Literal
 
+from api.grid.habitats import load_vocabulary
 from api.models import FactorRule
 from api.species import Species
 
@@ -231,7 +232,7 @@ def combine_factors(
 
 # The rule each fixture factor stands for (fixture-only numbers, shaped like the real
 # config/species/*.yaml so the "why this score" copy has something true to say). The altitude band
-# is per species, in ALTITUDE_TRAPEZOID.
+# and the habitat fit are per species, in ALTITUDE_TRAPEZOID and HABITAT_AFFINITY.
 _DRYING = FactorRule(
     kind="count_days",
     variable="et0_fao_evapotranspiration",
@@ -244,7 +245,6 @@ _DRYING = FactorRule(
 )
 FACTOR_RULES: dict[str, FactorRule] = {
     "season": FactorRule(kind="season_window"),
-    "habitat": FactorRule(kind="habitat"),
     "rain_trigger": FactorRule(
         kind="rain_event",
         variable="precipitation_sum",
@@ -296,7 +296,16 @@ FACTOR_RULES: dict[str, FactorRule] = {
 FIXTURE_RAIN_LAG_DAYS = 12  # inside every fixture rain lag plateau
 
 
+def habitat_fit(species: Species, habitat: str) -> float:
+    return HABITAT_AFFINITY[species].get(habitat, HABITAT_AFFINITY_DEFAULT[species])
+
+
 def rule_for(species: Species, factor_id: str) -> FactorRule:
+    if factor_id == "habitat":
+        return FactorRule(
+            kind="habitat",
+            affinity={h: habitat_fit(species, h) for h in load_vocabulary().habitats},
+        )
     if factor_id == "altitude":
         return FactorRule(
             kind="static_band",

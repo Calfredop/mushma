@@ -16,11 +16,10 @@ from api.fixtures.cells import CellSpec
 from api.fixtures.scoring import (
     ALTITUDE_TRAPEZOID,
     FACTOR_SPECS,
-    HABITAT_AFFINITY,
-    HABITAT_AFFINITY_DEFAULT,
     FactorResult,
     FactorSpec,
     combine_factors,
+    habitat_fit,
     measure,
     rule_for,
     season_gate,
@@ -59,7 +58,7 @@ def _factor_value(
     if spec.id == "season":
         return season_gate(species, target_date)
     if spec.id == "habitat":
-        return HABITAT_AFFINITY[species].get(cell.habitat, HABITAT_AFFINITY_DEFAULT[species])
+        return habitat_fit(species, cell.habitat)
     if spec.id == "altitude":
         return trapezoid(cell.elevation_m, ALTITUDE_TRAPEZOID[species])
     if spec.role == "stopper":

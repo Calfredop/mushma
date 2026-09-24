@@ -240,7 +240,8 @@ dataset instead, with no data at all.
 Every factor in a `/spot` or `/cells/{id}` breakdown carries its role, weight, the measured input
 with its unit, the lag of the rain it scored, its growth days, and the rule's bands inlined, so
 the "why this score" panel quotes the evidence and the quoted band can never drift from the value
-beside it.
+beside it. The response also lists the cell's forest types with their shares (`habitats`), and the
+habitat factor's rule gives each type's fit for the species (`affinity`).
 
 ### Woodland grid
 

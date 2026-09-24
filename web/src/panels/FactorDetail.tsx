@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next'
+import type { HabitatShare } from '../api/queries'
+import { useForestTypes } from '../hooks/useForestTypes'
 import { intlLocale, type Language } from '../i18n'
 import { describeBand, OP_SYMBOL, type Trapezoid } from '../score/detail'
+import { forestMix } from '../score/habitats'
 import type { FactorBreakdown } from '../score/impact'
 import { addDays, formatDayLong, type IsoDate } from '../time/days'
 import styles from './WhyBreakdown.module.css'
@@ -10,6 +13,8 @@ interface Props {
   /** The scored day: windows and lags are counted back from it. */
   date: IsoDate
   id: string
+  /** The cell's forest types, which the habitat factor scores. */
+  habitats?: readonly HabitatShare[]
 }
 
 const NO_BREAK_SPACE = '\u00A0'
@@ -21,8 +26,9 @@ const TIGHT_UNITS = new Set(['%', '°'])
  * the visitor's language. The API sends the numbers, the unit and the rule's
  * bands; this only phrases them (AGENTS.md: the model runs server-side).
  */
-export function FactorDetail({ factor, date, id }: Props) {
+export function FactorDetail({ factor, date, id, habitats }: Props) {
   const { t, i18n } = useTranslation()
+  const forest = useForestTypes()
   const locale = intlLocale(i18n.resolvedLanguage as Language)
   const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
   const list = new Intl.ListFormat(locale, { type: 'conjunction' })
@@ -39,6 +45,10 @@ export function FactorDetail({ factor, date, id }: Props) {
   const percent = new Intl.NumberFormat(locale, {
     style: 'percent',
     maximumFractionDigits: 0,
+  })
+  const fitNumber = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   })
 
   const variableLabel = (name: string) => {
@@ -103,7 +113,10 @@ export function FactorDetail({ factor, date, id }: Props) {
   const measurement = (): string => {
     if (!rule) return t('why.detail.none')
     if (rule.kind === 'season_window') return t('why.detail.season')
-    if (rule.kind === 'habitat') return t('why.detail.habitat')
+    if (rule.kind === 'habitat') {
+      const types = forest.describe(habitats)
+      return types ? t('why.detail.forest', { types }) : t('why.detail.habitat')
+    }
     if (factor.input == null) return t('why.detail.notMeasured')
 
     const offset = rule.offset_days ?? 0
@@ -162,6 +175,21 @@ export function FactorDetail({ factor, date, id }: Props) {
     })
   }
 
+  /** How well each of the cell's named forest types suits the species, as the rule scores it. */
+  const forestFit = (): string | null => {
+    const affinity = rule?.affinity
+    if (!affinity) return null
+    const fits = forestMix(habitats)
+      .main.filter((h) => affinity[h.habitat] != null)
+      .map((h) =>
+        t('forest.fit', {
+          type: forest.name(h.habitat),
+          fit: fitNumber.format(affinity[h.habitat]),
+        }),
+      )
+    return fits.length > 0 ? t('why.detail.forestFit', { fits: list.format(fits) }) : null
+  }
+
   const onClock = rule?.lag_unit === 'growth_days'
   const ruleText = rule?.trapezoid ? band(rule.trapezoid, factor.unit, 'rule') : null
   const lagText = rule?.lag_days
@@ -178,11 +206,13 @@ export function FactorDetail({ factor, date, id }: Props) {
       )
     : null
   const growthText = growth()
+  const fitText = forestFit()
 
   return (
     <div id={id} className={styles.detail} data-testid="factor-detail">
       <p>{measurement()}</p>
       {growthText && <p>{growthText}</p>}
+      {fitText && <p>{fitText}</p>}
       {ruleText && <p>{ruleText}</p>}
       {lagText && <p>{lagText}</p>}
       {whereText && <p>{whereText}</p>}

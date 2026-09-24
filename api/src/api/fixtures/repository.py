@@ -15,6 +15,7 @@ from api.models import (
     FactorChip,
     FactorsResponse,
     GridCellScore,
+    HabitatShare,
     Hotspot,
     HotspotsResponse,
     OutlookResponse,
@@ -133,6 +134,7 @@ class FixtureRepository:
             lon=cell.lon,
             lat=cell.lat,
             place=Place(comune=cell.comune, nearest_place=cell.nearest_place),
+            habitats=[HabitatShare(habitat=cell.habitat, fraction=1.0)],
             species=species_forecasts,
         )
 

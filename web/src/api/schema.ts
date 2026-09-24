@@ -265,6 +265,11 @@ export interface components {
     CellDetailResponse: {
       /** Cell Id */
       cell_id: string
+      /**
+       * Habitats
+       * @description the cell's forest types, largest share first; the shares sum to 1
+       */
+      habitats: components['schemas']['HabitatShare'][]
       /** Lat */
       lat: number
       /** Lon */
@@ -428,6 +433,13 @@ export interface components {
      */
     FactorRule: {
       /**
+       * Affinity
+       * @description habitat: how well each forest type (`config/habitats.yaml`) suits the taxon, 0-1, for every type; the value is their mean weighted by the cell's `habitats`
+       */
+      affinity?: {
+        [key: string]: number
+      } | null
+      /**
        * Aggregate
        * @description how a window aggregate combines the days; `percent_of_normal` is their sum as a percentage of the cell's normal for the same days
        */
@@ -550,6 +562,19 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components['schemas']['ValidationError'][]
+    }
+    /** HabitatShare */
+    HabitatShare: {
+      /**
+       * Fraction
+       * @description its share of the cell's wooded area
+       */
+      fraction: number
+      /**
+       * Habitat
+       * @description the forest type, a habitat of `config/habitats.yaml`
+       */
+      habitat: string
     }
     /** Hotspot */
     Hotspot: {

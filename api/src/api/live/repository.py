@@ -13,6 +13,7 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
+from api.grid.habitats import load_vocabulary
 from api.live.breakdown import reconstruct_breakdown
 from api.live.factors import factor_chips, winner_values
 from api.live.hotspots import cluster_hotspots
@@ -26,6 +27,7 @@ from api.models import (
     DayScore,
     FactorsResponse,
     GridCellScore,
+    HabitatShare,
     Hotspot,
     HotspotsResponse,
     OutlookResponse,
@@ -57,6 +59,7 @@ class LiveRepository:
         self.sightings = SightingsStore(root / "sightings" / REGION)
         self.rules = rules or load_rules()
         self._cells: pd.DataFrame | None = None
+        self._habitats: pd.DataFrame | None = None
         self._time_views: TimeViews | None = None
 
     @property
@@ -68,6 +71,29 @@ class LiveRepository:
             all_cells = pd.read_parquet(grid_path, columns=CELL_COLUMNS)
             self._cells = all_cells[all_cells["woodland"]].reset_index(drop=True)
         return self._cells
+
+    @property
+    def habitats(self) -> pd.DataFrame:
+        """Every cell's forest types (``cell_habitats.parquet``), each cell's largest share first
+        and equal shares in the vocabulary's order, like the grid's ``dominant_habitat``."""
+        if self._habitats is None:
+            shares = pd.read_parquet(self.root / "grid" / REGION / "cell_habitats.parquet")
+            order = {habitat: i for i, habitat in enumerate(load_vocabulary().habitats)}
+            shares["order"] = shares["habitat"].map(order)
+            self._habitats = shares.sort_values(
+                ["cell_id", "fraction", "order"], ascending=[True, False, True]
+            ).reset_index(drop=True)
+        return self._habitats
+
+    def _habitat_shares(self, cell_id: str) -> list[HabitatShare]:
+        rows = self.habitats[self.habitats["cell_id"] == cell_id]
+        # Three decimals is a tenth of a percent of the cell; a sliver that rounds to nothing is
+        # left out rather than served as a 0 share.
+        return [
+            HabitatShare(habitat=habitat, fraction=share)
+            for habitat, fraction in zip(rows["habitat"], rows["fraction"], strict=True)
+            if (share := round(float(fraction), 3)) > 0
+        ]
 
     def _cell_row(self, cell_id: str) -> pd.Series:
         matches = self.cells[self.cells["cell_id"] == cell_id]
@@ -183,6 +209,7 @@ class LiveRepository:
             lon=float(cell_row["lon"]),
             lat=float(cell_row["lat"]),
             place=Place(comune=cell_row["comune_name"], nearest_place=cell_row["place_name"]),
+            habitats=self._habitat_shares(cell_id),
             species=species_forecasts,
         )
 

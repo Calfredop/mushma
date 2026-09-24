@@ -122,6 +122,17 @@ class TestGetCellDetailAndSpot:
         unmeasured = first_porcini_factor(CELL_A["cell_id"])
         assert (unmeasured.key, unmeasured.input, unmeasured.unit) == ("rain_a", None, "m")
 
+    def test_cell_detail_names_its_forest_types_largest_first(self, repo: LiveRepository) -> None:
+        detail = repo.get_cell_detail(CELL_A["cell_id"])
+        assert [(h.habitat, h.fraction) for h in detail.habitats] == [
+            ("beech", 0.7),
+            ("chestnut", 0.3),
+        ]
+
+    def test_equal_forest_types_follow_the_vocabulary_order(self, repo: LiveRepository) -> None:
+        detail = repo.get_cell_detail(CELL_B["cell_id"])
+        assert [h.habitat for h in detail.habitats] == ["beech", "chestnut"]
+
     def test_unknown_cell_id_raises(self, repo: LiveRepository) -> None:
         with pytest.raises(CellNotFound):
             repo.get_cell_detail("not-a-real-cell")

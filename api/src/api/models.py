@@ -87,6 +87,11 @@ class FactorRule(BaseModel):
     where: FactorWhere | None = Field(
         default=None, description="gates and stoppers that apply only in part of the region"
     )
+    affinity: dict[str, Annotated[float, Field(ge=0, le=1)]] | None = Field(
+        default=None,
+        description="habitat: how well each forest type (`config/habitats.yaml`) suits the taxon, "
+        "0-1, for every type; the value is their mean weighted by the cell's `habitats`",
+    )
 
     @property
     def input_unit(self) -> str | None:
@@ -205,6 +210,11 @@ class StatusResponse(BaseModel):
     )
 
 
+class HabitatShare(BaseModel):
+    habitat: str = Field(description="the forest type, a habitat of `config/habitats.yaml`")
+    fraction: float = Field(gt=0, le=1, description="its share of the cell's wooded area")
+
+
 class CellDetailResponse(BaseModel):
     """Shared shape for `GET /spot` and `GET /cells/{id}`: today plus a
     7-day outlook, per species, with the full factor breakdown."""
@@ -213,6 +223,9 @@ class CellDetailResponse(BaseModel):
     lon: float
     lat: float
     place: Place
+    habitats: list[HabitatShare] = Field(
+        description="the cell's forest types, largest share first; the shares sum to 1"
+    )
     species: list[SpeciesForecast]
 
 

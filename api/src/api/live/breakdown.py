@@ -17,6 +17,7 @@ from functools import cache
 
 import pandas as pd
 
+from api.grid.habitats import load_vocabulary
 from api.model.rules import (
     ATTRIBUTE_UNITS,
     DERIVED_UNITS,
@@ -24,6 +25,7 @@ from api.model.rules import (
     DaysSinceFactor,
     Factor,
     GrowthClock,
+    HabitatFactor,
     RainEventFactor,
     StaticBandFactor,
     WindowAggregateFactor,
@@ -35,6 +37,11 @@ from api.weather.config import load_weather_config
 @cache
 def _weather_units() -> dict[str, str]:
     return {name: v.unit for name, v in load_weather_config().variables.items()}
+
+
+@cache
+def _habitats() -> list[str]:
+    return load_vocabulary().habitats
 
 
 def _variable_unit(variable: str) -> str:
@@ -107,6 +114,12 @@ def _describe_measurement(factor: Factor, growth: GrowthClock | None) -> FactorR
                 op=factor.input.op,
                 threshold=factor.input.threshold,
                 trapezoid=factor.response.trapezoid,
+            )
+        case HabitatFactor():
+            fit = factor.input.affinity
+            return FactorRule(
+                kind=factor.kind,
+                affinity={h: fit.get(h, factor.input.default) for h in _habitats()},
             )
         case _:
             return FactorRule(kind=factor.kind)

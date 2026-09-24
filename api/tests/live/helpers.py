@@ -61,6 +61,18 @@ def write_cells(root: Path, cells: list[dict]) -> None:
     pd.DataFrame(cells).to_parquet(path, index=False)
 
 
+def write_habitats(root: Path, shares: dict[str, list[tuple[str, float]]]) -> None:
+    """``shares``: cell_id -> its ``(habitat, fraction)`` pairs, as ``cell_habitats.parquet``."""
+    rows = [
+        {"cell_id": cell_id, "habitat": habitat, "fraction": fraction}
+        for cell_id, pairs in shares.items()
+        for habitat, fraction in pairs
+    ]
+    path = root / "grid" / REGION / "cell_habitats.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_parquet(path, index=False)
+
+
 def cell(x: int, y: int, lon: float, lat: float, *, woodland: bool = True, **overrides) -> dict:
     row = {
         "cell_id": make_cell_id(x, y, 1000),
@@ -109,6 +121,12 @@ CELL_A = cell(0, 0, lon=10.000, lat=43.000, comune_name="Alpha", place_name="APl
 CELL_B = cell(1000, 0, lon=10.010, lat=43.000, comune_name="Beta", place_name="BPlace")
 CELL_C = cell(50_000, 50_000, lon=10.5, lat=43.5, comune_name="Gamma", place_name="CPlace")
 CELL_D_NON_WOODLAND = cell(0, 50_000, lon=10.0, lat=43.5, woodland=False)
+# Each woodland cell's forest types. Cell B's two tie, and the vocabulary order breaks the tie.
+HABITATS = {
+    CELL_A["cell_id"]: [("chestnut", 0.3), ("beech", 0.7)],
+    CELL_B["cell_id"]: [("chestnut", 0.5), ("beech", 0.5)],
+    CELL_C["cell_id"]: [("deciduous_oak", 1.0)],
+}
 
 
 def dataset_ruleset() -> RuleSet:
@@ -137,7 +155,8 @@ def build_dataset(root: Path, outlook_days: int = 8) -> RuleSet:
     """A small but complete synthetic $DATA_DIR: enough for every ScoresRepository method (and
     the API contract tests) to exercise real code paths, not just fixture-mode stand-ins.
 
-    - cells A and B are edge-adjacent (a hotspot cluster); C is isolated; D isn't woodland.
+    - cells A and B are edge-adjacent (a hotspot cluster); C is isolated; D isn't woodland. Each
+      woodland cell has its forest types (``HABITATS``), for the cell detail.
     - one arbitrary day (SCORES_DATE, unrelated to "today") has combined + all 3 groups scored
       for A/B/C, for get_scores / get_hotspots / cross-species cell-set consistency.
     - the "today.." outlook is scored (with factors) for all 3 groups plus combined, on cells A
@@ -150,6 +169,7 @@ def build_dataset(root: Path, outlook_days: int = 8) -> RuleSet:
     - a couple of sightings, for get_sightings and hotspot sighting counts.
     """
     write_cells(root, [CELL_A, CELL_B, CELL_C, CELL_D_NON_WOODLAND])
+    write_habitats(root, HABITATS)
 
     for group, leaf, scores in [
         ("porcini", "porcini_a", [(CELL_A, 0.9), (CELL_B, 0.85), (CELL_C, 0.6)]),

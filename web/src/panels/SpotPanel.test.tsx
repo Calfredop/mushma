@@ -26,6 +26,9 @@ describe('SpotPanel', () => {
     )
     expect(screen.getByRole('heading', { name: 'Camaldoli' })).toBeInTheDocument()
     expect(screen.getByText('Comune di Poppi')).toBeInTheDocument()
+    expect(
+      screen.getByText('Bosco: abetina 62%, faggeta 31% e altri tipi 7%'),
+    ).toBeInTheDocument()
 
     const porciniBars = screen.getAllByRole('button', { name: /^Porcini, / })
     expect(porciniBars).toHaveLength(8)

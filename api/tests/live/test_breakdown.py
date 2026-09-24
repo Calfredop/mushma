@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 from pydantic import TypeAdapter
 
+from api.grid.habitats import load_vocabulary
 from api.live.breakdown import reconstruct_breakdown
 from api.model.rules import (
     DERIVED_SERIES,
@@ -88,6 +89,12 @@ def window_aggregate(id: str, variable: str, **overrides) -> Factor:
         input={"variable": variable, "aggregate": "mean", "window_days": 20, "offset_days": 2},
         response={"trapezoid": [6, 10, 17, 22]},
         **overrides,
+    )
+
+
+def habitat(affinity: dict[str, float], default: float) -> Factor:
+    return factor(
+        id="habitat", role="gate", kind="habitat", input={"affinity": affinity, "default": default}
     )
 
 
@@ -245,6 +252,22 @@ class TestFactorMeasurements:
         assert (b.input, b.unit, b.days_ago) == (None, None, None)
         assert b.rule is not None
         assert (b.rule.kind, b.rule.variable, b.rule.trapezoid) == ("season_window", None, None)
+
+    def test_a_habitat_rule_gives_every_forest_type_its_fit(self) -> None:
+        """So the copy can say how well each of the cell's forest types suits the taxon, including
+        the ones the rule leaves to its default."""
+        (b,) = reconstruct_breakdown(
+            [habitat({"beech": 1.0, "chestnut": 0.6}, 0.1)], {"habitat": 0.8}
+        )
+        assert (b.input, b.unit) == (None, None)
+        assert b.rule is not None and b.rule.affinity is not None
+        assert set(b.rule.affinity) == set(load_vocabulary().habitats)
+        assert (b.rule.affinity["beech"], b.rule.affinity["chestnut"]) == (1.0, 0.6)
+        assert b.rule.affinity["macchia"] == 0.1
+
+    def test_only_a_habitat_rule_has_a_fit_per_forest_type(self) -> None:
+        (b,) = reconstruct_breakdown([gate()], {"season_window": 0.6})
+        assert b.rule is not None and b.rule.affinity is None
 
     def test_columns_missing_from_the_row_degrade_to_none(self) -> None:
         """Days scored without the factors tier's measurement columns still explain themselves."""

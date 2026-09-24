@@ -69,6 +69,14 @@
             "title": "Cell Id",
             "type": "string"
           },
+          "habitats": {
+            "description": "the cell's forest types, largest share first; the shares sum to 1",
+            "items": {
+              "$ref": "#/components/schemas/HabitatShare"
+            },
+            "title": "Habitats",
+            "type": "array"
+          },
           "lat": {
             "title": "Lat",
             "type": "number"
@@ -93,6 +101,7 @@
           "lon",
           "lat",
           "place",
+          "habitats",
           "species"
         ],
         "title": "CellDetailResponse",
@@ -470,6 +479,23 @@
       "FactorRule": {
         "description": "What a rule asked of the measurement (`config/species/*.yaml`), so the copy can say what it\nwanted. Which fields are set follows `kind`: a season window or habitat has none of them.",
         "properties": {
+          "affinity": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "maximum": 1.0,
+                  "minimum": 0.0,
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "habitat: how well each forest type (`config/habitats.yaml`) suits the taxon, 0-1, for every type; the value is their mean weighted by the cell's `habitats`",
+            "title": "Affinity"
+          },
           "aggregate": {
             "anyOf": [
               {
@@ -783,6 +809,28 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HabitatShare": {
+        "properties": {
+          "fraction": {
+            "description": "its share of the cell's wooded area",
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Fraction",
+            "type": "number"
+          },
+          "habitat": {
+            "description": "the forest type, a habitat of `config/habitats.yaml`",
+            "title": "Habitat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "habitat",
+          "fraction"
+        ],
+        "title": "HabitatShare",
         "type": "object"
       },
       "Hotspot": {

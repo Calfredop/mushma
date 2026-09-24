@@ -5,6 +5,7 @@ import pytest
 from api.fixtures.cells import CELLS
 from api.fixtures.generator import WINDOW_OFFSETS, combined_score, score_and_factors
 from api.fixtures.scoring import ALTITUDE_TRAPEZOID, FACTOR_SPECS, trapezoid
+from api.grid.habitats import load_vocabulary
 from api.species import SPECIES
 
 TARGET = date(2026, 9, 17)
@@ -88,6 +89,13 @@ class TestMeasurements:
                 assert factor.unit == "m"
                 assert factor.rule is not None
                 assert tuple(factor.rule.trapezoid) == ALTITUDE_TRAPEZOID[species]
+
+    def test_habitat_is_the_fit_its_rule_gives_the_cells_forest_type(self) -> None:
+        for cell, _, factor in every_factor():
+            if factor.key == "habitat":
+                assert factor.rule is not None and factor.rule.affinity is not None
+                assert set(factor.rule.affinity) == set(load_vocabulary().habitats)
+                assert factor.rule.affinity[cell.habitat] == factor.value
 
     def test_a_rain_event_says_when_the_rain_ended_inside_its_lag_window(self) -> None:
         seen = 0

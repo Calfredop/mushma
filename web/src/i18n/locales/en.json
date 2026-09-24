@@ -123,7 +123,8 @@
     "close": "Close the forecast",
     "pastDateNote": "The spot forecast starts today: use the map for past days.",
     "selectDay": "{{species}}, {{date}}: score {{value}}",
-    "notFound": "There's no forecast for this spot. Close it and pick another one."
+    "notFound": "There's no forecast for this spot. Close it and pick another one.",
+    "forest": "Forest: {{types}}"
   },
   "why": {
     "title": "Why this score",
@@ -142,6 +143,8 @@
       "none": "No detail available for this factor.",
       "season": "The time of year this species usually comes up; out of season the score is zero.",
       "habitat": "How well this cell's woodland type suits the species.",
+      "forest": "This cell's forest: {{types}}.",
+      "forestFit": "How well each type suits the species, from 0 to 1: {{fits}}. The cell's value is their average, weighted by share.",
       "static": "For this cell: {{value}}.",
       "rain_one": "{{amount}} of rain in {{count}} day{{until}}.",
       "rain_other": "{{amount}} of rain in {{count}} days{{until}}.",
@@ -238,6 +241,27 @@
     "soil_ph": "Soil pH",
     "sun_exposure": "Sun exposure",
     "slope": "Slope"
+  },
+  "forest": {
+    "types": {
+      "beech": "beech",
+      "chestnut": "chestnut",
+      "deciduous_oak": "Turkey and downy oak",
+      "evergreen_oak": "holm and cork oak",
+      "mixed_broadleaf": "other broadleaf",
+      "riparian": "riverside trees",
+      "exotic_broadleaf": "exotic broadleaf",
+      "mediterranean_pine": "Mediterranean pine",
+      "mountain_pine": "mountain pine",
+      "fir_spruce": "fir and spruce",
+      "other_conifer": "other conifers",
+      "mixed_broadleaf_conifer": "mixed broadleaf and conifer",
+      "macchia": "Mediterranean scrub",
+      "transitional_woodland_shrub": "young woodland and scrub"
+    },
+    "share": "{{type}} {{share}}",
+    "rest": "other types {{share}}",
+    "fit": "{{type}} {{fit}}"
   },
   "analysis": {
     "toggle": "Analysis",

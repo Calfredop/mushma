@@ -4,6 +4,7 @@ import type { CellDetailResponse } from '../api/queries'
 import { CloseIcon } from '../components/icons'
 import { ScoreChip } from '../components/ScoreChip'
 import { distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
+import { useForestTypes } from '../hooks/useForestTypes'
 import { intlLocale, type Language } from '../i18n'
 import { formatScore } from '../score/format'
 import { scoreColor } from '../score/scale'
@@ -65,6 +66,7 @@ export function SpotPanel({
   const language = i18n.resolvedLanguage as Language
   const locale = intlLocale(language)
   const [picked, setPicked] = useState<Selection | null>(null)
+  const forest = useForestTypes()
 
   const closeButton = (
     <button
@@ -112,6 +114,7 @@ export function SpotPanel({
   const distanceText = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(
     distance,
   )
+  const forestTypes = forest.describe(detail.habitats)
 
   return (
     <section className={panel.section} aria-labelledby="spot-title">
@@ -130,6 +133,9 @@ export function SpotPanel({
               </>
             )}
           </p>
+          {forestTypes && (
+            <p className={panel.subtitle}>{t('spot.forest', { types: forestTypes })}</p>
+          )}
         </div>
         {closeButton}
       </header>
@@ -205,6 +211,7 @@ export function SpotPanel({
           species={selection.species}
           day={selectedDay}
           isForecast={selectedDay.date > today}
+          habitats={detail.habitats}
         />
       )}
     </section>

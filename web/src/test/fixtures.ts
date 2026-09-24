@@ -9,7 +9,16 @@ import type {
 
 const factors = (scale: number) => [
   { key: 'season', i18n_key: 'factor.season', value: 1, contribution: 1 },
-  { key: 'habitat', i18n_key: 'factor.habitat', value: 0.9, contribution: 0.9 },
+  {
+    key: 'habitat',
+    i18n_key: 'factor.habitat',
+    value: 0.9,
+    contribution: 0.9,
+    rule: {
+      kind: 'habitat' as const,
+      affinity: { fir_spruce: 0.85, beech: 1, chestnut: 0.9, macchia: 0 },
+    },
+  },
   {
     key: 'rain_trigger',
     i18n_key: 'factor.rain_trigger',
@@ -40,6 +49,11 @@ export const CELL_DETAIL: CellDetailResponse = {
   lon: 11.7333,
   lat: 43.85,
   place: { comune: 'Poppi', nearest_place: 'Camaldoli' },
+  habitats: [
+    { habitat: 'fir_spruce', fraction: 0.62 },
+    { habitat: 'beech', fraction: 0.31 },
+    { habitat: 'chestnut', fraction: 0.07 },
+  ],
   species: [
     { species: 'porcini', days: days('porcini', 0.63) },
     { species: 'ovoli', days: days('ovoli', 0.4) },

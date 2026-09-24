@@ -123,7 +123,8 @@
     "close": "Chiudi la previsione",
     "pastDateNote": "La previsione del punto parte da oggi: per i giorni passati guarda la mappa.",
     "selectDay": "{{species}}, {{date}}: indice {{value}}",
-    "notFound": "Nessuna previsione per questo punto. Chiudi e scegli un altro punto."
+    "notFound": "Nessuna previsione per questo punto. Chiudi e scegli un altro punto.",
+    "forest": "Bosco: {{types}}"
   },
   "why": {
     "title": "Perché questo indice",
@@ -142,6 +143,8 @@
       "none": "Nessun dettaglio disponibile per questo fattore.",
       "season": "Il periodo dell'anno in cui questa specie di solito nasce; fuori stagione l'indice è zero.",
       "habitat": "Quanto il tipo di bosco di questa cella si adatta alla specie.",
+      "forest": "Bosco di questa cella: {{types}}.",
+      "forestFit": "Quanto ogni tipo si adatta alla specie, da 0 a 1: {{fits}}. Il valore della cella è la loro media, pesata per quota.",
       "static": "Per questa cella: {{value}}.",
       "rain_one": "{{amount}} di pioggia in {{count}} giorno{{until}}.",
       "rain_other": "{{amount}} di pioggia in {{count}} giorni{{until}}.",
@@ -238,6 +241,27 @@
     "soil_ph": "pH del suolo",
     "sun_exposure": "Esposizione al sole",
     "slope": "Pendenza"
+  },
+  "forest": {
+    "types": {
+      "beech": "faggeta",
+      "chestnut": "castagneto",
+      "deciduous_oak": "querceto di cerro e roverella",
+      "evergreen_oak": "lecceta e sughereta",
+      "mixed_broadleaf": "altre latifoglie",
+      "riparian": "bosco ripariale",
+      "exotic_broadleaf": "latifoglie esotiche",
+      "mediterranean_pine": "pineta mediterranea",
+      "mountain_pine": "pineta montana",
+      "fir_spruce": "abetina",
+      "other_conifer": "altre conifere",
+      "mixed_broadleaf_conifer": "bosco misto di latifoglie e conifere",
+      "macchia": "macchia mediterranea",
+      "transitional_woodland_shrub": "bosco giovane e arbusteto"
+    },
+    "share": "{{type}} {{share}}",
+    "rest": "altri tipi {{share}}",
+    "fit": "{{type}} {{fit}}"
   },
   "analysis": {
     "toggle": "Analisi",
