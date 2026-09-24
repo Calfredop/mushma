@@ -9,6 +9,7 @@ from api.models import (
     CellDetailResponse,
     ComuniResponse,
     FactorsResponse,
+    ForestTypesResponse,
     HotspotsResponse,
     OutlookResponse,
     PlausibleSpeciesResponse,
@@ -84,6 +85,9 @@ class ScoresRepository(Protocol):
 
     def get_comuni(self) -> ComuniResponse:
         """Comuni with woodland, by name."""
+
+    def get_forest_types(self) -> ForestTypesResponse:
+        """Every woodland cell's dominant forest type. Static: never varies by species or day."""
 
     def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
         """Every stored season for Tuscany (``comune`` None) or one comune. Raises AreaNotFound."""

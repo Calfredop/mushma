@@ -215,6 +215,20 @@ class HabitatShare(BaseModel):
     fraction: float = Field(gt=0, le=1, description="its share of the cell's wooded area")
 
 
+class CellForestType(BaseModel):
+    cell_id: str
+    habitat: str = Field(
+        description="the cell's dominant forest type, a habitat of `config/habitats.yaml`"
+    )
+
+
+class ForestTypesResponse(BaseModel):
+    """Analysis mode's Bosco layer: every woodland cell's dominant forest type. Static grid data --
+    doesn't vary by species or day, so unlike `/scores` and `/factors` there's no date here."""
+
+    cells: list[CellForestType]
+
+
 class CellDetailResponse(BaseModel):
     """Shared shape for `GET /spot` and `GET /cells/{id}`: today plus a
     7-day outlook, per species, with the full factor breakdown."""

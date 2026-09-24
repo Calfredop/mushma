@@ -12,6 +12,7 @@ from api.models import (
     CellDetailResponse,
     ComuniResponse,
     FactorsResponse,
+    ForestTypesResponse,
     HotspotsResponse,
     OutlookResponse,
     PlausibleSpeciesResponse,
@@ -97,6 +98,17 @@ def get_factors(
     except DateOutOfRange as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     response.headers["Cache-Control"] = cache_control_for_date(target_date)
+    return result
+
+
+@router.get(
+    "/forest-types",
+    response_model=ForestTypesResponse,
+    summary="Analysis mode's Bosco layer: every woodland cell's dominant forest type",
+)
+def get_forest_types(repository: Repository, response: Response) -> ForestTypesResponse:
+    result = repository.get_forest_types()
+    response.headers["Cache-Control"] = DAILY
     return result
 
 

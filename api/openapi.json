@@ -148,6 +148,25 @@
         "title": "CellFactors",
         "type": "object"
       },
+      "CellForestType": {
+        "properties": {
+          "cell_id": {
+            "title": "Cell Id",
+            "type": "string"
+          },
+          "habitat": {
+            "description": "the cell's dominant forest type, a habitat of `config/habitats.yaml`",
+            "title": "Habitat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cell_id",
+          "habitat"
+        ],
+        "title": "CellForestType",
+        "type": "object"
+      },
       "CellSeason": {
         "properties": {
           "cell_id": {
@@ -766,6 +785,23 @@
           "cells"
         ],
         "title": "FactorsResponse",
+        "type": "object"
+      },
+      "ForestTypesResponse": {
+        "description": "Analysis mode's Bosco layer: every woodland cell's dominant forest type. Static grid data --\ndoesn't vary by species or day, so unlike `/scores` and `/factors` there's no date here.",
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/CellForestType"
+            },
+            "title": "Cells",
+            "type": "array"
+          }
+        },
+        "required": [
+          "cells"
+        ],
+        "title": "ForestTypesResponse",
         "type": "object"
       },
       "GridCellScore": {
@@ -2035,6 +2071,24 @@
           }
         },
         "summary": "Analysis mode: every factor behind one species' conditions score, per woodland cell"
+      }
+    },
+    "/forest-types": {
+      "get": {
+        "operationId": "get_forest_types_forest_types_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForestTypesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Analysis mode's Bosco layer: every woodland cell's dominant forest type"
       }
     },
     "/health": {

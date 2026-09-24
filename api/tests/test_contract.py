@@ -9,10 +9,12 @@ import math
 import httpx
 import pytest
 
+from api.grid.habitats import load_vocabulary
 from api.models import (
     CellDetailResponse,
     ComuniResponse,
     FactorsResponse,
+    ForestTypesResponse,
     HotspotsResponse,
     OutlookResponse,
     PlausibleSpeciesResponse,
@@ -194,6 +196,26 @@ class TestSightings:
         bounded_total = sum(row["count"] for row in bounded.json()["counts"])
         open_total = sum(row["count"] for row in open_ended.json()["counts"])
         assert bounded_total <= open_total
+
+
+class TestForestTypes:
+    def test_covers_every_cell_scores_can_serve_today(
+        self, client: httpx.Client, servable_cell_ids: set[str]
+    ) -> None:
+        # Static grid data: it can cover more than today's scored window (e.g. a cell that
+        # hasn't been (re)scored yet still has a forest type), but never less.
+        response = client.get("/forest-types")
+        assert response.status_code == 200
+        body = ForestTypesResponse.model_validate(response.json())
+        assert servable_cell_ids <= {cell.cell_id for cell in body.cells}
+        known = set(load_vocabulary().habitats)
+        for cell in body.cells:
+            assert cell.habitat in known
+
+    def test_cell_ids_are_unique(self, client: httpx.Client) -> None:
+        response = client.get("/forest-types")
+        cell_ids = [cell["cell_id"] for cell in response.json()["cells"]]
+        assert len(cell_ids) == len(set(cell_ids))
 
 
 @pytest.fixture

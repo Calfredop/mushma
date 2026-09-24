@@ -66,6 +66,10 @@ class TestTimeViewsCacheHeaders:
     def test_the_comuni_list_is_kept_for_a_day(self) -> None:
         assert client.get("/comuni").headers["cache-control"] == DAILY
 
+
+def test_forest_types_are_kept_for_a_day() -> None:
+    assert client.get("/forest-types").headers["cache-control"] == DAILY
+
     def test_seasons_and_the_outlook_are_short_lived(self) -> None:
         for path, params in (
             ("/history/seasons", {}),

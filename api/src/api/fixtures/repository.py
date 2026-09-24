@@ -9,11 +9,13 @@ from api.fixtures.timeviews import FixtureTimeViews
 from api.models import (
     CellDetailResponse,
     CellFactors,
+    CellForestType,
     ComuniResponse,
     DayScore,
     FactorBreakdown,
     FactorChip,
     FactorsResponse,
+    ForestTypesResponse,
     GridCellScore,
     HabitatShare,
     Hotspot,
@@ -197,6 +199,11 @@ class FixtureRepository:
 
     def get_comuni(self) -> ComuniResponse:
         return self._time_views.get_comuni()
+
+    def get_forest_types(self) -> ForestTypesResponse:
+        return ForestTypesResponse(
+            cells=[CellForestType(cell_id=cell.id, habitat=cell.habitat) for cell in CELLS]
+        )
 
     def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
         return self._time_views.get_seasons(species, comune)

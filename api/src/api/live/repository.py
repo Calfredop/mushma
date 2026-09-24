@@ -23,9 +23,11 @@ from api.model.store import ScoreStore
 from api.models import (
     CellDetailResponse,
     CellFactors,
+    CellForestType,
     ComuniResponse,
     DayScore,
     FactorsResponse,
+    ForestTypesResponse,
     GridCellScore,
     HabitatShare,
     Hotspot,
@@ -294,6 +296,17 @@ class LiveRepository:
 
     def get_comuni(self) -> ComuniResponse:
         return self.time_views.get_comuni()
+
+    def get_forest_types(self) -> ForestTypesResponse:
+        # `self.habitats` is already sorted dominant-first per cell (see its docstring).
+        dominant = self.habitats.drop_duplicates("cell_id", keep="first")
+        dominant = dominant[dominant["cell_id"].isin(self.cells["cell_id"])]
+        return ForestTypesResponse(
+            cells=[
+                CellForestType(cell_id=cell_id, habitat=habitat)
+                for cell_id, habitat in zip(dominant["cell_id"], dominant["habitat"], strict=True)
+            ]
+        )
 
     def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
         return self.time_views.get_seasons(species, comune)
