@@ -472,3 +472,43 @@ class PlausibleSpeciesResponse(BaseModel):
     )
     good_score: float = Field(gt=0, le=1)
     species: list[SpeciesProfile]
+
+
+# --- Multi-region (feat-full-italy-coverage) ----------------------------------------------------
+
+
+class RegionInfo(BaseModel):
+    """One served region, for the hub's list and the region switcher."""
+
+    id: str
+    name: dict[str, str] = Field(description="display names keyed by locale, at least it and en")
+    bbox_wgs84: list[float] = Field(
+        min_length=4, max_length=4, description="[lon_min, lat_min, lon_max, lat_max]"
+    )
+    history_start: date = Field(description="first day of weather history / season replay")
+    species: list[Species] = Field(description="species groups this region offers")
+    updated_at: datetime | None = Field(
+        description="when this region's scores were last (re)generated; null before the first run"
+    )
+
+
+class RegionsResponse(BaseModel):
+    regions: list[RegionInfo]
+
+
+class RegionOverview(BaseModel):
+    """One region's aggregate for the national hub map."""
+
+    region: str
+    mean_score: float = Field(ge=0, le=1)
+    good_share: float = Field(
+        ge=0, le=1, description="share of woodland cells at or above good_score"
+    )
+    updated_at: datetime | None
+
+
+class OverviewResponse(BaseModel):
+    species: SpeciesOrCombined
+    date: date
+    good_score: float = Field(gt=0, le=1)
+    regions: list[RegionOverview]

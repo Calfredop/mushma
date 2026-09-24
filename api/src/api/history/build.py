@@ -47,6 +47,7 @@ from api.model.inputs import load_cells
 from api.model.rules import load_rules
 from api.model.series import day_of_year
 from api.model.store import ScoreStore
+from api.regions import region_display_name
 from api.sightings.store import SightingsStore
 from api.timeutil import today_rome
 from api.weather.config import WeatherConfig, load_weather_config
@@ -56,7 +57,6 @@ from api.weather.seasonal import outlook_dir
 Log = Callable[[str], None]
 RAIN = "precipitation_sum"
 TEMPERATURE = "temperature_2m_mean"
-REGION_NAMES = {"tuscany": "Toscana"}
 MEMORY_LIMIT = "256MB"
 CELL_COLUMNS = [
     "cell_id",
@@ -294,8 +294,8 @@ def update_history(
     last_day = (today or today_rome()) - timedelta(days=1)
     config = load_history_config()
     weather_config = load_weather_config()
-    model_config = load_model_config()
-    rules = load_rules()
+    model_config = load_model_config(region=region)
+    rules = load_rules(region)
     climatology, store = _stores(region, root)
     con = history_connection(root)
     # About a second: rebuilt every time, so the normals follow the backfill as it adds years.
@@ -309,7 +309,7 @@ def update_history(
     # Only areas with weather can have seasons: a comune whose woodland no weather point reaches
     # (Isola del Giglio) would list with nothing behind it.
     served = cells[cells["cell_id"].isin(set(weights["cell_id"]))]
-    store.write(store.areas_path, area_table(served, region, REGION_NAMES.get(region, region)))
+    store.write(store.areas_path, area_table(served, region, region_display_name(region)))
     fits = static_fit(rules, load_cells(grid_dir))
     store.write(store.area_fit_path, area_fit(fits, members, config.plausible_fit))
 

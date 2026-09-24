@@ -37,7 +37,9 @@ def client(
 
         root = tmp_path_factory.mktemp("live_contract")
         rules = build_dataset(root)
-        app.dependency_overrides[get_repository] = lambda: LiveRepository(root, rules=rules)
+        app.dependency_overrides[get_repository] = lambda: LiveRepository(
+            root, region="tuscany", rules=rules
+        )
 
     try:
         with TestClient(app) as test_client:

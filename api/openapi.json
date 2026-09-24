@@ -1171,6 +1171,46 @@
         "title": "OutlookResponse",
         "type": "object"
       },
+      "OverviewResponse": {
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "good_score": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Good Score",
+            "type": "number"
+          },
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/RegionOverview"
+            },
+            "title": "Regions",
+            "type": "array"
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci",
+              "combined"
+            ],
+            "title": "Species",
+            "type": "string"
+          }
+        },
+        "required": [
+          "species",
+          "date",
+          "good_score",
+          "regions"
+        ],
+        "title": "OverviewResponse",
+        "type": "object"
+      },
       "Place": {
         "properties": {
           "comune": {
@@ -1285,6 +1325,133 @@
           "drier_pct"
         ],
         "title": "RainTiltBands",
+        "type": "object"
+      },
+      "RegionInfo": {
+        "description": "One served region, for the hub's list and the region switcher.",
+        "properties": {
+          "bbox_wgs84": {
+            "description": "[lon_min, lat_min, lon_max, lat_max]",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox Wgs84",
+            "type": "array"
+          },
+          "history_start": {
+            "description": "first day of weather history / season replay",
+            "format": "date",
+            "title": "History Start",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "display names keyed by locale, at least it and en",
+            "title": "Name",
+            "type": "object"
+          },
+          "species": {
+            "description": "species groups this region offers",
+            "items": {
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci"
+              ],
+              "type": "string"
+            },
+            "title": "Species",
+            "type": "array"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "when this region's scores were last (re)generated; null before the first run",
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "bbox_wgs84",
+          "history_start",
+          "species",
+          "updated_at"
+        ],
+        "title": "RegionInfo",
+        "type": "object"
+      },
+      "RegionOverview": {
+        "description": "One region's aggregate for the national hub map.",
+        "properties": {
+          "good_share": {
+            "description": "share of woodland cells at or above good_score",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Good Share",
+            "type": "number"
+          },
+          "mean_score": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Mean Score",
+            "type": "number"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "region",
+          "mean_score",
+          "good_share",
+          "updated_at"
+        ],
+        "title": "RegionOverview",
+        "type": "object"
+      },
+      "RegionsResponse": {
+        "properties": {
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/RegionInfo"
+            },
+            "title": "Regions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "regions"
+        ],
+        "title": "RegionsResponse",
         "type": "object"
       },
       "ScoresResponse": {
@@ -1938,7 +2105,7 @@
     }
   },
   "info": {
-    "description": "Fruiting-conditions scores, cell detail, hotspots and sightings for wild edible mushrooms in Tuscany. Scores are a 0-1 conditions index, never a probability or an edibility claim.",
+    "description": "Fruiting-conditions scores, cell detail, hotspots and sightings for wild edible mushrooms across served Italian regions. Scores are a 0-1 conditions index, never a probability or an edibility claim. Every data route takes a `region` query parameter (default `tuscany`).",
     "title": "mushma API",
     "version": "0.1.0"
   },
@@ -1956,6 +2123,18 @@
               "title": "Cell Id",
               "type": "string"
             }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1970,7 +2149,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "unknown cell id"
+            "description": "unknown cell id or region"
           },
           "422": {
             "content": {
@@ -1989,6 +2168,20 @@
     "/comuni": {
       "get": {
         "operationId": "get_comuni_comuni_get",
+        "parameters": [
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -1999,6 +2192,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           },
           "503": {
             "description": "history not built yet"
@@ -2043,6 +2246,18 @@
               "description": "defaults to today, Europe/Rome",
               "title": "Date"
             }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2057,7 +2272,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "no factors stored for that day"
+            "description": "no factors stored for that day, or unknown region"
           },
           "422": {
             "content": {
@@ -2076,6 +2291,20 @@
     "/forest-types": {
       "get": {
         "operationId": "get_forest_types_forest_types_get",
+        "parameters": [
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -2086,6 +2315,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Analysis mode's Bosco layer: every woodland cell's dominant forest type"
@@ -2140,6 +2379,18 @@
               "title": "Species",
               "type": "string"
             }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2154,7 +2405,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "season not stored"
+            "description": "season not stored, or unknown region"
           },
           "422": {
             "content": {
@@ -2178,7 +2429,7 @@
         "operationId": "get_seasons_history_seasons_get",
         "parameters": [
           {
-            "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+            "description": "ISTAT comune code (see /comuni); omit for the whole region",
             "in": "query",
             "name": "comune",
             "required": false,
@@ -2191,7 +2442,7 @@
                   "type": "null"
                 }
               ],
-              "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+              "description": "ISTAT comune code (see /comuni); omit for the whole region",
               "title": "Comune"
             }
           },
@@ -2210,6 +2461,18 @@
               "title": "Species",
               "type": "string"
             }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2224,7 +2487,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "unknown comune"
+            "description": "unknown comune or region"
           },
           "422": {
             "content": {
@@ -2240,7 +2503,7 @@
             "description": "history not built yet"
           }
         },
-        "summary": "Every stored season for Tuscany or a comune: good days, weather vs normal, sightings"
+        "summary": "Every stored season for the region or a comune: good days, weather vs normal, sightings"
       }
     },
     "/hotspots": {
@@ -2292,6 +2555,18 @@
               "title": "Limit",
               "type": "integer"
             }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2306,7 +2581,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "date outside the served window"
+            "description": "date outside the served window, or unknown region"
           },
           "422": {
             "content": {
@@ -2341,7 +2616,7 @@
             }
           },
           {
-            "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+            "description": "ISTAT comune code (see /comuni); omit for the whole region",
             "in": "query",
             "name": "comune",
             "required": false,
@@ -2354,8 +2629,20 @@
                   "type": "null"
                 }
               ],
-              "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+              "description": "ISTAT comune code (see /comuni); omit for the whole region",
               "title": "Comune"
+            }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
             }
           }
         ],
@@ -2371,7 +2658,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "unknown comune"
+            "description": "unknown comune or region"
           },
           "422": {
             "content": {
@@ -2388,6 +2675,89 @@
           }
         },
         "summary": "The season so far and an outlook (not a forecast) for the weeks and months ahead"
+      }
+    },
+    "/overview": {
+      "get": {
+        "operationId": "get_overview_overview_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "species",
+            "required": false,
+            "schema": {
+              "default": "combined",
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci",
+                "combined"
+              ],
+              "title": "Species",
+              "type": "string"
+            }
+          },
+          {
+            "description": "defaults to today, Europe/Rome",
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "defaults to today, Europe/Rome",
+              "title": "Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Per served region: mean score and share of woodland at or above good_score"
+      }
+    },
+    "/regions": {
+      "get": {
+        "operationId": "get_regions_regions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Served regions (id, names, bbox, history start, species, freshness)"
       }
     },
     "/scores": {
@@ -2427,6 +2797,18 @@
               "description": "defaults to today, Europe/Rome",
               "title": "Date"
             }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2441,7 +2823,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "date outside the served window"
+            "description": "date outside the served window, or unknown region"
           },
           "422": {
             "content": {
@@ -2512,6 +2894,18 @@
               "description": "last day included; defaults to no limit",
               "title": "Until"
             }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2544,7 +2938,7 @@
         "operationId": "get_species_species_get",
         "parameters": [
           {
-            "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+            "description": "ISTAT comune code (see /comuni); omit for the whole region",
             "in": "query",
             "name": "comune",
             "required": false,
@@ -2557,8 +2951,20 @@
                   "type": "null"
                 }
               ],
-              "description": "ISTAT comune code (see /comuni); omit for all of Tuscany",
+              "description": "ISTAT comune code (see /comuni); omit for the whole region",
               "title": "Comune"
+            }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
             }
           }
         ],
@@ -2574,7 +2980,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "unknown comune"
+            "description": "unknown comune or region"
           },
           "422": {
             "content": {
@@ -2590,7 +2996,7 @@
             "description": "history not built yet"
           }
         },
-        "summary": "Plausible species for Tuscany or a comune: habitat fit and good days per season, per species and taxon"
+        "summary": "Plausible species for the region or a comune: habitat fit and good days per season, per species and taxon"
       }
     },
     "/spot": {
@@ -2617,6 +3023,18 @@
               "minimum": -180,
               "title": "Lon",
               "type": "number"
+            }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
             }
           }
         ],
@@ -2648,6 +3066,20 @@
     "/status": {
       "get": {
         "operationId": "get_status_status_get",
+        "parameters": [
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -2658,6 +3090,19 @@
               }
             },
             "description": "Successful Response"
+          },
+          "404": {
+            "description": "unknown or unserved region"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           },
           "503": {
             "description": "the pipeline has never scored anything yet"

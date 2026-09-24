@@ -2,8 +2,7 @@
 api.sightings.store) via DuckDB. Replaces fixture mode once the daily pipeline (api.jobs.daily) is
 producing data. See api.repository.ScoresRepository for the contract each method implements.
 
-Tuscany is the only region in v1 (PRD -> Current focus), so it's hardcoded rather than plumbed
-through as a parameter nothing yet varies.
+One instance per region id; ``api.routes`` keeps a lazy registry keyed by region.
 """
 
 import json
@@ -48,18 +47,18 @@ from api.sightings.store import SightingsStore
 from api.species import SPECIES, Species, SpeciesOrCombined
 from api.timeutil import today_rome
 
-REGION = "tuscany"
 FORECAST_OFFSETS = range(0, 8)  # today + 7-day outlook, PRD -> Features 2
 HOTSPOT_SIGHTINGS_WINDOW_DAYS = 90
 CELL_COLUMNS = ["cell_id", "lon", "lat", "woodland", "comune_name", "place_name", "x_min", "y_min"]
 
 
 class LiveRepository:
-    def __init__(self, root: Path, rules: RuleSet | None = None) -> None:
+    def __init__(self, root: Path, region: str = "tuscany", rules: RuleSet | None = None) -> None:
         self.root = root
-        self.scores = ScoreStore(root / "scores" / REGION)
-        self.sightings = SightingsStore(root / "sightings" / REGION)
-        self.rules = rules or load_rules()
+        self.region = region
+        self.scores = ScoreStore(root / "scores" / region)
+        self.sightings = SightingsStore(root / "sightings" / region)
+        self.rules = rules or load_rules(region)
         self._cells: pd.DataFrame | None = None
         self._habitats: pd.DataFrame | None = None
         self._time_views: TimeViews | None = None
@@ -69,7 +68,7 @@ class LiveRepository:
         """Woodland cells only -- the model never scores anything else, so nothing else is ever
         servable through this repository."""
         if self._cells is None:
-            grid_path = self.root / "grid" / REGION / "cells.parquet"
+            grid_path = self.root / "grid" / self.region / "cells.parquet"
             all_cells = pd.read_parquet(grid_path, columns=CELL_COLUMNS)
             self._cells = all_cells[all_cells["woodland"]].reset_index(drop=True)
         return self._cells
@@ -79,7 +78,7 @@ class LiveRepository:
         """Every cell's forest types (``cell_habitats.parquet``), each cell's largest share first
         and equal shares in the vocabulary's order, like the grid's ``dominant_habitat``."""
         if self._habitats is None:
-            shares = pd.read_parquet(self.root / "grid" / REGION / "cell_habitats.parquet")
+            shares = pd.read_parquet(self.root / "grid" / self.region / "cell_habitats.parquet")
             order = {habitat: i for i, habitat in enumerate(load_vocabulary().habitats)}
             shares["order"] = shares["habitat"].map(order)
             self._habitats = shares.sort_values(
@@ -291,7 +290,7 @@ class LiveRepository:
     @property
     def time_views(self) -> TimeViews:
         if self._time_views is None:
-            self._time_views = TimeViews(self.root, REGION, self.cells)
+            self._time_views = TimeViews(self.root, self.region, self.cells)
         return self._time_views
 
     def get_comuni(self) -> ComuniResponse:
@@ -319,3 +318,24 @@ class LiveRepository:
 
     def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
         return self.time_views.get_species(comune)
+
+    def overview_row(
+        self, species: SpeciesOrCombined, target_date: date, good_score: float
+    ) -> tuple[float, float, datetime | None]:
+        """Mean score and share of woodland cells at/above ``good_score``, plus ``updated_at``."""
+        scores = self.get_scores(species, target_date)
+        if not scores.cells:
+            return 0.0, 0.0, self._updated_at()
+        values = [cell.score for cell in scores.cells]
+        mean = sum(values) / len(values)
+        good_share = sum(1 for score in values if score >= good_score) / len(values)
+        return mean, good_share, self._updated_at()
+
+    def _updated_at(self) -> datetime | None:
+        if not self.scores.meta_path.exists():
+            return None
+        written_at = json.loads(self.scores.meta_path.read_text()).get("written_at")
+        return datetime.fromisoformat(written_at) if written_at else None
+
+    def region_updated_at(self) -> datetime | None:
+        return self._updated_at()

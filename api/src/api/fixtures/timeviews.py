@@ -46,7 +46,7 @@ from api.weather.config import load_weather_config
 FIRST_YEAR = 2016
 GOOD_SCORE = 0.6
 PLAUSIBLE_FIT = 0.5
-REGION_NAME = "Toscana"
+DEFAULT_REGION_ID = "tuscany"
 # (month, day) spans, like the real rule files' season windows.
 WINDOWS: dict[str, tuple[tuple[int, int], tuple[int, int]]] = {
     "porcini": ((5, 1), (12, 20)),
@@ -66,13 +66,17 @@ PROVINCES = {
     "Castellina in Chianti": "SI",
     "Castiglione della Pescaia": "GR",
     "Chiusi della Verna": "AR",
+    "Città di Castello": "PG",
     "Fivizzano": "MS",
+    "Foligno": "PG",
     "Follonica": "GR",
     "Gaiole in Chianti": "SI",
+    "Gubbio": "PG",
     "Marradi": "FI",
     "Massa Marittima": "GR",
     "Montalcino": "SI",
     "Palazzuolo sul Senio": "FI",
+    "Perugia": "PG",
     "Piancastagnaio": "SI",
     "Poppi": "AR",
     "Portoferraio": "LI",
@@ -87,6 +91,8 @@ PROVINCES = {
     "Sassetta": "LI",
     "Seggiano": "GR",
     "Sillano Giuncugnano": "LU",
+    "Spoleto": "PG",
+    "Todi": "PG",
 }
 
 
@@ -99,9 +105,9 @@ def _code(name: str) -> str:
     return name.lower().replace(" ", "-").replace("'", "")
 
 
-def _comuni() -> dict[str, list[CellSpec]]:
+def _comuni(cells: tuple[CellSpec, ...]) -> dict[str, list[CellSpec]]:
     by_name: dict[str, list[CellSpec]] = {}
-    for cell in CELLS:
+    for cell in cells:
         by_name.setdefault(cell.comune, []).append(cell)
     return dict(sorted(by_name.items(), key=lambda item: item[0].casefold()))
 
@@ -115,10 +121,12 @@ def _years(today: date) -> list[int]:
     return list(range(FIRST_YEAR, today.year + 1))
 
 
-def _area(comune: str | None) -> tuple[str, Area]:
+def _area(
+    region_id: str, region_name: str, cells: tuple[CellSpec, ...], comune: str | None
+) -> tuple[str, Area]:
     if comune is None:
-        return "tuscany", Area(code=None, name=REGION_NAME, kind="region")
-    for name in _comuni():
+        return region_id, Area(code=None, name=region_name, kind="region")
+    for name in _comuni(cells):
         if _code(name) == comune:
             return name, Area(code=comune, name=name, kind="comune")
     raise AreaNotFound(comune)
@@ -206,6 +214,18 @@ def _baseline(today: date) -> Baseline:
 
 
 class FixtureTimeViews:
+    def __init__(
+        self,
+        region_id: str = DEFAULT_REGION_ID,
+        cells: tuple[CellSpec, ...] = CELLS,
+        region_name: str | None = None,
+    ) -> None:
+        from api.regions import region_display_name
+
+        self.region_id = region_id
+        self.cells = cells
+        self.region_name = region_name or region_display_name(region_id)
+
     def get_comuni(self) -> ComuniResponse:
         return ComuniResponse(
             comuni=[
@@ -213,17 +233,17 @@ class FixtureTimeViews:
                     code=_code(name),
                     name=name,
                     province=PROVINCES.get(name, ""),
-                    lon=round(sum(c.lon for c in cells) / len(cells), 4),
-                    lat=round(sum(c.lat for c in cells) / len(cells), 4),
-                    cells=len(cells),
+                    lon=round(sum(c.lon for c in group) / len(group), 4),
+                    lat=round(sum(c.lat for c in group) / len(group), 4),
+                    cells=len(group),
                 )
-                for name, cells in _comuni().items()
+                for name, group in _comuni(self.cells).items()
             ]
         )
 
     def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
         today = today_rome()
-        key, area = _area(comune)
+        key, area = _area(self.region_id, self.region_name, self.cells, comune)
         return SeasonsResponse(
             species=species,
             area=area,
@@ -237,7 +257,7 @@ class FixtureTimeViews:
         years = _years(today)
         if year not in years:
             raise SeasonNotFound(year, years)
-        region = _season("tuscany", species, year, today)
+        region = _season(self.region_id, species, year, today)
         cells = [
             CellSeason(
                 cell_id=cell.id,
@@ -245,10 +265,10 @@ class FixtureTimeViews:
                 lat=cell.lat,
                 good_days=int(region.good_days * (0.3 + 1.4 * _unit(cell.id, species, year))),
             )
-            for cell in CELLS
+            for cell in self.cells
         ]
         comuni = []
-        for name in _comuni():
+        for name in _comuni(self.cells):
             season = _season(name, species, year, today)
             comuni.append(
                 ComuneSeason(
@@ -274,7 +294,7 @@ class FixtureTimeViews:
 
     def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
         today = today_rome()
-        key, area = _area(comune)
+        key, area = _area(self.region_id, self.region_name, self.cells, comune)
         config = load_history_config()
         window = _window(species, today.year)
         seasonal = load_weather_config().seasonal
@@ -334,8 +354,9 @@ class FixtureTimeViews:
 
     def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
         today = today_rome()
-        key, area = _area(comune)
-        rules = load_rules()
+        key, area = _area(self.region_id, self.region_name, self.cells, comune)
+        # Fixture regions share Tuscany's rule files for taxon metadata; Umbria has none yet.
+        rules = load_rules("tuscany")
         profiles = []
         for group, keys in rules.groups.items():
             group_days = {

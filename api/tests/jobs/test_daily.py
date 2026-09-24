@@ -14,31 +14,74 @@ class FakeResult:
     returncode: int = 0
 
 
-def test_runs_ingest_scoring_then_the_time_views_steps() -> None:
+def test_runs_each_step_for_every_served_region() -> None:
     calls: list[list[str]] = []
 
     def runner(args: list[str]) -> FakeResult:
         calls.append(args)
         return FakeResult()
 
-    daily.main(today=date(2026, 9, 18), runner=runner, alert=lambda message: None)
+    daily.main(
+        today=date(2026, 9, 18),
+        runner=runner,
+        alert=lambda message: None,
+        regions=["tuscany", "umbria"],
+    )
 
+    exe = daily.sys.executable
     assert calls == [
-        [daily.sys.executable, "-m", "api.weather.ingest", "update"],
-        [daily.sys.executable, "-m", "api.sightings.ingest", "fetch"],
+        [exe, "-m", "api.weather.ingest", "update", "--region", "tuscany"],
+        [exe, "-m", "api.sightings.ingest", "fetch", "--region", "tuscany"],
         [
-            daily.sys.executable,
+            exe,
             "-m",
             "api.model.pipeline",
             "score",
+            "--region",
+            "tuscany",
             "--start",
             "2026-09-12",
             "--end",
             "2026-09-25",
         ],
-        [daily.sys.executable, "-m", "api.history.build", "update", "--years", "2026-2026"],
-        [daily.sys.executable, "-m", "api.weather.seasonal", "fetch"],
-        [daily.sys.executable, "-m", "api.history.build", "outlook"],
+        [
+            exe,
+            "-m",
+            "api.history.build",
+            "update",
+            "--region",
+            "tuscany",
+            "--years",
+            "2026-2026",
+        ],
+        [exe, "-m", "api.weather.seasonal", "fetch", "--region", "tuscany"],
+        [exe, "-m", "api.history.build", "outlook", "--region", "tuscany"],
+        [exe, "-m", "api.weather.ingest", "update", "--region", "umbria"],
+        [exe, "-m", "api.sightings.ingest", "fetch", "--region", "umbria"],
+        [
+            exe,
+            "-m",
+            "api.model.pipeline",
+            "score",
+            "--region",
+            "umbria",
+            "--start",
+            "2026-09-12",
+            "--end",
+            "2026-09-25",
+        ],
+        [
+            exe,
+            "-m",
+            "api.history.build",
+            "update",
+            "--region",
+            "umbria",
+            "--years",
+            "2026-2026",
+        ],
+        [exe, "-m", "api.weather.seasonal", "fetch", "--region", "umbria"],
+        [exe, "-m", "api.history.build", "outlook", "--region", "umbria"],
     ]
 
 
@@ -49,7 +92,12 @@ def test_early_january_updates_last_years_history_too() -> None:
         calls.append(args)
         return FakeResult()
 
-    daily.main(today=date(2027, 1, 3), runner=runner, alert=lambda message: None)
+    daily.main(
+        today=date(2027, 1, 3),
+        runner=runner,
+        alert=lambda message: None,
+        regions=["tuscany"],
+    )
 
     history = next(args for args in calls if "api.history.build" in args and "update" in args)
     assert history[-1] == "2026-2027"
@@ -63,7 +111,12 @@ def test_a_long_range_forecast_outage_comes_after_the_days_scores() -> None:
         return FakeResult(returncode=1 if "api.weather.seasonal" in args else 0)
 
     with pytest.raises(SystemExit):
-        daily.main(today=date(2026, 9, 18), runner=runner, alert=lambda message: None)
+        daily.main(
+            today=date(2026, 9, 18),
+            runner=runner,
+            alert=lambda message: None,
+            regions=["tuscany"],
+        )
 
     modules = [args[2] for args in calls]
     assert modules.index("api.model.pipeline") < modules.index("api.weather.seasonal")
@@ -74,37 +127,92 @@ def test_score_window_is_six_days_back_to_seven_forward() -> None:
     assert daily.score_window(date(2026, 9, 18)) == (date(2026, 9, 12), date(2026, 9, 25))
 
 
-def test_stops_and_alerts_on_the_first_failing_step() -> None:
+def test_one_regions_failure_does_not_stop_the_others() -> None:
     calls: list[list[str]] = []
 
     def runner(args: list[str]) -> FakeResult:
         calls.append(args)
-        return FakeResult(returncode=1 if "update" in args else 0)
+        region = args[args.index("--region") + 1] if "--region" in args else ""
+        if region == "tuscany" and "update" in args and "api.weather.ingest" in args:
+            return FakeResult(returncode=1)
+        return FakeResult()
 
     alerts: list[str] = []
     with pytest.raises(SystemExit):
-        daily.main(today=date(2026, 9, 18), runner=runner, alert=alerts.append)
+        daily.main(
+            today=date(2026, 9, 18),
+            runner=runner,
+            alert=alerts.append,
+            regions=["tuscany", "umbria"],
+        )
+
+    regions_run = {args[args.index("--region") + 1] for args in calls if "--region" in args}
+    assert regions_run == {"tuscany", "umbria"}
+    assert any("tuscany" in message for message in alerts)
+    assert any(args[2] == "api.weather.ingest" and "umbria" in args for args in calls)
+
+
+def test_stops_region_steps_on_the_first_failing_step() -> None:
+    calls: list[list[str]] = []
+
+    def runner(args: list[str]) -> FakeResult:
+        calls.append(args)
+        return FakeResult(returncode=1 if "api.weather.ingest" in args else 0)
+
+    alerts: list[str] = []
+    with pytest.raises(SystemExit):
+        daily.main(
+            today=date(2026, 9, 18),
+            runner=runner,
+            alert=alerts.append,
+            regions=["tuscany"],
+        )
 
     assert len(calls) == 1, "the sightings fetch and the score step must not run after a failure"
-    assert alerts and "update" in alerts[0]
+    assert alerts and "tuscany" in alerts[0]
 
 
 def test_no_alert_on_success() -> None:
     alerts: list[str] = []
-    daily.main(today=date(2026, 9, 18), runner=lambda args: FakeResult(), alert=alerts.append)
+    daily.main(
+        today=date(2026, 9, 18),
+        runner=lambda args: FakeResult(),
+        alert=alerts.append,
+        regions=["tuscany"],
+    )
     assert alerts == []
 
 
 def test_structured_logs_are_one_json_object_per_line(capsys: pytest.CaptureFixture[str]) -> None:
     daily.main(
-        today=date(2026, 9, 18), runner=lambda args: FakeResult(), alert=lambda message: None
+        today=date(2026, 9, 18),
+        runner=lambda args: FakeResult(),
+        alert=lambda message: None,
+        regions=["tuscany"],
     )
     lines = [line for line in capsys.readouterr().out.splitlines() if line]
     events = [json.loads(line)["event"] for line in lines]
     assert events[0] == "job_start"
     assert events[-1] == "job_done"
+    assert "open_meteo_calls" in events
+    assert "region_done" in events
     assert events.count("step_start") == 6
     assert events.count("step_done") == 6
+
+
+def test_logs_weighted_open_meteo_calls_from_the_ledger(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(daily, "open_meteo_calls_today", lambda root=None: 123.0)
+    daily.main(
+        today=date(2026, 9, 18),
+        runner=lambda args: FakeResult(),
+        alert=lambda message: None,
+        regions=["tuscany"],
+    )
+    lines = [json.loads(line) for line in capsys.readouterr().out.splitlines() if line]
+    summary = next(line for line in lines if line["event"] == "open_meteo_calls")
+    assert summary["weighted_calls_today"] == 123.0
 
 
 def test_a_failed_step_is_logged_and_the_job_failure_is_logged_too(
@@ -114,10 +222,19 @@ def test_a_failed_step_is_logged_and_the_job_failure_is_logged_too(
         return FakeResult(returncode=1)
 
     with pytest.raises(SystemExit):
-        daily.main(today=date(2026, 9, 18), runner=runner, alert=lambda message: None)
+        daily.main(
+            today=date(2026, 9, 18),
+            runner=runner,
+            alert=lambda message: None,
+            regions=["tuscany"],
+        )
 
     events = [json.loads(line)["event"] for line in capsys.readouterr().out.splitlines() if line]
-    assert events == ["job_start", "step_start", "step_failed", "job_failed"]
+    assert events[0] == "job_start"
+    assert "step_failed" in events
+    assert "region_failed" in events
+    assert "open_meteo_calls" in events
+    assert events[-1] == "job_failed"
 
 
 def test_heartbeat_fires_once_the_job_succeeds() -> None:
@@ -127,6 +244,7 @@ def test_heartbeat_fires_once_the_job_succeeds() -> None:
         runner=lambda args: FakeResult(),
         alert=lambda message: None,
         heartbeat=lambda: heartbeats.append(None),
+        regions=["tuscany"],
     )
     assert len(heartbeats) == 1
 
@@ -143,6 +261,7 @@ def test_no_heartbeat_on_failure() -> None:
             runner=runner,
             alert=lambda message: None,
             heartbeat=lambda: heartbeats.append(None),
+            regions=["tuscany"],
         )
     assert heartbeats == []
 

@@ -35,3 +35,12 @@ Then:
 Done when: pytest and ruff green; a local run with Tuscany plus the fixture region
 answers every route for both; `uv run python -m api.jobs.daily` loops both; the
 OpenAPI diff is summarised in the commit message.
+
+## Done (2026-09-24)
+
+Multi-region API shipped: `region` on every data route (default `tuscany`, unknown →
+`application/problem+json` 404), `GET /regions` and `GET /overview`, fixture Umbria
+alongside Tuscany, lazy per-region `LiveRepository` registry, daily job loops served
+regions (one failure does not stop the others; logs weighted Open-Meteo calls; one
+heartbeat). Region display names come from `config/regions/*.yaml`. pytest 833 and
+ruff green; OpenAPI regenerated (`/regions`, `/overview`, `region` query on data routes).

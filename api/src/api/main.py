@@ -1,12 +1,13 @@
 import os
 
 import sentry_sdk
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 from api.ratelimit import RateLimitMiddleware
-from api.routes import router
+from api.regions import RegionNotServed
+from api.routes import region_problem, router
 
 # Error tracking (M7 · production hardening): only when a DSN is set, so local dev, CI and
 # fixtures mode need no Sentry project at all. Sampling stays low/zero to stay well inside the
@@ -22,12 +23,19 @@ app = FastAPI(
     title="mushma API",
     description=(
         "Fruiting-conditions scores, cell detail, hotspots and sightings for "
-        "wild edible mushrooms in Tuscany. Scores are a 0-1 conditions index, "
-        "never a probability or an edibility claim."
+        "wild edible mushrooms across served Italian regions. Scores are a 0-1 "
+        "conditions index, never a probability or an edibility claim. Every data "
+        "route takes a `region` query parameter (default `tuscany`)."
     ),
     version="0.1.0",
 )
 app.include_router(router)
+
+
+@app.exception_handler(RegionNotServed)
+async def _region_not_served(_request: Request, exc: RegionNotServed):
+    return region_problem(exc)
+
 
 app.add_middleware(RateLimitMiddleware)
 

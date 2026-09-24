@@ -1,13 +1,12 @@
-import os
 from datetime import date as Date
 from datetime import timedelta
-from functools import lru_cache
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi.responses import JSONResponse
 
 from api.cache import DAILY, SHORT_LIVED, cache_control_for_date
-from api.grid.sources import data_dir
+from api.model.rules import DEFAULT_REGION
 from api.models import (
     CellDetailResponse,
     ComuniResponse,
@@ -15,13 +14,17 @@ from api.models import (
     ForestTypesResponse,
     HotspotsResponse,
     OutlookResponse,
+    OverviewResponse,
     PlausibleSpeciesResponse,
+    RegionsResponse,
     ScoresResponse,
     SeasonMapResponse,
     SeasonsResponse,
     SightingsResponse,
     StatusResponse,
 )
+from api.regions import RegionNotServed
+from api.registry import get_overview_response, get_regions_response, repository_for
 from api.repository import (
     AreaNotFound,
     CellNotFound,
@@ -36,22 +39,19 @@ from api.timeutil import today_rome
 
 SIGHTINGS_DEFAULT_LOOKBACK_DAYS = 365
 
+RegionQuery = Annotated[
+    str,
+    Query(
+        description="Italian region slug with underscores (e.g. emilia_romagna); "
+        "defaults to tuscany so installed PWAs keep working"
+    ),
+]
 
-@lru_cache
-def _live_repository() -> ScoresRepository:
-    # Cached: loading the rule config (YAML + validation) and the grid on every request would be
-    # wasted work -- both are read-only for the process's lifetime.
-    from api.live.repository import LiveRepository
 
-    return LiveRepository(data_dir())
-
-
-def get_repository() -> ScoresRepository:
-    if os.environ.get("MUSHMA_FIXTURES") == "1":
-        from api.fixtures.repository import FixtureRepository
-
-        return FixtureRepository()
-    return _live_repository()
+def get_repository(
+    region: RegionQuery = DEFAULT_REGION,
+) -> ScoresRepository:
+    return repository_for(region)
 
 
 Repository = Annotated[ScoresRepository, Depends(get_repository)]
@@ -59,11 +59,57 @@ Repository = Annotated[ScoresRepository, Depends(get_repository)]
 router = APIRouter()
 
 
+def problem_response(status: int, title: str, detail: str) -> JSONResponse:
+    return JSONResponse(
+        status_code=status,
+        content={"type": "about:blank", "title": title, "status": status, "detail": detail},
+        media_type="application/problem+json",
+    )
+
+
+def region_problem(exc: RegionNotServed) -> JSONResponse:
+    return problem_response(404, "Region not found", str(exc))
+
+
+async def region_not_served_handler(_request: Request, exc: RegionNotServed) -> JSONResponse:
+    return region_problem(exc)
+
+
+@router.get(
+    "/regions",
+    response_model=RegionsResponse,
+    summary="Served regions (id, names, bbox, history start, species, freshness)",
+)
+def get_regions(response: Response) -> RegionsResponse:
+    result = get_regions_response()
+    response.headers["Cache-Control"] = SHORT_LIVED
+    return result
+
+
+@router.get(
+    "/overview",
+    response_model=OverviewResponse,
+    summary="Per served region: mean score and share of woodland at or above good_score",
+)
+def get_overview(
+    response: Response,
+    species: Annotated[SpeciesOrCombined, Query()] = "combined",
+    date: Annotated[Date | None, Query(description="defaults to today, Europe/Rome")] = None,
+) -> OverviewResponse:
+    target_date = date or today_rome()
+    try:
+        result = get_overview_response(species, target_date)
+    except DateOutOfRange as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    response.headers["Cache-Control"] = cache_control_for_date(target_date)
+    return result
+
+
 @router.get(
     "/scores",
     response_model=ScoresResponse,
     summary="Whole-region grid of conditions scores for one species (or combined)",
-    responses={404: {"description": "date outside the served window"}},
+    responses={404: {"description": "date outside the served window, or unknown region"}},
 )
 def get_scores(
     repository: Repository,
@@ -84,7 +130,7 @@ def get_scores(
     "/factors",
     response_model=FactorsResponse,
     summary="Analysis mode: every factor behind one species' conditions score, per woodland cell",
-    responses={404: {"description": "no factors stored for that day"}},
+    responses={404: {"description": "no factors stored for that day, or unknown region"}},
 )
 def get_factors(
     repository: Repository,
@@ -132,7 +178,7 @@ def get_spot(
     "/cells/{cell_id}",
     response_model=CellDetailResponse,
     summary="Score, 7-day outlook and factor breakdown for every species in one cell",
-    responses={404: {"description": "unknown cell id"}},
+    responses={404: {"description": "unknown cell id or region"}},
 )
 def get_cell(repository: Repository, response: Response, cell_id: str) -> CellDetailResponse:
     try:
@@ -147,7 +193,7 @@ def get_cell(repository: Repository, response: Response, cell_id: str) -> CellDe
     "/hotspots",
     response_model=HotspotsResponse,
     summary="Ranked clusters of high-scoring cells, with nearby recent sightings",
-    responses={404: {"description": "date outside the served window"}},
+    responses={404: {"description": "date outside the served window, or unknown region"}},
 )
 def get_hotspots(
     repository: Repository,
@@ -189,7 +235,10 @@ def get_sightings(
     "/status",
     response_model=StatusResponse,
     summary="Data freshness: the latest scored day, when it was generated, and the rules version",
-    responses={503: {"description": "the pipeline has never scored anything yet"}},
+    responses={
+        503: {"description": "the pipeline has never scored anything yet"},
+        404: {"description": "unknown or unserved region"},
+    },
 )
 def get_status(repository: Repository, response: Response) -> StatusResponse:
     try:
@@ -204,7 +253,7 @@ def get_status(repository: Repository, response: Response) -> StatusResponse:
 # Tables built by api.history.build; until they exist the routes answer 503.
 
 Comune = Annotated[
-    str | None, Query(description="ISTAT comune code (see /comuni); omit for all of Tuscany")
+    str | None, Query(description="ISTAT comune code (see /comuni); omit for the whole region")
 ]
 _HISTORY_ERRORS = {503: {"description": "history not built yet"}}
 
@@ -227,8 +276,9 @@ def get_comuni(repository: Repository, response: Response) -> ComuniResponse:
 @router.get(
     "/history/seasons",
     response_model=SeasonsResponse,
-    summary="Every stored season for Tuscany or a comune: good days, weather vs normal, sightings",
-    responses={404: {"description": "unknown comune"}, **_HISTORY_ERRORS},
+    summary="Every stored season for the region or a comune: good days, weather vs normal, "
+    "sightings",
+    responses={404: {"description": "unknown comune or region"}, **_HISTORY_ERRORS},
 )
 def get_seasons(
     repository: Repository,
@@ -250,7 +300,7 @@ def get_seasons(
     "/history/season/{year}",
     response_model=SeasonMapResponse,
     summary="One season on the map: good days per woodland cell, comuni ranked by them",
-    responses={404: {"description": "season not stored"}, **_HISTORY_ERRORS},
+    responses={404: {"description": "season not stored, or unknown region"}, **_HISTORY_ERRORS},
 )
 def get_season_map(
     repository: Repository,
@@ -274,7 +324,7 @@ def get_season_map(
     "/outlook",
     response_model=OutlookResponse,
     summary="The season so far and an outlook (not a forecast) for the weeks and months ahead",
-    responses={404: {"description": "unknown comune"}, **_HISTORY_ERRORS},
+    responses={404: {"description": "unknown comune or region"}, **_HISTORY_ERRORS},
 )
 def get_outlook(
     repository: Repository,
@@ -295,9 +345,9 @@ def get_outlook(
 @router.get(
     "/species",
     response_model=PlausibleSpeciesResponse,
-    summary="Plausible species for Tuscany or a comune: habitat fit and good days per season, "
+    summary="Plausible species for the region or a comune: habitat fit and good days per season, "
     "per species and taxon",
-    responses={404: {"description": "unknown comune"}, **_HISTORY_ERRORS},
+    responses={404: {"description": "unknown comune or region"}, **_HISTORY_ERRORS},
 )
 def get_species(
     repository: Repository, response: Response, comune: Comune = None
