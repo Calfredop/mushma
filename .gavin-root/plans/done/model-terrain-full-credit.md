@@ -1,6 +1,6 @@
 ---
 title: [model] Slope and sun exposure: normal terrain at full credit
-status: In Progress
+status: Done
 priority: medium
 complexity: simple
 ---
