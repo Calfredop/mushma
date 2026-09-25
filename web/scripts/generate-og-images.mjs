@@ -3,12 +3,14 @@
 // renders real HTML/CSS with the app's own fonts, so the card matches the brand exactly; a plain
 // SVG can't do that portably since Young Serif and Atkinson Hyperlegible aren't system fonts.
 //
-// Run manually when the brand or copy changes, and commit the PNGs:
+// Run manually when the brand or copy changes, or after adding a region, and commit the PNGs:
 //
-//   node scripts/generate-og-images.mjs
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+//   node scripts/generate-og-images.mjs            # the hub and every region in the registry
+//   node scripts/generate-og-images.mjs liguria    # only these region slugs (a region card)
+import { mkdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { chromium } from '@playwright/test'
+import { runnerImport } from 'vite'
 
 const ROOT = resolve(import.meta.dirname, '..')
 const OUT_DIR = resolve(ROOT, 'public/og')
@@ -25,18 +27,43 @@ const ATKINSON = fontDataUri(
 )
 const MARK_SVG = readFileSync(resolve(ROOT, 'public/favicon.svg'), 'utf8')
 
-// Matches region registry SEO titles (Italian: the indexed language) plus the hub.
+// One card per region and per species page, from the region registry (src/regions/), so adding a
+// region never edits this file. Titles are Italian, the indexed language.
+const { module: registry } = await runnerImport(resolve(ROOT, 'src/regions/index.ts'))
+const SPECIES_LABEL = { porcini: 'Porcini', ovoli: 'Ovoli', gallinacci: 'Gallinacci' }
+
+function listIt(words) {
+  return words.length < 2
+    ? words.join('')
+    : `${words.slice(0, -1).join(', ')} e ${words.at(-1)}`
+}
+
+function regionCards(region) {
+  const where = `in ${region.name.it}`
+  const labels = region.species.map((species) => SPECIES_LABEL[species])
+  const [first, ...rest] = labels
+  return [
+    {
+      name: region.slug,
+      title: `${listIt([first, ...rest.map((l) => l.toLowerCase())])} ${where}`,
+    },
+    ...region.species.map((species) => ({
+      name: `${region.slug}-${species}`,
+      title: `${SPECIES_LABEL[species]} ${where}`,
+    })),
+  ]
+}
+
+const only = process.argv.slice(2)
 const CARDS = [
-  { name: 'hub', title: 'Condizioni per i funghi in Italia' },
-  { name: 'toscana', title: 'Porcini, ovoli e gallinacci in Toscana' },
-  { name: 'toscana-porcini', title: 'Porcini in Toscana' },
-  { name: 'toscana-ovoli', title: 'Ovoli in Toscana' },
-  { name: 'toscana-gallinacci', title: 'Gallinacci in Toscana' },
-  { name: 'umbria', title: 'Porcini, ovoli e gallinacci in Umbria' },
-  { name: 'umbria-porcini', title: 'Porcini in Umbria' },
-  { name: 'umbria-ovoli', title: 'Ovoli in Umbria' },
-  { name: 'umbria-gallinacci', title: 'Gallinacci in Umbria' },
+  ...(only.length ? [] : [{ name: 'hub', title: 'Condizioni per i funghi in Italia' }]),
+  ...registry
+    .listRegions()
+    .filter((region) => !only.length || only.includes(region.slug))
+    .flatMap(regionCards),
 ]
+if (only.length && CARDS.length === 0)
+  throw new Error(`no region in the registry for ${only}`)
 
 function cardHtml(title) {
   return `<!doctype html>
