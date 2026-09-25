@@ -115,3 +115,37 @@ def test_species_level_taxa_default_to_species_rank_with_no_exclusions() -> None
 
 def test_soil_dna_material_samples_are_not_sightings() -> None:
     assert load_sightings_config().quality.exclude_basis_of_record == ["MATERIAL_SAMPLE"]
+
+
+def test_inaturalist_place_comes_from_the_region_config() -> None:
+    from api.grid.region import load_region
+    from api.sightings.config import inaturalist_place_id
+
+    config = load_sightings_config()
+
+    assert inaturalist_place_id(load_region("umbria"), config) == 10875
+
+
+def test_tuscany_keeps_the_sightings_yaml_place() -> None:
+    from api.grid.region import load_region
+    from api.sightings.config import inaturalist_place_id
+
+    config = load_sightings_config()
+
+    assert inaturalist_place_id(load_region("tuscany"), config) == config.inaturalist.place_id
+
+
+def test_another_region_without_a_place_is_refused(tmp_path: Path) -> None:
+    from api.grid.region import load_region
+    from api.sightings.config import inaturalist_place_id
+
+    raw = yaml.safe_load(
+        (Path(__file__).resolve().parents[2] / "src/api/config/regions/umbria.yaml").read_text()
+    )
+    raw.pop("sightings", None)
+    raw["id"] = "elsewhere"
+    path = tmp_path / "elsewhere.yaml"
+    path.write_text(yaml.safe_dump(raw))
+
+    with pytest.raises(ValueError, match="inaturalist_place_id"):
+        inaturalist_place_id(load_region(path), load_sightings_config())
