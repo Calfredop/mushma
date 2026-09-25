@@ -1,5 +1,5 @@
 ---
-order: 7
+order: 1024
 title: M3 · Model v1: species rules, scoring, backtest
 status: In Progress
 priority: high

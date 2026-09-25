@@ -1,5 +1,5 @@
 ---
-order: 4100
+order: 10240
 title: [region] Friuli-Venezia Giulia
 status: To Do
 complexity: complex

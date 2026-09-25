@@ -1,5 +1,5 @@
 ---
-order: 3900
+order: 8192
 title: [region] Trentino-Alto Adige
 status: To Do
 complexity: complex
