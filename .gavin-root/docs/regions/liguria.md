@@ -114,6 +114,50 @@ Threshold sensitivity (recomputed from stored fractions, a few cells off the bui
 too imprecise, 18 with unknown uncertainty, 1 undated); **46 land on Liguria's woodland cells**
 (66 are off the woodland grid: outside the region inside the bbox, or on non-woodland cells).
 
+## Species rules
+
+Full evidence: `.gavin-root/docs/species-ecology/liguria.md`; rules in
+`api/src/api/config/species/liguria/` (14 new references, all verified).
+
+- **All three groups kept.** Ovoli are the least common but clearly present: the Beigua park names
+  "porcini ed ovoli" as its hinterland's mushrooms, the regional law (L.R. 17/2014) sets a separate
+  1 kg limit for them, and iNaturalist holds 24 Ligurian ovoli against 31 porcini.
+- **Changed from Tuscany: where the hosts are.** *B. edulis* altitude band starts at 150→450 m
+  (Tuscany 200→700 m) and *B. pinophilus* at 250→600 m (300→800 m): Ligurian beech grows from about
+  500 m and chestnut from 300 m. Eight habitat affinities follow what Liguria's classes hold:
+  `other_conifer` (black pine, Douglas fir plantations) up for *edulis*, *reticulatus* and
+  *pinophilus*; `mediterranean_pine` (maritime pine) up for *edulis*, *pinophilus* and gallinacci;
+  `mountain_pine` (Scots pine) to 1.0 for *pinophilus*; `mixed_broadleaf_conifer` (here chestnut or
+  oak with pine, not beech with fir) up for *aereus* and ovoli.
+- **Unchanged: season windows, weather rules, stoppers, growth clocks.** No Ligurian or NW-Apennine
+  source gives weather numbers; the one Ligurian plot study (Sassello 2012–2014) found no climate
+  effect at plot scale.
+- **Open questions.** The `slope` and `sun_exposure` stoppers were anchored on Tuscan grid
+  percentiles, and Liguria's woods are steeper (median slope 22.7° against 16.6°). The slope stopper
+  (×1 to 25°, ×0.8 from 40°) touches 34 % of Ligurian woodland cells against 13 % in Tuscany, but its
+  mean factor is only 0.985 (Tuscany 0.994; 10th percentile 0.94), so it was left alone. Intense
+  autumn storms saturate the 30 mm rain trigger, and no source gives a "too much rain" threshold.
+- **Press contrasts** (`liguria/sanity.yaml`): 11, written before any Liguria score existed, 9 for
+  porcini, 1 for ovoli (id `ovoli_…`) and 1 for gallinacci (id `gallinacci_…`). The sanity check
+  scores one group per run (`--group`), so each contrast is read against its own group below.
+
+## After the deploy: what to verify
+
+The stores are rsync'd to the server before the PR; the API serves Liguria once main (with
+`config/regions/liguria.yaml`) is redeployed by the rail's "Deploy pulled main" step. Then check:
+
+- [ ] `https://mappafunghi.app/liguria` and `/liguria/porcini`, `/liguria/ovoli`,
+  `/liguria/gallinacci` show real scores for today (not fixtures), and a tapped cell's "why this
+  score" names Ligurian habitats.
+- [ ] `https://api.mappafunghi.app/regions` lists `liguria`; the hub `/` lists it and colours it
+  from `/overview`.
+- [ ] `https://mappafunghi.app/sitemap.xml` has the four Liguria URLs (built from the registry).
+- [ ] Lighthouse SEO is 100 on `/liguria` (prerendered title, description, canonical, og image
+  `og/liguria.png`, JSON-LD Dataset with `sameAs` Wikidata Q1256).
+- [ ] `/credits` shows "Regione Liguria — Tipi forestali e uso del suolo 2025".
+- [ ] The next morning's daily job has a `region_done` line for `liguria`
+  (`journalctl -u mushma-daily`), and its Open-Meteo call count stays inside the budget.
+
 ## Known limitations
 
 - The web registry finds a region by bbox (`findRegionAt`), and Liguria's bbox overlaps Tuscany's
