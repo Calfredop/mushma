@@ -7,11 +7,13 @@
 ``lattice`` re-fetches (from the cache, when present) three 14-day windows of 2024 for every 0.1°
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
-with the SIR Toscana gauges inside them. Results land in ``$DATA_DIR/weather/<region>/checks/``.
+with the rain gauges inside them (SIR Toscana; Umbria's Servizio Idrografico for Umbria). Results
+land in ``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
 import json
+from collections.abc import Callable
 from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
@@ -21,8 +23,10 @@ import numpy as np
 import pandas as pd
 from pyproj import Transformer
 
-from api.grid.region import load_region
+from api.grid.region import RegionConfig, load_region
 from api.grid.sources import fetch
+from api.model.rules import DEFAULT_REGION
+from api.weather import umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -105,9 +109,10 @@ def leave_out_errors(
     return pd.DataFrame.from_dict(rows, orient="index")
 
 
-def compare_gauge(model_calendar: pd.Series, gauge: pd.Series) -> dict:
-    """Downscaled calendar-day rain against a gauge's 09:00-09:00 days."""
-    model = gauge_day_totals(model_calendar)
+def compare_gauge(model_calendar: pd.Series, gauge: pd.Series, nine_to_nine: bool = True) -> dict:
+    """Downscaled calendar-day rain against a gauge's days: 09:00-09:00 (SIR Toscana) unless
+    ``nine_to_nine`` is off, when the gauge's days are calendar days."""
+    model = gauge_day_totals(model_calendar) if nine_to_nine else model_calendar
     days = model.index.intersection(gauge.index)
     model, gauge = model[days], gauge[days]
     full = pd.Index(
@@ -199,14 +204,63 @@ def run_lattice(region_id: str) -> None:
     errors.to_csv(out / "lattice_errors.csv", index=False)
 
 
-def run_gauges(region_id: str, start: date, end: date) -> None:
-    region = load_region(region_id)
-    grid_dir, store, raw = region_paths(region.id)
-    config = load_weather_config()
+GaugeSeries = Callable[[str], pd.Series]
+
+
+def _sir_toscana_gauges(raw: Path, start: date, end: date) -> tuple[pd.DataFrame, GaugeSeries]:
     sir = raw / "sir_toscana"
     stations = json.loads(fetch(STATIONS_URL, sir / "stations.json").read_text())
     years = {str(y) for y in range(start.year, end.year + 1)}
     gauges = parse_stations(stations, years)
+    urls = dict(zip(gauges["code"], gauges["url"], strict=True))
+
+    def series(code: str) -> pd.Series:
+        return parse_series(json.loads(fetch(urls[code], sir / f"{code}.json").read_text()))
+
+    return gauges, series
+
+
+def _umbria_sir_gauges(raw: Path, start: date, end: date) -> tuple[pd.DataFrame, GaugeSeries]:
+    folder = raw / "umbria_sir"
+    frames = [
+        umbria_sir.parse_daily(fetch(umbria_sir.HISTORY_URL, folder / "storico_giornalieri.zip"))
+    ]
+    if end.year >= date.today().year:
+        frames.append(
+            umbria_sir.parse_daily(
+                fetch(umbria_sir.CURRENT_YEAR_URL, folder / "anno_corrente_giornalieri.csv")
+            )
+        )
+    daily = pd.concat(frames, ignore_index=True).drop_duplicates(["code", "date"], keep="last")
+    gauges = umbria_sir.gauges_covering(daily, start, end)
+    return gauges, lambda code: umbria_sir.series_of(daily, code)
+
+
+# Gauge networks by the name a region config gives under `checks: {gauges: ...}`, with whether
+# their day runs 09:00-09:00 (SIR Toscana) or is a calendar day (Umbria: undocumented, so the check
+# reports both; see .gavin-root/docs/regions/umbria.md).
+GAUGE_NETWORKS = {
+    "sir_toscana": (_sir_toscana_gauges, True),
+    "umbria_sir": (_umbria_sir_gauges, False),
+}
+
+
+def gauge_network(region: RegionConfig) -> str:
+    network = (region.extra.get("checks") or {}).get("gauges")
+    if network is None and region.id == DEFAULT_REGION:
+        return "sir_toscana"
+    if network not in GAUGE_NETWORKS:
+        raise SystemExit(f"region {region.id!r} names no known gauge network under checks.gauges")
+    return network
+
+
+def run_gauges(region_id: str, start: date, end: date, nine_to_nine: bool | None = None) -> None:
+    region = load_region(region_id)
+    grid_dir, store, raw = region_paths(region.id)
+    config = load_weather_config()
+    load_gauges, network_nine_to_nine = GAUGE_NETWORKS[gauge_network(region)]
+    nine_to_nine = network_nine_to_nine if nine_to_nine is None else nine_to_nine
+    gauges, gauge_series = load_gauges(raw, start, end)
     to_laea = Transformer.from_crs(4326, region.grid.crs, always_xy=True)
     x, y = to_laea.transform(gauges["lon"].to_numpy(), gauges["lat"].to_numpy())
     size = region.grid.cell_size_m
@@ -214,9 +268,13 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
         f"1kmE{int(a // size)}N{int(b // size)}" for a, b in zip(x, y, strict=True)
     ]
     cells = pd.read_parquet(grid_dir / "cells.parquet", columns=["cell_id", "elevation_m"])
+    if "elevation_m" not in gauges.columns:
+        # No station heights (Umbria): band each gauge by its cell's mean DEM height.
+        gauges = gauges.merge(cells, on="cell_id", how="left")
     weights = pd.read_parquet(store.weights_path)
     gauges = gauges[gauges["cell_id"].isin(weights["cell_id"])]
     con = duckdb.connect()
+    reanalysis = [s for s in config.source_order if s != config.forecast.model]
     model = cell_weather(
         con,
         store,
@@ -225,13 +283,12 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
         start - timedelta(days=1),
         end,
         {"precipitation_sum": config.variables["precipitation_sum"]},
-        [config.history.model],
+        reanalysis,
     ).df()
     model["date"] = pd.to_datetime(model["date"]).dt.date
     rows = []
     for gauge in gauges.itertuples():
-        path = fetch(gauge.url, sir / f"{gauge.code}.json")
-        series = parse_series(json.loads(path.read_text()))
+        series = gauge_series(gauge.code)
         series = series[(series.index >= start) & (series.index <= end)]
         cell = model[model["cell_id"] == gauge.cell_id].set_index("date")["value"]
         if cell.empty or len(series) < 0.8 * ((end - start).days + 1):
@@ -242,7 +299,7 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
                 "name": gauge.name,
                 "elevation_m": gauge.elevation_m,
                 "cell_id": gauge.cell_id,
-                **compare_gauge(cell, series),
+                **compare_gauge(cell, series, nine_to_nine),
             }
         )
     results = pd.DataFrame(rows)
@@ -259,12 +316,14 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
     )
     by_band["pooled_ratio"] = by_band["pooled_ratio"] / by_band.pop("gauge_mm")
     overall = compare_overall(results)
-    print(f"{len(results)} woodland gauges, {start} to {end}")
+    day = "09-09 gauge days" if nine_to_nine else "calendar days"
+    print(f"{len(results)} woodland gauges, {start} to {end}, {day}")
     print(by_band.round(3).to_string())
     print(json.dumps(overall, indent=2))
     out = store.root / "checks"
     out.mkdir(parents=True, exist_ok=True)
-    results.to_csv(out / f"gauges_{start:%Y%m%d}_{end:%Y%m%d}.csv", index=False)
+    suffix = "" if nine_to_nine == network_nine_to_nine else ("_9to9" if nine_to_nine else "_cal")
+    results.to_csv(out / f"gauges_{start:%Y%m%d}_{end:%Y%m%d}{suffix}.csv", index=False)
 
 
 def compare_overall(results: pd.DataFrame) -> dict:
@@ -286,11 +345,17 @@ def main() -> None:
     parser.add_argument("--start", type=date.fromisoformat, default=date(2025, 1, 1))
     parser.add_argument("--end", type=date.fromisoformat, default=date(2025, 12, 31))
     parser.add_argument("--year", type=int, default=2024)
+    parser.add_argument(
+        "--gauge-day",
+        choices=["09-09", "calendar"],
+        help="gauges: override the network's day window (compare both when it is undocumented)",
+    )
     args = parser.parse_args()
     if args.check == "lattice":
         run_lattice(args.region)
     elif args.check == "gauges":
-        run_gauges(args.region, args.start, args.end)
+        nine = None if args.gauge_day is None else args.gauge_day == "09-09"
+        run_gauges(args.region, args.start, args.end, nine)
     else:
         from api.weather.cds_compare import main_compare
 

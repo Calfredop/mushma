@@ -68,3 +68,23 @@ def test_compare_gauge_measures_bias_and_agreement_on_gauge_days() -> None:
     assert metrics["ratio"] == pytest.approx(0.8)
     assert metrics["daily_corr"] == pytest.approx(1.0)
     assert metrics["wet3_hit_rate"] <= 1.0
+
+
+def test_compare_gauge_on_calendar_days_skips_the_9_to_9_recut() -> None:
+    days = pd.date_range("2025-01-01", periods=60).date
+    rng = np.random.default_rng(5)
+    calendar = pd.Series(rng.gamma(0.4, 12, len(days)), index=days)
+
+    metrics = compare_gauge(0.5 * calendar, calendar, nine_to_nine=False)
+
+    assert metrics["days"] == 60
+    assert metrics["ratio"] == pytest.approx(0.5)
+    assert metrics["daily_corr"] == pytest.approx(1.0)
+
+
+def test_each_region_checks_rain_against_its_own_gauge_network() -> None:
+    from api.grid.region import load_region
+    from api.weather.checks import gauge_network
+
+    assert gauge_network(load_region("tuscany")) == "sir_toscana"
+    assert gauge_network(load_region("umbria")) == "umbria_sir"
