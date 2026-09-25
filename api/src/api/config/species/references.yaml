@@ -828,6 +828,19 @@ references:
       hold-out (0.507 -> 0.463, 6 sightings) and was not adopted.
     cited_as:
     - model-v1-validation.md
+  mushma_umbria_gauge_check_2026:
+    citation: 'mushma Umbria rain check: downscaled ERA5-Land (CDS) daily precipitation against the Regione Umbria
+      Servizio Idrografico rain gauges inside woodland cells, 2019-2025 (8 gauges with 80 % of days, 402-1,053 m) and
+      2025 (9 gauges); calendar days (daily correlation 0.65 against 0.42 on 09-09 days). See regions/umbria.md'
+    url: https://dati.regione.umbria.it/dataset/sir_precipitazioni_storico
+    kind: analysis
+    region: Umbria
+    verified: verified
+    supports: 'ERA5-Land holds 0.88 of Umbrian woodland gauge rain over 2019-2025 (0.81 in 2025); a gauge-total fit of
+      scale = 0.89 + 0.33 per km of elevation brings it to 1.00, where the national 1.28 + 0.29 per km (Tuscan gauges)
+      would make it 1.32.'
+    cited_as:
+    - regions/umbria.md
   mushma_umbria_grid_check_2026:
     citation: 'mushma Umbria grid check: habitat shares, elevation and SoilGrids pH of the 3,253 woodland cells of the
       Umbrian grid built 2026-09-25 (CLC 2018 IV level alone), read-only query'

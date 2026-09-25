@@ -163,3 +163,11 @@ def test_a_microclimate_on_a_variable_the_ingest_lacks_is_refused(tmp_path: Path
 
     with pytest.raises(RuleConfigError, match="dew_point_2m_mean"):
         load_rules(model_file=path)
+
+
+def test_umbria_scales_its_cds_history_with_its_own_gauge_fit() -> None:
+    scale = load_model_config(region="umbria").precipitation_scale
+
+    assert scale.sources == ["era5_land_cds", "era5_seamless"]
+    assert (scale.intercept, scale.per_km) == (0.89, 0.33)
+    assert set(scale.source) <= set(load_rules("umbria").references)
