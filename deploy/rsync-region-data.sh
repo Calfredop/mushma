@@ -57,12 +57,14 @@ say "Rsync $REGION from $DATA_DIR -> $DEPLOY_HOST:$REMOTE_DATA"
 paths=()
 for tree in grid weather scores sightings climatology history outlook; do
   if [ -d "$DATA_DIR/$tree/$REGION" ]; then
-    paths+=("$DATA_DIR/./$tree/$REGION")
+    paths+=("$tree/$REGION")
   fi
 done
 [ "${#paths[@]}" -gt 0 ] || die "no store trees for $REGION under $DATA_DIR"
-# -L: follow symlinks (worktrees may share a data root). --relative keeps grid/<region>/… layout.
-rsync -azL --info=stats2 --relative "${paths[@]}" "$DEPLOY_HOST:$REMOTE_DATA/"
+# -L: follow symlinks (worktrees may share a data root). -R with paths relative to $DATA_DIR keeps
+# the grid/<region>/… layout. Short flags, --stats and no "/./" anchor: macOS ships openrsync,
+# which lacks --info and --relative and ignores the anchor.
+(cd "$DATA_DIR" && rsync -azLR --stats "${paths[@]}" "$DEPLOY_HOST:$REMOTE_DATA/")
 
 say "Synced $REGION"
 if [ "$REDEPLOY" = 1 ]; then
