@@ -89,8 +89,8 @@ correction.
 
 From the Copernicus CDS, 2016-01-01 to 2026-09-14, through the ERA5-Land time-series product
 (`cds.method: timeseries`, added by this card; `.gavin-root/docs/weather-history-cds.md`): 56 node
-requests plus 22 half-yearly snowfall requests, instead of 634 weekly bbox chunks that CDS would
-have run one at a time for about 30–60 h. The days after 2026-09-14 come from the Open-Meteo update
+requests of about 40 s each, plus 23 Italy-wide half-yearly snowfall requests that every region
+shares, instead of 634 weekly bbox chunks that CDS would have run one at a time for about 30–60 h. The days after 2026-09-14 come from the Open-Meteo update
 step, as for every region.
 
 ## Data

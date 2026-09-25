@@ -58,10 +58,16 @@ values from the `reanalysis-era5-land-timeseries` product instead:
   half a year per request (cost 1 × 24 h × 31 d × 6 months × 2 = 8,928 of 12,000); a
   month the range only partly covers goes alone with its days, so no request asks for
   days CDS does not have yet. It is deaccumulated per node over the whole range at once.
+  These requests are the slow part: the gridded dataset runs one request per account at
+  a time, and a half-year took over 10 min. CDS costs by field, not by area (an
+  Italy-wide half-year costs the same 8,928), so they cover **all of Italy**
+  (`cds.snowfall_area`, the basemap's extent) and every region reuses one cache:
+  23 requests for 2016 to today, for the whole country. `read_snowfall_zip` picks the
+  region's nodes in xarray before building a frame.
 - **Local days.** Node series start a day before the range, so each Europe/Rome day
   gets its evening UTC hours; days are aggregated a year at a time with the same
   `aggregate_hourly_frame` and written under the same source id `era5_land_cds`.
-- **Cost for a region.** Umbria: 56 node requests + 22 snowfall requests instead of 634
+- **Cost for a region.** Umbria: 56 node requests (plus the shared snowfall) instead of 634
   chunks. Chunks still work (`method: chunks`) and their cache is untouched.
 - **Queue.** `CdsClient` waits out the "temporarily limited" rejections (2 min, up to
   an hour) instead of failing the backfill. Queued weekly chunks from any rail still
