@@ -104,27 +104,32 @@ def _local_dates(times_utc: pd.Series, timezone: str) -> pd.Series:
     return aware.dt.date
 
 
-def _hourly_accumulation(cumulative: np.ndarray) -> np.ndarray:
+def _hourly_accumulation(cumulative: np.ndarray, hours_utc: np.ndarray | None = None) -> np.ndarray:
     """Turn an ERA5-Land cumulative-from-forecast-start series into per-hour increments.
 
-    ERA5-Land resets at 01 UTC; the 00 UTC step repeats the previous day's total.
-    At the start of a series (chunk / missing prior hour) that 00 UTC value must not
-    count as an increment — we have no previous step to difference against.
+    ERA5-Land accumulates from 00 UTC: the 01 UTC value is the first hour's own amount and the
+    00 UTC step repeats the previous day's total. With ``hours_utc`` the 01 UTC step is always the
+    reset, however large that first hour is against the day before; without it (or across a gap),
+    a drop below half the previous value marks one. At the start of a series (chunk / missing prior
+    hour) a 00 UTC value must not count as an increment: there is no previous step to difference.
 
-    Tiny float32 decreases overnight (SSRD plateaus around 1e7 J m⁻²) are noise, not
-    resets: only a drop of more than half the previous value counts as a forecast reset.
+    Tiny float32 decreases overnight (SSRD plateaus around 1e7 J m⁻²) are noise, not resets.
     """
     if len(cumulative) == 0:
         return cumulative
     diffs = np.empty_like(cumulative, dtype=float)
-    diffs[0] = 0.0
+    first = float(cumulative[0])
+    starts_fresh = hours_utc is not None and int(hours_utc[0]) == 1 and np.isfinite(first)
+    diffs[0] = max(0.0, first) if starts_fresh else 0.0
     for i in range(1, len(cumulative)):
         cur = float(cumulative[i])
         prev = float(cumulative[i - 1])
         if not (np.isfinite(cur) and np.isfinite(prev)):
             diffs[i] = cur if np.isfinite(cur) else 0.0
             continue
-        if prev > 0 and cur < 0.5 * prev:
+        if hours_utc is not None and int(hours_utc[i]) == 1:
+            diffs[i] = max(0.0, cur)  # accumulation restarted at 00 UTC
+        elif prev > 0 and cur < 0.5 * prev:
             diffs[i] = max(0.0, cur)  # forecast reset
         else:
             diffs[i] = max(0.0, cur - prev)
@@ -155,10 +160,11 @@ def aggregate_hourly_frame(
     df = hourly.copy()
     df["point_id"] = [point_id(lat, lon) for lat, lon in zip(df["lat"], df["lon"], strict=True)]
     df = df.sort_values(["point_id", "time"]).reset_index(drop=True)
+    hours = pd.to_datetime(df["time"], utc=True).dt.hour.to_numpy()
     for col in accumulated:
         if col in df.columns:
             df[col] = df.groupby("point_id", sort=False)[col].transform(
-                lambda s: _hourly_accumulation(s.to_numpy(dtype=float))
+                lambda s: _hourly_accumulation(s.to_numpy(dtype=float), hours[s.index])
             )
     df["local_date"] = _local_dates(df["time"], timezone)
     df["hour_utc"] = pd.to_datetime(df["time"], utc=True).dt.hour
@@ -696,8 +702,10 @@ def backfill_cds_timeseries(
         .drop_duplicates(["time", "lat", "lon"])
         .sort_values(["lat", "lon", "time"])
     )
+    snowfall = snowfall.reset_index(drop=True)
+    snow_hours = pd.to_datetime(snowfall["time"]).dt.hour.to_numpy()
     snowfall["sf"] = snowfall.groupby(["lat", "lon"], sort=False)["sf"].transform(
-        lambda s: _hourly_accumulation(s.to_numpy(dtype=float))
+        lambda s: _hourly_accumulation(s.to_numpy(dtype=float), snow_hours[s.index])
     )
     hourly = hourly.merge(snowfall, on=["time", "lat", "lon"], how="left")
 
