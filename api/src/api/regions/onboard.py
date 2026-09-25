@@ -34,6 +34,7 @@ from api.model.rules import load_rules
 from api.regions import history_start_date, list_configured_regions
 from api.timeutil import today_rome
 from api.weather.cds import CdsCredentialsError, resolve_cds_key
+from api.weather.config import load_weather_config
 from api.weather.ingest import SETTLE_DAYS
 
 STEP_NAMES = (
@@ -181,9 +182,10 @@ def update_ready(root: Path, region: str, today: date) -> bool:
     store = root / "weather" / region / "daily"
     if not store.is_dir():
         return False
-    # Skip when this year's daily partition exists; the daily job still refreshes.
-    year_dirs = list(store.glob(f"source=*/year={today.year}/data.parquet"))
-    return bool(year_dirs)
+    # Skip when this year's forecast partition exists; the daily job still refreshes. Only the
+    # forecast source counts: the CDS backfill writes this year's reanalysis partition too.
+    forecast = load_weather_config().forecast.model
+    return (store / f"source={forecast}" / f"year={today.year}" / "data.parquet").is_file()
 
 
 def sightings_ready(root: Path, region: str) -> bool:
