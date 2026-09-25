@@ -33,6 +33,38 @@ So requests are cached under `$DATA_DIR/raw/cds/` as ~7-day hourly chunks (a ful
 month of all variables exceeds CDS cost limits on a regional bbox) and aggregated
 once into the daily store.
 
+### Fetching: the time-series product (2026-09-25, `region-umbria` card)
+
+The weekly chunks were too slow to onboard 19 regions. A region needs ~630 requests
+for 2016 to today, and CDS runs **one request per account at a time**, across every
+dataset. Each request ran ~2.5–6 min, so a region took ~30–60 h, and every region rail
+shares the account (a full queue also rejects new submissions with "Number queued
+requests for this dataset is temporarily limited").
+
+`cds.method: timeseries` in `weather.yaml` now fetches the same hourly ERA5-Land
+values from the `reanalysis-era5-land-timeseries` product instead:
+
+- **Node series.** One request per weather node (the 0.2° lattice nodes sit on the
+  ERA5-Land grid) for the whole range, with the nine variables it offers. One Umbrian
+  node for 2016-01-01 → 2026-09-14 took **35 s** to run (7.6 MB zip).
+- **Same values.** Checked against the weekly chunk at the same node (N43.00 E12.40,
+  8–14 Aug 2026, 168 hours): temperatures, dew point and soil temperature within
+  0.0003 K, soil water and wind identical. Precipitation and radiation are **already
+  hourly increments** in this product (weekly sums equal to 2e-8 m); the gridded
+  dataset's 00 UTC carry-over step does not exist here.
+- **Snowfall** is not in the product. It comes from the gridded dataset, snowfall only,
+  half a year per request (cost 1 × 24 h × 31 d × 6 months × 2 = 8,928 of 12,000); a
+  month the range only partly covers goes alone with its days, so no request asks for
+  days CDS does not have yet. It is deaccumulated per node over the whole range at once.
+- **Local days.** Node series start a day before the range, so each Europe/Rome day
+  gets its evening UTC hours; days are aggregated a year at a time with the same
+  `aggregate_hourly_frame` and written under the same source id `era5_land_cds`.
+- **Cost for a region.** Umbria: 56 node requests + 22 snowfall requests instead of 634
+  chunks. Chunks still work (`method: chunks`) and their cache is untouched.
+- **Queue.** `CdsClient` waits out the "temporarily limited" rejections (2 min, up to
+  an hour) instead of failing the backfill. Queued weekly chunks from any rail still
+  delay everyone's requests, so rails should not warm chunk caches any more.
+
 ## Variable map
 
 | Store variable | CDS / derived |

@@ -100,6 +100,31 @@ references:
     supports: all 127 species sensitive to daily temperature extremes.
     cited_as:
     - porcini.md R21
+  angelini2016_collestrada:
+    citation: 'Angelini P., Bistocchi G., Arcangeli A., Rubini A., Venanzoni R. (2016) Inventory, diversity and
+      communities of macrofungi in the Collestrada forest (Umbria, central Italy). Plant Biosystems 150(5): 1096–1105'
+    doi: 10.1080/11263504.2015.1108939
+    url: https://research.unipg.it/handle/11391/1444550
+    kind: peer_reviewed
+    region: Umbria (Collestrada, 250–306 m)
+    verified: verified
+    supports: 'three-year survey of 341 macrofungi in seven Umbrian wood types (oak, hornbeam, holm oak); "changes of
+      meteorogical conditions, especially the rainfall level and relative humidity, during the growing seasons and
+      years have a major impact" (abstract; community level, not per taxon). The only Umbrian weather-fruiting finding.'
+    cited_as:
+    - species-ecology/umbria.md
+  angelini2017_umbria_checklist:
+    citation: 'Angelini P., Arcangeli A., Bistocchi G., Rubini A., Venanzoni R., Perini C. (2017) Current knowledge of
+      Umbrian macrofungi (central Italy). Plant Biosystems 151(5): 915–923'
+    doi: 10.1080/11263504.2016.1265609
+    url: https://research.unipg.it/handle/11391/1395978
+    kind: peer_reviewed
+    region: Umbria
+    verified: verified
+    supports: 'the Umbrian checklist, 1,016 species from 95 localities (1990–2015); abstract only, the locality table was
+      not seen. Not in GBIF, which is why Umbrian GBIF records are so few.'
+    cited_as:
+    - species-ecology/umbria.md
   arrigoni_viciani_castagneti:
     citation: 'Arrigoni P.V., Viciani D. Caratteri fisionomici e fitosociologici dei castagneti toscani. Parlatorea
       5: 55–99 (year not verified)'
@@ -298,6 +323,15 @@ references:
     supports: chestnut "does not thrive on limestone", very acidic to neutral soils.
     cited_as:
     - gallinacci.md R17
+  costacciaro_funghi_monte_cucco:
+    citation: 'Università degli Uomini Originari di Costacciaro. Raccolta funghi (Monte Cucco)'
+    url: https://www.uominioriginaricostacciaro.it/raccolta-funghi/
+    kind: web
+    region: Umbria (Monte Cucco)
+    verified: verified
+    supports: '"il fungo porcino, che predilige le secolari faggete" of Monte Cucco (taxon not named).'
+    cited_as:
+    - species-ecology/umbria.md
   danell1994_mycorrhiza:
     citation: 'Danell E. (1994). Formation and growth of the ectomycorrhiza of Cantharellus cibarius. Mycorrhiza
       5: 89–97'
@@ -794,6 +828,33 @@ references:
       hold-out (0.507 -> 0.463, 6 sightings) and was not adopted.
     cited_as:
     - model-v1-validation.md
+  mushma_umbria_grid_check_2026:
+    citation: 'mushma Umbria grid check: habitat shares, elevation and SoilGrids pH of the 3,253 woodland cells of the
+      Umbrian grid built 2026-09-25 (CLC 2018 IV level alone), read-only query'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/regions/umbria.md
+    kind: analysis
+    region: Umbria
+    verified: verified
+    supports: 'deciduous oak 58.8 % of the wooded area, chestnut 1.5 %, beech 6.5 % (dominant cells at a mean 1,197 m),
+      no fir; woodland cells p10 360 m, median 590 m, p90 1,017 m; SoilGrids topsoil pH p10 6.59, median 6.89, p90 7.20,
+      no woodland cell below pH 6.0, so a SoilGrids pH rule cannot tell Umbrian cells apart.'
+    cited_as:
+    - species-ecology/umbria.md
+    - regions/umbria.md
+  mushma_umbria_occurrence_check_2026:
+    citation: 'mushma Umbria occurrence check: GBIF occurrence API (gadmGid ITA.18_1), iNaturalist histogram and
+      observation APIs (place 10875, Umbria) and the Open-Meteo elevation API, queried 2026-09-25. Aggregates only; no
+      coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations/histogram
+    kind: analysis
+    region: Umbria
+    verified: verified
+    supports: 'Umbrian verifiable iNaturalist records: B. aereus 8 (Aug 1, Sep 5, Oct 1, Nov 1), B. reticulatus 5 (Jun
+      2, Sep 2, Oct 1), no B. edulis (about 3 expected at the Tuscan rate) and no B. pinophilus, A. caesarea 3 (Sep 1,
+      Oct 2), Cantharellus 6 (May 2, Jun 1, Oct 1, Nov 2; C. pallens 3, C. alborufescens 1); GBIF fruit-body records
+      almost none. Too few to fit any band.'
+    cited_as:
+    - species-ecology/umbria.md
   myboletus_finferli:
     citation: 'MyBoletus. Chanterelles in Europe: where to find them, season and habitat'
     url: https://myboletus.com/en/funghi/finferli/
@@ -892,6 +953,49 @@ references:
     supports: 250 m global pH(H2O) at six depths, with uncertainty.
     cited_as:
     - gallinacci.md R21
+  regione_umbria_castagno2025:
+    citation: 'Regione Umbria, Servizio Sviluppo rurale; 3A–PTA Parco Tecnologico Agroalimentare dell''Umbria (2025) Il
+      castagno da frutto in Umbria. I Quaderni della Biodiversità 14. ISBN 978-88-88417-23-3'
+    url: https://biodiversita.umbria.parco3a.org/wp-content/uploads/2025/09/QBD-14-ESE-WEB-singole_compressed.pdf
+    kind: institutional
+    region: Umbria
+    verified: verified
+    supports: 'Umbrian chestnut belt 500–600 m (400–550 m north and east, 600–700 m west and south), about 1,000 ha,
+      "la necessità imprescindibile dell''acidità dei suoli" (pdf pp. 66–67); chestnut areas: Alto Tevere, Spoletino,
+      Amerino, Orvietano, Pievese, Gualdo Tadino, Frascaro di Norcia; "dopo le prime piogge estive, esplodono lattari,
+      porcini, ovoli" in the Montebibico chestnut groves near Spoleto (pdf p. 83).'
+    cited_as:
+    - species-ecology/umbria.md
+  regione_umbria_funghi2013:
+    citation: 'Regione Umbria, Servizio Foreste, economia e territorio montano; Gruppo Micologico Ternano (Belli L., De
+      Angelis A., Donati P., Fantini F., Liberati G., Materozzi G.) (2013) Funghi e tartufi dell''Umbria. Ristampa
+      luglio 2013 (1st ed. "Funghi dell''Umbria", 1997). Centro Stampa Giunta regionale, Perugia'
+    url: https://www.regione.umbria.it/documents/18/1932463/Libro+Funghi+e+Tartufi/2c2d4961-b28d-47f3-87fe-1335769676ec
+    kind: institutional
+    region: Umbria
+    verified: verified
+    supports: 'per-taxon Umbrian season, hosts and frequency: B. edulis late summer to late autumn under beech, chestnut,
+      fir, "Poco comune in Umbria" (p. 141); B. pinophilus autumn, spring flushes "possibili ma non frequenti", "non è
+      comune in Umbria" (p. 142); B. aestivalis "Specie xerofila", May to October in sunny chestnut, oak and beech woods,
+      "molto comune nella nostra regione" (p. 143); B. aereus "Specie autunnale, a volte anche a fine estate, o prima ma
+      ad altitudini sopra gli ottocento mille metri", oaks and chestnut, "non disdegnando comunque anche il faggio" (p.
+      144); A. caesarea summer and autumn in chestnut, cerro and roverella woods "ad altitudini inferiori agli 800/900 m"
+      (p. 44); C. cibarius "da maggio a ottobre", broadleaf woods in central Italy (p. 163).'
+    cited_as:
+    - species-ecology/umbria.md
+  regione_umbria_stato_foreste2009:
+    citation: 'Regione Umbria, Servizio Foreste ed Economia montana; Università degli Studi di Perugia (2009) Lo stato
+      delle foreste in Umbria – anno 2008 (Piano Forestale Regionale 2008–2017)'
+    url: https://www.regione.umbria.it/documents/18/1932463/stato+delle+foreste+in+umbria/ff789e89-397c-4fed-89e4-54fe9cff1ccc
+    kind: institutional
+    region: Umbria
+    verified: verified
+    supports: 'INFC 2005 categories for Umbria: cerrete about 120,000 ha, roverella over 96,500, ostrieti about 60,000,
+      leccete about 40,000 (pdf p. 6); forest-soil survey (Tabella 6): 29 of 318 horizons acid (mean pH 5.3), sandstone,
+      marnoso-arenacea and volcanic soils sub-acid at a mean pH 7.4, calcareous 8.1 (pdf p. 20).'
+    cited_as:
+    - species-ecology/umbria.md
+    - regions/umbria.md
   rita2021:
     citation: 'Rita A., Bonanomi G., Allevato E., Borghetti M., Cesarano G., Mogavero V., Rossi S., Saulino L.,
       Zotti M., Saracino A. (2021) Topography modulates near-ground microclimate in the Mediterranean Fagus sylvatica
@@ -1063,6 +1167,38 @@ references:
     supports: late summer and early autumn precipitation drive emergence and yield (B. edulis among the species).
     cited_as:
     - porcini.md R17
+  umbria24_bistocchi2022:
+    citation: 'Fabrizi C. (2022-10-03) Porcini e ovoli, l''esperto: «Stagione eccezionale». Umbria24 (interview with
+      the mycologist Giancarlo Bistocchi)'
+    url: https://www.umbria24.it/attualita/porcini-e-ovuli-lesperto-stagione-eccezionale-regole-da-rispettare/
+    kind: web
+    region: Umbria
+    verified: verified
+    supports: '"i nostri porcini, ovvero i boletus aereus e aestivalis, prediligono temperature miti e molta pioggia";
+      the 2022 flush started around Città della Pieve and Pietrafitta, then Terni, Perugia and Gubbio.'
+    cited_as:
+    - species-ecology/umbria.md
+  umbria24_loschi2023:
+    citation: 'Troccoli M. (2023-09-22) Funghi in Umbria: aspettando i Porcini è il momento degli Ovoli. Umbria24
+      (interview with Luciano Loschi, gruppo micologico-naturalistico di Foligno)'
+    url: https://www.umbria24.it/umbria/funghi-aspettando-i-porcini-e-il-momento-degli-ovoli-buonissime-previsioni-per-il-tartufo-bianco/
+    kind: web
+    region: Umbria
+    verified: verified
+    supports: 'Umbrian porcini grow "in ambienti xerofili, cioè caldi, in simbiosi con cerro, roverella, castagno" and
+      "hanno bisogno di piogge, assenza di vento, sole di giorno e fresco di notte"; ovoli from mid-September 2023.'
+    cited_as:
+    - species-ecology/umbria.md
+  umbriaoggi_dove_funghi2019:
+    citation: 'Redazione UmbriaOggi (2019-09-18) Dove cercare funghi in Umbria'
+    url: https://www.umbriaoggi.it/dove-cercare-funghi-in-umbria-17372
+    kind: web
+    region: Umbria
+    verified: verified
+    supports: 'forager list of Umbrian porcini areas (Valnerina, Bettona, Monti Martani, Monte Subasio, Monte Serano, the
+      Spoleto hills, Città di Castello, Umbertide, Monte Malbe, Orvieto, Sellano) and "dai 700 metri ai 1300 metri".'
+    cited_as:
+    - species-ecology/umbria.md
   yan_hunt1999:
     citation: 'Yan W., Hunt L.A. (1999) An equation for modelling the temperature response of plants using only the
       cardinal temperatures. Annals of Botany 84: 607–614'
