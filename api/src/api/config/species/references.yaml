@@ -100,6 +100,30 @@ references:
     supports: all 127 species sensitive to daily temperature extremes.
     cited_as:
     - porcini.md R21
+  appennino4p_funghi:
+    citation: Tasselli M. I funghi nelle Quattro Province. Dove comincia l'Appennino (appennino4p.it; the Apennines of
+      Piacenza, Pavia, Alessandria and Genoa, incl. Val Trebbia)
+    url: https://www.appennino4p.it/funghi
+    kind: web
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'B. aestivalis "il tipico porcino estivo" from June under oak and chestnut; B. edulis in autumn under beech;
+      B. aereus in autumn oak woods; ovolo favoured by "le prime piogge di settembre", acid-soil oak and chestnut woods,
+      "prettamente termofila"; finferli from June in oak and chestnut at low-mid altitude.'
+    cited_as:
+    - emilia_romagna.md R13
+  arpae_atlante_clima2017:
+    citation: Antolini G., Pavan V., Tomozeiu R., Marletto V. (a cura di) (2017) Atlante climatico dell'Emilia-Romagna
+      1961-2015. Arpae Emilia-Romagna
+    url: https://www.arpae.it/it/temi-ambientali/clima/rapporti-e-documenti/atlante-climatico/atlante-climatico-1961-2015
+    kind: institutional
+    region: Emilia-Romagna
+    verified: verified
+    supports: 1991-2015 vs 1961-1990 regional mean temperature +1.1 °C (+1.4 max, +0.8 min), annual rain -22 mm (-2 %)
+      "con notevoli cambiamenti stagionali (estati più aride e autunni più piovosi)"; municipal normals, e.g. Monchio
+      delle Corti 7.8 -> 8.8 °C and 2061 -> 1954 mm, Sestola 10.7 -> 11.5 °C and 1046 -> 1017 mm.
+    cited_as:
+    - emilia_romagna.md R8
   arrigoni_viciani_castagneti:
     citation: 'Arrigoni P.V., Viciani D. Caratteri fisionomici e fitosociologici dei castagneti toscani. Parlatorea
       5: 55–99 (year not verified)'
@@ -241,6 +265,17 @@ references:
       protection.
     cited_as:
     - porcini.md R1
+  borgotaro_selvicoltura:
+    citation: Consorzio per la tutela dell'IGP Fungo di Borgotaro, "La selvicoltura"
+    url: https://www.fungodiborgotaro.com/ita/6/la-selvicoltura/
+    kind: institutional
+    region: Emilia-Romagna
+    verified: verified
+    supports: '"querceti e castagneti nelle quote inferiori e faggete ed abetine artificiali nella fascia più alta";
+      high forest yields markedly less than coppice ("sensibile decremento della produzione fungina"); abandoned or aged
+      woods less than tended ones.'
+    cited_as:
+    - emilia_romagna.md R11
   brejon_hoffman2026_preprint:
     citation: 'Brejon Lamartinière E., Hoffman J.I. (2025, version posted 8 June 2026) Predicting porcini: a decade
       of sporocarp monitoring reveals the meteorological triggers of Boletus edulis fruiting in central European
@@ -289,6 +324,18 @@ references:
     supports: rain episodes of 15–20 l/m²; 18–22 days lag; S/SE-facing sunny clearings; siliceous soils.
     cited_as:
     - ovoli.md R23
+  comunalie_co2sink2023:
+    citation: Scuola Superiore Sant'Anna, Consorzio Comunalie Parmensi (c. 2023) Progetto CO2SINK, allegato 2 (flussi
+      dei cercatori di funghi e turismo nelle Comunalie Parmensi, dati 2020)
+    url: https://www.comunalie.com/dati/progetti/allegato2_202305275448.pdf
+    kind: institutional
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Tabella 1: mushroom-picking permits sold for the Albareto reserve in 2020 by month: June 253, July 10,
+      August 123, September 6,818, October 1,031, November 1 (8,236 in all; 32,944 across the Comunalie). Effort, not
+      fruiting, in a COVID year.'
+    cited_as:
+    - emilia_romagna.md R10
   conedera2016_castanea:
     citation: 'Conedera M., Tinner W., Krebs P., de Rigo D., Caudullo G. (2016). Castanea sativa in Europe: distribution,
       habitat, usage and threats. In: European Atlas of Forest Tree Species. Publ. Off. EU'
@@ -670,6 +717,17 @@ references:
     supports: mainly autumnal, sporadic late spring; conifers and beech, chestnut, birch.
     cited_as:
     - porcini.md R42
+  montagnatore_valtaro:
+    citation: 'montagnatore (2013-09). Andare a funghi in val Taro (blog)'
+    url: http://montagnatore.blogspot.com/2013/09/andare-funghi-in-val-taro.html
+    kind: web
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Folklore. All four porcini "fra i 500 e i 1500 metri" under "cerri, querce, castagni e faggi" in Val Taro,
+      appearing in the order aestivalis, aereus, pinophilus, edulis; woods mostly north-facing and reached by "aria umida
+      del mare".'
+    cited_as:
+    - emilia_romagna.md R14
   moore2008_fruit_bodies:
     citation: 'Moore D., Gange A.C., Gange E.G., Boddy L. (2008) Fruit bodies: their production and development in
       relation to environment. In: Boddy L., Frankland J.C., van West P. (eds) Ecology of Saprotrophic
@@ -756,6 +814,21 @@ references:
     - ovoli.md R15
     - gallinacci.md R25
     - gallinacci.md R26
+  mushma_occurrence_check_er_2026:
+    citation: 'mushma occurrence cross-check for Emilia-Romagna: iNaturalist observations and histogram APIs (place
+      96905, verifiable), GBIF occurrence API (gadmGid ITA.6_1) and the Open-Meteo elevation API, queried 2026-09-25.
+      Aggregates only (counts by month, enrichment against all fungi, elevation quantiles); no coordinates are stored
+      or published'
+    url: https://api.inaturalist.org/v1/observations/histogram?place_id=96905&taxon_id=48701&verifiable=true&interval=month_of_year
+    kind: analysis
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Monthly counts and enrichment: B. edulis n=25 (Aug 2.8x, Sep 4.6x, Oct 0.4x; median 1209 m), B.
+      reticulatus n=25 (Jun-Sep; median 1105 m), B. aereus n=11 (10 in Sep; median 504 m), B. pinophilus n=4, A. caesarea
+      n=16 (Aug 2.2x, Sep 4.7x, Oct 0.6x; max 711 m), Cantharellus n=38 (Jun-Sep, none Dec-Apr; median 947 m). See
+      emilia_romagna.md, Occurrence check.'
+    cited_as:
+    - emilia_romagna.md R2
   mushma_pvgis_kd_2026:
     citation: 'mushma diffuse-fraction check: PVGIS 5.3 monthly radiation (MRcalc, SARAH3 satellite record 2005–2023)
       at seven Tuscan points (Firenze, Siena, Casentino, Garfagnana, Amiata, Lunigiana, Mugello), queried
@@ -852,6 +925,22 @@ references:
     supports: B. edulis and B. aereus fruit in Cistus ladanifer scrub (37.8 and 22.5 kg/ha).
     cited_as:
     - porcini.md R32
+  padovan2009_casentinesi:
+    citation: Padovan F. (2009) Atlante illustrato dei funghi del Parco. 845 specie di funghi nel Parco Nazionale delle
+      Foreste Casentinesi (texts F. Padovan, D. Ubaldi). Ente Parco Nazionale delle Foreste Casentinesi, Monte
+      Falterona e Campigna. ISBN 978-88-95719-00-9
+    url: https://www.parcoforestecasentinesi.it/sites/default/files/images/cartella_ricerca/libro%20atlante%20funghi.pdf
+    kind: monograph
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Dated park records (Romagna and Tuscan sides) and habitat notes: B. edulis "dalla fine estate al tardo
+      autunno" in conifer and broadleaf woods; B. aestivalis "già all''inizio estate" (records 25 Jun-3 Sep); B.
+      pinophilus "prima comparsa all''inizio dell''estate e riappare poi ad autunno avanzato", rare; A. caesarea "legata
+      ai boschi termofili di castagni e querce", uncommon and declining with abandoned chestnut groves; C. cibarius
+      records 25 Jun-17 Nov and listed among the "nordic" fungi; B. aereus absent from the mountain forests, expected
+      "nelle aree collinari".'
+    cited_as:
+    - emilia_romagna.md R1
   parlade2017:
     citation: 'Parladé J., Martínez-Peña F., Pera J. (2017) Effects of forest management and climatic variables
       on the mycelium dynamics and sporocarp production of the ectomycorrhizal fungus Boletus edulis. Forest Ecology
@@ -872,6 +961,19 @@ references:
     supports: '"indifferent to pH", prefers lime-rich soils in the north of its range.'
     cited_as:
     - gallinacci.md R19
+  pezzi2007_treeline:
+    citation: 'Pezzi G., Bitelli G., Ferrari C., Girelli V.A., Gusella L., Masi S., Mognol A. (2007) Pattern temporale
+      del limite altitudinale dei boschi di faggio nell''Appennino settentrionale. Un''analisi di dati fotogrammetrici.
+      Forest@ 4(1): 79-87'
+    doi: 10.3832/efor0440-0040079
+    url: https://foresta.sisef.org/pdf/?id=efor0440-0040079
+    kind: peer_reviewed
+    region: Emilia-Romagna
+    verified: verified
+    supports: beech treeline on the Emilian side of Prado and Cusna between 1538 and 1804 m, 80 % of it between 1651
+      and 1775 m, mostly on north-east to east aspects.
+    cited_as:
+    - emilia_romagna.md R5
   pilz2003:
     citation: Pilz D., Norvell L., Danell E., Molina R. (2003). Ecology and management of commercially harvested
       chanterelle mushrooms. Gen. Tech. Rep. PNW-GTR-576. USDA Forest Service, PNW Research Station
@@ -892,6 +994,81 @@ references:
     supports: 250 m global pH(H2O) at six depths, with uncertainty.
     cited_as:
     - gallinacci.md R21
+  rapetti_vittorini1989:
+    citation: 'Rapetti F., Vittorini S. (1989) Aspetti del clima nei versanti tirrenico ed adriatico lungo l''allineamento
+      Livorno-Monte Cimone-Modena. Atti della Società Toscana di Scienze Naturali, Memorie serie A, 96: 159-192'
+    url: http://www.stsn.it/AttiA1989/piccini-pranzini/rapetti-vittorini.pdf
+    kind: peer_reviewed
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Tuscan vs Emilian slope, 1961-1980: the Tyrrhenian side is much rainier (over 2500 mm west of the
+      watershed, not over 1500 mm east of it) and over 1 °C warmer at the same altitude; January 0 °C isotherm at 1300 m
+      in Tuscany, 1000 m on the Po side; the temperate-cool climate starts at 682 m (Pavullo) vs 1340 m (Boscolungo).'
+    cited_as:
+    - emilia_romagna.md R7
+  rer_funghi_specie:
+    citation: Regione Emilia-Romagna. Alcune delle specie più comuni di funghi commestibili presenti in Emilia-Romagna
+      (leaflet, Parchi, foreste e Natura 2000)
+    url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/sistema-regionale/funghi-sottobosco-tartufi/funghi-allegati/funghi-commestibili/@@download/file
+    kind: institutional
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Habitat and season only: A. caesarea "in estate-autunno in boschi di latifoglie, soprattutto di castagni e
+      querce, nelle radure, in terreno siliceo"; B. edulis "da luglio all''autunno" in conifer and broadleaf woods, B.
+      reticulatus "di preferenza ristretto alle latifoglie"; C. cibarius "da giugno a novembre in boschi di conifere e
+      latifoglie, in luoghi umidi e terreni silicei".'
+    cited_as:
+    - emilia_romagna.md R12
+  rer_ifer2006:
+    citation: Regione Emilia-Romagna, Servizio Parchi e Risorse Forestali (2006) Inventario Forestale Regionale,
+      risultati finali (rilievi 1984-1994; hill and mountain zone)
+    url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/inventari-e-carte-forestali/inventario-forestale/IFER_dati_finali.pdf/@@download/file/IFER_dati_finali.pdf
+    kind: dataset
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Woodland by altitude class (ha): 0-200 6,302; 201-400 53,250; 401-600 91,054; 601-800 92,394; 801-1000
+      72,436; 1001-1200 45,631; 1201-1400 27,641; 1401-1600 12,324; 1601-1800 2,137; 1801-2000 4 (about 0.5 % above
+      1600 m); area by forest type (faggete 82,693 ha, castagno 28,001 ha, abetine 5,695 ha).'
+    cited_as:
+    - emilia_romagna.md R6
+  rer_lr6_1996:
+    citation: Regione Emilia-Romagna, L.R. 2 aprile 1996 n. 6, Disciplina della raccolta e della commercializzazione dei
+      funghi epigei spontanei (consolidated text with L.R. 38/2001, 7/2004, 15/2011)
+    url: https://demetra.regione.emilia-romagna.it/al/articolo?urn=er:assemblealegislativa:legge:1996%3B6
+    kind: institutional
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Picking rules only, no season or month window: Tuesday, Thursday, Saturday and Sunday, from an hour before
+      sunrise to an hour after sunset; 3 kg a day, of which at most 1 kg of A. caesarea and Calocybe gambosa; closed
+      ovoli banned; minimum cap 3 cm for the porcini group, 2 cm for C. cibarius.'
+    cited_as:
+    - emilia_romagna.md R9
+  rer_pfr2016_quadro:
+    citation: Regione Emilia-Romagna (2016) Piano Forestale Regionale 2014-2020, Quadro conoscitivo
+    url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/pianificazione-forestale/piano-forestale-regionale/documenti-nuovo-piano-forestale-regionale/il-quadro-conoscitivo-del-piano-forestale-2014-2020/@@download/file
+    kind: institutional
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Beech lower subzone "tra i 1000 e i 1400 m" (west) and "tra i 700 e i 1250 m" (east), upper limit of beech
+      and of the forest "intorno ai 1700 metri"; Turkey oak up to 1400 m on the "argille scagliose"; chestnut in the
+      submontane belt "sempre su versanti freschi"; January 0 °C isotherm near the central-western watershed above 1000
+      m, absent in Romagna, which is warmer at the same altitude; rain over 2000 mm on the Emilia-Liguria watershed,
+      about 1500 mm further east; forest types by area; 80 % of beech woods coppice.'
+    cited_as:
+    - emilia_romagna.md R3
+  rer_prodromi_tipologia2006:
+    citation: Camerano P., Varese P., Grieco C. (IPLA) for Regione Emilia-Romagna (2006) Prodromi della tipologia
+      forestale dell'Emilia-Romagna, relazione
+    url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/le-foreste-dellemilia-romagna/articoli-e-contributi/indagini/relazione200701.pdf/@@download/file/relazione200701.pdf
+    kind: institutional
+    region: Emilia-Romagna
+    verified: verified
+    supports: 'Beech "fascia pressoché continua tra 1000 e 1600-1700", highest at Monte Falco (1650 m, Romagna) and Corno
+      alle Scale (1800 m, Emilia), with grassland and bilberry heath above it in Emilia; the lower beech belt mixes with
+      Turkey oak and chestnut up to 1100-1200 m; eutrophic beech 1000-1300(1400) m; Turkey oak woods 400-900 m, just
+      below the beech; fir-beech in the Casentinesi 900-1250(1350) m.'
+    cited_as:
+    - emilia_romagna.md R4
   rita2021:
     citation: 'Rita A., Bonanomi G., Allevato E., Borghetti M., Cesarano G., Mogavero V., Rossi S., Saulino L.,
       Zotti M., Saracino A. (2021) Topography modulates near-ground microclimate in the Mediterranean Fagus sylvatica
