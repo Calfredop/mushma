@@ -9,6 +9,7 @@ import json
 import math
 import os
 import shutil
+import ssl
 import time
 import urllib.error
 import urllib.parse
@@ -21,6 +22,10 @@ import yaml
 from shapely.geometry.base import BaseGeometry
 
 SOURCES_FILE = Path(__file__).resolve().parent.parent / "config" / "sources.yaml"
+# Intermediate CA certificates that some source servers fail to send with their own (public
+# certificates from the CA's repository, e.g. static.regione.marche.it's GlobalSign RSA OV SSL CA
+# 2018). Browsers and curl fetch a missing one themselves; Python's ssl does not.
+CERTS_DIR = SOURCES_FILE.parent / "certs"
 API_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -45,6 +50,14 @@ def data_dir() -> Path:
     return Path(os.environ.get("DATA_DIR", API_ROOT / "data"))
 
 
+def download_ssl_context() -> ssl.SSLContext:
+    """The default verifying context, plus the intermediate CAs in ``config/certs/``."""
+    context = ssl.create_default_context()
+    for pem in sorted(CERTS_DIR.glob("*.pem")):
+        context.load_verify_locations(cafile=pem)
+    return context
+
+
 def fetch(url: str, dest: Path, retries: int = 4, backoff_s: float = 5.0) -> Path:
     """Download ``url`` to ``dest`` unless it is already there. Writes atomically.
 
@@ -59,7 +72,9 @@ def fetch(url: str, dest: Path, retries: int = 4, backoff_s: float = 5.0) -> Pat
     for attempt in range(retries + 1):
         try:
             with (
-                urllib.request.urlopen(request, timeout=300) as response,
+                urllib.request.urlopen(
+                    request, timeout=300, context=download_ssl_context()
+                ) as response,
                 partial.open("wb") as out,
             ):
                 shutil.copyfileobj(response, out, length=1 << 20)

@@ -1,5 +1,8 @@
 import json
+import ssl
 import threading
+import urllib.error
+import urllib.request
 import zipfile
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -11,6 +14,7 @@ from shapely.geometry import box
 
 from api.grid.sources import (
     copernicus_dem_tiles,
+    download_ssl_context,
     extract_7z,
     fetch,
     fetch_arcgis_features,
@@ -51,6 +55,37 @@ def test_fetch_leaves_no_file_behind_when_the_download_fails(tmp_path: Path) -> 
 
     assert not dest.exists()
     assert list(dest.parent.glob("*")) == []
+
+
+def test_download_context_trusts_the_intermediates_some_servers_leave_out() -> None:
+    # static.regione.marche.it (the REM vegetation map) sends its leaf certificate alone.
+    context = download_ssl_context()
+    names = {
+        dict(pair[0] for pair in cert["subject"]).get("commonName")
+        for cert in context.get_ca_certs()
+    }
+
+    assert "GlobalSign RSA OV SSL CA 2018" in names
+    assert context.verify_mode == ssl.CERT_REQUIRED
+    assert context.check_hostname
+
+
+def test_fetch_verifies_https_with_the_download_context(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    seen: dict[str, object] = {}
+
+    def fake_urlopen(request, timeout, context=None):  # noqa: ANN001, ANN202
+        seen["context"] = context
+        raise urllib.error.HTTPError(request.full_url, 404, "not found", {}, None)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+
+    with pytest.raises(urllib.error.HTTPError):
+        fetch("https://example.org/layer.zip", tmp_path / "layer.zip")
+
+    assert isinstance(seen["context"], ssl.SSLContext)
+    assert seen["context"].verify_mode == ssl.CERT_REQUIRED
 
 
 def test_read_region_boundary_dissolves_the_region_and_reprojects(tmp_path: Path) -> None:
