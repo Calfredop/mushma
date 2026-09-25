@@ -77,3 +77,25 @@ soil:
 # 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
 sightings:
   inaturalist_place_id: 10872
+
+# Rain scale (merged onto config/model.yaml): the gauge check asked for it. Against ARPA Piemonte's gauges
+# in woodland (2019-2025, 97 gauges) the CDS reanalysis holds 133 % of the rain, the reverse of Tuscany,
+# and the national scale, fitted on Tuscan era5_seamless rain, would double it. A gauge-total fit gives
+# 0.74 with no height term. Piemonte's history is CDS, so the scale names that source too: the national
+# one scales era5_seamless only, while the rain normals are scaled whatever their source.
+# .gavin-root/docs/regions/piemonte.md, Validation.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.74
+    per_km: 0.0
+    source: [mushma_arpa_piemonte_gauge_check_2026]
+    notes: >-
+      Piemonte: least squares through the origin of gauge totals on model totals x (a + b x elevation) over
+      the 97 ARPA Piemonte woodland gauges with 80 % of 2019-2025 days (UTC days, rain marked OK) gave
+      a = 0.733, b = 0.007 per km (a alone 0.740): pooled ratio 1.33 -> 0.98, every height band 0.94-1.03.
+      Fitted on 2019-2024 it gives 1.02 on 2025. The excess is mostly drizzle: the reanalysis has 1 mm or
+      more on 51 % of days against the gauges' 25 %, six times the gauge rain on gauge days under 5 mm and
+      0.70 of it on days of 20 mm or more. A factor cannot fix that: at 0.74, 3-day totals of 30 mm or more
+      come on 6.7 % of windows against 8.6 % at the gauges, while 3-day totals of 10 mm or more stay too
+      frequent (27.7 % against 21.9 %). It scales totals: timing errors and missed convective cells stay.

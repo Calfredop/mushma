@@ -1386,3 +1386,17 @@ references:
       26,797 Piedmontese iNaturalist fungi records. See species-ecology/piemonte.md.'
     cited_as:
     - species-ecology/piemonte.md
+  mushma_arpa_piemonte_gauge_check_2026:
+    citation: 'mushma Piemonte rain check: downscaled ERA5-Land (CDS) daily precipitation against ARPA Piemonte''s
+      open daily rain (Meteoweb API, Banca Dati Storica) at the 97 gauges inside woodland cells with 80 % of
+      2019-2025 days (270-2,280 m), rain marked OK only, 00-24 UTC days. See regions/piemonte.md'
+    url: https://utility.arpa.piemonte.it/docs/
+    kind: analysis
+    region: Piemonte
+    verified: verified
+    supports: 'ERA5-Land holds 1.33 of Piedmontese woodland gauge rain over 2019-2025 (1.28-1.38 in every height band,
+      1.14-1.67 by year) and rains 1 mm or more on 51 % of days against the gauges'' 25 %; a gauge-total fit gives
+      scale = 0.74 with no height term (0.76 fitted on 2019-2024 gives 1.02 on 2025), where the national 1.28 + 0.29
+      per km would make it 2.05.'
+    cited_as:
+    - regions/piemonte.md
