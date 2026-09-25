@@ -36,10 +36,6 @@ const CARDS = [
   { name: 'umbria-porcini', title: 'Porcini in Umbria' },
   { name: 'umbria-ovoli', title: 'Ovoli in Umbria' },
   { name: 'umbria-gallinacci', title: 'Gallinacci in Umbria' },
-  { name: 'emilia-romagna', title: 'Porcini, ovoli e gallinacci in Emilia-Romagna' },
-  { name: 'emilia-romagna-porcini', title: 'Porcini in Emilia-Romagna' },
-  { name: 'emilia-romagna-ovoli', title: 'Ovoli in Emilia-Romagna' },
-  { name: 'emilia-romagna-gallinacci', title: 'Gallinacci in Emilia-Romagna' },
 ]
 
 function cardHtml(title) {
