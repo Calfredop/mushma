@@ -81,7 +81,11 @@ Piemonte rain gauges feed a check only, never the app.
   (`api.inaturalist.org/v1/places/autocomplete?q=Piemonte`).
 - **Gauges.** `api.weather.checks gauges --region piemonte` reads ARPA Piemonte's open daily rain
   (`api.weather.arpa_piemonte`, Validation).
-- **`model:` overrides:** see Validation.
+- **`model:` overrides:** the rain scale, ×0.74 over `era5_land_cds` and `era5_seamless` (Validation,
+  rain gauges). The gauge check asked for it: the reanalysis is wetter than the Piedmontese gauges,
+  the reverse of Tuscany.
+- **Weather points.** 125 land nodes on the 0.2° lattice (128 candidates), all 9,537 woodland cells
+  within reach.
 
 ## Grid
 
@@ -135,6 +139,66 @@ for the first time):
 | Santa Maria Maggiore (village) | `1kmE4201N2559` | no | 0.18 | — | 837 | Santa Maria Maggiore (VB) |
 | Torino (city) | `1kmE4138N2442` | no | 0.00 | — | 246 | Torino (TO) |
 
+## Weather history
+
+From the Copernicus CDS, 2016-01-01 to 2026-09-14, through the ERA5-Land time-series product
+(`cds.method: timeseries`): 125 node requests, 27 of them already cached by Liguria's lane (the
+nodes the two regions share), 98 fetched at 20–80 s each, 89 min in all. The days after 2026-09-14
+come from the Open-Meteo update step, as for every region.
+
+**Snowfall.** The time-series product has none, and the gridded dataset's queue was stuck on
+2026-09-25 as it was for Umbria and Liguria (a one-request probe for 1–14 Sep 2026, Italy-wide, sat
+in "accepted" for over an hour while the node series ran). So the node backfill ran with
+`--skip-snowfall`, and snowfall is filled from the Open-Meteo archive once the daily call budget
+allows (see Data); CDS snowfall, if the queued Italy-wide requests ever finish, outranks it.
+
 ## Data
 
 (written by `api.regions.onboard piemonte`)
+
+## Validation
+
+### Rain gauges (`api.weather.checks gauges --region piemonte`)
+
+ARPA Piemonte's open daily rain (CC BY 4.0, "Fonte: Arpa Piemonte"), read from its Meteoweb REST API
+(`api.weather.arpa_piemonte`): 323 measuring points with a rain gauge, 153 of them in woodland cells,
+**97** with valid rain on 80 % of the days of 2019–2025, at 270–2,280 m (8 below 400 m, 38 at
+400–800 m, 51 above). The stations carry their height. Per ARPA's data guide (*Banca Dati Storica —
+Guida alla lettura dei dati*, v1.7) a daily total is the rain of 00–24 **UTC**, so the model's
+calendar days are re-cut as for ARPA Liguria (median daily correlation 0.797 against 0.794 on
+calendar days: the cut barely matters at this scale). Only rain marked OK (class `0` or `Z`) counts;
+snowfall (`5`), snow melted in the gauge (`3`), uncertain and unusable days are left out of both
+sides.
+
+- **ERA5-Land (CDS) holds 1.33 of the gauge rain** (pooled 2019–2025; median per gauge 1.36, daily
+  correlation 0.80, 3-day wet-window hit rate 0.92, false alarms 0.19). The same in every height
+  band (1.28 below 400 m, 1.34 at 400–800 m, 1.33 above), so height has no part in it; by year it
+  runs from 1.14 (wet 2024) to 1.67 (dry 2022).
+- **It rains too often, and too little when it pours.** The reanalysis has 1 mm or more on 51 % of
+  days against the gauges' 25 %, and 5 mm or more on 1.6 times as many days. On gauge days under
+  5 mm it gives six times the gauge rain; on gauge days of 20 mm or more, 0.70 of it. The totals are
+  high because of the drizzle, which is also why the ratio is highest in dry years.
+- **The national rain scale does not fit.** 1.28 + 0.29 per km (fitted on Tuscan gauges, applied to
+  `era5_seamless` only) would make Piedmontese rain **2.05** times the gauges'. A least-squares fit of
+  gauge totals on model totals × (a + b × km, capped at 1.7 km as the national scale is) over
+  2019–2025 gives **a = 0.733, b = 0.007 per km**; a factor alone gives 0.740. So `piemonte.yaml` sets
+  `model.precipitation_scale` to **0.74, no height term**, over both `era5_land_cds` and
+  `era5_seamless` (Piemonte's history is CDS). Pooled ratio 1.33 → 0.98, every band 0.94–1.03.
+  Fitted on 2019–2024 alone it gives 0.76 and holds 2025 at 1.02.
+- **What a factor cannot fix.** The rules read rain as 3-day totals (the rain trigger ramps from 10
+  to 30 mm), 30-day totals (ovoli 25 → 75 mm, gallinacci 15 → 70 mm), a count of 5 mm days
+  (gallinacci) and, for porcini, the 30-day total as a percentage of the cell's normal, which no
+  scale changes. Share of windows at or above each threshold:
+
+| | gauges | raw | × 0.74 (shipped) | × 0.85 |
+|---|---|---|---|---|
+| 3-day ≥ 10 mm | 21.9 % | 34.6 % | 27.7 % | 30.8 % |
+| 3-day ≥ 30 mm | 8.6 % | 11.1 % | 6.7 % | 8.5 % |
+| 30-day ≥ 25 mm | 64.5 % | 87.3 % | 81.0 % | 84.3 % |
+| 30-day ≥ 75 mm | 31.3 % | 49.2 % | 35.3 % | 41.8 % |
+
+  ×0.85 would match the frequency of the 30 mm trigger but leave every 30-day threshold a third too
+  often met; ×0.74 (the totals fit, the method Tuscany, Liguria and Umbria used) is closer
+  everywhere but makes 30 mm events a fifth too rare. The totals fit ships. Correcting the drizzle
+  itself (a wet-day threshold or quantile mapping per region, from every region's open gauges) is a
+  cross-region follow-up, like the calibration step at the Tuscan–Umbrian border.
