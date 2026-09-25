@@ -1220,3 +1220,169 @@ references:
     verified: verified
     supports: 'the development-rate curve r = ((Tmax − T) / (Tmax − Topt)) × ((T − Tmin) / (Topt − Tmin)) ^ ((Topt −
       Tmin) / (Tmax − Topt)): 0 at Tmin and Tmax, 1 at Topt (eq. 4A); the growth clock''s temperature pace.'
+  # ---------------------------------------------------------------------------------------------
+  # Piemonte (region card, 2026-09-25): sources for species/piemonte/ and
+  # .gavin-root/docs/species-ecology/piemonte.md. Appended as one block rather than sorted in.
+  # ---------------------------------------------------------------------------------------------
+  ipla_tipi_forestali_2008:
+    citation: 'Camerano P., Gottero F., Terzuolo P.G., Varese P. - IPLA S.p.A. (2008) Tipi forestali del Piemonte.
+      2nd ed. (1st 2000). Regione Piemonte, Blu Edizioni, Torino, 216 pp. (2018 reprint)'
+    url: https://www.regione.piemonte.it/web/sites/default/files/media/documenti/2019-03/tipi_forestali_del_piemonte.pdf
+    kind: institutional
+    region: Piemonte
+    verified: verified
+    supports: 'the IPLA forest categories and their areas (874,660 ha of woods: Castagneti 204,367 ha, 23.4 %; Faggete
+      135,770; Robinieti 108,136; Lariceti e Cembrete 79,536; Boscaglie pioniere e d''invasione 59,933; Querceti di
+      roverella 42,763; Acero-tiglio-frassineti 40,846; Querceti di rovere 38,578; Querco-carpineti 35,039; Abetine
+      15,221; Pinete di pino silvestre 14,326; Orno-ostrieti 12,897; Peccete 8,825; Rimboschimenti 18,989); chestnut
+      "dalla pianura a tutto il piano montano", marginal "a quote superiori a 1000 m"; Querceti di rovere "in tutti
+      i casi ... popolamenti acidofili"; birch, hazel and rowan the commonest pioneer trees; larch mixed into the
+      endalpic spruce woods "fino al 40%"; the montane-subalpine boundary "tra i 1500 m nel Piemonte settentrionale
+      e i 1800 m nei settori endalpici centromeridionali".'
+    cited_as:
+    - species-ecology/piemonte.md
+  rp_relazione_ambiente_foreste2024:
+    citation: 'Regione Piemonte, Arpa Piemonte (2024) Relazione sullo stato dell''ambiente in Piemonte 2024: Carta e
+      superficie forestale'
+    url: https://relazione.ambiente.piemonte.it/2024/carta-e-superficie-forestale
+    kind: institutional
+    region: Piemonte
+    verified: verified
+    supports: 'Carta forestale 2016: 976,953 ha of forest; Castagneti 22 % (206,977 ha), Faggete 15 % (141,599 ha),
+      Robinieti 12 % (117,483 ha), Larici-cembrete 10 % (92,533 ha), Boscaglie pioniere e d''invasione 8 % (74,995
+      ha), together about two thirds of the woods; 72 % of the woods in the mountains, 19 % in the hills, 9 % in
+      the plain.'
+    cited_as:
+    - species-ecology/piemonte.md
+  arpa_piemonte_precipitazioni2023:
+    citation: 'Arpa Piemonte (2023) Relazione sullo stato dell''ambiente in Piemonte 2023: Clima, Precipitazioni
+      (1958-2022 series)'
+    url: https://relazione.ambiente.piemonte.it/2023/it/clima/stato/precipitazioni
+    kind: institutional
+    region: Piemonte
+    verified: verified
+    supports: 'annual rain rising in the Verbano (Lago Maggiore) and slightly falling over the rest of the region, most
+      in the Biellese and between Cuneo and Alessandria; winters and springs more often in deficit, autumns more
+      often in surplus; summer 2022 the 15th driest since 1958 after a 111-day winter dry spell (9 December 2021 to
+      29 March 2022).'
+    cited_as:
+    - species-ecology/piemonte.md
+  lr_piemonte_24_2007:
+    citation: 'Regione Piemonte. Guida alla raccolta funghi in Piemonte: normative e procedure (L.R. 17 dicembre 2007,
+      n. 24, Tutela dei funghi epigei spontanei)'
+    url: https://www.regione.piemonte.it/web/temi/ambiente-territorio/biodiversita-aree-naturali/conservazione-salvaguardia/guida-alla-raccolta-funghi-piemonte-normative-procedure
+    kind: institutional
+    region: Piemonte
+    verified: verified
+    supports: '3 kg a day per person; "È vietata la raccolta di esemplari di Amanita cesarea allo stato di ovolo
+      chiuso" (ovoli are picked in Piemonte); picking "vietata dal tramonto alla levata del sole". No season
+      calendar, so the law gives no season prior.'
+    cited_as:
+    - species-ecology/piemonte.md
+  piemonte_pat_funghi_vallate:
+    citation: 'Regione Piemonte, PiemonteIS - Eccellenza Piemonte. Prodotti agroalimentari tradizionali: Funghi delle
+      vallate piemontesi'
+    url: https://www.piemonteagri.it/qualita/it/prodotti/ortofrutta-e-cereali/695-funghi-delle-vallate-piemontesi
+    kind: institutional
+    region: Piemonte
+    verified: verified
+    supports: 'mushrooms picked "in tutte le vallate montane e pedemontane piemontesi, con maggiore concentrazione nelle
+      vallate cuneesi e in Val Sangone, da fine aprile a metà novembre"; the four porcini under "querce, faggi,
+      castagni", in conifer, broadleaf, birch and poplar woods; "Porcino nero ... Diffuso alle basse quote, sotto
+      gli 800 metri", "tra maggio e ottobre" in open oak and chestnut woods; gallinaccio "tra giugno e settembre,
+      nei castagneti e nel bosco ceduo"; ovolo buono listed.'
+    cited_as:
+    - species-ecology/piemonte.md
+  muse_censimento_edulis:
+    citation: 'Censimento dei macromiceti (Federazioni dei gruppi micologici del Trentino-Alto Adige, Veneto, Friuli
+      Venezia Giulia; hosted by MUSE), species page with text by M. Floriani: Boletus edulis'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=356530&ar=tv
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: 'north-east Italian records from 10 m to 2175 m (2 September 2019, Trentino); collections under Picea
+      abies at 1500 m and in beech at 800 m.'
+    cited_as:
+    - species-ecology/piemonte.md
+  muse_censimento_pinophilus:
+    citation: 'Censimento dei macromiceti (hosted by MUSE), species page with text by M. Floriani: Boletus pinophilus'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=309751&ar=tv
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: '"frequentemente legato al pino silvestre" but also with other trees, broadleaves included; the earliest
+      and latest Boletus ("più precoce e più tardiva"); records from 200 m to 1898 m; earliest 12 May, latest 28
+      October in spruce and Scots pine woods at 910-1120 m.'
+    cited_as:
+    - species-ecology/piemonte.md
+  muse_censimento_cibarius:
+    citation: 'Censimento dei macromiceti (hosted by MUSE), species page with text by M. Floriani: Cantharellus
+      cibarius'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=200345&ar=tv
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: 'north-east Italian C. cibarius records from 10 m to 2040 m ("Conifere e microselva alpina", 22 July
+      2001); collections in spruce-dominated mixed wood at 1420 m.'
+    cited_as:
+    - species-ecology/piemonte.md
+  diez2020_alps:
+    citation: 'Diez J., Kauserud H., Andrew C., Heegaard E., Krisai-Greilhuber I., Senn-Irlet B., Høiland K., Egli S.,
+      Büntgen U. (2020) Altitudinal upwards shifts in fungal fruiting in the Alps. Proceedings of the Royal Society B
+      287: 20192348'
+    doi: 10.1098/rspb.2019.2348
+    kind: peer_reviewed
+    region: European Alps
+    verified: verified
+    supports: '"many fungal species are fruiting at significantly higher elevations in 2010 compared to 1960, and
+      especially so among soil-dwelling fungi"; high-altitude species shifted most (abstract, via Crossref).'
+    cited_as:
+    - species-ecology/piemonte.md
+  funghimagazine_alberi_porcini:
+    citation: 'Funghi Magazine. Gli alberi dei funghi Porcini: i Porcini e i loro alberi'
+    url: https://funghimagazine.it/gli-alberi-dei-funghi-porcini/
+    kind: web
+    verified: verified
+    supports: 'in pure larch (and ash, poplar, willow, maple) woods porcini are "altamente improbabile, se non del tutto
+      impossibile"; "I porcini dell''abete rosso sono: Boletus pinophilus, B. edulis"; the porcini of black and Scots
+      pine are B. reticulatus, B. pinophilus and B. edulis.'
+    cited_as:
+    - species-ecology/piemonte.md
+  funghimagazine_2024_10_11:
+    citation: 'Funghi Magazine (2024-10-11) Piogge magiche: nuova ondata di Porcini in arrivo. La raccolta continua'
+    url: https://funghimagazine.it/funghi-11-10-2024/
+    kind: web
+    region: north-west Italy
+    verified: verified
+    supports: 'B. aereus candidates "tutti i boschi a Sud del Po, tra colline del Po-Monferrato-Langhe-Roero e
+      pre-appennino Alessandrino"; north of the Po "non si è visto nascere un solo Porcino Nero/Boletus aereus" in
+      2024; those woods had "anomale quanto massicce nascite di Ovoli Reali/A.caesarea" at the end of September and
+      the start of October 2024.'
+    cited_as:
+    - species-ecology/piemonte.md
+  cacciatoridifunghi_piemonte2023:
+    citation: 'Cacciatoridifunghi.it (2023-06-23) Dove trovare funghi porcini in Piemonte?'
+    url: https://www.cacciatoridifunghi.it/blog/altro/dove-trovare-funghi-porcini-in-piemonte/
+    kind: web
+    region: Piemonte
+    verified: verified
+    supports: 'forager page: common porcini limited to "2000 metri"; porcino nero and estatino "spesso a un''altitudine
+      inferiore ai 700 m"; hosts per taxon (red porcini with spruce, fir and pines).'
+    cited_as:
+    - species-ecology/piemonte.md
+  mushma_occurrence_check_piemonte_2026:
+    citation: 'mushma Piemonte occurrence check: GBIF occurrence API (gadmGid ITA.13_1, basis of record human
+      observation, preserved specimen, occurrence, observation, machine observation, living specimen; month facet),
+      iNaturalist histogram, species-count and observations APIs (place 10872, verifiable; elevations only for open,
+      accurate records) and the Open-Meteo elevation API, queried 2026-09-25. Aggregates only (counts by month and
+      elevation band, elevation quantiles); no coordinates are stored or published'
+    url: https://api.gbif.org/v1/occurrence/search
+    kind: analysis
+    region: Piemonte
+    verified: verified
+    supports: 'Piedmontese record counts by month and elevation for the six keys (B. edulis GBIF 49 / iNat 151, B.
+      reticulatus 26 / 83, B. aereus 9 / 23, B. pinophilus 8 / 16, A. caesarea 18 / 50, Cantharellus 26 / 79, of
+      which 58 of 66 species-level iNaturalist records are C. cibarius) and their month enrichment against all
+      26,797 Piedmontese iNaturalist fungi records. See species-ecology/piemonte.md.'
+    cited_as:
+    - species-ecology/piemonte.md
