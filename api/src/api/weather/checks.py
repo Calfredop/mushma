@@ -6,16 +6,12 @@
 
 ``lattice`` re-fetches (from the cache, when present) three 14-day windows of 2024 for every 0.1°
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
-coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled reanalysis rain in
-woodland cells with the rain gauges inside them: SIR Toscana's by default, or the source a region
-names under ``gauges`` in its config (``arpae`` for Emilia-Romagna). Results land in
-``$DATA_DIR/weather/<region>/checks/``.
+coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
+with the SIR Toscana gauges inside them. Results land in ``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
-import gzip
 import json
-from collections.abc import Callable
 from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
@@ -25,10 +21,9 @@ import numpy as np
 import pandas as pd
 from pyproj import Transformer
 
-from api.grid.region import RegionConfig, load_region
+from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpae
-from api.weather.config import WeatherConfig, load_weather_config
+from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
     build_points,
@@ -204,50 +199,14 @@ def run_lattice(region_id: str) -> None:
     errors.to_csv(out / "lattice_errors.csv", index=False)
 
 
-GaugeLoader = Callable[[Path, date, date], tuple[pd.DataFrame, Callable[[str], pd.Series]]]
-
-
-def gauge_source(region: RegionConfig) -> str:
-    """The rain-gauge network a region is checked against (``gauges`` in its config)."""
-    return str(region.extra.get("gauges") or "sir_toscana")
-
-
-def reanalysis_sources(config: WeatherConfig) -> list[str]:
-    """Reanalysis sources, most trusted first: the rain the gauges are compared with."""
-    return [m for m in (config.cds.model if config.cds else None, config.history.model) if m]
-
-
-def _sir_gauges(raw: Path, start: date, end: date) -> tuple[pd.DataFrame, Callable]:
-    sir = raw / "sir_toscana"
-    stations = json.loads(fetch(STATIONS_URL, sir / "stations.json").read_text())
-    years = {str(y) for y in range(start.year, end.year + 1)}
-    gauges = parse_stations(stations, years)
-    urls = dict(zip(gauges["code"], gauges["url"], strict=True))
-
-    def series(code: str) -> pd.Series:
-        path = fetch(urls[code], sir / f"{code}.json")
-        return parse_series(json.loads(path.read_text()))
-
-    return gauges, series
-
-
-def _arpae_gauges(raw: Path, start: date, end: date) -> tuple[pd.DataFrame, Callable]:
-    frames = []
-    for month, url in arpae.month_urls(start, end):
-        with gzip.open(fetch(url, raw / "arpae" / f"{month}.json.gz"), "rt") as lines:
-            frames.append(arpae.parse_daily_rain(lines))
-    gauges, by_code = arpae.gauge_series(pd.concat(frames, ignore_index=True))
-    return gauges, by_code.__getitem__
-
-
-GAUGE_SOURCES: dict[str, GaugeLoader] = {"sir_toscana": _sir_gauges, "arpae": _arpae_gauges}
-
-
 def run_gauges(region_id: str, start: date, end: date) -> None:
     region = load_region(region_id)
     grid_dir, store, raw = region_paths(region.id)
     config = load_weather_config()
-    gauges, gauge_rain = GAUGE_SOURCES[gauge_source(region)](raw, start, end)
+    sir = raw / "sir_toscana"
+    stations = json.loads(fetch(STATIONS_URL, sir / "stations.json").read_text())
+    years = {str(y) for y in range(start.year, end.year + 1)}
+    gauges = parse_stations(stations, years)
     to_laea = Transformer.from_crs(4326, region.grid.crs, always_xy=True)
     x, y = to_laea.transform(gauges["lon"].to_numpy(), gauges["lat"].to_numpy())
     size = region.grid.cell_size_m
@@ -266,12 +225,13 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
         start - timedelta(days=1),
         end,
         {"precipitation_sum": config.variables["precipitation_sum"]},
-        reanalysis_sources(config),
+        [config.history.model],
     ).df()
     model["date"] = pd.to_datetime(model["date"]).dt.date
     rows = []
     for gauge in gauges.itertuples():
-        series = gauge_rain(gauge.code)
+        path = fetch(gauge.url, sir / f"{gauge.code}.json")
+        series = parse_series(json.loads(path.read_text()))
         series = series[(series.index >= start) & (series.index <= end)]
         cell = model[model["cell_id"] == gauge.cell_id].set_index("date")["value"]
         if cell.empty or len(series) < 0.8 * ((end - start).days + 1):

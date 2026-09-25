@@ -148,8 +148,5 @@ soil:
 sightings:
   inaturalist_place_id: 96905
 
-# Rain gauges for `api.weather.checks gauges`: ARPAE-SIMC's open station data (CC BY 4.0).
-gauges: arpae
-
 # No model overrides: the national lapse rates and rain scale apply (see the region doc for the
 # lattice check).
