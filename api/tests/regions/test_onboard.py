@@ -323,3 +323,21 @@ def test_cds_step_keeps_a_past_years_end() -> None:
 
     args = specs["cds"].args_lists[0]
     assert args[args.index("--end") + 1] == "2024-12-31"
+
+
+def test_update_is_not_skipped_because_cds_wrote_this_year(tmp_path: Path) -> None:
+    """The CDS backfill writes this year's partition too; only the forecast source means the
+    Open-Meteo update (recent days and the +7-day forecast) has run."""
+    today = date(2026, 9, 25)
+    daily = tmp_path / "weather" / "liguria" / "daily"
+    cds = daily / "source=era5_land_cds" / "year=2026"
+    cds.mkdir(parents=True)
+    (cds / "data.parquet").write_bytes(b"")
+
+    assert not onboard.update_ready(tmp_path, "liguria", today)
+
+    forecast = daily / "source=ecmwf_ifs" / "year=2026"
+    forecast.mkdir(parents=True)
+    (forecast / "data.parquet").write_bytes(b"")
+
+    assert onboard.update_ready(tmp_path, "liguria", today)
