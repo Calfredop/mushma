@@ -318,3 +318,14 @@ def test_write_meta_records_the_credits_the_app_must_show(tmp_path: Path) -> Non
     assert meta["source_order"] == ["era5_land_cds", "era5_seamless", "ecmwf_ifs"]
     assert meta["points"]["spacing_deg"] == 0.2
     assert meta["variables"]["temperature_2m_min"]["lapse_rate_c_per_km"] == 4.2
+
+
+def test_a_backfill_can_ask_for_some_variables_only() -> None:
+    from api.weather.config import load_weather_config
+    from api.weather.ingest import only_variables
+
+    config = only_variables(load_weather_config(), ["snowfall_sum"])
+
+    assert list(config.variables) == ["snowfall_sum"]
+    with pytest.raises(SystemExit, match="unknown"):
+        only_variables(load_weather_config(), ["snow_on_the_moon"])

@@ -380,6 +380,14 @@ def region_paths(region_id: str, root: Path | None = None) -> tuple[Path, Weathe
     return root / "grid" / region_id, WeatherStore(root / "weather" / region_id), root / "raw"
 
 
+def only_variables(config: WeatherConfig, names: list[str]) -> WeatherConfig:
+    """The config narrowed to ``names``, for a backfill of some variables only."""
+    unknown = sorted(set(names) - set(config.variables))
+    if unknown:
+        raise SystemExit(f"unknown weather variables {unknown}; see weather.yaml variables")
+    return replace(config, variables={name: config.variables[name] for name in names})
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("command", choices=["points", "backfill", "update", "downscale"])
@@ -396,6 +404,16 @@ def main() -> None:
         "--wait", action="store_true", help="backfill: keep going through daily limits until done"
     )
     parser.add_argument("--per-day", type=float, help="override the daily call budget")
+    parser.add_argument(
+        "--variables",
+        help="backfill --source open_meteo: only these daily variables (comma-separated)",
+    )
+    parser.add_argument(
+        "--skip-snowfall",
+        action="store_true",
+        help="backfill --source cds: leave snowfall to the Open-Meteo archive (--variables "
+        "snowfall_sum) while the CDS gridded queue is backed up",
+    )
     args = parser.parse_args()
 
     config = load_weather_config()
@@ -442,6 +460,7 @@ def main() -> None:
                 end,
                 log,
                 snowfall_area=config.cds.snowfall_area,
+                snowfall=not args.skip_snowfall,
             )
         else:
             summary = backfill_cds(cds, store, points, region.timezone, start, end, log)
@@ -450,6 +469,8 @@ def main() -> None:
     if args.command == "backfill":
         # Newer days are still arriving in the archive: the daily update fetches those.
         end = args.end or today - timedelta(days=SETTLE_DAYS + 1)
+        if args.variables:
+            config = only_variables(config, args.variables.split(","))
 
         def run() -> BackfillStatus:
             now = datetime.now(ZoneInfo(region.timezone)).date()
