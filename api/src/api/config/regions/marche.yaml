@@ -1,0 +1,125 @@
+# Marche: region #5 of the full-Italy rollout (.gavin-root/docs/regions/marche.md).
+id: marche
+name: {it: Marche, en: Marche}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [12.18, 42.68, 13.92, 43.97]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 11
+
+# Woodland: one regional map gives both layers. The REM natural-vegetation map (Regione Marche,
+# 1:50,000, 2019) gives every polygon its physiognomy with its dominant species (TipoFisio: how much
+# of each cell is broadleaf, conifer, mixed forest, macchia or regrowth) and the dominant species
+# alone (SpeciePrev: which kind). CLC IV alone finds only 201,233 ha of forest here (-31 % against
+# INFC 2015): its 25 ha unit misses the small woods of the Marche hills. Montane heath (Juniperus
+# communis and nana, Calluna, Vaccinium, Salix retusa, Rhamnus alpinus), Arundo pliniana reed beds,
+# garighe and grassland are left out, as UCS and CLC leave 321/322 out in Tuscany. See
+# .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/marche.md.
+forest:
+  groups:
+    source: rm_rem_vegetazione
+    class_column: TipoFisio
+    classes:
+      "Bosco deciduo di Acer obtusatum W. et K.": broadleaf
+      "Bosco deciduo di Ailanthus altissima (Miller) Swingle": broadleaf
+      "Bosco deciduo di Alnus glutinosa (L.) Gaertner": broadleaf
+      "Bosco deciduo di Carpinus betulus L.": broadleaf
+      "Bosco deciduo di Castanea sativa Miller": broadleaf
+      "Bosco deciduo di Fagus sylvatica L.": broadleaf
+      "Bosco deciduo di Fraxinus excelsior L.": broadleaf
+      "Bosco deciduo di Fraxinus oxycarpa Bieb.": broadleaf
+      "Bosco deciduo di Ostrya carpinifolia Scop.": broadleaf
+      "Bosco deciduo di Populus nigra L.": broadleaf
+      "Bosco deciduo di Quercus cerris L.": broadleaf
+      "Bosco deciduo di Quercus pubescens Willd.": broadleaf
+      "Bosco deciduo di Quercus robur L.": broadleaf
+      "Bosco deciduo di Robinia pseudoacacia L.": broadleaf
+      "Bosco deciduo di Salix alba L.": broadleaf
+      "Bosco deciduo di Ulmus minor Miller": broadleaf
+      # Holm-oak woods (Conero, Furlo, Frasassi, Rossa gorges) carry this label, natural or not.
+      "Rimboschimento sempreverde a leccio": broadleaf
+      "Rimboschimento deciduo": broadleaf
+      "Bosco misto di Quercus pubescens Willd.": mixed
+      "Rimboschimento misto": mixed
+      "Bosco sempreverde di Pinus halepensis Miller": conifer
+      "Rimboschimento sempreverde a pino nero": conifer
+      "Rimboschimento sempreverde": conifer  # Aleppo pine, Greek and silver fir, cypress
+      "Arbusteto sempreverde di Erica arborea L.": macchia
+      "Arbusteto sempreverde di Juniperus oxycedrus L.": macchia
+      "Arbusteto misto di Juniperus oxycedrus L. ssp. oxycedrus": macchia
+      "Arbusteto sempreverde di Ampelodesmos mauritanicus (Poiret) Dur. et Sch.": macchia
+      "Arbusteto deciduo di Spartium junceum L.": transitional
+      "Arbusteto deciduo di Cornus sanguinea L.": transitional
+      "Arbusteto deciduo di Crataegus laevigata (Poir.) DC.": transitional
+      "Arbusteto deciduo di Prunus spinosa L.": transitional
+      "Arbusteto deciduo di Prunus mahaleb L.": transitional
+      "Arbusteto deciduo di Rubus ulmifolius Schott": transitional
+      "Arbusteto deciduo di Salix eleagnos Scop. ssp. angustifolia (Cariot) Rech. fil.": transitional
+      "Arbusteto deciduo di Salix purpurea L.": transitional
+      "Arbusteto misto di Cercis siliquastrum L.": transitional
+      "Arbusteto misto di Cotinus coggygria Scop.": transitional
+      "Prebosco di Ulmus minor Miller": transitional
+  types:
+    source: rm_rem_vegetazione
+    classes:
+      "Fagus sylvatica L.": beech
+      "Castanea sativa Miller": chestnut
+      "Quercus pubescens Willd.": deciduous_oak
+      "Quercus cerris L.": deciduous_oak
+      "Quercus robur L.": deciduous_oak
+      "Quercus ilex L.": evergreen_oak
+      "Ostrya carpinifolia Scop.": mixed_broadleaf     # orno-ostrieti, the commonest wood here
+      "Carpinus betulus L.": mixed_broadleaf
+      "Fraxinus excelsior L.": mixed_broadleaf
+      "Acer obtusatum W. et K.": mixed_broadleaf
+      "Acer pseudoplatanus L.": mixed_broadleaf
+      "Alnus cordata (Loisel.) Desf.": mixed_broadleaf
+      "Populus nigra L.": riparian
+      "Salix alba L.": riparian
+      "Alnus glutinosa (L.) Gaertner": riparian
+      "Fraxinus oxycarpa Bieb.": riparian
+      "Ulmus minor Miller": riparian
+      "Robinia pseudoacacia L.": exotic_broadleaf
+      "Ailanthus altissima (Miller) Swingle": exotic_broadleaf
+      "Pinus halepensis Miller": mediterranean_pine
+      "Pinus pinea L.": mediterranean_pine
+      "Pinus nigra Arnold": mountain_pine  # black pine, as CLC IV 3122 files it in Tuscany
+      "Abies alba Miller": fir_spruce
+      "Abies cephalonica Link.": fir_spruce
+      "Cupressus arizonica Green": other_conifer
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Marche, IT", admin level
+# 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 7029
+
+# Rain scale (merged onto config/model.yaml), borrowed: Marche publishes no open daily rain that a
+# script can read (SIRMIP needs registration; the AMAP agrometeo API has no daily measures yet), so
+# there is no Marche gauge check. The national scale cannot stay as it is: it scales era5_seamless
+# only while the rain normals are scaled whatever their source, and Marche's history is CDS. Both
+# bordering regions' woodland-gauge fits on the same CDS rain find it about right below 400 m and
+# dry in the mountains; this is their mean. .gavin-root/docs/regions/marche.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.76
+    per_km: 0.57
+    source: [mushma_marche_rain_prior_2026]
+    notes: >-
+      Marche: no gauge fit. Mean of the two bordering regions' least-squares fits of woodland gauge
+      totals on CDS era5_land_cds totals x (a + b x elevation), 2019-2025: Umbria 0.89 + 0.33 per km
+      (8 Servizio Idrografico gauges, 402-1,053 m; raw pooled ratio 0.88) and Emilia-Romagna 0.62 +
+      0.80 per km (66 ARPAE gauges, 183-1,535 m; raw 1.06 below 400 m, 0.94 at 400-800 m, 0.69
+      above). It gives 0.87 at 200 m, 1.04 at 500 m, 1.21 at 800 m and 1.44 at 1,200 m. The
+      national 1.28 + 0.29 per km would make both neighbours' CDS rain 25-30 % too wet.
