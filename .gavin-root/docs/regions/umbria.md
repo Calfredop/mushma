@@ -125,6 +125,22 @@ only those inside woodland cells count, and only **8** do with 80 % of days over
   `model.precipitation_scale` to it, over both `era5_land_cds` and `era5_seamless`: Umbria's
   history is CDS, which the national block would have left unscaled while the normals were scaled.
 - With 8 gauges the elevation slope is loosely held; the intercept agrees between the two windows.
+- **Corroborated on every Umbrian gauge.** A one-off check (not the committed tool) interpolated the
+  CDS rain bilinearly from the nodes to all **82** gauges with 80 % of days in 2019–2025 (67–1,538 m,
+  heights from their grid cell): raw pooled ratio 1.01 (1.12 below 400 m, 0.88 at 400–800 m, 0.90
+  above), own fit 0.85 + 0.31 per km, and the woodland fit above lands at 1.04 on them. The national
+  scale would be 1.42 there.
+
+**Known issue: a step at the Tuscan border.** CDS and `era5_seamless` rain agree in amount (pooled
+0.995 over Tuscany's 103 nodes in 2024), but Tuscany's SIR gauges read the reanalysis at 0.63–0.79
+of gauge rain and Umbria's at about 0.9–1.1, so each region's own region-wide fit scales the same
+reanalysis rain differently: at the border near Cortona (Tuscany, 437 m, ×1.41) and Lisciano Niccone
+(Umbria, 295 m, ×0.99), 12 km apart, the raw 3-day rain was 18.6 and 17.8 mm on 25 Sep 2026, scaled
+to 26.2 and 17.6 mm. That day the combined score's mean along the border band was 0.86 on the Tuscan
+side and 0.47 on the Umbrian side, porcini 0.47 and 0.07. Tuscany's scale was fitted on gauges where
+the reanalysis misses the Apennine and Apuan orographic rain; one region-wide number cannot be right
+at both ends of Tuscany. A national or spatially smooth rain calibration (per zone or node, from
+every region's open gauges) is the fix, and is a cross-region follow-up, not this card's.
 
 ### Backtest (hold-out seasons 2024–2025, `backtest/umbria/onboard/`)
 
