@@ -21,8 +21,16 @@ points:
     date: "2024-01-15"
     variables: [temperature_2m_mean, soil_moisture_0_to_7cm_mean]
 
-# Reanalysis: ERA5-Land at 0.1°, with the variables ERA5-Land lacks in Open-Meteo (precipitation,
-# snowfall, wind, and the radiation behind ET0) taken from ERA5. About 5 days behind real time.
+# Reanalysis history for *new* regions: Copernicus CDS bulk ERA5-Land (no Open-Meteo quota).
+# See .gavin-root/docs/weather-history-cds.md. Tuscany keeps its stored Open-Meteo archive
+# (era5_seamless); source_order prefers CDS when both exist for a day.
+cds:
+  dataset: reanalysis-era5-land
+  model: era5_land_cds
+  start_date: "2016-01-01"
+
+# Open-Meteo archive: kept for Tuscany's existing table and as a fallback seam with the forecast.
+# The daily update still refreshes recent reanalysis days from here (CDS is ~5 days behind).
 history:
   endpoint: https://archive-api.open-meteo.com/v1/archive
   model: era5_seamless
@@ -31,11 +39,12 @@ history:
   recent_days: 14
 
 # Forecast: one model for every lead time, with the same soil layers as ERA5-Land. past_days
-# bridges the reanalysis delay.
+# bridges the reanalysis delay. Cut to 7 so 20 regions fit ~half of Open-Meteo's 10k calls/day
+# together with the thinned seasonal lattice (weather-history-cds.md).
 forecast:
   endpoint: https://api.open-meteo.com/v1/forecast
   model: ecmwf_ifs
-  past_days: 14
+  past_days: 7
   forecast_days: 8
 
 # Long-range forecast for the seasonal outlook (M6, .gavin-root/docs/time-views.md): Open-Meteo's
@@ -43,10 +52,13 @@ forecast:
 # (monthly values), about 36 km. It is raw model output, so only its ensemble means and their
 # anomalies against the model's own hindcast climate are kept, mapped onto the variables above.
 # forecast_days bounds each request: 46 days is the EC46 range, 150 covers this month and four more.
+# point_stride 3 keeps every third 0.2° weather point (a 0.6° lattice) so 20 regions stay under
+# ~5,000 weighted Open-Meteo calls/day.
 seasonal:
   endpoint: https://seasonal-api.open-meteo.com/v1/seasonal
   source: ecmwf_seasonal
   forecast_days: {weekly: 46, monthly: 150}
+  point_stride: 3
   variables:
     precipitation_sum: {mean: precipitation_mean, anomaly: precipitation_anomaly, unit: mm, anomaly_unit: mm}
     temperature_2m_mean:
@@ -95,4 +107,4 @@ lapse_rates:
     transparency. In the leave-out test these rates beat 6.5 °C/km on every temperature variable.
 
 # Source ids (sources.yaml) the app must credit wherever this weather is shown.
-credits: [open_meteo, copernicus_era5_land, ecmwf_open_data]
+credits: [open_meteo, copernicus_era5_land, copernicus_cds, ecmwf_open_data]

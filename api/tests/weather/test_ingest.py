@@ -307,7 +307,14 @@ def test_write_meta_records_the_credits_the_app_must_show(tmp_path: Path) -> Non
     assert credits["open_meteo"]["attribution"] == "Weather data by Open-Meteo.com, CC BY 4.0"
     assert credits["open_meteo"]["homepage"] == "https://open-meteo.com/"
     assert credits["copernicus_era5_land"]["license"] == "CC BY 4.0"
-    assert set(credits) == {"open_meteo", "copernicus_era5_land", "ecmwf_open_data"}
+    assert set(credits) == {
+        "open_meteo",
+        "copernicus_era5_land",
+        "copernicus_cds",
+        "ecmwf_open_data",
+    }
     assert meta["history"]["model"] == "era5_seamless" and meta["forecast"]["model"] == "ecmwf_ifs"
+    assert meta["cds"]["model"] == "era5_land_cds"
+    assert meta["source_order"] == ["era5_land_cds", "era5_seamless", "ecmwf_ifs"]
     assert meta["points"]["spacing_deg"] == 0.2
     assert meta["variables"]["temperature_2m_min"]["lapse_rate_c_per_km"] == 4.2

@@ -1,0 +1,326 @@
+# Press-contrast sanity check for Tuscany (api.model.sanity).
+# Areas by comuni or provinces; windows and source URLs written down before any area
+# score was looked at. `seasons: normal` expands to `normal_seasons`.
+areas:
+  garfagnana:
+    comuni:
+    - Camporgiano
+    - Careggine
+    - Castelnuovo di Garfagnana
+    - Castiglione di Garfagnana
+    - Fabbriche di Vergemoli
+    - Fosciandora
+    - Gallicano
+    - Minucciano
+    - Molazzana
+    - Piazza al Serchio
+    - Pieve Fosciana
+    - San Romano in Garfagnana
+    - Sillano Giuncugnano
+    - Vagli Sotto
+    - Villa Collemandina
+  lunigiana:
+    comuni:
+    - Aulla
+    - Bagnone
+    - Casola in Lunigiana
+    - Comano
+    - Filattiera
+    - Fivizzano
+    - Fosdinovo
+    - Licciana Nardi
+    - Mulazzo
+    - Podenzana
+    - Pontremoli
+    - Tresana
+    - Villafranca in Lunigiana
+    - Zeri
+  northwest:
+    comuni:
+    - Camporgiano
+    - Careggine
+    - Castelnuovo di Garfagnana
+    - Castiglione di Garfagnana
+    - Fabbriche di Vergemoli
+    - Fosciandora
+    - Gallicano
+    - Minucciano
+    - Molazzana
+    - Piazza al Serchio
+    - Pieve Fosciana
+    - San Romano in Garfagnana
+    - Sillano Giuncugnano
+    - Vagli Sotto
+    - Villa Collemandina
+    - Aulla
+    - Bagnone
+    - Casola in Lunigiana
+    - Comano
+    - Filattiera
+    - Fivizzano
+    - Fosdinovo
+    - Licciana Nardi
+    - Mulazzo
+    - Podenzana
+    - Pontremoli
+    - Tresana
+    - Villafranca in Lunigiana
+    - Zeri
+  casentino:
+    comuni:
+    - Bibbiena
+    - Castel Focognano
+    - Castel San Niccolò
+    - Chitignano
+    - Chiusi della Verna
+    - Montemignaio
+    - Ortignano Raggiolo
+    - Poppi
+    - Pratovecchio Stia
+    - Talla
+  arezzo_outside_casentino:
+    provinces:
+    - AR
+    excluding:
+    - Bibbiena
+    - Castel Focognano
+    - Castel San Niccolò
+    - Chitignano
+    - Chiusi della Verna
+    - Montemignaio
+    - Ortignano Raggiolo
+    - Poppi
+    - Pratovecchio Stia
+    - Talla
+  siena_and_arezzo:
+    provinces:
+    - SI
+    - AR
+    excluding:
+    - Bibbiena
+    - Castel Focognano
+    - Castel San Niccolò
+    - Chitignano
+    - Chiusi della Verna
+    - Montemignaio
+    - Ortignano Raggiolo
+    - Poppi
+    - Pratovecchio Stia
+    - Talla
+    - Abbadia San Salvatore
+    - Arcidosso
+    - Castel del Piano
+    - Castell'Azzara
+    - Castiglione d'Orcia
+    - Piancastagnaio
+    - Radicofani
+    - Roccalbegna
+    - Santa Fiora
+    - Seggiano
+    - Semproniano
+  mugello:
+    comuni:
+    - Barberino di Mugello
+    - Borgo San Lorenzo
+    - Dicomano
+    - Firenzuola
+    - Marradi
+    - Palazzuolo sul Senio
+    - Scarperia e San Piero
+    - Vicchio
+  amiata:
+    comuni:
+    - Abbadia San Salvatore
+    - Arcidosso
+    - Castel del Piano
+    - Castell'Azzara
+    - Castiglione d'Orcia
+    - Piancastagnaio
+    - Radicofani
+    - Roccalbegna
+    - Santa Fiora
+    - Seggiano
+    - Semproniano
+  vallombrosa:
+    comuni:
+    - Reggello
+  abetone:
+    comuni:
+    - Abetone Cutigliano
+  tuscany:
+    provinces:
+    - '*'
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: casentino_2023
+  claim: '2023: Casentino was the one good area of Arezzo province; the rest had an ''annata nera'''
+  source: https://www.lanazione.it/arezzo/cronaca/lisola-felice-per-i-porcini-e-qui-tanti-cercatori-affollano-le-foreste-per-lesperto-e-una-stagione-al-top-56a1b784
+  higher:
+    area: casentino
+    seasons:
+    - 2023
+    start: 09-15
+    end: 10-31
+  lower:
+    area: arezzo_outside_casentino
+    seasons:
+    - 2023
+    start: 09-15
+    end: 10-31
+- id: northwest_2023
+  claim: '2023: excellent in Lunigiana and Garfagnana, ''in piccola misura'' near Siena and Arezzo'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: northwest
+    seasons:
+    - 2023
+    start: 09-15
+    end: 10-31
+  lower:
+    area: siena_and_arezzo
+    seasons:
+    - 2023
+    start: 09-15
+    end: 10-31
+- id: october_2021
+  claim: 'October 2021: an extraordinary flush in Garfagnana, an ''infame stagione'' at Vallombrosa'
+  source: https://www.giornaledibarga.it/2021/10/incredibile-nascita-di-funghi-nelle-selve-della-garfagnana-e-della-media-vallle-357672/
+  higher:
+    area: garfagnana
+    seasons:
+    - 2021
+    start: 10-01
+    end: 10-31
+  lower:
+    area: vallombrosa
+    seasons:
+    - 2021
+    start: 10-01
+    end: 10-31
+- id: drought_2017
+  claim: '2017: a drought year, foragers ''a mani vuote''; autumn 2018 followed a very wet August'
+  source: https://www.ilgiunco.net/2018/09/19/funghi-e-boom-in-toscana-e-in-maremma-autunno-record-dopo-le-piogge-di-agosto/
+  higher:
+    area: tuscany
+    seasons:
+    - 2018
+    start: 09-01
+    end: 10-31
+  lower:
+    area: tuscany
+    seasons:
+    - 2017
+    start: 09-01
+    end: 10-31
+- id: abetone_2017_2019
+  claim: 'Abetone, October: ''niente funghi'' in 2017, ''bosco ricoperto di funghi'' in 2019'
+  source: https://funghintoscana.blogspot.com/2017/10/fine-corsa.html
+  higher:
+    area: abetone
+    seasons:
+    - 2019
+    start: 10-01
+    end: 10-31
+  lower:
+    area: abetone
+    seasons:
+    - 2017
+    start: 10-01
+    end: 10-31
+- id: casentino_2024
+  claim: 'September 2024: a record season in Casentino'
+  source: https://www.lanazione.it/arezzo/cronaca/lisola-felice-dei-funghi-e-qui-il-casentino-come-le-dolomiti-annata-con-produzione-da-record-5a57ebf8
+  higher:
+    area: casentino
+    seasons:
+    - 2024
+    start: 09-01
+    end: 09-30
+  lower:
+    area: casentino
+    seasons: normal
+    start: 09-01
+    end: 09-30
+- id: mugello_2024_2025
+  claim: 'Mugello, early September: no season yet after a dry 2024 summer, ''stagione d''oro'' in 2025'
+  source: https://www.lanazione.it/firenze/cronaca/stagione-doro-per-il-fungo-00cfcaa5
+  higher:
+    area: mugello
+    seasons:
+    - 2025
+    start: 09-01
+    end: 09-15
+  lower:
+    area: mugello
+    seasons:
+    - 2024
+    start: 09-01
+    end: 09-15
+- id: northwest_2025_timing
+  claim: '2025: an early boom in Lunigiana and Garfagnana (late August, early September), then a poor
+    October of heat and drying wind'
+  source: https://funghimagazine.it/aggiornamento-nascite-funghi-23-10-2025/
+  higher:
+    area: northwest
+    seasons:
+    - 2025
+    start: 08-25
+    end: 09-15
+  lower:
+    area: northwest
+    seasons:
+    - 2025
+    start: 10-01
+    end: 10-31
+- id: amiata_2025_timing
+  claim: '2025: Amiata at its peak in early September, October poor'
+  source: https://funghimagazine.it/buttata-record-2025-annata-eccezionale-per-i-porcini/
+  higher:
+    area: amiata
+    seasons:
+    - 2025
+    start: 08-25
+    end: 09-15
+  lower:
+    area: amiata
+    seasons:
+    - 2025
+    start: 10-01
+    end: 10-31
+- id: garfagnana_2019
+  claim: 'Garfagnana 2019: a record September and October'
+  source: https://www.lanazione.it/lucca/cronaca/raccolta-funghi-c08befa0
+  higher:
+    area: garfagnana
+    seasons:
+    - 2019
+    start: 09-01
+    end: 10-31
+  lower:
+    area: garfagnana
+    seasons: normal
+    start: 09-01
+    end: 10-31
+- id: vallombrosa_2022
+  claim: 'Vallombrosa, late October 2022: ''secco strasecco'', never seen anything like it'
+  source: https://funghintoscana.blogspot.com/2022/11/fine-dei-giochi.html
+  higher:
+    area: vallombrosa
+    seasons: normal
+    start: 10-15
+    end: 10-31
+  lower:
+    area: vallombrosa
+    seasons:
+    - 2022
+    start: 10-15
+    end: 10-31

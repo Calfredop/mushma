@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { DATA_CREDITS } from '../credits'
-import en from '../i18n/locales/en.json'
 import itLocale from '../i18n/locales/it.json'
+import { REGIONS } from '../regions'
 import { ROUTES, type SiteRoute } from '../routes'
 import { TAXA } from '../taxa'
 import { type JsonLdNode, serializeJsonLd, structuredData } from './structuredData'
@@ -71,23 +71,40 @@ describe('structuredData', () => {
       const app = onlyNode(nodes, 'WebApplication')
       expect(app).toMatchObject({
         name: 'Mappa Funghi',
-        url: 'https://mappafunghi.app/toscana',
+        url: 'https://mappafunghi.app/',
         isAccessibleForFree: true,
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       })
       expect(app.featureList).toEqual(Object.values(itLocale.structuredData.features))
+      expect(app.image).toBe('https://mappafunghi.app/og/hub.png')
     }
   })
 
   it('describes each page with its own URL, title and description', () => {
-    for (const { path, seoKey } of ROUTES) {
-      const copy = itLocale.seo[seoKey as keyof typeof itLocale.seo]
-      expect(onlyNode(graph(path), 'WebPage')).toMatchObject({
-        url: `https://mappafunghi.app${path}`,
-        name: copy.title,
-        description: copy.description,
-        inLanguage: 'it',
-      })
+    for (const siteRoute of ROUTES) {
+      const { path, seoKey, region: regionSlug } = siteRoute
+      const page = onlyNode(graph(path), 'WebPage')
+      const url =
+        path === '/' ? 'https://mappafunghi.app/' : `https://mappafunghi.app${path}`
+      if (regionSlug) {
+        const region = REGIONS[regionSlug]
+        const key = seoKey as 'region' | 'porcini' | 'ovoli' | 'gallinacci'
+        const seo = region.copy.it.seo[key]
+        expect(page).toMatchObject({
+          url,
+          name: seo.title,
+          description: seo.description,
+          inLanguage: 'it',
+        })
+      } else {
+        const copy = itLocale.seo[seoKey as keyof typeof itLocale.seo]
+        expect(page).toMatchObject({
+          url,
+          name: copy.title,
+          description: copy.description,
+          inLanguage: 'it',
+        })
+      }
     }
   })
 
@@ -229,10 +246,12 @@ describe('structuredData', () => {
   it('follows the UI language', () => {
     const nodes = graph('/toscana/porcini', 'en')
     expect(onlyNode(nodes, 'WebPage')).toMatchObject({
-      name: en.seo.porcini.title,
+      name: 'Porcini in Tuscany: conditions index | Mappa Funghi',
       inLanguage: 'en',
     })
-    expect(onlyNode(nodes, 'Dataset').name).toBe(en.structuredData.dataset.porcini)
+    expect(onlyNode(nodes, 'Dataset').name).toBe(
+      'Conditions index for porcini in Tuscany',
+    )
     expect(onlyNode(nodes, 'AdministrativeArea')).toMatchObject({
       name: 'Tuscany',
       alternateName: 'Toscana',

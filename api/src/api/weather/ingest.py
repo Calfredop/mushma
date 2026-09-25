@@ -330,6 +330,15 @@ def write_meta(config: WeatherConfig, store: WeatherStore, region: str) -> Path:
             "endpoint": config.history.endpoint,
             "start_date": str(config.history.start_date),
         },
+        "cds": (
+            {
+                "dataset": config.cds.dataset,
+                "model": config.cds.model,
+                "start_date": str(config.cds.start_date),
+            }
+            if config.cds
+            else None
+        ),
         "forecast": {
             "model": config.forecast.model,
             "endpoint": config.forecast.endpoint,
@@ -378,6 +387,12 @@ def main() -> None:
     parser.add_argument("--start", type=date.fromisoformat)
     parser.add_argument("--end", type=date.fromisoformat)
     parser.add_argument(
+        "--source",
+        choices=["open_meteo", "cds"],
+        default="open_meteo",
+        help="backfill: open_meteo archive (default) or Copernicus CDS ERA5-Land",
+    )
+    parser.add_argument(
         "--wait", action="store_true", help="backfill: keep going through daily limits until done"
     )
     parser.add_argument("--per-day", type=float, help="override the daily call budget")
@@ -409,6 +424,17 @@ def main() -> None:
         return
 
     points = pd.read_parquet(store.points_path)
+    if args.command == "backfill" and args.source == "cds":
+        from api.weather.cds import CdsClient, backfill_cds
+
+        if config.cds is None:
+            raise SystemExit("weather.yaml has no cds: section")
+        end = args.end or today - timedelta(days=SETTLE_DAYS + 1)
+        start = args.start or config.cds.start_date
+        cds = CdsClient(cache_dir=raw / "cds")
+        summary = backfill_cds(cds, store, points, region.timezone, start, end, log)
+        log(f"backfill cds: {json.dumps(summary)}")
+        return
     if args.command == "backfill":
         # Newer days are still arriving in the archive: the daily update fetches those.
         end = args.end or today - timedelta(days=SETTLE_DAYS + 1)

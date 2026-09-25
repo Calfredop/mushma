@@ -1,0 +1,88 @@
+.hub {
+  position: relative;
+  height: 100dvh;
+  overflow: auto;
+  background: var(--lichene, #edf0ea);
+  color: var(--humus, #1c211d);
+}
+
+.header {
+  padding: calc(var(--safe-top-clear, 0px) + var(--space-5)) var(--space-5) var(--space-4);
+  max-width: 40rem;
+}
+
+.wordmark {
+  margin: 0 0 var(--space-2);
+  font-family: 'Young Serif', serif;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.45;
+  color: rgb(28 33 29 / 78%);
+}
+
+.map {
+  width: 100%;
+  height: min(55vh, 28rem);
+  border-block: 1px solid rgb(28 33 29 / 12%);
+}
+
+.list {
+  padding: var(--space-5);
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.listTitle {
+  margin: 0 0 var(--space-4);
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.regionList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.regionCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-4);
+  border: 1px solid rgb(28 33 29 / 14%);
+  border-radius: var(--radius-m);
+  background: rgb(255 255 255 / 45%);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms var(--ease);
+}
+
+.regionCard:hover {
+  background: rgb(255 255 255 / 72%);
+}
+
+.regionName {
+  font-size: 1.0625rem;
+  font-weight: 650;
+}
+
+.regionIntro {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: rgb(28 33 29 / 72%);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -1,34 +1,37 @@
 import { useTranslation } from 'react-i18next'
-import { SPECIES_OR_COMBINED, type SpeciesOrCombined } from '../state/urlState'
+import type { Species, SpeciesOrCombined } from '../state/urlState'
 import styles from './SpeciesSwitcher.module.css'
 
 interface Props {
   value: SpeciesOrCombined
   onChange: (species: SpeciesOrCombined) => void
+  /** The region's offered species (combined is always available unless `noCombined`). */
+  species: readonly Species[]
   /** Analysis mode has no combined score, so "Tutti" can't be picked there. */
   noCombined?: boolean
 }
 
-export function SpeciesSwitcher({ value, onChange, noCombined = false }: Props) {
+export function SpeciesSwitcher({ value, onChange, species, noCombined = false }: Props) {
   const { t } = useTranslation()
+  const options: SpeciesOrCombined[] = ['combined', ...species]
 
   return (
     <div role="radiogroup" aria-label={t('species.label')} className={styles.switcher}>
-      {SPECIES_OR_COMBINED.map((species) => {
-        const disabled = noCombined && species === 'combined'
+      {options.map((option) => {
+        const disabled = noCombined && option === 'combined'
         return (
           <button
-            key={species}
+            key={option}
             type="button"
             role="radio"
-            aria-checked={value === species}
+            aria-checked={value === option}
             className={styles.option}
-            data-species={species}
+            data-species={option}
             disabled={disabled}
             title={disabled ? t('analysis.noCombined') : undefined}
-            onClick={() => onChange(species)}
+            onClick={() => onChange(option)}
           >
-            {t(`species.${species}.name`)}
+            {t(`species.${option}.name`)}
           </button>
         )
       })}

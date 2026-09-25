@@ -76,10 +76,21 @@ copernicus_era5_land:
   license: CC BY 4.0
   attribution: "Contains modified Copernicus Climate Change Service information, CC BY 4.0"
   notes: >-
-    Served through Open-Meteo (model era5_seamless). Every Climate Data Store dataset moved to CC BY
-    4.0 on 2 July 2025. Cite: Muñoz Sabater, J. (2019). ERA5-Land hourly data from 1950 to present.
-    C3S Climate Data Store. https://doi.org/10.24381/cds.e2161bac; Hersbach, H. et al. (2023). ERA5
-    hourly data on single levels from 1940 to present. https://doi.org/10.24381/cds.adbb2d47
+    Served through Open-Meteo (model era5_seamless) for Tuscany's stored history, and directly
+    from the CDS for new regions (model era5_land_cds). Every Climate Data Store dataset moved to
+    CC BY 4.0 on 2 July 2025. Cite: Muñoz Sabater, J. (2019). ERA5-Land hourly data from 1950 to
+    present. C3S Climate Data Store. https://doi.org/10.24381/cds.e2161bac; Hersbach, H. et al.
+    (2023). ERA5 hourly data on single levels from 1940 to present.
+    https://doi.org/10.24381/cds.adbb2d47
+
+copernicus_cds:
+  name: Copernicus Climate Data Store — ERA5-Land hourly (bulk history)
+  homepage: https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land
+  license: CC BY 4.0
+  attribution: "Contains modified Copernicus Climate Change Service information, CC BY 4.0"
+  notes: >-
+    Direct CDS download used for multi-region history backfill (source id era5_land_cds). See
+    .gavin-root/docs/weather-history-cds.md. Same underlying ERA5-Land as copernicus_era5_land.
 
 ecmwf_open_data:
   name: ECMWF — IFS HRES open data forecasts (9 km)

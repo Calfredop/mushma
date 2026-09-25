@@ -97,9 +97,9 @@
     "userPosition": "La tua posizione"
   },
   "search": {
-    "label": "Cerca un luogo in Toscana",
+    "label": "Cerca un luogo",
     "placeholder": "Paese, monte, località…",
-    "noResults": "Nessun luogo trovato in Toscana",
+    "noResults": "Nessun luogo trovato nelle regioni coperte",
     "error": "La ricerca non risponde. Riprova tra poco.",
     "clear": "Cancella la ricerca",
     "attribution": "Ricerca: Photon, dati © OpenStreetMap",
@@ -111,7 +111,10 @@
     "locating": "Cerco la tua posizione…",
     "denied": "La posizione è disattivata. Consentila nelle impostazioni del browser oppure cerca un luogo.",
     "unavailable": "Non riesco a trovare la tua posizione. Riprova oppure cerca un luogo.",
-    "outside": "Sei fuori dalla Toscana: per ora Mappa Funghi copre solo la Toscana."
+    "outside": "Sei fuori dalle regioni coperte da Mappa Funghi.",
+    "switchOffer": "Sei in {{region}}.",
+    "switch": "Passa a {{region}}",
+    "dismissSwitch": "Resta qui"
   },
   "spot": {
     "title": "Previsione del punto",
@@ -482,22 +485,6 @@
     "body": "L'indirizzo non corrisponde a nessuna pagina di Mappa Funghi."
   },
   "seo": {
-    "region": {
-      "title": "Mappa Funghi – porcini, ovoli e gallinacci in Toscana",
-      "description": "L'indice delle condizioni per porcini, ovoli e gallinacci in Toscana: meteo, bosco e quota aggiornati ogni giorno, cella per cella da 1 km."
-    },
-    "porcini": {
-      "title": "Porcini in Toscana: indice delle condizioni | Mappa Funghi",
-      "description": "Dove e quando le condizioni favoriscono i porcini in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
-    },
-    "ovoli": {
-      "title": "Ovoli in Toscana: indice delle condizioni | Mappa Funghi",
-      "description": "Dove e quando le condizioni favoriscono gli ovoli in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
-    },
-    "gallinacci": {
-      "title": "Gallinacci in Toscana: indice delle condizioni | Mappa Funghi",
-      "description": "Dove e quando le condizioni favoriscono i gallinacci in Toscana: pioggia, temperatura e tipo di bosco aggiornati ogni giorno su una mappa a celle da 1 km."
-    },
     "credits": {
       "title": "Dati e crediti | Mappa Funghi",
       "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi in Toscana."
@@ -509,13 +496,11 @@
     "privacy": {
       "title": "Informativa sulla privacy | Mappa Funghi",
       "description": "Come Mappa Funghi tratta i tuoi dati: indirizzo IP, posizione facoltativa, valori tecnici nel browser e l'analisi Umami, nel rispetto del GDPR."
+    },
+    "hub": {
+      "title": "Mappa Funghi – condizioni per i funghi in Italia",
+      "description": "L'indice delle condizioni per porcini, ovoli e gallinacci nelle regioni italiane coperte: scegli una regione sulla mappa nazionale."
     }
-  },
-  "intro": {
-    "region": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per porcini, ovoli e gallinacci: più è alto, più meteo e bosco sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. Qui ogni cella mostra la specie con le condizioni migliori; scegli una specie per vedere la sua stagione e cosa pesa sul suo indice.",
-    "porcini": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i porcini: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va soprattutto da fine estate all'autunno.",
-    "ovoli": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per gli ovoli: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va da giugno a novembre, soprattutto in autunno.",
-    "gallinacci": "La mappa divide i boschi della Toscana in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i gallinacci: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione dura quasi tutto l'anno, con i picchi in primavera e in autunno."
   },
   "lede": {
     "region": "Condizioni per i funghi, cella per cella.",
@@ -525,7 +510,7 @@
     "more": "Come funziona"
   },
   "structuredData": {
-    "appDescription": "Mappa Funghi stima ogni giorno, cella per cella, quanto meteo, bosco e terreno favoriscono la crescita di porcini, ovoli e gallinacci in Toscana, con le prospettive a 7 giorni e i fattori dietro ogni indice. Stima solo le condizioni: non riconosce i funghi e non dice mai se un fungo si può mangiare.",
+    "appDescription": "Mappa Funghi stima ogni giorno, cella per cella, quanto meteo, bosco e terreno favoriscono la crescita di porcini, ovoli e gallinacci nelle regioni italiane coperte, con le prospettive a 7 giorni e i fattori dietro ogni indice. Stima solo le condizioni: non riconosce i funghi e non dice mai se un fungo si può mangiare.",
     "browserRequirements": "Richiede JavaScript e WebGL",
     "features": {
       "map": "Mappa dell'indice delle condizioni per ogni cella di bosco da 1 km",
@@ -536,12 +521,7 @@
       "outlook": "Le prospettive della stagione, con pioggia e temperature rispetto al normale",
       "offline": "Installabile come app e utilizzabile anche senza rete"
     },
-    "dataset": {
-      "region": "Indice delle condizioni per porcini, ovoli e gallinacci in Toscana",
-      "porcini": "Indice delle condizioni per i porcini in Toscana",
-      "ovoli": "Indice delle condizioni per gli ovoli in Toscana",
-      "gallinacci": "Indice delle condizioni per i gallinacci in Toscana"
-    },
+    "dataset": {},
     "score": {
       "name": "Indice delle condizioni",
       "description": "Quanto meteo, bosco e terreno favoriscono la crescita dei funghi in una cella di bosco da 1 km in un dato giorno, da 0 (sfavorevoli) a 1 (ideali). È un indice e non è una probabilità di trovarli."
@@ -684,5 +664,12 @@
       "unknown": "tendenza non disponibile"
     },
     "leadRain": "Pioggia nei giorni prima: il {{percent}} del normale"
+  },
+  "hub": {
+    "lede": "Scegli una regione per vedere le condizioni cella per cella.",
+    "regions": "Regioni coperte"
+  },
+  "regions": {
+    "label": "Regione"
   }
 }

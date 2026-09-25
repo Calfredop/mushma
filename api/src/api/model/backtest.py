@@ -314,7 +314,7 @@ def prepare(
 ) -> BacktestInputs:
     root = data_root or data_dir()
     grid_dir, weather_store, raw_dir = region_paths(region, root)
-    model_config = model_config or load_model_config()
+    model_config = model_config or load_model_config(region=region)
     weather_config = load_weather_config()
     cells = load_cells(grid_dir)
     weights = pd.read_parquet(weather_store.weights_path)
@@ -388,7 +388,7 @@ def main() -> None:
     if touched and not args.allow_holdout:
         parser.error(f"seasons {touched} are held out: pass --allow-holdout once tuning is frozen")
     inputs = prepare(args.region, seasons)
-    rules = load_rules()
+    rules = load_rules(args.region)
     per_presence, summary, winners = run(inputs, rules, seasons, log)
     out = data_dir() / "backtest" / args.region / args.label
     out.mkdir(parents=True, exist_ok=True)
@@ -398,7 +398,7 @@ def main() -> None:
         json.dumps(
             {
                 "written_at": datetime.now(UTC).isoformat(timespec="seconds"),
-                "rules_version": rules_version(),
+                "rules_version": rules_version(args.region),
                 "seasons": seasons,
                 "radius_km": RADIUS_KM,
                 "window_days": WINDOW_DAYS,

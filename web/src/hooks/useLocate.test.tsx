@@ -30,12 +30,32 @@ describe('useLocate', () => {
     expect(onError).not.toHaveBeenCalled()
   })
 
-  it('refuses a fix outside the region', () => {
+  it('refuses a fix outside every served region', () => {
     mockGeolocation({ lat: 45.46, lon: 9.19 }) // Milan
     const onError = vi.fn()
     const { result } = renderHook(() => useLocate({ onLocated: vi.fn(), onError }))
     act(() => result.current.locate())
     expect(onError).toHaveBeenCalledWith('outside')
+  })
+
+  it('offers another served region when the fix lands there', () => {
+    mockGeolocation({ lat: 42.9, lon: 12.5 }) // Umbria
+    const onOtherRegion = vi.fn()
+    const onError = vi.fn()
+    const { result } = renderHook(() =>
+      useLocate({
+        onLocated: vi.fn(),
+        onError,
+        bounds: [
+          [9.68, 42.23],
+          [12.38, 44.48],
+        ],
+        onOtherRegion,
+      }),
+    )
+    act(() => result.current.locate())
+    expect(onOtherRegion).toHaveBeenCalledWith('umbria', 42.9, 12.5)
+    expect(onError).not.toHaveBeenCalled()
   })
 
   it('tells denied permission apart from other failures', () => {

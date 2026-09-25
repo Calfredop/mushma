@@ -44,6 +44,9 @@ export type SpeciesProfile = components['schemas']['SpeciesProfile']
 export type TaxonProfile = components['schemas']['TaxonProfile']
 export type ForestTypesResponse = components['schemas']['ForestTypesResponse']
 export type CellForestType = components['schemas']['CellForestType']
+export type RegionsResponse = components['schemas']['RegionsResponse']
+export type OverviewResponse = components['schemas']['OverviewResponse']
+export type RegionOverview = components['schemas']['RegionOverview']
 
 export class ApiError extends Error {
   readonly status: number
@@ -74,18 +77,23 @@ function staleTimeFor(date: IsoDate, today: IsoDate): number {
   return daysBetween(today, date) < -DATE_WINDOW.pastDays ? DAY : 10 * MINUTE
 }
 
+/** Cached API responses stay per region (query keys include `apiRegionId`). */
 export function useScores(
+  apiRegionId: string,
   species: SpeciesOrCombined,
   date: IsoDate,
   today: IsoDate,
   enabled = true,
 ) {
   return useQuery({
-    queryKey: ['scores', species, date],
+    queryKey: ['scores', apiRegionId, species, date],
     enabled,
     queryFn: ({ signal }) =>
       apiClient
-        .GET('/scores', { params: { query: { species, date } }, signal })
+        .GET('/scores', {
+          params: { query: { species, date, region: apiRegionId } },
+          signal,
+        })
         .then(unwrap<ScoresResponse>('/scores')),
     staleTime: staleTimeFor(date, today),
     placeholderData: (previous) => previous,
@@ -94,25 +102,34 @@ export function useScores(
 
 /** Analysis mode: every factor behind one species' score, per cell, for one day. Shared by
  * `useFactors` and the play button's prefetch, so both fill the same cache entry. */
-export function factorsQuery(species: Species, date: IsoDate, today: IsoDate) {
+export function factorsQuery(
+  apiRegionId: string,
+  species: Species,
+  date: IsoDate,
+  today: IsoDate,
+) {
   return queryOptions({
-    queryKey: ['factors', species, date],
+    queryKey: ['factors', apiRegionId, species, date],
     queryFn: ({ signal }) =>
       apiClient
-        .GET('/factors', { params: { query: { species, date } }, signal })
+        .GET('/factors', {
+          params: { query: { species, date, region: apiRegionId } },
+          signal,
+        })
         .then(unwrap<FactorsResponse>('/factors')),
     staleTime: staleTimeFor(date, today),
   })
 }
 
 export function useFactors(
+  apiRegionId: string,
   species: Species,
   date: IsoDate,
   today: IsoDate,
   enabled = true,
 ) {
   return useQuery({
-    ...factorsQuery(species, date, today),
+    ...factorsQuery(apiRegionId, species, date, today),
     enabled,
     // The last day stays drawn while the next loads, but never another species' factors.
     placeholderData: (previous) => (previous?.species === species ? previous : undefined),
@@ -120,6 +137,7 @@ export function useFactors(
 }
 
 export function useHotspots(
+  apiRegionId: string,
   species: SpeciesOrCombined,
   date: IsoDate,
   today: IsoDate,
@@ -127,11 +145,14 @@ export function useHotspots(
   enabled = true,
 ) {
   return useQuery({
-    queryKey: ['hotspots', species, date, limit],
+    queryKey: ['hotspots', apiRegionId, species, date, limit],
     enabled,
     queryFn: ({ signal }) =>
       apiClient
-        .GET('/hotspots', { params: { query: { species, date, limit } }, signal })
+        .GET('/hotspots', {
+          params: { query: { species, date, limit, region: apiRegionId } },
+          signal,
+        })
         .then(unwrap<HotspotsResponse>('/hotspots')),
     staleTime: staleTimeFor(date, today),
   })
@@ -142,20 +163,31 @@ export function isClientError(error: unknown): boolean {
   return error instanceof ApiError && error.status >= 400 && error.status < 500
 }
 
-export function useSpotForecast(spot: Spot | null, today: IsoDate) {
+export function useSpotForecast(apiRegionId: string, spot: Spot | null, today: IsoDate) {
   return useQuery({
     // Keyed on today too: the outlook starts from today, so it moves at midnight.
-    queryKey: ['spot', spot, today],
+    queryKey: ['spot', apiRegionId, spot, today],
     enabled: spot !== null,
     queryFn: ({ signal }) => {
       if (spot?.kind === 'cell') {
         return apiClient
-          .GET('/cells/{cell_id}', { params: { path: { cell_id: spot.cellId } }, signal })
+          .GET('/cells/{cell_id}', {
+            params: {
+              path: { cell_id: spot.cellId },
+              query: { region: apiRegionId },
+            },
+            signal,
+          })
           .then(unwrap<CellDetailResponse>('/cells'))
       }
       if (spot?.kind === 'point') {
         return apiClient
-          .GET('/spot', { params: { query: { lat: spot.lat, lon: spot.lon } }, signal })
+          .GET('/spot', {
+            params: {
+              query: { lat: spot.lat, lon: spot.lon, region: apiRegionId },
+            },
+            signal,
+          })
           .then(unwrap<CellDetailResponse>('/spot'))
       }
       throw new Error('no spot selected')
@@ -172,6 +204,7 @@ export interface DateRange {
 
 /** Sighting totals per cell for one species, or summed over all of them. */
 export function useSightingTotals(
+  apiRegionId: string,
   species: SpeciesOrCombined,
   range: DateRange,
   enabled: boolean,
@@ -189,12 +222,19 @@ export function useSightingTotals(
   const { since, until } = range
   return useQueries({
     queries: speciesList.map((sp) => ({
-      queryKey: ['sightings', sp, since, until ?? null],
+      queryKey: ['sightings', apiRegionId, sp, since, until ?? null],
       enabled,
       queryFn: ({ signal }: { signal: AbortSignal }) =>
         apiClient
           .GET('/sightings', {
-            params: { query: { species: sp, since, ...(until ? { until } : {}) } },
+            params: {
+              query: {
+                species: sp,
+                since,
+                region: apiRegionId,
+                ...(until ? { until } : {}),
+              },
+            },
             signal,
           })
           .then(unwrap<components['schemas']['SightingsResponse']>('/sightings')),
@@ -207,28 +247,34 @@ export function useSightingTotals(
 
 // --- Time views (M6) ----------------------------------------------------------------------------
 
-/** Comuni with woodland, for the area picker. Changes only when the grid is rebuilt. */
 /** Data freshness (M7): when the pipeline last ran and through which day. Polled, not just
  * fetched once, so a long-open tab picks up tomorrow's run without a reload. */
-export function useStatus() {
+export function useStatus(apiRegionId: string) {
   return useQuery({
-    queryKey: ['status'],
+    queryKey: ['status', apiRegionId],
     queryFn: ({ signal }) =>
       apiClient
-        .GET('/status', { signal })
+        .GET('/status', {
+          params: { query: { region: apiRegionId } },
+          signal,
+        })
         .then(unwrap<components['schemas']['StatusResponse']>('/status')),
     staleTime: 10 * MINUTE,
     refetchInterval: 10 * MINUTE,
   })
 }
 
-export function useComuni(enabled: boolean) {
+/** Comuni with woodland, for the area picker. Changes only when the grid is rebuilt. */
+export function useComuni(apiRegionId: string, enabled: boolean) {
   return useQuery({
-    queryKey: ['comuni'],
+    queryKey: ['comuni', apiRegionId],
     enabled,
     queryFn: ({ signal }) =>
       apiClient
-        .GET('/comuni', { signal })
+        .GET('/comuni', {
+          params: { query: { region: apiRegionId } },
+          signal,
+        })
         .then(unwrap<components['schemas']['ComuniResponse']>('/comuni')),
     staleTime: 24 * 60 * MINUTE,
   })
@@ -236,31 +282,37 @@ export function useComuni(enabled: boolean) {
 
 /** Analysis mode's Bosco layer: every woodland cell's dominant forest type. Static grid data --
  * doesn't vary by species or day, so it's fetched once and kept, like `useComuni`. */
-export function useForestTypeCells(enabled: boolean) {
+export function useForestTypeCells(apiRegionId: string, enabled: boolean) {
   return useQuery({
-    queryKey: ['forest-types'],
+    queryKey: ['forest-types', apiRegionId],
     enabled,
     queryFn: ({ signal }) =>
       apiClient
-        .GET('/forest-types', { signal })
+        .GET('/forest-types', {
+          params: { query: { region: apiRegionId } },
+          signal,
+        })
         .then(unwrap<ForestTypesResponse>('/forest-types')),
     staleTime: 24 * 60 * MINUTE,
   })
 }
 
-/** Every stored season for Tuscany (`comune` null) or one comune. */
+/** Every stored season for the region (`comune` null) or one comune. */
 export function useSeasons(
+  apiRegionId: string,
   species: SpeciesOrCombined,
   comune: string | null,
   enabled: boolean,
 ) {
   return useQuery({
-    queryKey: ['seasons', species, comune],
+    queryKey: ['seasons', apiRegionId, species, comune],
     enabled,
     queryFn: ({ signal }) =>
       apiClient
         .GET('/history/seasons', {
-          params: { query: { species, ...(comune ? { comune } : {}) } },
+          params: {
+            query: { species, region: apiRegionId, ...(comune ? { comune } : {}) },
+          },
           signal,
         })
         .then(unwrap<SeasonsResponse>('/history/seasons')),
@@ -270,14 +322,21 @@ export function useSeasons(
 }
 
 /** One season on the map: good days per woodland cell, and the comuni ranked by them. */
-export function useSeasonMap(year: number | null, species: SpeciesOrCombined) {
+export function useSeasonMap(
+  apiRegionId: string,
+  year: number | null,
+  species: SpeciesOrCombined,
+) {
   return useQuery({
-    queryKey: ['season-map', year, species],
+    queryKey: ['season-map', apiRegionId, year, species],
     enabled: year !== null,
     queryFn: ({ signal }) =>
       apiClient
         .GET('/history/season/{year}', {
-          params: { path: { year: year! }, query: { species } },
+          params: {
+            path: { year: year! },
+            query: { species, region: apiRegionId },
+          },
           signal,
         })
         .then(unwrap<SeasonMapResponse>('/history/season')),
@@ -287,14 +346,24 @@ export function useSeasonMap(year: number | null, species: SpeciesOrCombined) {
 }
 
 /** The season so far and the outlook after the 7-day forecast, for one species. */
-export function useOutlook(species: Species | null, comune: string | null) {
+export function useOutlook(
+  apiRegionId: string,
+  species: Species | null,
+  comune: string | null,
+) {
   return useQuery({
-    queryKey: ['outlook', species, comune],
+    queryKey: ['outlook', apiRegionId, species, comune],
     enabled: species !== null,
     queryFn: ({ signal }) =>
       apiClient
         .GET('/outlook', {
-          params: { query: { species: species!, ...(comune ? { comune } : {}) } },
+          params: {
+            query: {
+              species: species!,
+              region: apiRegionId,
+              ...(comune ? { comune } : {}),
+            },
+          },
           signal,
         })
         .then(unwrap<OutlookResponse>('/outlook')),
@@ -302,19 +371,57 @@ export function useOutlook(species: Species | null, comune: string | null) {
   })
 }
 
-/** Which species the woodland of a comune (or Tuscany) plausibly holds, per species and taxon,
+/** Which species the woodland of a comune (or the region) plausibly holds, per species and taxon,
  * and each one's good days per season. */
-export function usePlausibleSpecies(comune: string | null, enabled: boolean) {
+export function usePlausibleSpecies(
+  apiRegionId: string,
+  comune: string | null,
+  enabled: boolean,
+) {
   return useQuery({
-    queryKey: ['species', comune],
+    queryKey: ['species', apiRegionId, comune],
     enabled,
     queryFn: ({ signal }) =>
       apiClient
         .GET('/species', {
-          params: { query: comune ? { comune } : {} },
+          params: {
+            query: { region: apiRegionId, ...(comune ? { comune } : {}) },
+          },
           signal,
         })
         .then(unwrap<PlausibleSpeciesResponse>('/species')),
     staleTime: 60 * MINUTE,
+  })
+}
+
+/** Served regions (hub list + switcher). Changes only when a region is added. */
+export function useRegions() {
+  return useQuery({
+    queryKey: ['regions'],
+    queryFn: ({ signal }) =>
+      apiClient.GET('/regions', { signal }).then(unwrap<RegionsResponse>('/regions')),
+    staleTime: 24 * 60 * MINUTE,
+  })
+}
+
+/** National hub aggregates: mean score and good-share per served region. */
+export function useOverview(
+  species: SpeciesOrCombined,
+  date: IsoDate,
+  today: IsoDate,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ['overview', species, date],
+    enabled,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/overview', {
+          params: { query: { species, date } },
+          signal,
+        })
+        .then(unwrap<OverviewResponse>('/overview')),
+    staleTime: staleTimeFor(date, today),
+    placeholderData: (previous) => previous,
   })
 }

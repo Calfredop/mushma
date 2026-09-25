@@ -46,3 +46,14 @@ Done when: the spike doc has the numbers and the decision; `uv run pytest`, `ruf
 check` and `ruff format --check` pass; Tuscany 2024 from CDS matches the stored
 history within the tolerances; the projected daily call count for 20 regions is in
 the doc.
+
+Blocked (2026-09-24): spike decision + ingest/tests/README done (`era5_land_cds`,
+hourly CDS → Europe/Rome days, seasonal stride 3, forecast past_days 7). Live 2024
+RMSE vs stored `era5_seamless` still needs `CDSAPI_KEY` in `api/.env` (rail gate was
+marked done but no key was on disk). Parent checklist stays open until that lands.
+
+Done 2026-09-25. Tuscany 2024 CDS backfill (60 weekly chunks, ~4.2 h cold / ~30 s from
+cache, 91 MB raw, 1.9 MB parquet). Deaccumulation fixed (full UTC series; drop leading
+00 UTC carryover; ignore float32 SSRD plateau noise). All RMSE gates pass (temps
+≤0.3 °C, VPD ≤10 %, rain wet-3d r 0.957, ET0 MAPE 3.6 %) — see
+`.gavin-root/docs/weather-history-cds.md` and `checks/cds_vs_seamless_2024.json`.

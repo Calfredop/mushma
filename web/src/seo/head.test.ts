@@ -17,14 +17,12 @@ afterEach(() => {
 })
 
 describe('seoKeyForRoute', () => {
-  it('keys the combined region view as "region" and a species page as the species', () => {
+  it('keys the hub and static pages; region and 404 return null (registry / noindex)', () => {
     const region = { slug: 'toscana' } as never
-    expect(seoKeyForRoute({ kind: 'region', region, species: 'combined' })).toBe('region')
-    expect(seoKeyForRoute({ kind: 'region', region, species: 'porcini' })).toBe('porcini')
-  })
-
-  it('keys a static page as itself, and a not-found match as null', () => {
+    expect(seoKeyForRoute({ kind: 'hub' })).toBe('hub')
     expect(seoKeyForRoute({ kind: 'static', page: 'credits' })).toBe('credits')
+    expect(seoKeyForRoute({ kind: 'region', region, species: 'combined' })).toBeNull()
+    expect(seoKeyForRoute({ kind: 'region', region, species: 'porcini' })).toBeNull()
     expect(seoKeyForRoute({ kind: 'not-found' })).toBeNull()
   })
 })

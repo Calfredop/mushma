@@ -190,8 +190,16 @@ hillshade (PRD → Architecture → Basemap). Fetch them once with the
 [pmtiles CLI](https://docs.protomaps.com/pmtiles/cli) (`brew install pmtiles`):
 
 ```sh
-cd web && scripts/extract-basemap.sh   # ~210 MB into the gitignored web/data/basemap/
+cd web && scripts/extract-basemap.sh          # Italy → italy.pmtiles + italy-terrain.pmtiles
+# optional local/dev smaller extract:
+# scripts/extract-basemap.sh '' tuscany
 ```
+
+The Italy extract is about **2.7 GB** total (`italy.pmtiles` ≈ 2.14 GB,
+`italy-terrain.pmtiles` ≈ 399 MB; recorded 2026-09-24, Protomaps build 20260924).
+That fits Cloudflare R2's 10 GB free tier with room for the old Tuscany files during
+cut-over. The rail holds for you to upload them and repoint Vercel before it pushes
+(see Deploying → Basemap).
 
 The dev server serves them at `/basemap/`. Without them, leave
 `VITE_BASEMAP_URL` and `VITE_TERRAIN_URL` empty and the map draws a plain land
@@ -260,27 +268,32 @@ rule are described in `.gavin-root/docs/woodland-grid.md`.
 
 ### Weather
 
-Daily weather comes from Open-Meteo: ERA5-Land history and the ECMWF IFS forecast, fetched on a
-0.2° lattice of model nodes and downscaled to the woodland cells. Build the point set once the grid
-exists, then backfill and update:
+History for new regions comes from a bulk ERA5-Land download on the Copernicus Climate Data Store
+(no Open-Meteo quota). Tuscany keeps its stored Open-Meteo archive history. Recent days, the
++7-day forecast and the seasonal outlook stay on Open-Meteo, fetched on a 0.2° lattice and
+downscaled to the woodland cells. Details: `.gavin-root/docs/weather-history-cds.md` and
+`.gavin-root/docs/weather-ingest.md`.
 
 ```sh
 cd api
-uv run python -m api.weather.ingest points            # land nodes and cell weights (~130 API calls)
-uv run python -m api.weather.ingest backfill --wait   # history from 2016, newest first; ~4 days
-uv run python -m api.weather.ingest update            # daily: new reanalysis days + 7-day forecast
+cp .env.example .env   # set CDSAPI_KEY=uid:key from https://cds.climate.copernicus.eu/how-to-api
+uv sync --group cds    # cdsapi + xarray + netCDF4 (only needed for CDS backfill)
+
+uv run python -m api.weather.ingest points
+# New region (or a CDS re-backfill of Tuscany for the 2024 check):
+uv run python -m api.weather.ingest backfill --source cds --wait
+# Tuscany's existing Open-Meteo archive table (kept as-is):
+uv run python -m api.weather.ingest backfill --wait
+uv run python -m api.weather.ingest update            # daily: recent reanalysis + 7-day forecast
 uv run python -m api.weather.ingest downscale --start 2026-09-10 --end 2026-09-24
-uv run python -m api.weather.checks gauges --start 2025-01-01 --end 2025-12-31   # model rain vs SIR Toscana gauges
-uv run python -m api.weather.checks lattice                                      # downscaling leave-out test
+uv run python -m api.weather.checks gauges --start 2025-01-01 --end 2025-12-31
+uv run python -m api.weather.checks lattice
 ```
 
-The backfill stays under the free API limits (it keeps a shared tally in
+The Open-Meteo archive backfill stays under the free API limits (shared tally in
 `api/data/raw/open_meteo/usage.json`), resumes where it stopped, and skips anything already stored.
-The first full run (2016–2025, September 2026) took three UTC days of quota; keep the machine awake
-while it waits for the next day's budget, since a sleeping laptop stalls the wait, and never run
-two at once. Verify a finished backfill by re-running `backfill` without `--wait`: it should fetch
-nothing and end with `"done": true`.
-Sources, method, checks and the backfill-depth decision are in `.gavin-root/docs/weather-ingest.md`.
+CDS downloads cache under `api/data/raw/cds/`. Seasonal fetch uses every third weather point (0.6°)
+so twenty regions fit about half of Open-Meteo's 10,000 calls/day.
 
 ### Sightings
 
@@ -387,6 +400,46 @@ uv run python -m api.jobs.daily
 Must finish well before 07:00 Europe/Rome (PRD → Constraints → Freshness) — see Deploying below for
 how it's scheduled, and check the actual run time after the first few days land.
 
+### Adding a region
+
+A region card is config, research, and one command. After the YAML, forest sources and species
+rules are in place (see `.gavin-root/docs/woodland-grid.md` → "Adding a region"):
+
+1. **CDS key.** Copy `api/.env.example` to `api/.env` and set `CDSAPI_KEY=uid:key` from
+   [the CDS how-to](https://cds.climate.copernicus.eu/how-to-api). Install the optional deps once:
+   `uv sync --group cds`. Without the key, the CDS step fails with a clear message; other steps
+   still run when you resume with `--from`.
+2. **Onboard.** From `api/`, with a shared data root if you use worktrees
+   (`DATA_DIR=/path/to/shared/data`):
+
+```sh
+cd api
+# Full chain (skips steps whose outputs already exist; safe to re-run):
+uv run python -m api.regions.onboard emilia_romagna
+# Resume, or re-do one step:
+uv run python -m api.regions.onboard emilia_romagna --from score
+uv run python -m api.regions.onboard tuscany --only backtest
+uv run python -m api.regions.onboard umbria --years 2016-2026
+```
+
+   Steps, in order: grid → weather points → CDS history → Open-Meteo update → sightings →
+   score (history without factors, then the served window) → history (update + seasonal +
+   outlook) → backtest → sanity. Each step is a child process and logs one JSON line. The command
+   prints a summary (cells, woodland cells, INFC deviation, nodes, years, sightings, backtest
+   AUCs, sanity contrasts) and writes it under a `## Data` heading in
+   `.gavin-root/docs/regions/<region>.md`.
+3. **Rsync to the server.** Once the stores look right, copy only that region's trees (not the
+   raw caches) and redeploy so the API serves it:
+
+```sh
+deploy/rsync-region-data.sh emilia_romagna --redeploy --run-job
+# or the gavin tool "Rsync region data" (params: region, redeploy, tests, run_job)
+```
+
+4. **Check on the site.** After deploy: `/<slug>` and its species pages show real scores, the hub
+   lists and colours the region, `/regions` includes it, and the next morning's daily job log has
+   a `region_done` line for it (`journalctl -u mushma-daily`).
+
 ## CI
 
 GitHub Actions (`.github/workflows/ci.yml`) lints and tests both `web/` and
@@ -413,8 +466,8 @@ the scheduled job machine could never share its stores with the API machine.
 variables (Production and Preview):
 
 - `VITE_API_BASE_URL=https://api.mappafunghi.app`
-- `VITE_BASEMAP_URL=https://tiles.mappafunghi.app/tuscany.json`
-- `VITE_TERRAIN_URL=https://tiles.mappafunghi.app/tuscany-terrain.json`
+- `VITE_BASEMAP_URL=https://tiles.mappafunghi.app/italy.json`
+- `VITE_TERRAIN_URL=https://tiles.mappafunghi.app/italy-terrain.json`
 
 They are baked in at build time, so changing one needs a redeploy. `mappafunghi.app` and
 `www.mappafunghi.app` are CNAMEs to Vercel on Cloudflare, "DNS only" (not proxied).
@@ -435,12 +488,29 @@ bucket `mushma-tiles`; the [Protomaps Cloudflare Worker](https://docs.protomaps.
 and z/x/y tiles on the custom domain `tiles.mappafunghi.app`, where Cloudflare's edge caches them
 (it doesn't on `workers.dev`). Its `wrangler.toml`: `bucket_name = "mushma-tiles"`,
 `PUBLIC_HOSTNAME = "tiles.mappafunghi.app"`, `ALLOWED_ORIGINS` the production origins plus
-`localhost:5173`/`4173`, and a `custom_domain` route for the hostname. To refresh the basemap:
+`localhost:5173`/`4173`, and a `custom_domain` route for the hostname.
+
+**Italy cut-over (foundation rail hold).** After `scripts/extract-basemap.sh` finishes, upload the
+Italy files and repoint the Vercel env *before* the rail pushes main:
+
+```sh
+cd web && scripts/extract-basemap.sh    # italy.pmtiles + italy-terrain.pmtiles
+ls -lh data/basemap/italy*.pmtiles      # confirm sizes fit R2 free tier (10 GB)
+pnpm dlx wrangler r2 object put mushma-tiles/italy.pmtiles --file data/basemap/italy.pmtiles --remote
+pnpm dlx wrangler r2 object put mushma-tiles/italy-terrain.pmtiles --file data/basemap/italy-terrain.pmtiles --remote
+```
+
+Then in the Vercel project (Production): set `VITE_BASEMAP_URL` /
+`VITE_TERRAIN_URL` to the `italy.json` / `italy-terrain.json` TileJSON URLs above (replacing
+`tuscany.*`). The next production build after the push picks them up. Keep the old `tuscany.*`
+objects in R2 until that deploy is verified.
+
+To refresh later:
 
 ```sh
 cd web && scripts/extract-basemap.sh
-pnpm dlx wrangler r2 object put mushma-tiles/tuscany.pmtiles --file data/basemap/tuscany.pmtiles --remote
-pnpm dlx wrangler r2 object put mushma-tiles/tuscany-terrain.pmtiles --file data/basemap/tuscany-terrain.pmtiles --remote
+pnpm dlx wrangler r2 object put mushma-tiles/italy.pmtiles --file data/basemap/italy.pmtiles --remote
+pnpm dlx wrangler r2 object put mushma-tiles/italy-terrain.pmtiles --file data/basemap/italy-terrain.pmtiles --remote
 ```
 
 Tiles stay cached for a day (`CACHE_CONTROL`) and in the PWA's own cache for 30.
@@ -463,6 +533,7 @@ quota. The raw grid sources are only needed to rebuild the grid, so they stay be
 rsync -azL --exclude 'raw/rt_ucs' --exclude 'raw/copernicus_dem' --exclude 'raw/ispra_clc18_iv' \
   --exclude 'raw/soilgrids' --exclude 'raw/sir_toscana' --exclude tmp --exclude backtest \
   --exclude '*.lock' api/data/ root@<server>:/srv/mushma-data/
+# One region only (after onboard): deploy/rsync-region-data.sh <region> [--redeploy]
 ```
 
 First setup on the server:

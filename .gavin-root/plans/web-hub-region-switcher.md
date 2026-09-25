@@ -40,3 +40,9 @@ parameter) using its fixtures. Decisions in the parent plan `feat-full-italy-cov
 Done when: `pnpm test`, `lint`, `format:check`, `build` and `test:e2e` are green with
 Tuscany plus the fixture region; Lighthouse SEO 100 on `/`, `/toscana` and one
 species page under the local static server the SEO card used.
+
+Done (2026-09-24): Hub at `/` with `/overview` map + region list; file registry
+(`regions/toscana.ts`, `umbria.ts`); RegionSwitcher; GPS/search switch offer;
+API `region` on all queries; SEO/prerender/sitemap/og/PWA `start_url` `/`.
+Verified: `pnpm test` (403), lint, format:check, build, `test:e2e` (19/19),
+Lighthouse SEO 100 on `/`, `/toscana`, `/toscana/porcini`.

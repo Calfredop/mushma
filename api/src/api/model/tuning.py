@@ -498,13 +498,13 @@ def main() -> None:
     def log(message: str) -> None:
         print(f"[{time.monotonic() - started:7.1f}s] {message}", flush=True)
 
-    config = load_model_config()
+    config = load_model_config(region=args.region)
     if args.rain_scale == "off":
         config = set_precipitation_scale(config, False)
     seasons = config.backtest.train_seasons
     result = coordinate_descent(
         SEARCHES[args.search],
-        load_rules(),
+        load_rules(args.region),
         config,
         backtest_evaluator(args.region, seasons),
         log=log,

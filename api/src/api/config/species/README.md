@@ -1,23 +1,58 @@
 # Species rules
 
-The rule config the model scores with: one file per species key, a shared bibliography, and the
-roll-up into the app's species in `../model.yaml`. The rules come from
+The rule config the model scores with: one file per species key **per region**, a shared
+bibliography, and the roll-up into the app's species in `../model.yaml`. The rules come from
 `.gavin-root/docs/species-ecology.md` and its evidence appendices in `.gavin-root/docs/species-ecology/`.
 Every number is a **prior for the backtest** unless the file's `status` is `tuned`
 (see `.gavin-root/docs/model-v1-validation.md`).
 
-`api.model.rules.load_rules()` loads and validates everything here, and refuses to load on the first
-problem, naming the file and the rule. `tests/model/test_rules.py` runs it against the shipped files and
-against 21 deliberately broken copies.
+`api.model.rules.load_rules(region)` loads and validates one region's set, and refuses to load on
+the first problem, naming the file and the rule. `tests/model/test_rules.py` runs it against every
+region directory and against deliberately broken copies.
 
-## Files
+## Layout
+
+```
+species/
+  README.md
+  references.yaml          # shared bibliography; every factor `source` id resolves here
+  tuscany/
+    porcini_edulis.yaml
+    porcini_reticulatus.yaml
+    porcini_aereus.yaml
+    porcini_pinophilus.yaml
+    ovoli_caesarea.yaml
+    gallinacci_cibarius.yaml
+    sanity.yaml            # press-contrast areas and windows (api.model.sanity)
+  <other_region>/
+    …                      # start from Tuscany's files; drop groups the region lacks
+```
+
+`../model.yaml` stays shared: which keys make up each group (tie-break order), national
+`precipitation_scale` and microclimate. A region may omit a whole group (no ovoli in an Alpine
+region): the groups list the keys that *can* exist; the region's files say which do; the API's
+species list follows. To override the rain scale (fitted on Tuscan gauges), put a `model:` block
+in `../regions/<id>.yaml` — national values apply by default.
+
+### Starting a new region card
+
+1. Copy `tuscany/` to `<region>/`.
+2. Drop any species keys that do not fruit there (or are out of scope).
+3. Retune season windows, altitude bands and habitats from regional sources; keep every
+   `source` id resolving in `references.yaml` (add citations there when you need new ones).
+4. Replace `sanity.yaml` with local press contrasts (or omit the file until the backtest has
+   scores to check).
+5. Only if gauge checks say so, override `precipitation_scale` under `model:` in the region YAML.
+
+## Files (Tuscany)
 
 | file | what it is |
 |---|---|
-| `porcini_edulis.yaml`, `porcini_reticulatus.yaml`, `porcini_aereus.yaml`, `porcini_pinophilus.yaml` | the four porcini taxa, all in group `porcini` |
-| `ovoli_caesarea.yaml` | *Amanita caesarea*, group `ovoli` |
-| `gallinacci_cibarius.yaml` | *Cantharellus cibarius* s.l., group `gallinacci` |
-| `references.yaml` | shared bibliography; every factor `source` id resolves here |
+| `tuscany/porcini_*.yaml` | the four porcini taxa, all in group `porcini` |
+| `tuscany/ovoli_caesarea.yaml` | *Amanita caesarea*, group `ovoli` |
+| `tuscany/gallinacci_cibarius.yaml` | *Cantharellus cibarius* s.l., group `gallinacci` |
+| `tuscany/sanity.yaml` | press-contrast areas, windows and source URLs |
+| `references.yaml` | shared bibliography |
 | `../model.yaml` | which keys make up each group, in tie-break order |
 
 ## How a score is computed
@@ -134,9 +169,11 @@ by frost").
 
 `../model.yaml` lists the keys behind each app species:
 
-- **Group score** (`porcini`, `ovoli`, `gallinacci`) = the max over the group's keys, with the winning
-  key's breakdown, so the UI can also say which porcino. On a tie the key listed first wins. Max, not
-  sum, because the four porcini share the same rain logic; a sum would count it four times.
+- **Group score** (`porcini`, `ovoli`, `gallinacci`) = the max over the group's keys that exist in
+  the region, with the winning key's breakdown, so the UI can also say which porcino. On a tie the
+  key listed first wins. Max, not sum, because the four porcini share the same rain logic; a sum
+  would count it four times. A group with no keys in the region is omitted from the region's
+  species list.
 - **Combined score** (`combined`) = the max over the groups **in season** (every season gate of at
   least one of the group's keys is open for that cell and day), with the winning group's breakdown. On a
   tie the group listed first wins. When no group is in season the combined score is 0, with no winner
@@ -163,7 +200,7 @@ The loader enforces all of these:
 - An enabled factor may only read weather variables the ingest fetches (`../weather.yaml`) and cell
   attributes the woodland grid has. Habitat keys must be in `../habitats.yaml`.
 - Factor ids are unique per file; the file name is the species key; the key's `group` matches
-  `../model.yaml`, which must list every file.
+  `../model.yaml`.
 - `known_gaps` records effects the sources support but the engine cannot encode (change detection,
   compound conditions, calendar-anchored windows, growing degree-days) or that need missing data, so
   they stay visible.

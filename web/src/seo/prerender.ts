@@ -7,8 +7,8 @@
  * so it stays free of `import.meta.env` like `./routes` and `./regions`.
  */
 import it from '../i18n/locales/it.json' with { type: 'json' }
-import { DEFAULT_REGION_SLUG } from '../regions.js'
-import { ogImagePath, regionPath, ROUTES, SITE_URL, type SiteRoute } from '../routes.js'
+import { REGIONS } from '../regions/index.js'
+import { ogImagePath, ROUTES, SITE_URL, type SiteRoute } from '../routes.js'
 import { type JsonLdDocument, serializeJsonLd, structuredData } from './structuredData.js'
 
 interface SeoCopy {
@@ -17,7 +17,24 @@ interface SeoCopy {
 }
 
 const SEO_COPY = (it as { seo: Record<string, SeoCopy> }).seo
-const INTRO_COPY = (it as { intro: Record<string, string> }).intro
+
+function copyFor(route: SiteRoute): SeoCopy {
+  if (route.region) {
+    const region = REGIONS[route.region]
+    const key = route.seoKey as 'region' | 'porcini' | 'ovoli' | 'gallinacci'
+    return region.copy.it.seo[key]
+  }
+  const copy = SEO_COPY[route.seoKey]
+  if (!copy) throw new Error(`No seo.${route.seoKey} copy for route ${route.path}`)
+  return copy
+}
+
+function introFor(route: SiteRoute): string | undefined {
+  if (!route.region) return undefined
+  const region = REGIONS[route.region]
+  const key = route.seoKey as 'region' | 'porcini' | 'ovoli' | 'gallinacci'
+  return region.copy.it.intro[key]
+}
 
 export interface RouteHead {
   path: string
@@ -33,15 +50,15 @@ export interface RouteHead {
 
 export function routeHeads(routes: SiteRoute[] = ROUTES): RouteHead[] {
   return routes.map((route) => {
-    const copy = SEO_COPY[route.seoKey]
-    if (!copy) throw new Error(`No seo.${route.seoKey} copy for route ${route.path}`)
+    const copy = copyFor(route)
+    const pathUrl = route.path === '/' ? '/' : route.path
     return {
       path: route.path,
-      url: `${SITE_URL}${route.path}`,
+      url: `${SITE_URL}${pathUrl === '/' ? '/' : pathUrl}`,
       title: copy.title,
       description: copy.description,
       image: `${SITE_URL}${ogImagePath(route)}`,
-      intro: INTRO_COPY[route.seoKey],
+      intro: introFor(route),
       jsonLd: structuredData(route, 'it'),
     }
   })
@@ -111,7 +128,7 @@ const BACK_TO_MAP = (it as { nav: { backToMap: string } }).nav.backToMap
 
 /**
  * Renders the static `404.html` Vercel serves for any path outside the route list: its own
- * title, `noindex` (nothing here to index), and a real link back to the default region — no
+ * title, `noindex` (nothing here to index), and a real link back to the hub — no
  * canonical, Open Graph or JSON-LD, since there's no page to describe.
  */
 export function renderNotFoundHtml(template: string): string {
@@ -119,7 +136,7 @@ export function renderNotFoundHtml(template: string): string {
   if (!template.includes('</head>')) throw new Error('template has no </head>')
   if (!template.includes(ROOT_DIV)) throw new Error('template has no empty #root')
 
-  const backHref = regionPath(DEFAULT_REGION_SLUG)
+  const backHref = '/'
   const tags = [
     `<meta name="robots" content="noindex">`,
     `<meta name="description" content="${escapeHtml(NOT_FOUND_COPY.body)}">`,

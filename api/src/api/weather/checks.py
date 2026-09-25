@@ -2,6 +2,7 @@
 
     uv run python -m api.weather.checks lattice   # lapse rates and the 0.2° lattice leave-out test
     uv run python -m api.weather.checks gauges --start 2025-01-01 --end 2026-09-06
+    uv run python -m api.weather.checks cds_vs_seamless --region tuscany --year 2024
 
 ``lattice`` re-fetches (from the cache, when present) three 14-day windows of 2024 for every 0.1°
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
@@ -280,15 +281,20 @@ def compare_overall(results: pd.DataFrame) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("check", choices=["lattice", "gauges"])
+    parser.add_argument("check", choices=["lattice", "gauges", "cds_vs_seamless"])
     parser.add_argument("--region", default="tuscany")
     parser.add_argument("--start", type=date.fromisoformat, default=date(2025, 1, 1))
     parser.add_argument("--end", type=date.fromisoformat, default=date(2025, 12, 31))
+    parser.add_argument("--year", type=int, default=2024)
     args = parser.parse_args()
     if args.check == "lattice":
         run_lattice(args.region)
-    else:
+    elif args.check == "gauges":
         run_gauges(args.region, args.start, args.end)
+    else:
+        from api.weather.cds_compare import main_compare
+
+        main_compare(args.region, args.year)
 
 
 if __name__ == "__main__":

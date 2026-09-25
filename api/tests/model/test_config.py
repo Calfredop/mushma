@@ -8,6 +8,41 @@ from api.model.config import MODEL_FILE, load_model_config
 from api.model.rules import RuleConfigError, load_rules
 
 
+def test_a_region_model_block_overrides_precipitation_scale(tmp_path: Path) -> None:
+    raw = yaml.safe_load(MODEL_FILE.read_text())
+    model_path = tmp_path / "model.yaml"
+    model_path.write_text(yaml.safe_dump(raw))
+    regions = tmp_path / "regions"
+    regions.mkdir()
+    (regions / "alpine.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "id": "alpine",
+                "name": {"it": "Alpi", "en": "Alps"},
+                "timezone": "Europe/Rome",
+                "bbox_wgs84": [6.0, 45.0, 8.0, 47.0],
+                "grid": {"crs": "EPSG:3035", "cell_size_m": 1000},
+                "boundary": {"source": "istat_boundaries", "region_code": 1},
+                "model": {
+                    "precipitation_scale": {
+                        "intercept": 1.0,
+                        "per_km": 0.0,
+                        "notes": "national rain is fine here; no Tuscan gauge fit.",
+                    }
+                },
+            }
+        )
+    )
+
+    scale = load_model_config(model_path, region="alpine", regions_dir=regions).precipitation_scale
+
+    assert scale.intercept == 1.0 and scale.per_km == 0.0
+    assert scale.factor(np.array([0.0, 1500.0])).tolist() == pytest.approx([1.0, 1.0])
+    # National defaults unchanged without a region override.
+    national = load_model_config(model_path, regions_dir=regions).precipitation_scale
+    assert national.intercept == pytest.approx(1.28)
+
+
 def test_groups_list_the_keys_in_tie_break_order() -> None:
     config = load_model_config()
 

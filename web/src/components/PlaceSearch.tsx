@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { REGION } from '../config'
+import { DEFAULT_REGION_SLUG, REGIONS } from '../config'
 import { type Place, searchPlaces } from '../geo/photon'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import type { Language } from '../i18n'
@@ -25,7 +25,7 @@ type Option = { kind: 'locate' } | { kind: 'place'; place: Place }
 
 export function PlaceSearch({
   onSelect,
-  bounds = REGION.bounds,
+  bounds = REGIONS[DEFAULT_REGION_SLUG].bounds,
   onLocate,
   locating = false,
   onFocus,

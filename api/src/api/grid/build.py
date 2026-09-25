@@ -263,6 +263,8 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
             "min_forest_km2": forest.MIN_FOREST_KM2,
         },
         "type_search_radii_cells": list(forest.TYPE_SEARCH_RADII),
+        "forest_area_ha": round(forest_ha, 1),
+        "infc_bosco_ha": infc_ha,
         "sources": {
             s: {"license": sources[s].license, "attribution": sources[s].attribution} for s in used
         },

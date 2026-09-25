@@ -16,18 +16,24 @@ import {
 const SPECIES_RULES_DIR = resolve(process.cwd(), '../api/src/api/config/species')
 
 /** Every enabled factor id in the species rule files: the chips the API can send. */
+function speciesYamlFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    if (entry.isDirectory()) return speciesYamlFiles(path)
+    return entry.name.endsWith('.yaml') ? [path] : []
+  })
+}
+
 function enabledRuleFactorIds(): string[] {
-  return readdirSync(SPECIES_RULES_DIR)
-    .filter((file) => file.endsWith('.yaml'))
-    .flatMap((file) =>
-      // The `factors:` list only, up to the next top-level key (known_gaps have ids too).
-      `\n${readFileSync(join(SPECIES_RULES_DIR, file), 'utf8').split('\nfactors:\n')[1] ?? ''}`
-        .split(/\n[a-z_]+:/)[0]
-        .split(/\n {2}- id: /)
-        .slice(1)
-        .filter((block) => !/\n {4}enabled: false/.test(block))
-        .map((block) => block.split('\n')[0].trim()),
-    )
+  return speciesYamlFiles(SPECIES_RULES_DIR).flatMap((file) =>
+    // The `factors:` list only, up to the next top-level key (known_gaps have ids too).
+    `\n${readFileSync(file, 'utf8').split('\nfactors:\n')[1] ?? ''}`
+      .split(/\n[a-z_]+:/)[0]
+      .split(/\n {2}- id: /)
+      .slice(1)
+      .filter((block) => !/\n {4}enabled: false/.test(block))
+      .map((block) => block.split('\n')[0].trim()),
+  )
 }
 
 describe('indicator colours', () => {

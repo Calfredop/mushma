@@ -97,9 +97,9 @@
     "userPosition": "Your position"
   },
   "search": {
-    "label": "Search a place in Tuscany",
+    "label": "Search a place",
     "placeholder": "Village, mountain, locality…",
-    "noResults": "No places found in Tuscany",
+    "noResults": "No places found in the covered regions",
     "error": "Search isn't responding. Try again shortly.",
     "clear": "Clear search",
     "attribution": "Search: Photon, data © OpenStreetMap",
@@ -111,7 +111,10 @@
     "locating": "Finding your location…",
     "denied": "Location access is off. Allow it in your browser settings, or search a place instead.",
     "unavailable": "Couldn't find your location. Try again, or search a place.",
-    "outside": "You're outside Tuscany: Mappa Funghi only covers Tuscany for now."
+    "outside": "You're outside the regions Mappa Funghi covers.",
+    "switchOffer": "You're in {{region}}.",
+    "switch": "Switch to {{region}}",
+    "dismissSwitch": "Stay here"
   },
   "spot": {
     "title": "Spot forecast",
@@ -482,22 +485,6 @@
     "body": "That address doesn't match any Mappa Funghi page."
   },
   "seo": {
-    "region": {
-      "title": "Mappa Funghi – porcini, ovoli and gallinacci in Tuscany",
-      "description": "The conditions index for porcini, ovoli and gallinacci in Tuscany: weather, woodland and elevation, updated daily, cell by cell."
-    },
-    "porcini": {
-      "title": "Porcini in Tuscany: conditions index | Mappa Funghi",
-      "description": "Where and when conditions favour porcini in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
-    },
-    "ovoli": {
-      "title": "Ovoli in Tuscany: conditions index | Mappa Funghi",
-      "description": "Where and when conditions favour ovoli in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
-    },
-    "gallinacci": {
-      "title": "Gallinacci in Tuscany: conditions index | Mappa Funghi",
-      "description": "Where and when conditions favour gallinacci in Tuscany: rain, temperature and woodland type, updated daily on a 1 km grid."
-    },
     "credits": {
       "title": "Data and credits | Mappa Funghi",
       "description": "The public data sources and open-source software Mappa Funghi uses to estimate mushroom conditions in Tuscany."
@@ -509,13 +496,11 @@
     "privacy": {
       "title": "Privacy Policy | Mappa Funghi",
       "description": "How Mappa Funghi handles your data: IP address, optional location, technical values in the browser and Umami analytics, under the GDPR."
+    },
+    "hub": {
+      "title": "Mappa Funghi – mushroom conditions across Italy",
+      "description": "The conditions index for porcini, ovoli and gallinacci in the Italian regions we cover: pick a region on the national map."
     }
-  },
-  "intro": {
-    "region": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for porcini, ovoli and gallinacci: the higher it is, the better the weather and woods suit them on that day. It shows where conditions are good, not where the mushrooms are. Here each cell shows the species with the best conditions; pick a species to see its season and what weighs on its score.",
-    "porcini": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for porcini: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs mainly from late summer through autumn.",
-    "ovoli": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for ovoli: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs from June to November, mostly in autumn.",
-    "gallinacci": "The map divides Tuscany's woods into 1 km cells and gives each one a conditions score from 0 to 1 for gallinacci: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn."
   },
   "lede": {
     "region": "Conditions for mushrooms, cell by cell.",
@@ -525,7 +510,7 @@
     "more": "How it works"
   },
   "structuredData": {
-    "appDescription": "Mappa Funghi estimates every day, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in Tuscany, with a 7-day outlook and the factors behind every score. It forecasts conditions only: it doesn't identify mushrooms and never says whether a mushroom is safe to eat.",
+    "appDescription": "Mappa Funghi estimates every day, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in the Italian regions we cover, with a 7-day outlook and the factors behind every score. It forecasts conditions only: it doesn't identify mushrooms and never says whether a mushroom is safe to eat.",
     "browserRequirements": "Requires JavaScript and WebGL",
     "features": {
       "map": "A map of the conditions score for every 1 km woodland cell",
@@ -536,12 +521,7 @@
       "outlook": "The season's outlook, with rain and temperature compared with normal",
       "offline": "Installable as an app and usable without signal"
     },
-    "dataset": {
-      "region": "Conditions score for porcini, ovoli and gallinacci in Tuscany",
-      "porcini": "Conditions score for porcini in Tuscany",
-      "ovoli": "Conditions score for ovoli in Tuscany",
-      "gallinacci": "Conditions score for gallinacci in Tuscany"
-    },
+    "dataset": {},
     "score": {
       "name": "Conditions score",
       "description": "How much the weather, woodland and terrain favour mushroom growth in a 1 km woodland cell on a given day, from 0 (unfavourable) to 1 (ideal). It is an index, not a probability of finding any."
@@ -684,5 +664,12 @@
       "unknown": "no trend available"
     },
     "leadRain": "Rain in the days before: {{percent}} of normal"
+  },
+  "hub": {
+    "lede": "Pick a region to see conditions cell by cell.",
+    "regions": "Covered regions"
+  },
+  "regions": {
+    "label": "Region"
   }
 }

@@ -1,14 +1,16 @@
 /**
- * The canonical route list: region/species paths from the region registry, plus the static
+ * The canonical route list: hub, region/species paths from the region registry, plus the static
  * pages. It drives client routing, the sitemap and the prerendered per-route heads (build
  * scripts import it directly, so — like `./regions` — it must stay free of `import.meta.env`).
  */
 import {
   DEFAULT_REGION_SLUG,
   findRegion,
+  listRegions,
+  pwaHubRedirectSlug,
   REGIONS,
   type RegionDefinition,
-} from './regions.js'
+} from './regions/index.js'
 import {
   isSpeciesOrCombined,
   SPECIES,
@@ -22,6 +24,7 @@ export const STATIC_PAGES = ['credits', 'terms', 'privacy'] as const
 export type StaticPage = (typeof STATIC_PAGES)[number]
 
 export type RouteMatch =
+  | { kind: 'hub' }
   | { kind: 'static'; page: StaticPage }
   | { kind: 'region'; region: RegionDefinition; species: SpeciesOrCombined }
   | { kind: 'not-found' }
@@ -41,7 +44,8 @@ function isStaticPage(segment: string): segment is StaticPage {
 /** Parses a pathname alone (no query string) into what it points at. */
 export function matchPath(pathname: string): RouteMatch {
   const segments = pathname.split('/').filter(Boolean)
-  if (segments.length === 0 || segments.length > 2) return { kind: 'not-found' }
+  if (segments.length === 0) return { kind: 'hub' }
+  if (segments.length > 2) return { kind: 'not-found' }
 
   const [first, second] = segments
   if (segments.length === 1 && isStaticPage(first)) return { kind: 'static', page: first }
@@ -67,7 +71,8 @@ export interface ResolvedLocation {
 
 /**
  * Reads the pathname and query string as loaded and returns what they point at, plus — for
- * the bare root or a legacy `?species=` link — the canonical URL to `replaceState` to.
+ * a legacy `?species=` link, or an installed PWA opening `/` with a stored last region — the
+ * canonical URL to `replaceState` to. Bare `/` is the hub for ordinary visits.
  */
 export function resolveLocation(pathname: string, search: string): ResolvedLocation {
   const params = new URLSearchParams(search)
@@ -78,13 +83,30 @@ export function resolveLocation(pathname: string, search: string): ResolvedLocat
   const suffix = query ? `?${query}` : ''
 
   if (pathname === '/') {
-    const region = REGIONS[DEFAULT_REGION_SLUG]
     const species: SpeciesOrCombined = isSpeciesOrCombined(legacySpecies)
       ? legacySpecies
       : 'combined'
-    const path =
-      species === 'combined' ? regionPath(region.slug) : speciesPath(region.slug, species)
-    return { match: { kind: 'region', region, species }, redirectTo: `${path}${suffix}` }
+    // Legacy `?species=` still lands on a region page (default region).
+    if (hadSpeciesParam) {
+      const region = REGIONS[DEFAULT_REGION_SLUG]
+      const path =
+        species === 'combined'
+          ? regionPath(region.slug)
+          : speciesPath(region.slug, species)
+      return {
+        match: { kind: 'region', region, species },
+        redirectTo: `${path}${suffix}`,
+      }
+    }
+    const pwaSlug = pwaHubRedirectSlug()
+    if (pwaSlug) {
+      const region = REGIONS[pwaSlug]
+      return {
+        match: { kind: 'region', region, species: 'combined' },
+        redirectTo: `${regionPath(region.slug)}${suffix}`,
+      }
+    }
+    return { match: { kind: 'hub' } }
   }
 
   const match = matchPath(pathname)
@@ -96,15 +118,22 @@ export interface SiteRoute {
   path: string
   region: string | null
   species: SpeciesOrCombined | null
-  /** The `seo.<key>` entry in the locale files (`./seo/prerender.ts`). */
+  /**
+   * SEO copy key: `hub` for `/`; a static page name; or a region's seo/intro key
+   * (`region` | species) read from that region's registry copy.
+   */
   seoKey: string
 }
 
 /**
- * The route's link-preview card: `/og/<region>.png`, or `/og/<region>-<species>.png` for a
- * species page. A page with no region (credits) reuses the default region's.
+ * The route's link-preview card: `/og/hub.png` for the hub; `/og/<region>.png`, or
+ * `/og/<region>-<species>.png` for a species page. A page with no region (credits) reuses the
+ * default region's.
  */
-export function ogImagePath(route: Pick<SiteRoute, 'region' | 'species'>): string {
+export function ogImagePath(
+  route: Pick<SiteRoute, 'region' | 'species' | 'path'>,
+): string {
+  if (route.path === '/') return '/og/hub.png'
   const region = route.region ?? DEFAULT_REGION_SLUG
   const name =
     route.species && route.species !== 'combined' ? `${region}-${route.species}` : region
@@ -112,7 +141,8 @@ export function ogImagePath(route: Pick<SiteRoute, 'region' | 'species'>): strin
 }
 
 export const ROUTES: SiteRoute[] = [
-  ...Object.values(REGIONS).flatMap((region) => [
+  { path: '/', region: null, species: null, seoKey: 'hub' },
+  ...listRegions().flatMap((region) => [
     {
       path: regionPath(region.slug),
       region: region.slug,
@@ -138,10 +168,12 @@ export const ROUTES: SiteRoute[] = [
 export function siteRouteFor(match: RouteMatch): SiteRoute | undefined {
   if (match.kind === 'not-found') return undefined
   const path =
-    match.kind === 'static'
-      ? `/${match.page}`
-      : match.species === 'combined'
-        ? regionPath(match.region.slug)
-        : speciesPath(match.region.slug, match.species)
+    match.kind === 'hub'
+      ? '/'
+      : match.kind === 'static'
+        ? `/${match.page}`
+        : match.species === 'combined'
+          ? regionPath(match.region.slug)
+          : speciesPath(match.region.slug, match.species)
   return ROUTES.find((route) => route.path === path)
 }

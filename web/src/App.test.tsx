@@ -21,6 +21,16 @@ vi.mock('./map/ConditionsMap', () => ({
   ),
 }))
 
+vi.mock('./pages/HubPage', () => ({
+  HubPage: (props: { onSelectRegion: (slug: string) => void }) => (
+    <div data-testid="hub">
+      <button type="button" onClick={() => props.onSelectRegion('umbria')}>
+        Umbria
+      </button>
+    </div>
+  ),
+}))
+
 // An empty day of scores, and nothing else: the map layer loads, the panels don't.
 vi.mock('./api/client', () => ({
   apiClient: {
@@ -31,7 +41,30 @@ vi.mock('./api/client', () => ({
               data: { cells: [], date: '2026-09-19', species: 'combined' },
               response: { status: 200 },
             }
-          : { data: undefined, response: { status: 404 } },
+          : path === '/overview'
+            ? {
+                data: {
+                  date: '2026-09-19',
+                  species: 'combined',
+                  good_score: 0.6,
+                  regions: [
+                    {
+                      region: 'tuscany',
+                      mean_score: 0.4,
+                      good_share: 0.2,
+                      updated_at: null,
+                    },
+                    {
+                      region: 'umbria',
+                      mean_score: 0.5,
+                      good_share: 0.3,
+                      updated_at: null,
+                    },
+                  ],
+                },
+                response: { status: 200 },
+              }
+            : { data: undefined, response: { status: 404 } },
       ),
   },
 }))
@@ -64,13 +97,14 @@ beforeEach(() => localStorage.setItem('mushma.disclaimer.v2', 'accepted'))
 afterEach(() => {
   localStorage.clear()
   Reflect.deleteProperty(navigator, 'geolocation')
-  window.history.replaceState(null, '', '/')
+  window.history.replaceState(null, '', '/toscana')
   track.mockClear()
 })
 
 describe('centre on my position', () => {
   it('moves the map to the fix and marks it, without opening a spot', async () => {
     mockGeolocation(43.85, 11.73)
+    window.history.replaceState(null, '', '/toscana')
     render(<App />)
 
     await userEvent.click(
@@ -84,19 +118,22 @@ describe('centre on my position', () => {
 
   it('leaves the map alone for a fix outside the region, and says why', async () => {
     mockGeolocation(45.46, 9.19) // Milan
+    window.history.replaceState(null, '', '/toscana')
     render(<App />)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Centra sulla mia posizione' }),
     )
 
-    expect(await screen.findByText(/fuori dalla Toscana/i)).toBeInTheDocument()
+    expect(await screen.findByText(/fuori dalle regioni coperte/i)).toBeInTheDocument()
     expect(mapProp('camera')).toBeNull()
     expect(mapProp('user-position')).toBeNull()
   })
 })
 
 describe('the phone shell', () => {
+  beforeEach(() => window.history.replaceState(null, '', '/toscana'))
+
   it('has no top bar: the wordmark and the search are in the sheet', async () => {
     render(<App />)
     const sheet = screen.getByRole('complementary')
@@ -104,7 +141,7 @@ describe('the phone shell', () => {
       within(sheet).getByRole('heading', { level: 1, name: 'Mappa Funghi' }),
     ).toBeInTheDocument()
     expect(
-      within(sheet).getByRole('combobox', { name: 'Cerca un luogo in Toscana' }),
+      within(sheet).getByRole('combobox', { name: 'Cerca un luogo' }),
     ).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
   })
@@ -141,9 +178,7 @@ describe('the phone shell', () => {
 
     const sheet = screen.getByRole('complementary')
     expect(sheet).toHaveAttribute('data-snap', 'peek')
-    await userEvent.click(
-      screen.getByRole('combobox', { name: 'Cerca un luogo in Toscana' }),
-    )
+    await userEvent.click(screen.getByRole('combobox', { name: 'Cerca un luogo' }))
     // The search comes up full, so its list has room.
     expect(sheet).toHaveAttribute('data-snap', 'full')
     await userEvent.click(screen.getByRole('option', { name: /^La mia posizione/ }))
@@ -186,9 +221,7 @@ describe('the phone shell', () => {
     mockGeolocationDenied()
     render(<App />)
     const sheet = screen.getByRole('complementary')
-    await userEvent.click(
-      screen.getByRole('combobox', { name: 'Cerca un luogo in Toscana' }),
-    )
+    await userEvent.click(screen.getByRole('combobox', { name: 'Cerca un luogo' }))
     expect(sheet).toHaveAttribute('data-snap', 'full')
     await userEvent.click(screen.getByRole('option', { name: /^La mia posizione/ }))
     expect(sheet).toHaveAttribute('data-snap', 'half')
@@ -261,11 +294,39 @@ describe('routing', () => {
       .forEach((el) => el.remove())
   })
 
-  it('redirects the bare root to the default region, combined view', async () => {
+  it('shows the hub at the bare root', async () => {
     window.history.replaceState(null, '', '/')
     render(<App />)
-    expect(await screen.findByTestId('map')).toBeInTheDocument()
-    expect(window.location.pathname).toBe('/toscana')
+    expect(await screen.findByTestId('hub')).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/')
+  })
+
+  it('navigates from the hub into a region', async () => {
+    window.history.replaceState(null, '', '/')
+    render(<App />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Umbria' }))
+    expect(window.location.pathname).toBe('/umbria')
+  })
+
+  it('switches region from the region menu, keeping the species', async () => {
+    window.history.replaceState(null, '', '/toscana/porcini')
+    render(<App />)
+    await screen.findByTestId('map')
+    await userEvent.click(screen.getByRole('button', { name: 'Regione' }))
+    await userEvent.click(screen.getByRole('option', { name: 'Umbria' }))
+    expect(window.location.pathname).toBe('/umbria/porcini')
+  })
+
+  it('offers to switch when GPS lands in another served region', async () => {
+    mockGeolocation(42.9, 12.5) // Umbria
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Centra sulla mia posizione' }),
+    )
+    expect(await screen.findByText(/Sei in Umbria/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Passa a Umbria' }))
+    expect(window.location.pathname).toBe('/umbria')
   })
 
   it('navigates to the species path when the switcher is used, and tracks the switch', async () => {

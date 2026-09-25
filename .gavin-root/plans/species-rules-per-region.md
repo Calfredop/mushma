@@ -28,3 +28,12 @@ Decisions in the parent plan `feat-full-italy-coverage.md`.
 
 Done when: pytest and ruff green, Tuscany scores unchanged, the sanity check runs
 from YAML with today's result.
+
+Done (2026-09-24): Species rules live under `config/species/<region>/` (Tuscany moved
+intact); `load_rules(region)` + callers updated; `precipitation_scale` overridable via
+`model:` on the region YAML; sanity contrasts in `tuscany/sanity.yaml` (6/11 hold on
+local scores). pytest 802 passed, ruff clean; Tuscany species SHA and wet-score freeze
+unchanged. Parent checklist left for the parent agent.
+
+Done (2026-09-24): rules under `species/tuscany/`; `load_rules(region)` wired through
+callers; sanity from YAML; README documents the layout; model+grid pytest green.

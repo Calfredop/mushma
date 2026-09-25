@@ -1,6 +1,5 @@
-/** Build-time settings (Vite env) and region constants. */
+/** Build-time settings (Vite env). Region data lives in `./regions/`. */
 import type { DateWindowSize } from './state/urlState'
-import { REGIONS, DEFAULT_REGION_SLUG } from './regions'
 
 export * from './regions'
 
@@ -16,17 +15,8 @@ export const BASEMAP_URL: string | undefined =
 export const TERRAIN_URL: string | undefined =
   import.meta.env.VITE_TERRAIN_URL || undefined
 
-/** The active region, until path routing (`/:region`) picks one per request. */
-export const REGION = REGIONS[DEFAULT_REGION_SLUG]
-
 /** Past days → today → +7 on the date strip: the scored window with its factor breakdown. */
 export const DATE_WINDOW: DateWindowSize = { pastDays: 6, forecastDays: 7 }
-
-/**
- * The first day a past date can be replayed from: the region's history start. A day the API
- * has no scores for says so on the map.
- */
-export const HISTORY_START = REGION.historyStart
 
 /** "Recent" sightings on the map overlay. */
 export const SIGHTINGS_WINDOW_DAYS = 90

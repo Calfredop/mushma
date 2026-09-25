@@ -53,17 +53,16 @@ describe('buildLlmsTxt', () => {
     const maps = sections(txt)[0]
     expect(maps.title).toBe(itLocale.llms.mapsTitle)
     const mapRoutes = ROUTES.filter((route) => route.region !== null)
-    expect(mapRoutes).toHaveLength(4)
-    for (const route of mapRoutes) {
-      const name =
-        itLocale.structuredData.dataset[
-          route.seoKey as keyof typeof itLocale.structuredData.dataset
-        ]
-      const intro = itLocale.intro[route.seoKey as keyof typeof itLocale.intro]
-      expect(maps.lines).toContain(
-        `- [${name}](https://mappafunghi.app${route.path}): ${intro}`,
-      )
-    }
+    expect(mapRoutes.length).toBeGreaterThanOrEqual(8)
+    expect(
+      maps.lines.some((line) => line.includes('https://mappafunghi.app/toscana')),
+    ).toBe(true)
+    expect(
+      maps.lines.some((line) => line.includes('https://mappafunghi.app/umbria')),
+    ).toBe(true)
+    expect(maps.lines.some((line) => line.includes('https://mappafunghi.app/):'))).toBe(
+      true,
+    )
   })
 
   it('links the credits page and every data source, with what it is used for and its licence', () => {

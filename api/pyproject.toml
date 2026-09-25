@@ -35,6 +35,11 @@ grid = [
     "rasterio>=1.5.1",
     "shapely>=2.1.2",
 ]
+cds = [
+    "cdsapi>=0.7.6",
+    "netcdf4>=1.7.2",
+    "xarray>=2025.1.0",
+]
 
 [tool.uv]
 default-groups = ["dev", "grid"]

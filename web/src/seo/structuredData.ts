@@ -11,7 +11,7 @@
 import { DATA_CREDITS } from '../credits.js'
 import en from '../i18n/locales/en.json' with { type: 'json' }
 import it from '../i18n/locales/it.json' with { type: 'json' }
-import { DEFAULT_REGION_SLUG, REGIONS, type RegionDefinition } from '../regions.js'
+import { REGIONS, type RegionDefinition } from '../regions/index.js'
 import {
   ogImagePath,
   regionPath,
@@ -32,13 +32,11 @@ export interface JsonLdDocument {
 
 interface Copy {
   seo: Record<string, { title: string; description: string }>
-  intro: Record<string, string>
   species: Record<Species, { name: string }>
   structuredData: {
     appDescription: string
     browserRequirements: string
     features: Record<string, string>
-    dataset: Record<string, string>
     score: { name: string; description: string }
     method: string
     country: string
@@ -112,7 +110,7 @@ function siteNodes(copy: Copy, lang: JsonLdLanguage): JsonLdNode[] {
       '@type': 'WebApplication',
       '@id': APP_ID,
       name: SITE_NAME,
-      url: `${SITE_URL}${regionPath(DEFAULT_REGION_SLUG)}`,
+      url: HOME_URL,
       description: copy.structuredData.appDescription,
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Any',
@@ -121,7 +119,7 @@ function siteNodes(copy: Copy, lang: JsonLdLanguage): JsonLdNode[] {
       isAccessibleForFree: true,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: Object.values(copy.structuredData.features),
-      image: `${SITE_URL}${ogImagePath({ region: DEFAULT_REGION_SLUG, species: 'combined' })}`,
+      image: `${SITE_URL}${ogImagePath({ path: '/', region: null, species: null })}`,
       publisher: ref(ORGANIZATION_ID),
     },
   ]
@@ -182,12 +180,16 @@ function mapNodes(
   const taxa = covered.flatMap((s) => TAXA[s].map((taxon) => taxonNode(taxon, s, copy)))
   const taxonRefs = taxa.map((taxon) => ref(taxon['@id'] as string))
   const regionUrlPath = regionPath(region.slug)
+  const localeCopy = region.copy[lang]
+  const seoKey = (
+    route.seoKey === 'region' || route.species === 'combined' ? 'region' : route.seoKey
+  ) as 'region' | Species
 
   const dataset: JsonLdNode = {
     '@type': 'Dataset',
     '@id': datasetId(route.path),
-    name: copy.structuredData.dataset[route.seoKey],
-    description: copy.intro[route.seoKey],
+    name: localeCopy.dataset[seoKey],
+    description: localeCopy.intro[seoKey],
     url,
     inLanguage: lang,
     creator: ref(ORGANIZATION_ID),
@@ -206,11 +208,11 @@ function mapNodes(
     isBasedOn: sources(),
     ...(species
       ? {
-          isPartOf: datasetStub(regionUrlPath, copy.structuredData.dataset.region),
+          isPartOf: datasetStub(regionUrlPath, localeCopy.dataset.region),
         }
       : {
           hasPart: region.species.map((s) =>
-            datasetStub(speciesPath(region.slug, s), copy.structuredData.dataset[s]),
+            datasetStub(speciesPath(region.slug, s), localeCopy.dataset[s]),
           ),
         }),
   }
@@ -257,10 +259,17 @@ export function structuredData(
   lang: JsonLdLanguage = 'it',
 ): JsonLdDocument {
   const copy = COPY[lang]
-  const seo = copy.seo[route.seoKey]
-  if (!seo) throw new Error(`No seo.${route.seoKey} copy for route ${route.path}`)
-  const url = `${SITE_URL}${route.path}`
   const region = route.region ? REGIONS[route.region] : undefined
+  let seo: { title: string; description: string }
+  if (region) {
+    const key = (route.seoKey === 'region' ? 'region' : route.seoKey) as
+      'region' | Species
+    seo = region.copy[lang].seo[key]
+  } else {
+    seo = copy.seo[route.seoKey]
+    if (!seo) throw new Error(`No seo.${route.seoKey} copy for route ${route.path}`)
+  }
+  const url = route.path === '/' ? `${SITE_URL}/` : `${SITE_URL}${route.path}`
   const map = region ? mapNodes(route, region, copy, lang) : undefined
 
   const page: JsonLdNode = {
@@ -276,7 +285,7 @@ export function structuredData(
       url: `${SITE_URL}${ogImagePath(route)}`,
       ...OG_IMAGE_SIZE,
     },
-    // A page with no map is one of the app's own (credits): it's about the app.
+    // A page with no map is one of the app's own (credits/hub): it's about the app.
     ...(map ? map.page : { about: ref(APP_ID), citation: sources() }),
   }
 

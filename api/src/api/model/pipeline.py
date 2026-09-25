@@ -36,7 +36,7 @@ from api.model.engine import (
     score_species,
 )
 from api.model.inputs import load_cells, load_normals, load_weather
-from api.model.rules import SPECIES_DIR, RuleSet, load_rules
+from api.model.rules import DEFAULT_REGION, SPECIES_DIR, RuleSet, load_rules, region_rules_dir
 from api.model.store import ScoreStore, Tier
 from api.weather.config import load_weather_config
 from api.weather.ingest import region_paths
@@ -46,10 +46,21 @@ Log = Callable[[str], None]
 CELL_DAYS_PER_CHUNK = 400_000
 
 
-def rules_version(species_dir: Path = SPECIES_DIR, model_file: Path = MODEL_FILE) -> str:
-    """A short hash of the rule files and the model config: which rules produced a score."""
+def rules_version(
+    region: str = DEFAULT_REGION,
+    *,
+    species_dir: Path = SPECIES_DIR,
+    model_file: Path = MODEL_FILE,
+) -> str:
+    """A short hash of the region's rule files, the shared bibliography and the model config."""
     digest = hashlib.sha256()
-    for path in [*sorted(species_dir.glob("*.yaml")), model_file]:
+    region_dir = region_rules_dir(region, species_dir)
+    paths = [
+        species_dir / "references.yaml",
+        *sorted(p for p in region_dir.glob("*.yaml") if p.name != "sanity.yaml"),
+        model_file,
+    ]
+    for path in paths:
         digest.update(path.name.encode())
         digest.update(path.read_bytes())
     return digest.hexdigest()[:12]
@@ -197,10 +208,10 @@ def run_scoring(
         raise ValueError(f"end {end} is before start {start}")
     root = data_root or data_dir()
     grid_dir, weather_store, _ = region_paths(region, root)
-    rules = load_rules()
-    model_config = load_model_config()
+    rules = load_rules(region)
+    model_config = load_model_config(region=region)
     weather_config = load_weather_config()
-    version = rules_version()
+    version = rules_version(region)
     lookback = max(required_lookback(spec) for spec in rules.species.values())
     con = duckdb.connect()
 
@@ -327,14 +338,15 @@ def main() -> None:
     score = sub.add_parser("score", help="score a date range and store it")
     score.add_argument("--start", type=date.fromisoformat, required=True)
     score.add_argument("--end", type=date.fromisoformat, required=True)
-    score.add_argument("--region", default="tuscany")
+    score.add_argument("--region", default=DEFAULT_REGION)
     score.add_argument(
         "--no-factors",
         dest="factors",
         action="store_false",
         help="skip the factor tier (breakdown columns): for long history runs",
     )
-    sub.add_parser("rules", help="validate the rule config and print a summary")
+    rules_cmd = sub.add_parser("rules", help="validate the rule config and print a summary")
+    rules_cmd.add_argument("--region", default=DEFAULT_REGION)
     args = parser.parse_args()
     started = time.monotonic()
 
@@ -342,7 +354,7 @@ def main() -> None:
         print(f"[{time.monotonic() - started:7.1f}s] {message}", flush=True)
 
     if args.command == "rules":
-        rules = load_rules()
+        rules = load_rules(args.region)
         for group, keys in rules.groups.items():
             for key in keys:
                 spec = rules.species[key]
@@ -355,7 +367,7 @@ def main() -> None:
                     f"{group:10} {key:22} {len(enabled):2} of {len(spec.factors):2} factors on, "
                     f"lookback {required_lookback(spec):2} d, {confidence}"
                 )
-        print(f"{len(rules.references)} references, rules version {rules_version()}")
+        print(f"{len(rules.references)} references, rules version {rules_version(args.region)}")
         return
     summary = run_scoring(args.region, args.start, args.end, factors=args.factors, log=log)
     log(json.dumps(summary))

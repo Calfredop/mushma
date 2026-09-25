@@ -1,17 +1,20 @@
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import pytest
+import yaml
 
+from api.model.rules import SPECIES_DIR
 from api.model.sanity import (
-    AREAS,
-    CONTRASTS,
     Area,
     Contrast,
+    SanityConfigError,
     Window,
     area_cells,
     evaluate_contrasts,
     fix_mojibake,
+    load_sanity,
 )
 
 CELLS = pd.DataFrame(
@@ -93,8 +96,48 @@ def test_a_window_over_several_seasons_averages_them_as_a_normal() -> None:
     assert row["lower_mean"] == pytest.approx(0.3) and row["holds"]
 
 
-def test_the_pre_registered_contrasts_name_known_areas_and_cite_a_source() -> None:
-    assert len(CONTRASTS) >= 8
-    for contrast in CONTRASTS:
-        assert contrast.higher.area in AREAS and contrast.lower.area in AREAS
+def test_tuscany_sanity_loads_from_yaml_with_known_areas_and_urls() -> None:
+    sanity = load_sanity("tuscany")
+
+    assert (SPECIES_DIR / "tuscany" / "sanity.yaml").is_file()
+    assert len(sanity.contrasts) >= 8
+    assert sanity.normal_seasons == list(range(2017, 2026))
+    for contrast in sanity.contrasts:
+        assert contrast.higher.area in sanity.areas and contrast.lower.area in sanity.areas
         assert contrast.source.startswith("http")
+
+
+def test_a_broken_sanity_file_is_refused(tmp_path: Path) -> None:
+    region = tmp_path / "species" / "tuscany"
+    region.mkdir(parents=True)
+    (tmp_path / "species" / "references.yaml").write_text("schema_version: 1\nreferences: {}\n")
+    (region / "sanity.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "areas": {"x": {"comuni": ["Poppi"]}},
+                "normal_seasons": [2020],
+                "contrasts": [
+                    {
+                        "id": "bad",
+                        "claim": "no url",
+                        "source": "not-a-url",
+                        "higher": {
+                            "area": "x",
+                            "seasons": [2020],
+                            "start": "09-01",
+                            "end": "09-30",
+                        },
+                        "lower": {
+                            "area": "x",
+                            "seasons": [2020],
+                            "start": "09-01",
+                            "end": "09-30",
+                        },
+                    }
+                ],
+            }
+        )
+    )
+
+    with pytest.raises(SanityConfigError, match="URL"):
+        load_sanity("tuscany", species_dir=tmp_path / "species")

@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { DATE_WINDOW, DEFAULT_REGION_SLUG, HISTORY_START, REGIONS } from '../config'
+import { DATE_WINDOW, DEFAULT_REGION_SLUG, REGIONS, rememberRegion } from '../config'
 import { type Navigate, usePath } from '../hooks/usePath'
 import {
   matchPath,
@@ -36,7 +36,7 @@ import {
 import type { RegionDefinition } from '../regions'
 
 /**
- * Fixes a legacy `/` or `?species=` link to its canonical region/species path, once,
+ * Fixes a legacy `?species=` link or a PWA hub redirect to its canonical path, once,
  * synchronously, before the first paint. Idempotent: safe to run twice (StrictMode).
  */
 function normalizeLegacyLocation(): null {
@@ -60,12 +60,14 @@ export interface CameraRequest {
 
 export interface AppStateValue extends UrlState {
   today: IsoDate
-  /** What the path resolved to: the map (a region), a static page, or nothing known. */
+  /** What the path resolved to: the hub, the map (a region), a static page, or nothing known. */
   route: RouteMatch
-  /** The active region: the path's region, or the default region on a static/not-found page. */
+  /** The active region: the path's region, or the default region on hub/static/not-found. */
   region: RegionDefinition
   species: SpeciesOrCombined
   setSpecies: (species: SpeciesOrCombined) => void
+  /** Navigate to another region, keeping species, date and view (query string). */
+  setRegion: (slug: string) => void
   path: string
   navigate: Navigate
   /** A day on the map; takes a season off the map. */
@@ -107,7 +109,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       today,
       DATE_WINDOW,
       region.bounds,
-      HISTORY_START,
+      region.historyStart,
     ),
   )
   const species = speciesForMode(routeSpecies, state.mode)
@@ -115,9 +117,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [sightingsVisible, setSightingsVisible] = useState(false)
   const cameraId = useRef(0)
 
+  // Remember the last region for an installed PWA's next open at `/`.
+  useEffect(() => {
+    if (route.kind === 'region') rememberRegion(region.slug)
+  }, [route.kind, region.slug])
+
   // An open tab (or a phone woken in the morning) crosses midnight in Rome:
   // move "today", and the selected date with it when it meant today.
   const todayRef = useRef(today)
+  const historyStart = region.historyStart
   useEffect(() => {
     const check = () => {
       const previous = todayRef.current
@@ -127,7 +135,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setToday(now)
       setState((s) => ({
         ...s,
-        date: rollToday(s.date, previous, now, DATE_WINDOW, HISTORY_START),
+        date: rollToday(s.date, previous, now, DATE_WINDOW, historyStart),
       }))
     }
     const interval = setInterval(check, 60_000)
@@ -136,7 +144,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       clearInterval(interval)
       document.removeEventListener('visibilitychange', check)
     }
-  }, [])
+  }, [historyStart])
 
   useEffect(() => {
     const search = serializeUrlState(state, today)
@@ -156,6 +164,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
   }, [route.kind, species, routeSpecies, region.slug, navigate])
 
+  // Drop a species the new region does not offer (keep combined or the first available).
+  useEffect(() => {
+    if (route.kind !== 'region') return
+    if (routeSpecies === 'combined') return
+    if (region.species.includes(routeSpecies)) return
+    navigate(regionPath(region.slug), { replace: true })
+  }, [route.kind, routeSpecies, region.species, region.slug, navigate])
+
   const setSpecies = useCallback(
     (next: SpeciesOrCombined) => {
       if (!canPickSpecies(next, state.mode)) return
@@ -164,6 +180,24 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       )
     },
     [navigate, region.slug, state.mode],
+  )
+  const setRegion = useCallback(
+    (slug: string) => {
+      const next = REGIONS[slug]
+      if (!next) return
+      const nextSpecies =
+        species === 'combined' || next.species.includes(species) ? species : 'combined'
+      const target =
+        nextSpecies === 'combined'
+          ? regionPath(next.slug)
+          : speciesPath(next.slug, nextSpecies)
+      // Keep date, view, mode, etc.; clear spot/comune that belong to the old region.
+      setState((s) => ({ ...s, spot: null, comune: null }))
+      navigate(
+        `${target}${serializeUrlState({ ...state, spot: null, comune: null }, today)}`,
+      )
+    },
+    [navigate, species, state, today],
   )
   const setMode = useCallback((mode: Mode) => setState((s) => withMode(s, mode)), [])
   const toggle = useCallback((id: string) => setState((s) => toggleIndicator(s, id)), [])
@@ -208,6 +242,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       region,
       species,
       setSpecies,
+      setRegion,
       path,
       navigate,
       setDate,
@@ -232,6 +267,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       region,
       species,
       setSpecies,
+      setRegion,
       path,
       navigate,
       setDate,

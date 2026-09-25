@@ -25,12 +25,17 @@ const ATKINSON = fontDataUri(
 )
 const MARK_SVG = readFileSync(resolve(ROOT, 'public/favicon.svg'), 'utf8')
 
-// Matches src/i18n/locales/it.json's seo.*.title (Italian: the indexed language).
+// Matches region registry SEO titles (Italian: the indexed language) plus the hub.
 const CARDS = [
+  { name: 'hub', title: 'Condizioni per i funghi in Italia' },
   { name: 'toscana', title: 'Porcini, ovoli e gallinacci in Toscana' },
   { name: 'toscana-porcini', title: 'Porcini in Toscana' },
   { name: 'toscana-ovoli', title: 'Ovoli in Toscana' },
   { name: 'toscana-gallinacci', title: 'Gallinacci in Toscana' },
+  { name: 'umbria', title: 'Porcini, ovoli e gallinacci in Umbria' },
+  { name: 'umbria-porcini', title: 'Porcini in Umbria' },
+  { name: 'umbria-ovoli', title: 'Ovoli in Umbria' },
+  { name: 'umbria-gallinacci', title: 'Gallinacci in Umbria' },
 ]
 
 function cardHtml(title) {

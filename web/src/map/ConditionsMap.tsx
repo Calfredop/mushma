@@ -14,7 +14,13 @@ import { useTranslation } from 'react-i18next'
 import type { Hotspot } from '../api/queries'
 import type { components } from '../api/schema'
 import { MinusIcon, PlusIcon } from '../components/icons'
-import { BASEMAP_URL, CELL_SIZE_KM, REGION, TERRAIN_URL } from '../config'
+import {
+  BASEMAP_URL,
+  CELL_SIZE_KM,
+  DEFAULT_REGION_SLUG,
+  REGIONS,
+  TERRAIN_URL,
+} from '../config'
 import type { RegionDefinition } from '../regions'
 import type { Language } from '../i18n'
 import type { CameraRequest } from '../state/AppState'
@@ -237,7 +243,7 @@ export function ConditionsMap({
   spotPoint,
   userPosition,
   lang,
-  region = REGION,
+  region = REGIONS[DEFAULT_REGION_SLUG],
   padding,
   onCellClick,
   onPointClick,

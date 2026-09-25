@@ -1,11 +1,15 @@
-"""The species rule config: one YAML file per species key, a shared bibliography, and the group
-roll-up in ``config/model.yaml``.
+"""The species rule config: one YAML file per species key per region, a shared bibliography, and
+the group roll-up in ``config/model.yaml``.
 
 Rules are data (AGENTS.md): every factor carries a ``source`` that resolves to
 ``species/references.yaml`` and a ``confidence``. :func:`load_rules` validates the files and
 refuses anything the engine could not score faithfully: a rule without a source, an unordered
 trapezoid, an enabled rule on data v1 does not have, an unknown habitat or weather variable. See
 ``config/species/README.md`` for the scoring semantics.
+
+Layout: ``config/species/<region>/<key>.yaml``; ``references.yaml`` stays shared under
+``config/species/``. A region may omit a group that ``model.yaml`` lists (no ovoli in the Alps);
+the region's files say which keys exist.
 """
 
 from dataclasses import dataclass
@@ -22,6 +26,9 @@ from api.weather.config import load_weather_config
 
 SPECIES_DIR = CONFIG_DIR / "species"
 REFERENCES_FILE = "references.yaml"
+# Meta files that live beside species keys in a region folder; not scored.
+NON_SPECIES_FILES = frozenset({"sanity.yaml"})
+DEFAULT_REGION = "tuscany"
 
 Role = Literal["gate", "driver", "stopper"]
 ROLE_ORDER: tuple[Role, ...] = ("gate", "driver", "stopper")
@@ -611,19 +618,44 @@ def _check_species(
     return errors
 
 
-def load_rules(species_dir: Path = SPECIES_DIR, model_file: Path = MODEL_FILE) -> RuleSet:
-    """Load and validate every species file in ``species_dir``; raise :class:`RuleConfigError`
-    naming the file and the rule on the first file that fails."""
+def list_rule_regions(species_dir: Path = SPECIES_DIR) -> list[str]:
+    """Region ids that have a species rule directory under ``species_dir``."""
+    return sorted(
+        path.name for path in species_dir.iterdir() if path.is_dir() and any(path.glob("*.yaml"))
+    )
+
+
+def region_rules_dir(region: str, species_dir: Path = SPECIES_DIR) -> Path:
+    """``species_dir/<region>/``; raises if the folder is missing."""
+    path = species_dir / region
+    if not path.is_dir():
+        raise RuleConfigError(f"no species rules for region {region!r} at {path}")
+    return path
+
+
+def load_rules(
+    region: str = DEFAULT_REGION,
+    *,
+    species_dir: Path = SPECIES_DIR,
+    model_file: Path = MODEL_FILE,
+) -> RuleSet:
+    """Load and validate every species file for ``region``; raise :class:`RuleConfigError`
+    naming the file and the rule on the first file that fails.
+
+    ``model.yaml`` lists the keys each group may use; the region's files say which exist, so a
+    region may omit a whole group. ``references.yaml`` is shared at ``species_dir``.
+    """
+    region_dir = region_rules_dir(region, species_dir)
     refs = _validate(_References, _read_yaml(species_dir / REFERENCES_FILE), REFERENCES_FILE)
     try:
-        model = load_model_config(model_file)
+        model = load_model_config(model_file, region=region)
     except (OSError, yaml.YAMLError, ValidationError) as error:
         raise RuleConfigError(f"{model_file.name}: {error}") from error
     for rule, cited in model.cited.items():
         unknown = [s for s in cited if s not in refs.references]
         if unknown:
             raise RuleConfigError(f"{model_file.name}: {rule} cites unknown sources {unknown}")
-    groups = model.groups
+    catalog = model.groups
     habitats = set(load_vocabulary().habitats)
     ingested = set(load_weather_config().variables)
     unknown = [v for v in model.microclimate.variables if v not in ingested]
@@ -633,12 +665,12 @@ def load_rules(species_dir: Path = SPECIES_DIR, model_file: Path = MODEL_FILE) -
         )
 
     loaded: dict[str, SpeciesRules] = {}
-    for path in sorted(species_dir.glob("*.yaml")):
-        if path.name == REFERENCES_FILE:
+    for path in sorted(region_dir.glob("*.yaml")):
+        if path.name in NON_SPECIES_FILES:
             continue
         rules = _validate(SpeciesRules, _read_yaml(path), path.stem)
         errors = _check_species(rules, path.stem, refs.references, habitats, ingested)
-        listed = [group for group, keys in groups.items() if rules.key in keys]
+        listed = [group for group, keys in catalog.items() if rules.key in keys]
         if listed != [rules.group]:
             errors.append(
                 f"group {rules.group!r} does not match model.yaml, which lists it under {listed}"
@@ -647,8 +679,13 @@ def load_rules(species_dir: Path = SPECIES_DIR, model_file: Path = MODEL_FILE) -
             raise RuleConfigError(f"{path.stem}: " + "; ".join(errors))
         loaded[rules.key] = rules
 
-    unfiled = [key for keys in groups.values() for key in keys if key not in loaded]
-    if unfiled:
-        raise RuleConfigError(f"model.yaml lists species keys with no rule file: {unfiled}")
+    if not loaded:
+        raise RuleConfigError(f"{region}: no species rule files in {region_dir}")
+
+    groups = {
+        group: [key for key in keys if key in loaded]
+        for group, keys in catalog.items()
+        if any(key in loaded for key in keys)
+    }
     ordered = {key: loaded[key] for keys in groups.values() for key in keys}
     return RuleSet(species=ordered, groups=groups, references=refs.references)

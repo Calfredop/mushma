@@ -14,12 +14,17 @@ SUN_SERIES = "sun_exposure_pct"  # api.model.rules.SUN_SERIES
 def test_history_comes_from_era5_and_the_forecast_from_ecmwf_ifs() -> None:
     config = load_weather_config()
 
+    assert config.cds is not None
+    assert config.cds.model == "era5_land_cds"
     assert config.history.model == "era5_seamless"
     assert config.history.endpoint == "https://archive-api.open-meteo.com/v1/archive"
     assert config.forecast.model == "ecmwf_ifs"
     assert config.forecast.endpoint == "https://api.open-meteo.com/v1/forecast"
     assert config.forecast.forecast_days == 8  # today + 7 days
-    assert config.source_order == ["era5_seamless", "ecmwf_ifs"]
+    assert config.forecast.past_days == 7
+    assert config.source_order == ["era5_land_cds", "era5_seamless", "ecmwf_ifs"]
+    assert config.seasonal is not None
+    assert config.seasonal.point_stride == 3
 
 
 def test_points_follow_the_era5_land_grid() -> None:
@@ -42,7 +47,7 @@ def test_temperatures_are_lapse_rate_corrected_and_the_rest_is_not() -> None:
 
 def test_every_weather_variable_the_species_rules_use_is_ingested() -> None:
     used = set()
-    for path in SPECIES_RULES.glob("*_*.yaml"):
+    for path in list(SPECIES_RULES.glob("*_*.yaml")) + list(SPECIES_RULES.glob("*/*_*.yaml")):
         doc = yaml.safe_load(path.read_text())
         for factor in doc.get("factors", []):
             variable = (factor.get("input") or {}).get("variable")

@@ -29,3 +29,8 @@ README.
 
 Done when: pytest and ruff green, the Tuscany dry run matches, the runbook reads top
 to bottom.
+
+Done 2026-09-24. `api.regions.onboard` runs the nine-step chain (child processes, JSON
+logs, skip-when-ready, clear CDS key error). README → "Adding a region"; gavin tool
+**Rsync region data** (`tool-5c6ba6b5652725c05fa9b949e82f754a`); pytest 842 /
+ruff green; Tuscany dry-run skips all steps and writes `.gavin-root/docs/regions/tuscany.md`.

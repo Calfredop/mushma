@@ -113,7 +113,7 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Every stored season for Tuscany or a comune: good days, weather vs normal, sightings */
+    /** Every stored season for the region or a comune: good days, weather vs normal, sightings */
     get: operations['get_seasons_history_seasons_get']
     put?: never
     post?: never
@@ -149,6 +149,40 @@ export interface paths {
     }
     /** The season so far and an outlook (not a forecast) for the weeks and months ahead */
     get: operations['get_outlook_outlook_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/overview': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Per served region: mean score and share of woodland at or above good_score */
+    get: operations['get_overview_overview_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/regions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Served regions (id, names, bbox, history start, species, freshness) */
+    get: operations['get_regions_regions_get']
     put?: never
     post?: never
     delete?: never
@@ -198,7 +232,7 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Plausible species for Tuscany or a comune: habitat fit and good days per season, per species and taxon */
+    /** Plausible species for the region or a comune: habitat fit and good days per season, per species and taxon */
     get: operations['get_species_species_get']
     put?: never
     post?: never
@@ -725,6 +759,23 @@ export interface components {
       species: 'porcini' | 'ovoli' | 'gallinacci'
       window: components['schemas']['SeasonWindow']
     }
+    /** OverviewResponse */
+    OverviewResponse: {
+      /**
+       * Date
+       * Format: date
+       */
+      date: string
+      /** Good Score */
+      good_score: number
+      /** Regions */
+      regions: components['schemas']['RegionOverview'][]
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+    }
     /** Place */
     Place: {
       /** Comune */
@@ -773,6 +824,64 @@ export interface components {
       drier_pct: number
       /** Wetter Pct */
       wetter_pct: number
+    }
+    /**
+     * RegionInfo
+     * @description One served region, for the hub's list and the region switcher.
+     */
+    RegionInfo: {
+      /**
+       * Bbox Wgs84
+       * @description [lon_min, lat_min, lon_max, lat_max]
+       */
+      bbox_wgs84: number[]
+      /**
+       * History Start
+       * Format: date
+       * @description first day of weather history / season replay
+       */
+      history_start: string
+      /** Id */
+      id: string
+      /**
+       * Name
+       * @description display names keyed by locale, at least it and en
+       */
+      name: {
+        [key: string]: string
+      }
+      /**
+       * Species
+       * @description species groups this region offers
+       */
+      species: ('porcini' | 'ovoli' | 'gallinacci')[]
+      /**
+       * Updated At
+       * @description when this region's scores were last (re)generated; null before the first run
+       */
+      updated_at: string | null
+    }
+    /**
+     * RegionOverview
+     * @description One region's aggregate for the national hub map.
+     */
+    RegionOverview: {
+      /**
+       * Good Share
+       * @description share of woodland cells at or above good_score
+       */
+      good_share: number
+      /** Mean Score */
+      mean_score: number
+      /** Region */
+      region: string
+      /** Updated At */
+      updated_at: string | null
+    }
+    /** RegionsResponse */
+    RegionsResponse: {
+      /** Regions */
+      regions: components['schemas']['RegionInfo'][]
     }
     /** ScoresResponse */
     ScoresResponse: {
@@ -1060,7 +1169,10 @@ export type $defs = Record<string, never>
 export interface operations {
   get_cell_cells__cell_id__get: {
     parameters: {
-      query?: never
+      query?: {
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
+      }
       header?: never
       path: {
         cell_id: string
@@ -1078,7 +1190,7 @@ export interface operations {
           'application/json': components['schemas']['CellDetailResponse']
         }
       }
-      /** @description unknown cell id */
+      /** @description unknown cell id or region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1098,7 +1210,10 @@ export interface operations {
   }
   get_comuni_comuni_get: {
     parameters: {
-      query?: never
+      query?: {
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
+      }
       header?: never
       path?: never
       cookie?: never
@@ -1112,6 +1227,15 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ComuniResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
         }
       }
       /** @description history not built yet */
@@ -1129,6 +1253,8 @@ export interface operations {
         species: 'porcini' | 'ovoli' | 'gallinacci'
         /** @description defaults to today, Europe/Rome */
         date?: string | null
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1145,7 +1271,7 @@ export interface operations {
           'application/json': components['schemas']['FactorsResponse']
         }
       }
-      /** @description no factors stored for that day */
+      /** @description no factors stored for that day, or unknown region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1165,7 +1291,10 @@ export interface operations {
   }
   get_forest_types_forest_types_get: {
     parameters: {
-      query?: never
+      query?: {
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
+      }
       header?: never
       path?: never
       cookie?: never
@@ -1179,6 +1308,15 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ForestTypesResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
         }
       }
     }
@@ -1209,6 +1347,8 @@ export interface operations {
     parameters: {
       query: {
         species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path: {
@@ -1227,7 +1367,7 @@ export interface operations {
           'application/json': components['schemas']['SeasonMapResponse']
         }
       }
-      /** @description season not stored */
+      /** @description season not stored, or unknown region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1255,9 +1395,11 @@ export interface operations {
   get_seasons_history_seasons_get: {
     parameters: {
       query?: {
-        /** @description ISTAT comune code (see /comuni); omit for all of Tuscany */
+        /** @description ISTAT comune code (see /comuni); omit for the whole region */
         comune?: string | null
         species?: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1274,7 +1416,7 @@ export interface operations {
           'application/json': components['schemas']['SeasonsResponse']
         }
       }
-      /** @description unknown comune */
+      /** @description unknown comune or region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1306,6 +1448,8 @@ export interface operations {
         /** @description defaults to today, Europe/Rome */
         date?: string | null
         limit?: number
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1322,7 +1466,7 @@ export interface operations {
           'application/json': components['schemas']['HotspotsResponse']
         }
       }
-      /** @description date outside the served window */
+      /** @description date outside the served window, or unknown region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1344,8 +1488,10 @@ export interface operations {
     parameters: {
       query: {
         species: 'porcini' | 'ovoli' | 'gallinacci'
-        /** @description ISTAT comune code (see /comuni); omit for all of Tuscany */
+        /** @description ISTAT comune code (see /comuni); omit for the whole region */
         comune?: string | null
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1362,7 +1508,7 @@ export interface operations {
           'application/json': components['schemas']['OutlookResponse']
         }
       }
-      /** @description unknown comune */
+      /** @description unknown comune or region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1387,12 +1533,67 @@ export interface operations {
       }
     }
   }
+  get_overview_overview_get: {
+    parameters: {
+      query?: {
+        species?: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+        /** @description defaults to today, Europe/Rome */
+        date?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OverviewResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_regions_regions_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RegionsResponse']
+        }
+      }
+    }
+  }
   get_scores_scores_get: {
     parameters: {
       query: {
         species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
         /** @description defaults to today, Europe/Rome */
         date?: string | null
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1409,7 +1610,7 @@ export interface operations {
           'application/json': components['schemas']['ScoresResponse']
         }
       }
-      /** @description date outside the served window */
+      /** @description date outside the served window, or unknown region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1435,6 +1636,8 @@ export interface operations {
         since?: string | null
         /** @description last day included; defaults to no limit */
         until?: string | null
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1465,8 +1668,10 @@ export interface operations {
   get_species_species_get: {
     parameters: {
       query?: {
-        /** @description ISTAT comune code (see /comuni); omit for all of Tuscany */
+        /** @description ISTAT comune code (see /comuni); omit for the whole region */
         comune?: string | null
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1483,7 +1688,7 @@ export interface operations {
           'application/json': components['schemas']['PlausibleSpeciesResponse']
         }
       }
-      /** @description unknown comune */
+      /** @description unknown comune or region */
       404: {
         headers: {
           [name: string]: unknown
@@ -1513,6 +1718,8 @@ export interface operations {
       query: {
         lat: number
         lon: number
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
       }
       header?: never
       path?: never
@@ -1542,7 +1749,10 @@ export interface operations {
   }
   get_status_status_get: {
     parameters: {
-      query?: never
+      query?: {
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
+      }
       header?: never
       path?: never
       cookie?: never
@@ -1556,6 +1766,22 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['StatusResponse']
+        }
+      }
+      /** @description unknown or unserved region */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
         }
       }
       /** @description the pipeline has never scored anything yet */

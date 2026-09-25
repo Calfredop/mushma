@@ -48,3 +48,10 @@ forest:
 # Topsoil pH (0-30 cm, depth-weighted) from SoilGrids. Not used by the v1 rules (PRD known gaps).
 soil:
   source: soilgrids
+
+# Optional model overrides (merged onto config/model.yaml). Omit to keep national defaults —
+# Tuscany's precipitation_scale was fitted on SIR Toscana gauges, so it is the national default.
+# model:
+#   precipitation_scale:
+#     intercept: 1.28
+#     per_km: 0.29

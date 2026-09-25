@@ -16,7 +16,7 @@ test.use({ viewport: { width: 1280, height: 800 }, isMobile: false, hasTouch: fa
 test('the time bar and the pill stay on the map, clear of the floating panel, and nothing scrolls the app sideways', async ({
   page,
 }) => {
-  await page.goto('/')
+  await page.goto('/toscana')
   await page.getByRole('button', { name: 'Ho capito' }).click()
 
   const main = page.getByRole('main')
@@ -73,7 +73,7 @@ test('the time bar and the pill stay on the map, clear of the floating panel, an
 test('the panel folds to its header, stays folded after a reload, and a chosen spot opens it', async ({
   page,
 }) => {
-  await page.goto('/')
+  await page.goto('/toscana')
   await page.getByRole('button', { name: 'Ho capito' }).click()
   await page.getByRole('button', { name: 'Rifiuta' }).click()
   const panel = page.getByRole('complementary')
@@ -127,7 +127,7 @@ test.describe('a folded panel', () => {
   test('still searches: its list opens over the map, and a place chosen unfolds it', async ({
     page,
   }) => {
-    await page.goto('/')
+    await page.goto('/toscana')
     await page.getByRole('button', { name: 'Ho capito' }).click()
     await page.getByRole('button', { name: 'Rifiuta' }).click()
     await page.getByRole('button', { name: 'Riduci il pannello' }).click()
@@ -168,7 +168,7 @@ for (const [width, height] of [
     test('the map chrome: pill beside the cluster, legend chip above the strip, the rest in the sheet', async ({
       page,
     }) => {
-      await page.goto('/')
+      await page.goto('/toscana')
       await page.getByRole('button', { name: 'Ho capito' }).click()
       await page.getByRole('button', { name: 'Rifiuta' }).click()
 
@@ -225,7 +225,7 @@ for (const [width, height] of [
     test('the species pill fades as glass: the fade is on the pill, not on a wrapper', async ({
       page,
     }) => {
-      await page.goto('/')
+      await page.goto('/toscana')
       await page.getByRole('button', { name: 'Ho capito' }).click()
       const pill = page.getByRole('radiogroup', { name: 'Specie' })
       // Halfway from half to full: an opacity on the pill's wrapper would cut its blur off.
@@ -241,7 +241,7 @@ for (const [width, height] of [
     test('the footer keeps its links on one row, none broken across lines', async ({
       page,
     }) => {
-      await page.goto('/')
+      await page.goto('/toscana')
       await page.getByRole('button', { name: 'Ho capito' }).click()
       await page.getByRole('button', { name: 'Rifiuta' }).click()
       await page.getByRole('button', { name: 'Espandi il pannello' }).click()
@@ -272,7 +272,7 @@ test.describe('a 360 px phone in analysis mode', () => {
   test.use({ viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true })
 
   test('the factor chips are one row just above the date strip', async ({ page }) => {
-    await page.goto('/?mode=analysis&f=rain_trigger')
+    await page.goto('/toscana?mode=analysis&f=rain_trigger')
     await page.getByRole('button', { name: 'Ho capito' }).click()
 
     const panel = page.getByRole('region', { name: "Fattori dell'indice" })

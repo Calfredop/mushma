@@ -21,10 +21,12 @@ describe('routeHeads', () => {
     expect(heads.map((h) => h.path)).toEqual(ROUTES.map((r) => r.path))
   })
 
-  it('gives the region page and each species page their own title and description', () => {
+  it('gives the hub, region page and each species page their own title and description', () => {
     const heads = routeHeads()
     const byPath = Object.fromEntries(heads.map((h) => [h.path, h]))
+    expect(byPath['/'].title).toContain('Italia')
     expect(byPath['/toscana'].title).toContain('Toscana')
+    expect(byPath['/umbria'].title).toContain('Umbria')
     expect(byPath['/toscana/porcini'].title).toContain('Porcini')
     expect(byPath['/toscana/ovoli'].title).toContain('Ovoli')
     expect(byPath['/toscana/gallinacci'].title).toContain('Gallinacci')
@@ -181,8 +183,8 @@ describe('renderNotFoundHtml', () => {
     expect(html).not.toContain('application/ld+json')
   })
 
-  it('shows a visible link back to the default region', () => {
-    expect(html).toContain('<a href="/toscana">')
+  it('shows a visible link back to the hub', () => {
+    expect(html).toContain('<a href="/">')
   })
 
   it('keeps the rest of the built document intact', () => {

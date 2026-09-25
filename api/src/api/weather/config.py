@@ -31,6 +31,15 @@ class PointsSpec:
 
 
 @dataclass(frozen=True)
+class CdsSpec:
+    """Bulk ERA5-Land history from the Copernicus CDS (source id ``era5_land_cds``)."""
+
+    dataset: str
+    model: str
+    start_date: date
+
+
+@dataclass(frozen=True)
 class HistorySpec:
     endpoint: str
     model: str
@@ -79,6 +88,7 @@ class SeasonalSpec:
     forecast_days: dict[str, int]  # granularity (weekly, monthly) -> horizon asked for
     variables: dict[str, SeasonalVariable]
     credits: list[str]
+    point_stride: int = 1
 
 
 @dataclass(frozen=True)
@@ -91,11 +101,17 @@ class WeatherConfig:
     variables: dict[str, Variable]
     credits: list[str]
     seasonal: SeasonalSpec | None = None
+    cds: CdsSpec | None = None
 
     @property
     def source_order(self) -> list[str]:
-        """Source ids, most trusted first: reanalysis wins over forecast for the same day."""
-        return [self.history.model, self.forecast.model]
+        """Source ids, most trusted first: CDS, then Open-Meteo archive, then forecast."""
+        order = []
+        if self.cds is not None:
+            order.append(self.cds.model)
+        order.append(self.history.model)
+        order.append(self.forecast.model)
+        return order
 
 
 def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
@@ -142,6 +158,17 @@ def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
         variables=variables,
         credits=list(raw.get("credits") or []),
         seasonal=_seasonal(raw.get("seasonal"), variables),
+        cds=_cds(raw.get("cds")),
+    )
+
+
+def _cds(raw: dict | None) -> CdsSpec | None:
+    if raw is None:
+        return None
+    return CdsSpec(
+        dataset=str(raw["dataset"]),
+        model=str(raw["model"]),
+        start_date=date.fromisoformat(str(raw["start_date"])),
     )
 
 
@@ -161,4 +188,5 @@ def _seasonal(raw: dict | None, variables: dict[str, Variable]) -> SeasonalSpec 
         forecast_days=granularities,
         variables=mapped,
         credits=list(raw.get("credits") or []),
+        point_stride=max(1, int(raw.get("point_stride") or 1)),
     )

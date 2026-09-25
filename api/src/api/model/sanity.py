@@ -1,24 +1,32 @@
-"""Sanity check: do the stored scores agree with seasons Tuscan foragers and local news remembered?
+"""Sanity check: do the stored scores agree with seasons foragers and local news remembered?
 
     uv run python -m api.model.sanity --label v1
 
 Each contrast pairs two windows of the porcini group score (an area, one or more seasons, a date
 range) and states which one local sources say was better. A window's value is its mean score over
 its woodland cell-days; a list of several seasons is that area's normal for the window. Contrasts
-and areas were written down, from the sources cited, before any area score was looked at. A
-contrast holding is a sanity check, not validation: the sources are news and forager blogs, often
-about a single valley, and several describe a record season in Coldiretti's recycled wording.
+and areas live in ``config/species/<region>/sanity.yaml``, written down from the sources cited
+before any area score was looked at. A contrast holding is a sanity check, not validation: the
+sources are news and forager blogs, often about a single valley, and several describe a record
+season in Coldiretti's recycled wording.
 """
+
+from __future__ import annotations
 
 import argparse
 import time
 from dataclasses import dataclass, field
 from datetime import date
+from pathlib import Path
+from typing import Annotated
 
 import duckdb
 import pandas as pd
+import yaml
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from api.grid.sources import data_dir
+from api.model.rules import DEFAULT_REGION, SPECIES_DIR, region_rules_dir
 from api.model.store import ScoreStore
 
 
@@ -76,171 +84,97 @@ class Contrast:
     lower: Window
 
 
-GARFAGNANA = [
-    "Camporgiano",
-    "Careggine",
-    "Castelnuovo di Garfagnana",
-    "Castiglione di Garfagnana",
-    "Fabbriche di Vergemoli",
-    "Fosciandora",
-    "Gallicano",
-    "Minucciano",
-    "Molazzana",
-    "Piazza al Serchio",
-    "Pieve Fosciana",
-    "San Romano in Garfagnana",
-    "Sillano Giuncugnano",
-    "Vagli Sotto",
-    "Villa Collemandina",
-]
-LUNIGIANA = [
-    "Aulla",
-    "Bagnone",
-    "Casola in Lunigiana",
-    "Comano",
-    "Filattiera",
-    "Fivizzano",
-    "Fosdinovo",
-    "Licciana Nardi",
-    "Mulazzo",
-    "Podenzana",
-    "Pontremoli",
-    "Tresana",
-    "Villafranca in Lunigiana",
-    "Zeri",
-]
-CASENTINO = [
-    "Bibbiena",
-    "Castel Focognano",
-    "Castel San Niccolò",
-    "Chitignano",
-    "Chiusi della Verna",
-    "Montemignaio",
-    "Ortignano Raggiolo",
-    "Poppi",
-    "Pratovecchio Stia",
-    "Talla",
-]
-MUGELLO = [
-    "Barberino di Mugello",
-    "Borgo San Lorenzo",
-    "Dicomano",
-    "Firenzuola",
-    "Marradi",
-    "Palazzuolo sul Senio",
-    "Scarperia e San Piero",
-    "Vicchio",
-]
-AMIATA = [
-    "Abbadia San Salvatore",
-    "Arcidosso",
-    "Castel del Piano",
-    "Castell'Azzara",
-    "Castiglione d'Orcia",
-    "Piancastagnaio",
-    "Radicofani",
-    "Roccalbegna",
-    "Santa Fiora",
-    "Seggiano",
-    "Semproniano",
-]
+class _Strict(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
 
-AREAS: dict[str, Area] = {
-    "garfagnana": Area(comuni=GARFAGNANA),
-    "lunigiana": Area(comuni=LUNIGIANA),
-    "northwest": Area(comuni=GARFAGNANA + LUNIGIANA),
-    "casentino": Area(comuni=CASENTINO),
-    "arezzo_outside_casentino": Area(provinces=["AR"], excluding=CASENTINO),
-    "siena_and_arezzo": Area(provinces=["SI", "AR"], excluding=CASENTINO + AMIATA),
-    "mugello": Area(comuni=MUGELLO),
-    "amiata": Area(comuni=AMIATA),
-    "vallombrosa": Area(comuni=["Reggello"]),
-    "abetone": Area(comuni=["Abetone Cutigliano"]),
-    "tuscany": Area(provinces=["*"]),
-}
 
-NORMAL = list(range(2017, 2026))  # the seasons scored for the check
+class _AreaDoc(_Strict):
+    comuni: list[str] = []
+    provinces: list[str] = []
+    excluding: list[str] = []
 
-CONTRASTS: list[Contrast] = [
-    Contrast(
-        "casentino_2023",
-        "2023: Casentino was the one good area of Arezzo province; the rest had an 'annata nera'",
-        "https://www.lanazione.it/arezzo/cronaca/lisola-felice-per-i-porcini-e-qui-tanti-cercatori-affollano-le-foreste-per-lesperto-e-una-stagione-al-top-56a1b784",
-        Window("casentino", [2023], "09-15", "10-31"),
-        Window("arezzo_outside_casentino", [2023], "09-15", "10-31"),
-    ),
-    Contrast(
-        "northwest_2023",
-        "2023: excellent in Lunigiana and Garfagnana, 'in piccola misura' near Siena and Arezzo",
-        "https://funghimagazine.it/aggiornamento-porcini-12-10-2023/",
-        Window("northwest", [2023], "09-15", "10-31"),
-        Window("siena_and_arezzo", [2023], "09-15", "10-31"),
-    ),
-    Contrast(
-        "october_2021",
-        "October 2021: an extraordinary flush in Garfagnana, an 'infame stagione' at Vallombrosa",
-        "https://www.giornaledibarga.it/2021/10/incredibile-nascita-di-funghi-nelle-selve-della-garfagnana-e-della-media-vallle-357672/",
-        Window("garfagnana", [2021], "10-01", "10-31"),
-        Window("vallombrosa", [2021], "10-01", "10-31"),
-    ),
-    Contrast(
-        "drought_2017",
-        "2017: a drought year, foragers 'a mani vuote'; autumn 2018 followed a very wet August",
-        "https://www.ilgiunco.net/2018/09/19/funghi-e-boom-in-toscana-e-in-maremma-autunno-record-dopo-le-piogge-di-agosto/",
-        Window("tuscany", [2018], "09-01", "10-31"),
-        Window("tuscany", [2017], "09-01", "10-31"),
-    ),
-    Contrast(
-        "abetone_2017_2019",
-        "Abetone, October: 'niente funghi' in 2017, 'bosco ricoperto di funghi' in 2019",
-        "https://funghintoscana.blogspot.com/2017/10/fine-corsa.html",
-        Window("abetone", [2019], "10-01", "10-31"),
-        Window("abetone", [2017], "10-01", "10-31"),
-    ),
-    Contrast(
-        "casentino_2024",
-        "September 2024: a record season in Casentino",
-        "https://www.lanazione.it/arezzo/cronaca/lisola-felice-dei-funghi-e-qui-il-casentino-come-le-dolomiti-annata-con-produzione-da-record-5a57ebf8",
-        Window("casentino", [2024], "09-01", "09-30"),
-        Window("casentino", NORMAL, "09-01", "09-30"),
-    ),
-    Contrast(
-        "mugello_2024_2025",
-        "Mugello, early September: no season yet after a dry 2024 summer, 'stagione d'oro' in 2025",
-        "https://www.lanazione.it/firenze/cronaca/stagione-doro-per-il-fungo-00cfcaa5",
-        Window("mugello", [2025], "09-01", "09-15"),
-        Window("mugello", [2024], "09-01", "09-15"),
-    ),
-    Contrast(
-        "northwest_2025_timing",
-        "2025: an early boom in Lunigiana and Garfagnana (late August, early September), then a "
-        "poor October of heat and drying wind",
-        "https://funghimagazine.it/aggiornamento-nascite-funghi-23-10-2025/",
-        Window("northwest", [2025], "08-25", "09-15"),
-        Window("northwest", [2025], "10-01", "10-31"),
-    ),
-    Contrast(
-        "amiata_2025_timing",
-        "2025: Amiata at its peak in early September, October poor",
-        "https://funghimagazine.it/buttata-record-2025-annata-eccezionale-per-i-porcini/",
-        Window("amiata", [2025], "08-25", "09-15"),
-        Window("amiata", [2025], "10-01", "10-31"),
-    ),
-    Contrast(
-        "garfagnana_2019",
-        "Garfagnana 2019: a record September and October",
-        "https://www.lanazione.it/lucca/cronaca/raccolta-funghi-c08befa0",
-        Window("garfagnana", [2019], "09-01", "10-31"),
-        Window("garfagnana", NORMAL, "09-01", "10-31"),
-    ),
-    Contrast(
-        "vallombrosa_2022",
-        "Vallombrosa, late October 2022: 'secco strasecco', never seen anything like it",
-        "https://funghintoscana.blogspot.com/2022/11/fine-dei-giochi.html",
-        Window("vallombrosa", NORMAL, "10-15", "10-31"),
-        Window("vallombrosa", [2022], "10-15", "10-31"),
-    ),
-]
+    @model_validator(mode="after")
+    def _named(self) -> _AreaDoc:
+        if not self.comuni and not self.provinces:
+            raise ValueError("an area needs comuni or provinces")
+        return self
+
+
+class _WindowDoc(_Strict):
+    area: str
+    seasons: list[int] | Annotated[str, Field(pattern=r"^normal$")]
+    start: Annotated[str, Field(pattern=r"^\d{2}-\d{2}$")]
+    end: Annotated[str, Field(pattern=r"^\d{2}-\d{2}$")]
+
+
+class _ContrastDoc(_Strict):
+    id: str
+    claim: Annotated[str, Field(min_length=1)]
+    source: Annotated[str, Field(min_length=1)]
+    higher: _WindowDoc
+    lower: _WindowDoc
+
+
+class _SanityDoc(_Strict):
+    areas: dict[str, _AreaDoc]
+    normal_seasons: list[int]
+    contrasts: Annotated[list[_ContrastDoc], Field(min_length=1)]
+
+
+class SanityConfigError(ValueError):
+    pass
+
+
+@dataclass(frozen=True)
+class SanityCheck:
+    areas: dict[str, Area]
+    contrasts: list[Contrast]
+    normal_seasons: list[int]
+
+
+def _window(doc: _WindowDoc, normal: list[int]) -> Window:
+    seasons = normal if doc.seasons == "normal" else list(doc.seasons)
+    if not seasons:
+        raise SanityConfigError("a window needs at least one season")
+    return Window(area=doc.area, seasons=seasons, start=doc.start, end=doc.end)
+
+
+def load_sanity(
+    region: str = DEFAULT_REGION,
+    *,
+    species_dir: Path = SPECIES_DIR,
+) -> SanityCheck:
+    """Load ``species/<region>/sanity.yaml``; raise SanityConfigError on the first fault."""
+    path = region_rules_dir(region, species_dir) / "sanity.yaml"
+    try:
+        raw = yaml.safe_load(path.read_text())
+        doc = _SanityDoc.model_validate(raw)
+    except (OSError, yaml.YAMLError, ValidationError) as error:
+        raise SanityConfigError(f"{path.name}: {error}") from error
+
+    areas = {
+        name: Area(comuni=a.comuni, provinces=a.provinces, excluding=a.excluding)
+        for name, a in doc.areas.items()
+    }
+    contrasts: list[Contrast] = []
+    for item in doc.contrasts:
+        higher = _window(item.higher, doc.normal_seasons)
+        lower = _window(item.lower, doc.normal_seasons)
+        for window in (higher, lower):
+            if window.area not in areas:
+                raise SanityConfigError(f"{item.id}: unknown area {window.area!r}")
+        if not item.source.startswith("http"):
+            raise SanityConfigError(f"{item.id}: source must be a URL")
+        contrasts.append(
+            Contrast(
+                id=item.id,
+                claim=item.claim,
+                source=item.source,
+                higher=higher,
+                lower=lower,
+            )
+        )
+    return SanityCheck(areas=areas, contrasts=contrasts, normal_seasons=list(doc.normal_seasons))
 
 
 def _window_mean(scores: pd.DataFrame, cells: set[str], window: Window) -> tuple[float, int]:
@@ -257,7 +191,7 @@ def evaluate_contrasts(
     contrasts: list[Contrast],
     scores: pd.DataFrame,
     cells: pd.DataFrame,
-    areas: dict[str, Area] = AREAS,
+    areas: dict[str, Area],
 ) -> pd.DataFrame:
     """One row per contrast: both windows' mean scores and whether the higher one is higher."""
     resolved = {name: area_cells(cells, area) for name, area in areas.items()}
@@ -283,21 +217,22 @@ def evaluate_contrasts(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--label", required=True)
-    parser.add_argument("--region", default="tuscany")
+    parser.add_argument("--region", default=DEFAULT_REGION)
     parser.add_argument("--group", default="porcini")
     args = parser.parse_args()
     started = time.monotonic()
+    sanity = load_sanity(args.region)
     root = data_dir()
     cells = pd.read_parquet(
         root / "grid" / args.region / "cells.parquet",
         columns=["cell_id", "comune_name", "province", "woodland"],
     )
-    seasons = sorted({s for c in CONTRASTS for w in (c.higher, c.lower) for s in w.seasons})
+    seasons = sorted({s for c in sanity.contrasts for w in (c.higher, c.lower) for s in w.seasons})
     store = ScoreStore(root / "scores" / args.region)
     scores = store.read(
         duckdb.connect(), args.group, date(min(seasons), 1, 1), date(max(seasons), 12, 31)
     ).df()
-    result = evaluate_contrasts(CONTRASTS, scores, cells)
+    result = evaluate_contrasts(sanity.contrasts, scores, cells, sanity.areas)
     out = root / "backtest" / args.region / args.label
     out.mkdir(parents=True, exist_ok=True)
     result.to_csv(out / f"sanity_{args.group}.csv", index=False)

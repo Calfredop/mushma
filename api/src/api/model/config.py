@@ -1,7 +1,11 @@
-"""Model config (``config/model.yaml``): species groups and weather preparation."""
+"""Model config (``config/model.yaml``): species groups and weather preparation.
+
+National defaults live in ``model.yaml``. A region may override parts (today:
+``precipitation_scale``) via a ``model:`` block in ``config/regions/<id>.yaml``.
+"""
 
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 import numpy as np
 import yaml
@@ -9,6 +13,18 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 MODEL_FILE = CONFIG_DIR / "model.yaml"
+REGIONS_DIR = CONFIG_DIR / "regions"
+
+
+def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
+    """Copy ``base`` with ``override`` applied; nested dicts merge, other values replace."""
+    merged = dict(base)
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = _deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
 
 
 class _Strict(BaseModel):
@@ -119,5 +135,21 @@ class ModelConfig(_Strict):
         }
 
 
-def load_model_config(path: Path = MODEL_FILE) -> ModelConfig:
-    return ModelConfig.model_validate(yaml.safe_load(path.read_text()))
+def load_model_config(
+    path: Path = MODEL_FILE,
+    *,
+    region: str | None = None,
+    regions_dir: Path = REGIONS_DIR,
+) -> ModelConfig:
+    """Load national model config, optionally merging a region's ``model:`` overrides.
+
+    Missing region files (or no ``model:`` block) leave the national values unchanged.
+    """
+    raw = yaml.safe_load(path.read_text())
+    if region is not None:
+        region_path = regions_dir / f"{region}.yaml"
+        if region_path.is_file():
+            override = (yaml.safe_load(region_path.read_text()) or {}).get("model") or {}
+            if override:
+                raw = _deep_merge(raw, override)
+    return ModelConfig.model_validate(raw)

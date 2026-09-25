@@ -10,16 +10,18 @@ import { type Credit, DATA_CREDITS, SOFTWARE_CREDITS } from '../credits.js'
 import { DISCLAIMER_SECTIONS, type DisclaimerSection } from '../disclaimer.js'
 import en from '../i18n/locales/en.json' with { type: 'json' }
 import it from '../i18n/locales/it.json' with { type: 'json' }
+import { REGIONS } from '../regions/index.js'
 import { ROUTES, SITE_URL } from '../routes.js'
 import type { JsonLdLanguage } from './structuredData.js'
+import type { Species } from '../state/urlState.js'
 
 interface Copy {
   seo: {
+    hub: { description: string }
     credits: { description: string }
     terms: { description: string }
     privacy: { description: string }
   }
-  intro: Record<string, string>
   disclaimer: {
     sections: Record<DisclaimerSection, { title: string; body: string }>
     inspection: string
@@ -35,7 +37,6 @@ interface Copy {
   structuredData: {
     appDescription: string
     features: Record<string, string>
-    dataset: Record<string, string>
     score: { name: string; description: string }
     method: string
   }
@@ -64,6 +65,7 @@ export function buildLlmsTxt(lang: JsonLdLanguage = 'it'): string {
   const copy = COPY[lang]
   const { structuredData: sd } = copy
   const mapRoutes = ROUTES.filter((route) => route.region !== null)
+  const hub = ROUTES.find((route) => route.path === '/')
 
   const blocks = [
     '# Mappa Funghi',
@@ -79,13 +81,16 @@ export function buildLlmsTxt(lang: JsonLdLanguage = 'it'): string {
     copy.llms.privacy,
     [copy.llms.featuresIntro, '', ...Object.values(sd.features).map((f) => `- ${f}`)],
     `## ${copy.llms.mapsTitle}`,
-    mapRoutes.map((route) =>
-      link(
-        sd.dataset[route.seoKey],
-        `${SITE_URL}${route.path}`,
-        copy.intro[route.seoKey],
-      ),
-    ),
+    [
+      ...(hub ? [link('Mappa Funghi', `${SITE_URL}/`, copy.seo.hub.description)] : []),
+      ...mapRoutes.map((route) => {
+        const region = REGIONS[route.region!]
+        const key = (route.seoKey === 'region' ? 'region' : route.seoKey) as
+          'region' | Species
+        const locale = region.copy[lang]
+        return link(locale.dataset[key], `${SITE_URL}${route.path}`, locale.intro[key])
+      }),
+    ],
     `## ${copy.credits.dataTitle}`,
     [
       link(copy.credits.title, `${SITE_URL}/credits`, copy.seo.credits.description),

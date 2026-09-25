@@ -10,7 +10,7 @@ declare global {
 // The phone sheet: an overlay on the map with peek, half and full snaps (the default project is
 // a Pixel 7, with touch).
 
-async function open(page: Page, path = '/') {
+async function open(page: Page, path = '/toscana') {
   await page.goto(path)
   await page.getByRole('button', { name: 'Ho capito' }).click()
   await page.getByRole('button', { name: 'Rifiuta' }).click()

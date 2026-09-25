@@ -34,7 +34,7 @@ async function bestCellOnScreen(page: Page) {
 }
 
 test('map → spot forecast → why this score', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/toscana')
 
   // First visit: the disclaimer.
   const disclaimer = page.getByRole('dialog', { name: 'Prima di usare la mappa' })
@@ -42,7 +42,7 @@ test('map → spot forecast → why this score', async ({ page }) => {
   await disclaimer.getByRole('button', { name: 'Ho capito' }).click()
   await expect(disclaimer).toBeHidden()
 
-  // First-time visitors land on the combined view (`/toscana`); switch to porcini.
+  // Combined view on the region path; switch to porcini.
   await expect(page).toHaveURL(/\/toscana$/)
   await expect(page.getByRole('radio', { name: 'Tutte' })).toBeChecked()
   await page.getByRole('radio', { name: 'Porcini' }).click()
@@ -71,12 +71,11 @@ test('map → spot forecast → why this score', async ({ page }) => {
   await expect(page.getByRole('complementary')).toHaveAttribute('data-snap', 'full')
   const why = page.getByRole('region', { name: 'Perché questo indice' })
   await expect(why).toBeVisible()
-  // The factors holding nothing back fold into one row; opening it shows them in place.
-  await why
-    .getByRole('button', {
-      name: /^(Altri \d+ fattori già ideali|Un altro fattore già ideale) \(1,00\)$/,
-    })
-    .click()
+  // The factors holding nothing back fold into one row when any sit at 1.00.
+  const folded = why.getByRole('button', {
+    name: /^(Altri \d+ fattori già ideali|Un altro fattore già ideale) \(1,00\)$/,
+  })
+  if (await folded.count()) await folded.click()
   await expect(why.getByRole('meter', { name: 'Stagione' })).toBeVisible()
   await expect(why.getByRole('listitem')).not.toHaveCount(0)
 
@@ -87,7 +86,7 @@ test('map → spot forecast → why this score', async ({ page }) => {
 })
 
 test('seasons on the map, a replayed day, and the outlook', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/toscana')
   await page.getByRole('button', { name: 'Ho capito' }).click()
   // The cookie banner covers the sheet's buttons on a phone.
   await page.getByRole('button', { name: 'Rifiuta' }).click()
@@ -127,7 +126,7 @@ test('seasons on the map, a replayed day, and the outlook', async ({ page }) => 
 test('analysis mode: two factors on the map, played through the days', async ({
   page,
 }) => {
-  await page.goto('/')
+  await page.goto('/toscana')
   await page.getByRole('button', { name: 'Ho capito' }).click()
   // The cookie banner covers the play button on a phone.
   await page.getByRole('button', { name: 'Rifiuta' }).click()
@@ -166,4 +165,17 @@ test('analysis mode: two factors on the map, played through the days', async ({
   await expect(page).toHaveURL(/date=\d{4}-\d{2}-\d{2}/)
   await page.getByRole('button', { name: 'Metti in pausa' }).click()
   await expect(page.getByRole('button', { name: 'Riproduci i giorni' })).toBeVisible()
+})
+
+test('hub at / lists regions and enters one', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByRole('heading', { name: 'Regioni coperte' })).toBeVisible()
+  await page
+    .getByRole('button', { name: /Toscana/ })
+    .first()
+    .click()
+  await expect(page).toHaveURL(/\/toscana$/)
+  await expect(page.getByRole('radio', { name: 'Tutte' })).toBeVisible()
 })

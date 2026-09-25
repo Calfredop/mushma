@@ -95,6 +95,13 @@ def _coord(value: float) -> str:
     return f"{value:.4f}".rstrip("0").rstrip(".")
 
 
+def seasonal_points(points: pd.DataFrame, stride: int) -> list[Point]:
+    """Land weather points thinned by ``stride`` (1 = all; 3 ≈ 0.6° on a 0.2° lattice)."""
+    land = request_points_of(points)
+    stride = max(1, stride)
+    return land[::stride]
+
+
 def seasonal_requests(
     config: WeatherConfig, points: list[Point], timezone: str
 ) -> list[SeasonalRequest]:
@@ -184,7 +191,8 @@ def fetch_seasonal(
 ) -> pd.DataFrame:
     """Every weekly and monthly value for the land points, from the cache when fresh."""
     frames = []
-    for request in seasonal_requests(config, request_points_of(points), timezone):
+    stride = config.seasonal.point_stride if config.seasonal else 1
+    for request in seasonal_requests(config, seasonal_points(points, stride), timezone):
         envelope = client.fetch_envelope(request, max_age_s)
         fetched_at = datetime.fromtimestamp(envelope["fetched_at"], UTC)
         frames.append(parse_seasonal(envelope["payload"], request, fetched_at))

@@ -4,15 +4,13 @@
  * the Italian-only indexed copy; this mirrors it for the current UI language and route.
  */
 import type { RouteMatch, StaticPage } from '../routes'
-import type { Species } from '../state/urlState'
 import { serializeJsonLd } from './structuredData'
 
-export type SeoKey = 'region' | Species | StaticPage
+export type SeoKey = 'hub' | StaticPage
 
-/** The `seo.<key>` entry that matches a route, or null for a 404 (no page to index). */
+/** Locale `seo.<key>` for hub/static pages; null for region pages (registry copy) and 404s. */
 export function seoKeyForRoute(route: RouteMatch): SeoKey | null {
-  if (route.kind === 'region')
-    return route.species === 'combined' ? 'region' : route.species
+  if (route.kind === 'hub') return 'hub'
   if (route.kind === 'static') return route.page
   return null
 }

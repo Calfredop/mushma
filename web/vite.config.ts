@@ -120,9 +120,9 @@ function vendorMaplibre(): Plugin {
  * Writes one prerendered HTML per route (`src/routes.ts` → `ROUTES`) from the built
  * `dist/index.html`: its own title, meta description, canonical, Open Graph + Twitter tags
  * and JSON-LD (`src/seo/prerender.ts`), plus `sitemap.xml`, `robots.txt`, `llms.txt` and
- * `404.html`. `closeBundle` is the last build hook, so every other plugin (PWA's manifest link
- * and registerSW script included) has already written its output by the time this reads the
- * template.
+ * `404.html`. The hub (`/`) overwrites `dist/index.html`. `closeBundle` is the last build
+ * hook, so every other plugin (PWA's manifest link and registerSW script included) has already
+ * written its output by the time this reads the template.
  */
 function prerenderRoutes(): Plugin {
   return {
@@ -133,9 +133,14 @@ function prerenderRoutes(): Plugin {
       const template = readFileSync(resolve(outDir, 'index.html'), 'utf8')
       const heads = routeHeads()
       for (const head of heads) {
-        const outFile = resolve(outDir, `.${head.path}`, 'index.html')
-        mkdirSync(dirname(outFile), { recursive: true })
-        writeFileSync(outFile, renderRouteHtml(template, head))
+        const html = renderRouteHtml(template, head)
+        if (head.path === '/') {
+          writeFileSync(resolve(outDir, 'index.html'), html)
+        } else {
+          const outFile = resolve(outDir, `.${head.path}`, 'index.html')
+          mkdirSync(dirname(outFile), { recursive: true })
+          writeFileSync(outFile, html)
+        }
       }
       writeFileSync(resolve(outDir, 'sitemap.xml'), buildSitemapXml(heads))
       writeFileSync(resolve(outDir, 'robots.txt'), buildRobotsTxt())
@@ -160,7 +165,7 @@ function prerenderRoutes(): Plugin {
  *   caching those and the map still works, just without that tile offline.
  */
 const API_ROUTE_RE =
-  /\/(scores|factors|spot|cells\/[^/?]+|hotspots|sightings|comuni|history\/[^/?]+|outlook|status)(\?|$)/
+  /\/(scores|factors|spot|cells\/[^/?]+|hotspots|sightings|comuni|forest-types|history\/[^/?]+|outlook|status|species|regions|overview)(\?|$)/
 
 function tileOrigin(url: string | undefined): string | undefined {
   if (!url) return undefined
@@ -184,9 +189,9 @@ function pwaPlugin(env: Record<string, string>): Plugin[] {
       name: 'Mappa Funghi',
       short_name: 'Mappa Funghi',
       description:
-        'Fruiting-conditions scores for porcini, ovoli and gallinacci in Tuscany.',
+        'Fruiting-conditions scores for porcini, ovoli and gallinacci across Italy.',
       lang: 'it',
-      start_url: '/toscana',
+      start_url: '/',
       scope: '/',
       display: 'standalone',
       background_color: '#edf0ea',

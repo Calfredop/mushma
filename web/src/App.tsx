@@ -33,6 +33,7 @@ import {
   useSightingTotals,
   useSpotForecast,
   useStatus,
+  useOverview,
 } from './api/queries'
 import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
@@ -45,17 +46,21 @@ import { InstallBanner } from './components/InstallBanner'
 import { PanelBoundary } from './components/PanelBoundary'
 import { Legend } from './components/Legend'
 import { PlaceSearch } from './components/PlaceSearch'
+import { RegionSwitcher } from './components/RegionSwitcher'
 import { Sheet, type SheetLayout } from './components/Sheet'
 import { SpeciesSwitcher } from './components/SpeciesSwitcher'
 import { TimeBar } from './components/TimeBar'
 import { ViewTabs } from './components/ViewTabs'
 import {
   DATE_WINDOW,
-  HISTORY_START,
   HOTSPOT_LIMIT,
   REPLAY_SIGHTINGS_DAYS,
   REPO_URL,
   SIGHTINGS_WINDOW_DAYS,
+  findRegionAt,
+  listRegions,
+  rememberRegion,
+  servedBounds,
 } from './config'
 import { getConsent } from './consent'
 import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
@@ -69,6 +74,7 @@ import './i18n'
 import { type AnalysisView, ConditionsMap } from './map/ConditionsMap'
 import type { MapPadding } from './map/padding'
 import { CreditsPage } from './pages/CreditsPage'
+import { HubPage } from './pages/HubPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { TermsPage } from './pages/TermsPage'
@@ -158,11 +164,18 @@ function MapScreen() {
   const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
   // A key, not a translated string, so it follows a language switch.
   const [locateError, setLocateError] = useState<LocateError | null>(null)
+  /** Another served region where a GPS/search landed — offer one-tap switch. */
+  const [switchOffer, setSwitchOffer] = useState<{
+    slug: string
+    lat: number
+    lon: number
+  } | null>(null)
   // The last GPS fix, for the dot on the map. Never in the URL: a shared link doesn't carry it.
   const [userPosition, setUserPosition] = useState<{ lat: number; lon: number } | null>(
     null,
   )
   const online = useOnline()
+  const apiRegionId = app.region.apiRegionId
 
   // What the map shows: a day (the date strip or a replayed past day), or a whole season.
   const seasonMode = app.season !== null
@@ -171,33 +184,49 @@ function MapScreen() {
   const analysis = app.mode === 'analysis'
   const factorDay = !seasonMode && inStrip
   const factorSpecies = app.species === 'combined' ? 'porcini' : app.species
-  const scores = useScores(app.species, app.date, app.today, !seasonMode && !analysis)
-  const factors = useFactors(factorSpecies, app.date, app.today, analysis && factorDay)
+  const scores = useScores(
+    apiRegionId,
+    app.species,
+    app.date,
+    app.today,
+    !seasonMode && !analysis,
+  )
+  const factors = useFactors(
+    apiRegionId,
+    factorSpecies,
+    app.date,
+    app.today,
+    analysis && factorDay,
+  )
   // The Bosco layer's forest types: static grid data, fetched once regardless of the toggle's
   // own state, so switching it on never waits on a request.
-  const forestTypes = useForestTypeCells(analysis)
-  const seasonMap = useSeasonMap(app.season, app.species)
+  const forestTypes = useForestTypeCells(apiRegionId, analysis)
+  const seasonMap = useSeasonMap(apiRegionId, app.season, app.species)
   const hotspots = useHotspots(
+    apiRegionId,
     app.species,
     app.date,
     app.today,
     HOTSPOT_LIMIT,
     !seasonMode && app.view === 'now',
   )
-  const spotForecast = useSpotForecast(app.spot, app.today)
-  const dataStatus = useStatus()
-  const comuni = useComuni(app.view !== 'now')
+  const spotForecast = useSpotForecast(apiRegionId, app.spot, app.today)
+  const dataStatus = useStatus(apiRegionId)
+  const comuni = useComuni(apiRegionId, app.view !== 'now')
   const seasons = useSeasons(
+    apiRegionId,
     app.species,
     app.comune,
     app.view === 'seasons' || seasonMode,
   )
   const outlook = useOutlook(
+    apiRegionId,
     app.view === 'outlook' && app.species !== 'combined' ? app.species : null,
     app.comune,
   )
   // A chosen zone's plausible species, in the seasons and outlook views.
   const plausibleQuery = usePlausibleSpecies(
+    apiRegionId,
     app.comune,
     app.view !== 'now' && app.comune !== null,
   )
@@ -218,7 +247,12 @@ function MapScreen() {
           since: addDays(app.date, -REPLAY_SIGHTINGS_DAYS),
           until: addDays(app.date, REPLAY_SIGHTINGS_DAYS),
         }
-  const sightings = useSightingTotals(app.species, sightingsRange, app.sightingsVisible)
+  const sightings = useSightingTotals(
+    apiRegionId,
+    app.species,
+    sightingsRange,
+    app.sightingsVisible,
+  )
   const replayWindow =
     !seasonMode && !inStrip && sightingsRange.until
       ? t('sightings.replayWindow', {
@@ -274,8 +308,10 @@ function MapScreen() {
   const { today } = app
   const prefetchFactors = useCallback(
     (date: IsoDate) =>
-      void queryClient.prefetchQuery(factorsQuery(factorSpecies, date, today)),
-    [queryClient, factorSpecies, today],
+      void queryClient.prefetchQuery(
+        factorsQuery(apiRegionId, factorSpecies, date, today),
+      ),
+    [queryClient, apiRegionId, factorSpecies, today],
   )
   const playback = usePlayback({
     days: stripDays,
@@ -285,7 +321,7 @@ function MapScreen() {
     enabled: analysis && factorDay,
   })
 
-  const { selectSpot, flyTo, setComune, setDate, setSpecies } = app
+  const { selectSpot, flyTo, setComune, setDate, setSpecies, setRegion } = app
   const handleSpeciesChange = useCallback(
     (species: SpeciesOrCombined) => {
       track({ name: 'species-switch', data: { species } })
@@ -323,12 +359,47 @@ function MapScreen() {
       setSnap('half')
       setPanelCollapsed(false)
       setLocateError(null)
+      setSwitchOffer(null)
     },
     [selectSpot, setPanelCollapsed],
   )
 
+  const offerOrOpen = useCallback(
+    (lat: number, lon: number, method: 'map' | 'search' | 'gps' | 'hotspot') => {
+      if (inBounds(lat, lon, app.region.bounds)) {
+        openSpot({ kind: 'point', lat, lon }, method, { lat, lon, zoom: SPOT_ZOOM })
+        return
+      }
+      const other = findRegionAt(lat, lon)
+      if (other && other.slug !== app.region.slug) {
+        setUserPosition({ lat, lon })
+        setSwitchOffer({ slug: other.slug, lat, lon })
+        setLocateError(null)
+        return
+      }
+      setLocateError('outside')
+    },
+    [app.region.bounds, app.region.slug, openSpot],
+  )
+
+  const acceptSwitch = useCallback(() => {
+    if (!switchOffer) return
+    const { slug, lat, lon } = switchOffer
+    setSwitchOffer(null)
+    setLocateError(null)
+    setRegion(slug)
+    window.setTimeout(() => {
+      openSpot({ kind: 'point', lat, lon }, 'gps', { lat, lon, zoom: SPOT_ZOOM })
+    }, 0)
+  }, [switchOffer, setRegion, openSpot])
+
   // "La mia posizione" in the search opens the forecast where you stand; the button on the map
   // only goes there.
+  const onOtherRegion = useCallback((slug: string, lat: number, lon: number) => {
+    setUserPosition({ lat, lon })
+    setSwitchOffer({ slug, lat, lon })
+    setLocateError(null)
+  }, [])
   const spotLocate = useLocate({
     onLocated: useCallback(
       (lat: number, lon: number) => {
@@ -339,18 +410,21 @@ function MapScreen() {
     ),
     onError: setLocateError,
     bounds: app.region.bounds,
+    onOtherRegion,
   })
   const centerLocate = useLocate({
     onLocated: useCallback(
       (lat: number, lon: number) => {
         setUserPosition({ lat, lon })
         setLocateError(null)
+        setSwitchOffer(null)
         flyTo({ lat, lon, zoom: SPOT_ZOOM })
       },
       [flyTo],
     ),
     onError: setLocateError,
     bounds: app.region.bounds,
+    onOtherRegion,
   })
   const locating = spotLocate.locating || centerLocate.locating
 
@@ -383,12 +457,7 @@ function MapScreen() {
       lon: hotspot.lon,
       zoom: HOTSPOT_ZOOM,
     })
-  const onPlace = (place: Place) =>
-    openSpot({ kind: 'point', lat: place.lat, lon: place.lon }, 'search', {
-      lat: place.lat,
-      lon: place.lon,
-      zoom: SPOT_ZOOM,
-    })
+  const onPlace = (place: Place) => offerOrOpen(place.lat, place.lon, 'search')
 
   // On a phone the map runs under the sheet: camera moves keep a place clear of it, as it is
   // or at half, where a chosen spot opens (full leaves too little map to aim at).
@@ -410,6 +479,10 @@ function MapScreen() {
   }, [desktop, panelCollapsed, sheetLayout, snap])
 
   const introKey = app.species === 'combined' ? 'region' : app.species
+  const introCopy = app.region.copy[language].intro[introKey]
+  const offeredRegion = switchOffer
+    ? (listRegions().find((r) => r.slug === switchOffer.slug) ?? null)
+    : null
 
   const infoMenuActions = {
     onDisclaimer: () => setDisclaimerOpen(true),
@@ -431,17 +504,19 @@ function MapScreen() {
           : undefined
   const status = locating
     ? t('locate.locating')
-    : !online
-      ? t('errors.offline')
-      : analysis
-        ? (analysisNote ?? (locateError && t(`locate.${locateError}`)))
-        : layer.isError
-          ? seasonMode
-            ? t(scoresUnavailable ? 'season.noData' : 'map.loadError')
-            : t(scoresUnavailable ? 'map.noData' : 'map.loadError')
-          : layer.isPending || layer.isPlaceholderData
-            ? t(seasonMode ? 'season.loading' : 'map.loading')
-            : locateError && t(`locate.${locateError}`)
+    : offeredRegion
+      ? undefined
+      : !online
+        ? t('errors.offline')
+        : analysis
+          ? (analysisNote ?? (locateError && t(`locate.${locateError}`)))
+          : layer.isError
+            ? seasonMode
+              ? t(scoresUnavailable ? 'season.noData' : 'map.loadError')
+              : t(scoresUnavailable ? 'map.noData' : 'map.loadError')
+            : layer.isPending || layer.isPlaceholderData
+              ? t(seasonMode ? 'season.loading' : 'map.loading')
+              : locateError && t(`locate.${locateError}`)
 
   return (
     <LazyMotion features={loadMotionFeatures} strict>
@@ -486,9 +561,11 @@ function MapScreen() {
             onHotspotClick={onHotspot}
           />
           <div className={styles.species}>
+            <RegionSwitcher value={app.region} onChange={setRegion} />
             <SpeciesSwitcher
               value={app.species}
               onChange={handleSpeciesChange}
+              species={app.region.species}
               noCombined={analysis}
             />
           </div>
@@ -517,6 +594,17 @@ function MapScreen() {
               <InfoMenu placement="left" className={styles.fab} {...infoMenuActions} />
             )}
           </div>
+          {offeredRegion && (
+            <p className={styles.status} role="status">
+              {t('locate.switchOffer', { region: offeredRegion.name[language] })}
+              <button type="button" onClick={acceptSwitch}>
+                {t('locate.switch', { region: offeredRegion.name[language] })}
+              </button>
+              <button type="button" onClick={() => setSwitchOffer(null)}>
+                {t('locate.dismissSwitch')}
+              </button>
+            </p>
+          )}
           {status && (
             <p className={styles.status} role="status">
               {status}
@@ -553,7 +641,7 @@ function MapScreen() {
                 today={app.today}
                 date={app.date}
                 window={DATE_WINDOW}
-                historyStart={HISTORY_START}
+                historyStart={app.region.historyStart}
                 season={app.season}
                 seasons={seasonYears}
                 onDate={handleDateChange}
@@ -615,7 +703,7 @@ function MapScreen() {
                 locating={spotLocate.locating}
                 // A phone: the sheet comes up full, so the list has room above the keyboard.
                 onFocus={() => setSnap('full')}
-                bounds={app.region.bounds}
+                bounds={servedBounds()}
               />
             </>
           }
@@ -651,7 +739,7 @@ function MapScreen() {
                   </button>
                   {/* Folded, not left out: it is what the page says to search engines too. */}
                   <p id="intro-more" hidden={!introOpen}>
-                    {t(`intro.${introKey}`)}
+                    {introCopy}
                   </p>
                 </div>
               )}
@@ -803,8 +891,30 @@ function MapScreen() {
 function Root() {
   const app = useAppState()
   const { t, i18n } = useTranslation()
+  const language = i18n.resolvedLanguage as Language
+  const overview = useOverview(app.species, app.date, app.today, app.route.kind === 'hub')
 
   useEffect(() => {
+    if (app.route.kind === 'hub') {
+      document.title = t('seo.hub.title')
+      setDocumentDescription(t('seo.hub.description'))
+      setDocumentCanonical(`${SITE_URL}/`)
+      setDocumentRobots(false)
+      const siteRoute = siteRouteFor(app.route)
+      setDocumentJsonLd(siteRoute && structuredData(siteRoute, currentLanguage()))
+      return
+    }
+    if (app.route.kind === 'region') {
+      const seoKey = app.route.species === 'combined' ? 'region' : app.route.species
+      const seo = app.route.region.copy[language].seo[seoKey]
+      document.title = seo.title
+      setDocumentDescription(seo.description)
+      setDocumentCanonical(`${SITE_URL}${app.path}`)
+      setDocumentRobots(false)
+      const siteRoute = siteRouteFor(app.route)
+      setDocumentJsonLd(siteRoute && structuredData(siteRoute, currentLanguage()))
+      return
+    }
     const key = seoKeyForRoute(app.route)
     document.title = t(key ? `seo.${key}.title` : 'notFound.title')
     setDocumentDescription(key ? t(`seo.${key}.description`) : undefined)
@@ -812,9 +922,49 @@ function Root() {
     setDocumentRobots(key === null)
     const siteRoute = siteRouteFor(app.route)
     setDocumentJsonLd(siteRoute && structuredData(siteRoute, currentLanguage()))
-  }, [app.route, app.path, t, i18n.resolvedLanguage])
+  }, [app.route, app.path, t, language, i18n.resolvedLanguage])
 
-  return app.route.kind === 'not-found' ? <NotFoundPage /> : <MapScreen />
+  if (app.route.kind === 'not-found') return <NotFoundPage />
+  if (app.route.kind === 'hub') {
+    return (
+      <HubShell
+        overview={overview.data?.regions}
+        onSelectRegion={(slug) => {
+          rememberRegion(slug)
+          app.navigate(regionPath(slug))
+        }}
+      />
+    )
+  }
+  return <MapScreen />
+}
+
+/** Hub with the same first-visit disclaimer and cookie banner as the map. */
+function HubShell({
+  overview,
+  onSelectRegion,
+}: {
+  overview: import('./api/queries').RegionOverview[] | undefined
+  onSelectRegion: (slug: string) => void
+}) {
+  const { navigate } = useAppState()
+  const [disclaimerOpen, setDisclaimerOpen] = useState(() => !disclaimerAccepted())
+  const [cookieBannerOpen, setCookieBannerOpen] = useState(() => getConsent() === null)
+
+  return (
+    <>
+      <HubPage overview={overview} onSelectRegion={onSelectRegion} />
+      <DisclaimerDialog open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
+      <CookieBanner
+        open={cookieBannerOpen}
+        onClose={() => setCookieBannerOpen(false)}
+        onPrivacyClick={() => {
+          setCookieBannerOpen(false)
+          navigate('/privacy')
+        }}
+      />
+    </>
+  )
 }
 
 export default function App() {

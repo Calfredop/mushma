@@ -18,8 +18,12 @@ fruiting — today, over the next week, across the season, and in past seasons.
 
 ## Current focus
 
-**Tuscany, Italy only.** Keep the region definition in config (boundary, grid,
-data extents) so another region could be added later without a rewrite.
+**Italy, region by region.** Tuscany is live; every other region is a standalone
+`region-*` plan and its own rail, started only after the multi-region foundation
+(`feat-full-italy-coverage`) is merged and deployed. Region definitions stay in
+config (boundary, grid, data extents, forest source, species rules). The app
+shows one region at a time; `/` is a national hub that lists and colours every
+served region.
 
 ### Species (v1)
 
@@ -165,8 +169,19 @@ All seven milestones below are v1; there is no smaller cut.
   gzip to ~40 KB, but isn't needed at this size). A JSON array of ~11k points
   is also well inside what MapLibre's point/circle layers render smoothly, and
   keeping JSON avoids a second encoding the frontend (already built against
-  this contract, M5) would have to learn. Revisit only if the grid grows much
-  denser or another region is added.
+  this contract, M5) would have to learn. **Payload budgets hold per region**:
+  the app loads one region at a time; a national overview uses a small
+  aggregate endpoint (`GET /overview`) rather than every cell. Revisit only if
+  a single region's grid grows much denser.
+- **Multi-region API.** Every data route takes a `region` query parameter
+  (default `tuscany`, so installed PWAs keep working). API ids are Italian
+  slugs with underscores (`emilia_romagna`); Tuscany keeps `tuscany`.
+  `GET /regions` lists served regions; `GET /overview` returns per-region mean
+  score and share of woodland cells at or above `good_score` for the hub map.
+- **Species rules per region.** Rule sets live under
+  `config/species/<region>/` (Tuscany under `tuscany/`), sharing one
+  bibliography. A region may omit a species group; the API's species list
+  follows what that region has on disk.
 - **Areas.** Aggregation for the seasonal outlook, history and hotspot labels
   uses **comuni** (ISTAT boundaries). A hotspot is a cluster of adjacent
   high-scoring cells, labelled by comune and nearest named place.
@@ -174,14 +189,18 @@ All seven milestones below are v1; there is no smaller cut.
   weather on a coarser point set and downscale to cells. Adjust temperature by
   elevation (lapse rate); rain can be taken from the nearest or interpolated
   point. Request daily data in `Europe/Rome` so a day's rain is a local day.
-  Decided in M2 (details in `.gavin-root/docs/weather-ingest.md`):
-  - **Sources.** History is Open-Meteo's ERA5-Land archive (`era5_seamless`:
-    ERA5-Land, with rain, snow and wind from ERA5), about 6 days behind real
-    time. The recent days and the +7-day forecast come from ECMWF IFS 9 km
-    (`ecmwf_ifs`), which uses the same land model and soil layers. Reanalysis
-    wins over forecast for any day both have, and each downscaled value records
-    which one it used.
-  - **Points.** Every other ERA5-Land node, a 0.2° lattice (103 land nodes).
+  Decided in M2, with the history source updated for multi-region
+  (`feat-full-italy-coverage`; details in `.gavin-root/docs/weather-ingest.md`):
+  - **Sources.** History comes from the **Copernicus Climate Data Store**
+    (ERA5-Land in bulk, no per-call cap), so a new region's 2016→today backfill
+    does not burn Open-Meteo quota. Tuscany keeps its already-stored Open-Meteo
+    archive history. The recent days and the +7-day forecast stay on Open-Meteo
+    ECMWF IFS 9 km (`ecmwf_ifs`); seasonal stays on Open-Meteo's free tier. The
+    daily job for 20 regions must fit about half of Open-Meteo's 10,000
+    calls/day. Reanalysis wins over forecast for any day both have, and each
+    downscaled value records which one it used.
+  - **Points.** Every other ERA5-Land node, a 0.2° lattice (103 land nodes for
+    Tuscany). The lattice stays 0.2° so the forecast seam is unchanged.
     Compared with the full 0.1° grid it needs about a third of the API calls.
     It loses about 0.3 °C on temperatures and 3 mm on wet 3-day rain totals
     (leave-out test, 2024).
@@ -192,12 +211,8 @@ All seven milestones below are v1; there is no smaller cut.
   - **History depth.** Backfill from **2016-01-01**, newest year first. The
     seasons from 2019 hold 90 % of the dated Tuscan GBIF records for the three
     species, and ten years give the percent- and percentile-of-normal factors a
-    first baseline. On the free API a year of history costs about 3,000 of the
-    10,000 daily calls, so the backfill runs in the background for about four
-    days. Going deeper, e.g. the 1991–2020 normal for the seasonal outlook
-    (M6), is a config change and a re-run. At about 75,000 calls that is only
-    worth it if M6 needs cell-level normals; area-level normals can come
-    cheaper from ERA5 at 0.25°.
+    first baseline. CDS bulk download replaces the Open-Meteo archive backfill
+    that used to cost ~3,000 of 10,000 daily calls per year.
 - **Basemap: self-hosted.** Decided in M5. Two files, both extracted by
   `web/scripts/extract-basemap.sh` and pinned to a build date:
   - a Tuscany extract of the **Protomaps** daily OpenStreetMap build (vector
@@ -240,9 +255,10 @@ All seven milestones below are v1; there is no smaller cut.
 
 | Need | Source |
 |---|---|
-| Weather: precipitation, Tmin/Tmax, soil temperature and moisture, wind, ET0 / VPD; history, forecast, seasonal | Open-Meteo (Historical/ERA5-Land, Forecast, Seasonal APIs) |
-| Observed regional rain (optional ground truth) | SIR Toscana (regional hydrological service), LaMMA |
-| Forest type / land cover | Regione Toscana land-use & forest maps (Geoscopio), Corine Land Cover, Copernicus HRL Forest Type |
+| Weather: history (ERA5-Land bulk) | Copernicus Climate Data Store (CDS) |
+| Weather: recent days, +7-day forecast, seasonal | Open-Meteo (Forecast / ECMWF IFS, Seasonal APIs) |
+| Observed regional rain (optional ground truth) | SIR Toscana (regional hydrological service), LaMMA; other regional ARPAs where open |
+| Forest type / land cover | Per-region land-use / forest maps where open-licensed; Corine Land Cover IV as fallback; Copernicus HRL Forest Type |
 | Elevation / slope / aspect | TINITALY DEM (INGV, 10 m) or Copernicus DEM GLO-30 |
 | Soil (optional, v1 gap) | SoilGrids (ISRIC), Regione Toscana pedological map |
 | Sightings | GBIF occurrence API (includes iNaturalist research-grade), iNaturalist API for the most recent records |
@@ -301,7 +317,6 @@ BY 4.0, per-dataset GBIF licenses, Copernicus). Show credits in the app.
 ## Not in v1 (undecided / later)
 
 - User accounts, logging the group's own finds, and social features.
-- Regions beyond Tuscany.
 - Species beyond porcini, ovoli and gallinacci (e.g. chiodini, prataioli, spugnole, tartufi).
 - Foraging regulations info (permits/tesserino, daily limits, protected areas).
 - Species cards with dangerous-lookalike warnings.
