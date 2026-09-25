@@ -43,8 +43,13 @@ def list_served_region_ids(root: Path | None = None, *, fixtures: bool = False) 
     if fixtures:
         return list(FIXTURE_REGIONS)
     root = root or data_dir()
+    # Rules too: a region's config can reach main before its species rules, and its stores the
+    # server before either; serving it then would make /regions and /overview raise.
+    with_rules = set(list_rule_regions())
     return [
-        region_id for region_id in list_configured_regions() if region_store_ready(root, region_id)
+        region_id
+        for region_id in list_configured_regions()
+        if region_id in with_rules and region_store_ready(root, region_id)
     ]
 
 
