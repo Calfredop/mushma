@@ -68,3 +68,21 @@ def test_compare_gauge_measures_bias_and_agreement_on_gauge_days() -> None:
     assert metrics["ratio"] == pytest.approx(0.8)
     assert metrics["daily_corr"] == pytest.approx(1.0)
     assert metrics["wet3_hit_rate"] <= 1.0
+
+
+def test_gauge_source_defaults_to_sir_and_follows_the_region_config() -> None:
+    from api.grid.region import load_region
+    from api.weather.checks import gauge_source
+
+    assert gauge_source(load_region("tuscany")) == "sir_toscana"
+    assert gauge_source(load_region("emilia_romagna")) == "arpae"
+
+
+def test_reanalysis_sources_put_cds_before_the_open_meteo_archive() -> None:
+    from api.weather.checks import reanalysis_sources
+    from api.weather.config import load_weather_config
+
+    config = load_weather_config()
+
+    assert reanalysis_sources(config) == [config.cds.model, config.history.model]
+    assert config.forecast.model not in reanalysis_sources(config)
