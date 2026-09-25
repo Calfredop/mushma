@@ -127,7 +127,7 @@ interval, so the changes stay on as priors, not results.
 - `api/` — Python + FastAPI service and the scheduled data pipeline
   (ingest → grid scoring → store). Deployed to a Hetzner server with Docker.
 - `deploy/` — the production stack for that server: Docker Compose (API + Caddy), the daily job's
-  systemd timer and the server's `.env` template.
+  systemd timer, the server's `.env` template and its host hardening script.
 - `.gavin-root/docs/` — research and reports (species ecology, sightings
   profile, validation).
 
@@ -547,6 +547,12 @@ cp mushma-daily.service mushma-daily.timer /etc/systemd/system/
 systemctl daemon-reload && systemctl enable --now mushma-daily.timer
 ```
 
+Then, from the laptop, put the host guards on (Server security, below):
+
+```sh
+ssh root@api.mappafunghi.app bash -s < deploy/harden-server.sh
+```
+
 **Analytics → Umami, same box.** `umami` and `umami-db` (Postgres — disposable, never backed up)
 run in the same `deploy/compose.yaml`, behind the same Caddy at `m.mappafunghi.app`
 (`deploy/Caddyfile`; the DNS record is "DNS only", like `api.`). `deploy/umami.env` (from
@@ -594,6 +600,29 @@ editing `deploy/Caddyfile`, deploy as usual, then reload Caddy on the server:
 ```sh
 cd /opt/mushma/deploy && docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
 ```
+
+**Server security.** Two firewalls, and nothing listens publicly but sshd and Caddy:
+
+- **Hetzner Cloud Firewall `mushma-prod`** (console → project `mandragora-00` → Firewalls),
+  applied to `mushma-prod-01` only. Inbound: TCP 22, 80 and 443, UDP 443 (Caddy's HTTP/3) and
+  ICMP, from anywhere; outbound open. This is the layer that filters Docker: a port published in
+  `deploy/compose.yaml` goes through Docker's own iptables chains, which ufw never sees. So publish
+  nothing but Caddy's 80/443, or bind a port to `127.0.0.1`, and open a new public port here
+  first. The project's `generic-firewall-01` belongs to `grimoria-00`, not this server.
+- **ufw on the host**, plus the rest of the host guards, from `deploy/harden-server.sh`
+  (idempotent; rerun it on a rebuilt server, or to put the config back). SSH is key-only as root
+  (the deploy scripts connect as root), with no X11 or agent forwarding. fail2ban reads sshd's
+  journal and bans an address for an hour after 5 failures in 10 minutes, longer each time it
+  comes back, up to a week. unattended-upgrades installs security updates daily and, when one
+  needs it, reboots at 02:00 UTC, ahead of the 05:00 Europe/Rome job. Docker's apt packages are
+  pinned by the Hetzner image and never upgrade on their own.
+
+The server also has Hetzner's delete/rebuild protection on. `authorized_keys` holds only the
+`mappafunghi` deploy key (`~/.ssh/mappafunghi`, wired by a `Host api.mappafunghi.app` block in
+`~/.ssh/config`). If SSH is ever locked out (lost key, or the laptop's address banned by fail2ban),
+go through the Hetzner console: Rescue → Reset Root Password, then the server's Console, and
+`fail2ban-client set sshd unbanip <address>` or fix `/root/.ssh/authorized_keys`. sshd never takes
+that root password over the network.
 
 **Search Console & Bing Webmaster Tools.** One-time, once `web/` is deployed and serving
 `/robots.txt` and `/sitemap.xml`. Indexing itself is Google's and Bing's own timeline, not
