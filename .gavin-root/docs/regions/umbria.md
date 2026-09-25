@@ -105,7 +105,17 @@ step, as for every region.
 
 ## After the deploy
 
-Check once `main` with this card is deployed and Umbria's stores are on the server:
+**Ship order (decided with the human, 2026-09-25): the stores go to the server only after this card
+is merged and deployed.** `main` already carries `umbria.yaml` (the foundation's fixture), and a
+region is served as soon as its grid and score meta are on the server's disk, so rsyncing before the
+deploy would serve Umbria on the old code (no species list; a failing morning job for Umbria, with
+an alert and no heartbeat). So, after the PR is merged and the rail's "Deploy pulled main" has run:
+
+- [ ] Run the gavin tool **Rsync region data** standalone (it runs in the root checkout, whose
+      `api/data` is the shared data root): region `umbria`, redeploy `yes`, tests `no`, run_job
+      `yes`. Umbria goes live on the new code and the daily job scores it at once.
+
+Then check:
 
 - [ ] `https://mappafunghi.app/umbria` and `/umbria/porcini`, `/umbria/ovoli`, `/umbria/gallinacci`
       show real scores: cells coloured, a tapped cell has a breakdown, the date control reaches
