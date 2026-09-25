@@ -148,5 +148,26 @@ soil:
 sightings:
   inaturalist_place_id: 96905
 
-# No model overrides: the national lapse rates and rain scale apply (see the region doc for the
-# lattice check).
+# Model overrides (merged onto config/model.yaml). The national lapse rates apply (lattice check in
+# the region doc). The national rain scale does not: it was fitted on Tuscan gauges for the Open-Meteo
+# archive, while this region's history is ERA5-Land from the CDS, and on ARPAE's gauges it would
+# make woodland rain 18-23 % too wet. Refitted on them:
+model:
+  precipitation_scale:
+    enabled: true
+    # era5_seamless too: the daily update bridges the CDS lag with a few days of it, and the snowfall
+    # history comes from it (snowfall is not scaled).
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.62
+    per_km: 0.80
+    max_elevation_m: 1700
+    confidence: plausible
+    source: [mushma_arpae_gauge_check_2026]
+    notes: >-
+      Ordinary least squares of each woodland gauge's gauge/model ratio on its elevation, over the
+      66 ARPAE gauges of 2025 with at least 80 % of days: a = 0.621, b = 0.802 per km. Tuscany's
+      method (least squares of totals through the origin) gave a = 0.534, b = 0.881: the same pooled
+      fit, but the few gauges below 400 m came out 16 % dry; the ratio fit gives every gauge the same
+      weight. On the 66 gauges of 2026 (January-August) it moves the pooled model/gauge ratio from
+      0.79 to 0.97 (below 400 m 1.06 -> 0.91, 400-800 m 0.89 -> 0.99, above 800 m 0.66 -> 0.96).
+      Gauges span 183-1535 m; the factor is extrapolated below and above.

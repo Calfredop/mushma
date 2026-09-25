@@ -773,6 +773,20 @@ references:
     supports: per-taxon hosts and season; B. aereus at low elevations.
     cited_as:
     - porcini.md R26
+  mushma_arpae_gauge_check_2026:
+    citation: 'mushma rain check: downscaled Copernicus ERA5-Land (CDS time series) daily precipitation against the
+      ARPAE-SIMC Emilia-Romagna rain gauges inside woodland cells (09:00-09:00 CET daily totals, open data), 2025
+      (66 gauges) and 2026-01-01 to 08-31 (66 gauges). See .gavin-root/docs/regions/emilia_romagna.md, Weather'
+    url: https://dati.arpae.it/dataset/dati-dalle-stazioni-meteo-locali-della-rete-idrometeorologica-regionale
+    kind: analysis
+    region: Emilia-Romagna
+    verified: verified
+    supports: ERA5-Land holds about 82 % of gauge rain in Emilia-Romagna woodland (2025), with a steep drop with
+      height (1.06 below 400 m, 0.94 at 400-800 m, 0.69 above); a per-gauge ratio fit on 2025 of scale = 0.62 +
+      0.80 per km of elevation brings 2026 to 0.97 overall (0.91-0.99 per band). The Tuscan scale would make it
+      18-23 % too wet.
+    cited_as:
+    - regions/emilia_romagna.md
   mushma_habitat_share_2026:
     citation: 'mushma habitat tiers and saturation: the smooth per-type affinity ranking was requantised to four levels
       (host 1.0, secondary 0.6, marginal 0.3, non-host 0-0.1) so a good host is the baseline instead of only the top type
