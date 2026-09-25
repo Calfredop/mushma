@@ -105,9 +105,14 @@ Threshold sensitivity (recomputed from stored fractions, a few cells off the bui
   national rates vs none vs 6.5 °C/km: mean air temperature 0.40 / 0.97 / 0.46 °C, minimum
   0.58 / 1.10 / 0.55 °C, soil 0.41 / 0.87 / 0.52 °C; wet-day rain RMSE 2.1 mm either way.
 - **History** comes from the CDS ERA5-Land time-series product, one request per node for
-  2016-01-01 to 2026-09-14, with snowfall from Italy-wide half-year files of the gridded dataset
-  shared by every region (`cds.snowfall_area`); Open-Meteo's archive and ECMWF IFS forecast fill
-  the days after.
+  2016-01-01 to 2026-09-14 (38 requests, ~55 s each). Snowfall, which that product lacks, was to
+  come from Italy-wide half-year files of the gridded dataset shared by every region
+  (`cds.snowfall_area`), but CDS's gridded queue was jammed on 2026-09-25 (9,197 requests
+  queued), so it comes from Open-Meteo's archive (`era5_seamless`, ERA5 snowfall, as Tuscany's
+  whole history has it): `backfill --source cds --skip-snowfall`, then `backfill --source
+  open_meteo --variables snowfall_sum` (1,061 weighted calls). The store takes each variable from
+  the best source that has it, so a later CDS snowfall backfill replaces it. Open-Meteo's archive
+  and the ECMWF IFS forecast fill the days after 2026-09-14.
 - **Rain scale: Liguria's own** (`model:` in `liguria.yaml`), from the gauge check below.
 
 ### Gauge check (ARPA Liguria)
@@ -182,10 +187,68 @@ Full evidence: `.gavin-root/docs/species-ecology/liguria.md`; rules in
   porcini, 1 for ovoli (id `ovoli_…`) and 1 for gallinacci (id `gallinacci_…`). The sanity check
   scores one group per run (`--group`), so each contrast is read against its own group below.
 
+## Validation
+
+Scored 2016-03-18 to 2026-10-02 on 2026-09-25 (rules version `7b4bed646323`, Liguria's rain
+scale, snowfall from `era5_seamless`): 3,952 woodland cells × 3,844 days per key, no cell-day
+without weather. `onboard` ran the hold-out backtest and the sanity check; the train-season
+backtest (`--seasons train --label onboard-train`) and the ovoli and gallinacci sanity runs were
+run after it. A dry run on a scratch store with snowfall at 0 gave the same numbers to the third
+decimal.
+
+**No tuning: the priors ship.** Usable presences (unique, unobscured group-cell-day sightings on
+woodland cells) in the train seasons 2016–2023: **28** (porcini 15, gallinacci 11, ovoli 2), under
+the 50 the parent plan asks for. Hold-out 2024–2025: 12 (porcini 4, gallinacci 6, ovoli 2).
+
+**Backtest** (AUC of the sighting's cell-day against backgrounds, model vs the baselines;
+`auc_local` = nearby cells the same day, `auc_time_effort` = the same cell on other days weighted
+by observer effort; 95 % bootstrap interval):
+
+| group | seasons | n | model `auc_local` | calendar | habitat | model `auc_time_effort` |
+|---|---|---|---|---|---|---|
+| porcini | train | 14 | 0.589 (0.51–0.67) | 0.534 | 0.500 | 0.478 (0.36–0.59) |
+| porcini | hold-out | 4 | 0.590 (0.47–0.71) | 0.534 | 0.500 | 0.684 (0.50–0.87) |
+| gallinacci | train | 11 | 0.702 (0.64–0.76) | 0.610 | 0.500 | 0.689 (0.59–0.78) |
+| gallinacci | hold-out | 6 | 0.689 (0.60–0.76) | 0.604 | 0.501 | 0.548 (0.37–0.71) |
+| ovoli | train | 2 | 0.657 (0.51–0.80) | 0.648 | 0.569 | 0.419 (0.34–0.50) |
+| ovoli | hold-out | 2 | 0.786 (0.73–0.84) | 0.635 | 0.562 | 0.581 (0.24–0.92) |
+
+Reading: where to look (`auc_local`) beats the calendar and habitat baselines for every group in
+both splits; gallinacci is the clearest (0.70 on 11 train presences). When (`auc_time_effort`)
+is at chance for porcini's train seasons and wide everywhere. At 2–15 presences per group none of
+this is more than a hint; Tuscany's first backtest had 16–23 per group and read the same way.
+
+**Sanity check** (`liguria/sanity.yaml`, 11 press contrasts written before any Liguria score
+existed), each contrast read against its own group:
+
+| contrast | group | higher window | lower window | holds |
+|---|---|---|---|---|
+| Aveto–Trebbia 2017 > 2016, 30 Sep–15 Oct | porcini | 0.498 | 0.598 | no |
+| Aveto–Trebbia 2021: October > late Aug–Sep | porcini | 0.856 | 0.539 | yes |
+| Aveto–Trebbia 2019 > 2021, 1–14 Sep | porcini | 0.475 | 0.617 | no |
+| Aveto–Trebbia July 2024 > July 2022 | porcini | 0.670 | 0.266 | yes |
+| Beigua–Stura 2022 > 2021, 1–15 Sep | porcini | 0.916 | 0.001 | yes |
+| Beigua–Stura July 2025 > normal | porcini | 0.664 | 0.393 | yes |
+| Val Bormida 2024 > normal, 12 Sep–5 Oct | porcini | 0.973 | 0.696 | yes |
+| Val Bormida > Beigua–Stura, 1–20 Sep 2020 | porcini | 0.602 | 0.531 | yes |
+| Levante > province of Savona, 1–12 Oct 2023 | porcini | 0.436 | 0.406 | yes |
+| Beigua–Stura ovoli 2022 > 2021, 28 Aug–15 Sep | ovoli | 0.824 | 0.124 | yes |
+| Arroscia / Alpi Liguri gallinacci 2025 > 2022, 28 Jun–15 Jul | gallinacci | 0.378 | 0.344 | yes |
+
+**9 of 11 hold** (porcini 7/9, ovoli 1/1, gallinacci 1/1). The `Data` section's "8/11" is the
+default run, which scores all 11 on the porcini group. Both misses are in Aveto–Trebbia, and both
+rest on the weakest sources: #1's 2017 side is blog hearsay, and #3 compares two early Septembers
+with the model placing 2021's rain earlier than the report did. See
+`.gavin-root/docs/species-ecology/liguria.md` for each contrast's evidence.
+
 ## After the deploy: what to verify
 
-The stores are rsync'd to the server before the PR; the API serves Liguria once main (with
-`config/regions/liguria.yaml`) is redeployed by the rail's "Deploy pulled main" step. Then check:
+The stores were rsync'd to the server on 2026-09-25 (`deploy/rsync-region-data.sh liguria`,
+302 MB, no redeploy). The server serves a region only when its YAML is in the deployed code and its
+stores are on disk, so they stay inert until `main` with `config/regions/liguria.yaml` is deployed by
+the rail's "Deploy pulled main" step (with the daily job, which brings the weather and scores up to
+that day). Checked right after the sync: `/regions` still lists only Tuscany, and Liguria answers
+404. Then check:
 
 - [ ] `https://mappafunghi.app/liguria` and `/liguria/porcini`, `/liguria/ovoli`,
   `/liguria/gallinacci` show real scores for today (not fixtures), and a tapped cell's "why this
@@ -206,3 +269,15 @@ The stores are rsync'd to the server before the PR; the API serves Liguria once 
   `/liguria` a point near La Spezia opens Liguria's forecast; from the hub or another region the
   switch offer names the first match in registry order (Tuscany). A boundary-polygon lookup would
   fix it for every pair of neighbours.
+
+## Data
+
+- cells: 5883
+- woodland cells: 3952
+- INFC deviation: +2.6% (grid 352,119 ha vs 343,160 ha) — within ±10 %
+- weather nodes: 38
+- years stored: 2016–2026 (11 years)
+- sightings kept: 46
+- backtest AUC (auc_local, model, all): gallinacci 0.689, ovoli 0.786, porcini 0.590
+- sanity contrasts: 8/11 passed
+
