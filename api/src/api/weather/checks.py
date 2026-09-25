@@ -217,6 +217,20 @@ class GaugeNetwork:
     day_totals: Callable[[pd.Series], pd.Series]
 
 
+def arpae_emilia_romagna(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """ARPAE-SIMC: monthly line-delimited JSON, 09:00-09:00 (CET) days (api.weather.arpae)."""
+    import gzip
+
+    from api.weather import arpae
+
+    frames = []
+    for month, url in arpae.month_urls(start, end):
+        with gzip.open(fetch(url, raw / "arpae" / f"{month}.json.gz"), "rt") as lines:
+            frames.append(arpae.parse_daily_rain(lines))
+    gauges, by_code = arpae.gauge_series(pd.concat(frames, ignore_index=True))
+    return GaugeNetwork(gauges, lambda gauge: by_code[gauge.code], gauge_day_totals)
+
+
 def sir_toscana(raw: Path, start: date, end: date) -> GaugeNetwork:
     """SIR Toscana: open JSON per station, 09:00-09:00 days."""
     sir = raw / "sir_toscana"
@@ -254,6 +268,7 @@ def arpa_liguria(raw: Path, start: date, end: date) -> GaugeNetwork:
 
 
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
+    "emilia_romagna": arpae_emilia_romagna,
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
 }

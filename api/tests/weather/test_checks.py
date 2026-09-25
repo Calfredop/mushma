@@ -1,3 +1,4 @@
+import json
 from datetime import date, timedelta
 
 import numpy as np
@@ -82,3 +83,33 @@ def test_compare_gauge_takes_the_gauge_network_day_cut() -> None:
     assert metrics["days"] == 59
     assert metrics["ratio"] == pytest.approx(0.5)
     assert metrics["daily_corr"] == pytest.approx(1.0)
+
+
+def test_emilia_romagna_reads_arpae_gauges_on_0900_days(tmp_path) -> None:
+    import gzip
+
+    from api.weather.checks import GAUGE_NETWORKS
+
+    line = json.dumps(
+        {
+            "network": "simnpr",
+            "lon": 1036000,
+            "lat": 4448000,
+            "date": "2025-10-01T08:00:00Z",
+            "data": [
+                {"vars": {"B01019": {"v": "Bosco"}, "B07030": {"v": 983.0}}},
+                {"timerange": [1, 0, 86400], "vars": {"B13011": {"v": 12.4}}},
+            ],
+        }
+    )
+    archive = tmp_path / "arpae" / "2025-10.json.gz"
+    archive.parent.mkdir()
+    with gzip.open(archive, "wt") as out:
+        out.write(line + "\n")
+
+    network = GAUGE_NETWORKS["emilia_romagna"](tmp_path, date(2025, 10, 1), date(2025, 10, 31))
+
+    gauge = next(network.gauges.itertuples())
+    assert gauge.name == "Bosco"
+    assert network.series(gauge).to_dict() == {date(2025, 10, 1): 12.4}
+    assert network.day_totals is gauge_day_totals
