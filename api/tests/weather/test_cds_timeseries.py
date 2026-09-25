@@ -371,3 +371,30 @@ def test_backfill_records_each_nodes_model_height_for_the_lapse_rate(tmp_path: P
     cds = cells[cells["source"] == SOURCE_ID].set_index("point_id")
     assert cds["elevation_m"].to_dict() == {"N43.00E012.40": 400.0, "N42.80E012.60": 600.0}
     assert cds.loc["N43.00E012.40", ["model_lat", "model_lon"]].tolist() == [43.0, 12.4]
+
+
+def test_backfill_can_leave_snowfall_to_another_source(tmp_path: Path) -> None:
+    """With the gridded queue backed up, snowfall can come from the Open-Meteo archive instead:
+    the store takes each variable from the best source that has it."""
+    store = WeatherStore(tmp_path / "store")
+    client = FakeClient(tmp_path)
+
+    backfill_cds_timeseries(
+        client,
+        store,
+        NODES,
+        "Europe/Rome",
+        date(2024, 3, 1),
+        date(2024, 3, 2),
+        log=lambda m: None,
+        read=fake_read,
+        snowfall=False,
+        read_snowfall=lambda path, points: fake_read(path),
+    )
+
+    assert not [label for label in client.fetched if label.startswith("sf_")]
+    daily = pd.read_parquet(store.partition_path(SOURCE_ID, 2024))
+    assert "snowfall_sum" not in set(daily["variable"])
+    assert {"precipitation_sum", "temperature_2m_mean", "et0_fao_evapotranspiration"} <= set(
+        daily["variable"]
+    )
