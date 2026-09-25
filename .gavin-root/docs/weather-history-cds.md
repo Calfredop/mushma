@@ -51,7 +51,9 @@ values from the `reanalysis-era5-land-timeseries` product instead:
   8–14 Aug 2026, 168 hours): temperatures, dew point and soil temperature within
   0.0003 K, soil water and wind identical. Precipitation and radiation are **already
   hourly increments** in this product (weekly sums equal to 2e-8 m); the gridded
-  dataset's 00 UTC carry-over step does not exist here.
+  dataset's 00 UTC carry-over step does not exist here. Through the whole daily
+  aggregation, the two paths give the same Europe/Rome days: all 11 variables within
+  1e-4 on the complete days 9–13 Aug 2026 at N42.20 E12.40.
 - **Snowfall** is not in the product. It comes from the gridded dataset, snowfall only,
   half a year per request (cost 1 × 24 h × 31 d × 6 months × 2 = 8,928 of 12,000); a
   month the range only partly covers goes alone with its days, so no request asks for
