@@ -6,6 +6,9 @@ from pathlib import Path
 
 import yaml
 
+from api.grid.region import RegionConfig
+from api.model.rules import DEFAULT_REGION
+
 SIGHTINGS_FILE = Path(__file__).resolve().parent.parent / "config" / "sightings.yaml"
 
 
@@ -116,4 +119,22 @@ def load_sightings_config(path: Path = SIGHTINGS_FILE) -> SightingsConfig:
         inaturalist=INaturalistSpec(**raw["inaturalist"]),
         quality=quality,
         credits=list(raw.get("credits") or []),
+    )
+
+
+def inaturalist_place_id(region: RegionConfig, config: SightingsConfig) -> int:
+    """The iNaturalist place a region's recent observations are filtered to.
+
+    ``sightings.inaturalist_place_id`` in the region YAML, resolved once by the place's name. The
+    default region keeps the place in ``sightings.yaml``; any other region must name its own, or
+    its fetch would silently pull the default region's observations.
+    """
+    place = (region.extra.get("sightings") or {}).get("inaturalist_place_id")
+    if place is not None:
+        return int(place)
+    if region.id == DEFAULT_REGION:
+        return config.inaturalist.place_id
+    raise ValueError(
+        f"region {region.id!r} has no sightings.inaturalist_place_id in its config: resolve the "
+        "region's place by name (api.inaturalist.org/v1/places/autocomplete) and add it"
     )
