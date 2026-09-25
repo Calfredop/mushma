@@ -62,8 +62,8 @@ national, so nothing is added. The Umbrian rain gauges feed a check only, never 
   (`api.inaturalist.org/v1/places/autocomplete?q=Umbria`). The foundation read one global place
   (Toscana) and cached GBIF pages by taxon only, so a second region would have fetched Tuscany's
   records; this card made the place and both raw caches per region.
-- **Gauges** `umbria_sir`: Regione Umbria Servizio Idrografico daily rain (open data, CC BY), for
-  `api.weather.checks gauges` (Validation).
+- **Gauges.** `api.weather.checks gauges --region umbria` reads the Regione Umbria Servizio
+  Idrografico's daily rain (open data, CC BY; `GAUGE_NETWORKS["umbria"]`, Validation).
 - **`model:` overrides:** none (Validation, gauge check).
 - **Weather points.** 56 land nodes on the 0.2° lattice, all 3,253 woodland cells within reach.
 
