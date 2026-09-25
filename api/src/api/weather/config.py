@@ -37,6 +37,12 @@ class CdsSpec:
     dataset: str
     model: str
     start_date: date
+    # How the hourly values are fetched: "chunks" (gridded, ~weekly bbox requests) or
+    # "timeseries" (one request per node, snowfall from the gridded dataset); api.weather.cds.
+    method: str = "chunks"
+
+
+CDS_METHODS = ("chunks", "timeseries")
 
 
 @dataclass(frozen=True)
@@ -165,10 +171,14 @@ def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
 def _cds(raw: dict | None) -> CdsSpec | None:
     if raw is None:
         return None
+    method = str(raw.get("method", "chunks"))
+    if method not in CDS_METHODS:
+        raise ValueError(f"cds.method must be one of {CDS_METHODS}, got {method!r}")
     return CdsSpec(
         dataset=str(raw["dataset"]),
         model=str(raw["model"]),
         start_date=date.fromisoformat(str(raw["start_date"])),
+        method=method,
     )
 
 
