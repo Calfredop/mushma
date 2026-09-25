@@ -4,6 +4,7 @@
  */
 import { inBounds } from '../geo/distance.js'
 import { liguria } from './liguria.js'
+import { marche } from './marche.js'
 import { toscana } from './toscana.js'
 import type { Bounds, RegionDefinition } from './types.js'
 import { umbria } from './umbria.js'
@@ -14,6 +15,7 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [toscana.slug]: toscana,
   [umbria.slug]: umbria,
   [liguria.slug]: liguria,
+  [marche.slug]: marche,
 }
 
 export const DEFAULT_REGION_SLUG = toscana.slug
@@ -26,6 +28,11 @@ export function getRegion(slug: string | undefined): RegionDefinition {
 /** A known slug's region, or undefined — for callers that must tell "unknown" from "default". */
 export function findRegion(slug: string): RegionDefinition | undefined {
   return REGIONS[slug]
+}
+
+/** "In the region" in `lang`: the region's `locative`, or `in <name>`. */
+export function regionLocative(region: RegionDefinition, lang: 'it' | 'en'): string {
+  return region.locative?.[lang] ?? `in ${region.name[lang]}`
 }
 
 /** Every served region, in registry order. */

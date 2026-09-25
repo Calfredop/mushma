@@ -112,7 +112,7 @@
     "denied": "La posizione è disattivata. Consentila nelle impostazioni del browser oppure cerca un luogo.",
     "unavailable": "Non riesco a trovare la tua posizione. Riprova oppure cerca un luogo.",
     "outside": "Sei fuori dalle regioni coperte da Mappa Funghi.",
-    "switchOffer": "Sei in {{region}}.",
+    "switchOffer": "Sei {{where}}.",
     "switch": "Passa a {{region}}",
     "dismissSwitch": "Resta qui"
   },
