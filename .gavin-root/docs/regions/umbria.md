@@ -99,9 +99,81 @@ step, as for every region.
 - woodland cells: 3253
 - INFC deviation: -20.2% (grid 311,303 ha vs 390,305 ha) — outside ±10%
 - weather nodes: 56
-- years stored: none
+- years stored: 2016–2026 (11 years)
 - sightings kept: 3
+- backtest AUC (auc_local, model, all): gallinacci 0.281, ovoli 0.196
+- sanity contrasts: 9/12 passed
 
+## Validation
+
+Run 2026-09-25 on the stores above (rules version `cd4c9095dbba`).
+
+### Rain gauges (`api.weather.checks gauges --region umbria`)
+
+Regione Umbria Servizio Idrografico, open daily rain (CC BY). 91 stations report since 2016, but
+only those inside woodland cells count, and only **8** do with 80 % of days over 2019–2025 (9 in
+2025), at 402–1,053 m; the stations carry no height, so each takes its cell's DEM mean.
+
+- **Gauge days are calendar days**: median daily correlation 0.65 against 0.42 when the model is
+  re-cut to 09:00–09:00 days (2025).
+- **ERA5-Land (CDS) holds 0.88 of the gauge rain** over 2019–2025 (median 0.85, daily correlation
+  0.71, 3-day wet-window hit rate 0.78), 0.81 in 2025.
+- **The national rain scale does not fit.** 1.28 + 0.29 per km (fitted on Tuscan gauges, and
+  applied to `era5_seamless` only) would make Umbrian rain 32 % too wet; a least-squares fit of
+  gauge totals on model totals × (a + b × km) over 2019–2025 gives **a = 0.89, b = 0.33 per km**
+  (pooled ratio 0.88 → 1.00; 2025 alone 0.92 + 0.41 per km). So `umbria.yaml` sets
+  `model.precipitation_scale` to it, over both `era5_land_cds` and `era5_seamless`: Umbria's
+  history is CDS, which the national block would have left unscaled while the normals were scaled.
+- With 8 gauges the elevation slope is loosely held; the intercept agrees between the two windows.
+
+### Backtest (hold-out seasons 2024–2025, `backtest/umbria/onboard/`)
+
+**Usable presences: 0 in the train seasons (2016–2023)**, far below the 50 the card asks before
+tuning, so **nothing is tuned: the researched priors ship**. The hold-out has 3 (gallinacci 2, ovoli
+1, porcini 0), all 2024–2025 GBIF records; the AUCs (auc_local gallinacci 0.28, ovoli 0.20; auc_region
+0.73 and 0.94) rest on one or two points and say nothing either way. Umbria has almost no public
+records (`species-ecology/umbria.md`, Sightings): validating it needs central-Italy records pooled
+with it.
+
+Combined-score winners over the 2024 and 2025 cell-days that have one: gallinacci 55 %, porcini 32 %,
+ovoli 13 %; 40 % of cell-days have no group in season. Gallinacci wins most because its season is
+the longest.
+
+### Press contrasts (`sanity.yaml`, porcini, `backtest/umbria/onboard/sanity_porcini.csv`)
+
+**9 of 12 hold.**
+
+| contrast | higher | lower | holds |
+|---|---|---|---|
+| `valnerina_2023` | 0.340 | 0.410 | no |
+| `alta_valnerina_october_2023` | 0.012 | 0.073 | no |
+| `orvietano_2023` | 0.508 | 0.439 | yes |
+| `umbria_2022_summer` | 0.222 | 0.174 | yes |
+| `umbria_2022_autumn` | 0.736 | 0.585 | yes |
+| `marche_border_2021` | 0.513 | 0.182 | yes |
+| `umbria_2021_early_september` | 0.442 | 0.328 | yes |
+| `apennine_august_2019` | 0.326 | 0.274 | yes |
+| `umbria_2024_autumn` | 0.957 | 0.615 | yes |
+| `alta_valle_tevere_2024` | 0.943 | 0.506 | yes |
+| `umbria_2025_early` | 0.725 | 0.496 | yes |
+| `acquasparta_sellano_2025` | 0.554 | 0.752 | no |
+
+- The good and bad years (2022 drought then boom, 2021, 2024, 2025) and the Apennine-border
+  contrasts all hold.
+- **Both Valnerina misses come from the rain, not the rules.** In the upper Valnerina (416 woodland
+  cells, median 1,006 m) in early October 2023, the 30-day rain factor (percentage of the cell's
+  normal) is 0 on 96 % of cell-days: ERA5-Land saw a dry September there. The late-August 2023 claim
+  credits Valnerina "dove le piogge sono state più copiose": local storms a ~9 km reanalysis
+  misses, the known convective-rain trap (`weather-ingest.md`). Season, habitat, altitude and
+  temperature gates are open in those cells.
+- `acquasparta_sellano_2025` names its areas "ad esempio", so it was the weakest claim.
+
+### Cells without weather
+
+7 woodland cells never get weather or a score: border slivers with under 0.25 ha inside Umbria and
+no DEM pixel of their own (so no height to move temperatures to), which pass the woodland test
+because CLC forest across the border counts toward the cell. Tuscany has the same kind (its daily
+runs report a few cell-days without weather). They show as unscored on the map.
 
 ## After the deploy
 
