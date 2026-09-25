@@ -267,13 +267,33 @@ def _read_wfs(
         "SRSNAME": download.get("srs", "EPSG:4326"),
         "BBOX": f"{lon_min},{lat_min},{lon_max},{lat_max},EPSG:4326",
     }
-    query = urllib.parse.urlencode(params)
     base = download["wfs"].rstrip("?")
     sep = "&" if "?" in base else "?"
     # Bbox is part of the cache key so overlapping regions do not share a stale clip.
-    dest = cache_dir / f"wfs_{lon_min}_{lat_min}_{lon_max}_{lat_max}.json".replace(".", "p")
-    fetch(f"{base}{sep}{query}", dest)
-    return gpd.read_file(dest)
+    stem = f"wfs_{lon_min}_{lat_min}_{lon_max}_{lat_max}".replace(".", "p")
+    page_size = download.get("page_size")
+    if not page_size:
+        dest = cache_dir / f"{stem}.json"
+        fetch(f"{base}{sep}{urllib.parse.urlencode(params)}", dest)
+        return gpd.read_file(dest)
+
+    import pandas as pd
+
+    # Servers cap GetFeature (GeoServer's maxFeatures); page with WFS 2.0 COUNT/STARTINDEX,
+    # sorted on a stable key so pages neither overlap nor skip, until a short page.
+    if download.get("sort_by"):
+        params["SORTBY"] = download["sort_by"]
+    frames = []
+    start = 0
+    while True:
+        page = {**params, "COUNT": str(page_size), "STARTINDEX": str(start)}
+        dest = cache_dir / f"{stem}_page{start // page_size:04d}.json"
+        frame = gpd.read_file(fetch(f"{base}{sep}{urllib.parse.urlencode(page)}", dest))
+        frames.append(frame)
+        if len(frame) < page_size:
+            break
+        start += page_size
+    return gpd.GeoDataFrame(pd.concat(frames, ignore_index=True), crs=frames[0].crs)
 
 
 def _read_zip_shapefile(

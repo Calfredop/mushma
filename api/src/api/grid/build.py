@@ -11,6 +11,7 @@ regions under ``$DATA_DIR/raw/``.
 import argparse
 import json
 import time
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -25,6 +26,7 @@ from api.grid.places import assign_comuni, nearest_place, read_comuni, read_ista
 from api.grid.region import RegionConfig, load_region
 from api.grid.soil import TOPSOIL_LAYERS, soil_ph_for_cells
 from api.grid.sources import (
+    Source,
     copernicus_dem_tiles,
     data_dir,
     fetch,
@@ -103,6 +105,75 @@ def forest_classes(
     return groups, types
 
 
+@dataclass
+class ForestCover:
+    """Land-cover polygons tagged with a broad ``group`` and forest-type polygons with a
+    ``habitat``, both in the grid's CRS, and the source ids they came from."""
+
+    groups: gpd.GeoDataFrame
+    types: gpd.GeoDataFrame
+    sources: list[str]
+
+
+def read_forest_cover(
+    forest_config: dict,
+    sources: dict[str, Source],
+    raw: Path,
+    *,
+    region_id: str,
+    bbox_wgs84: tuple[float, float, float, float],
+    crs: str,
+    group_classes: dict[str, str],
+    type_classes: dict[str, str],
+) -> ForestCover:
+    """Read the region's forest sources once each and tag their polygons.
+
+    - ``forest.groups`` set: groups from that land-cover source's ``class_column``, types from the
+      ``forest.types`` source's ``field``. When both name the same source (a regional forest-type
+      map that also carries the land-use code, e.g. Liguria), it is read once.
+    - ``forest.groups`` omitted: groups and types both from the CLC IV code.
+    """
+    types_source_id = (forest_config.get("types") or {}).get("source", "ispra_clc18_iv")
+    types_download = sources[types_source_id].download or {}
+    type_field = types_download.get("field", "clc18")
+
+    def tagged(frame: gpd.GeoDataFrame, column: str, name: str, classes: dict) -> gpd.GeoDataFrame:
+        frame = frame.assign(**{name: frame[column].astype(str).map(classes)})
+        return frame[frame[name].notna()].to_crs(crs)
+
+    if "groups" not in forest_config:
+        clc = read_vector(types_download, raw / types_source_id / region_id, bbox_wgs84=bbox_wgs84)
+        return ForestCover(
+            groups=tagged(clc, type_field, "group", group_classes),
+            types=tagged(clc, type_field, "habitat", type_classes),
+            sources=[types_source_id],
+        )
+
+    groups_config = forest_config["groups"]
+    groups_source_id = groups_config["source"]
+    class_col = forest_group_column(groups_config)
+    one_map = groups_source_id == types_source_id
+    listed = ", ".join(f"'{c}'" for c in group_classes)
+    cover = read_vector(
+        sources[groups_source_id].download or {},
+        raw / groups_source_id,
+        bbox_wgs84=bbox_wgs84,
+        columns=[class_col, type_field] if one_map else [class_col],
+        where=f"{class_col} IN ({listed})",
+    )
+    if one_map:
+        type_cover = cover
+    else:
+        type_cover = read_vector(
+            types_download, raw / types_source_id / region_id, bbox_wgs84=bbox_wgs84
+        )
+    return ForestCover(
+        groups=tagged(cover, class_col, "group", group_classes),
+        types=tagged(type_cover, type_field, "habitat", type_classes),
+        sources=[groups_source_id] if one_map else [groups_source_id, types_source_id],
+    )
+
+
 def assemble_cells(
     grid: gpd.GeoDataFrame,
     mask: pd.DataFrame,
@@ -143,48 +214,20 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
     grid = generate_grid(boundary, region.grid.cell_size_m, crs)
 
     group_classes, type_classes = forest_classes(region, vocabulary)
-    types_source_id = (forest_config.get("types") or {}).get("source", "ispra_clc18_iv")
-    clc_download = sources[types_source_id].download or {}
-    clc_field = clc_download.get("field", "clc18")
-
-    if "groups" in forest_config:
-        step("forest groups (land cover)")
-        groups_config = forest_config["groups"]
-        groups_source_id = groups_config["source"]
-        class_col = forest_group_column(groups_config)
-        codes = list(group_classes)
-        listed = ", ".join(f"'{c}'" for c in codes)
-        cover = read_vector(
-            sources[groups_source_id].download or {},
-            raw / groups_source_id,
-            columns=[class_col],
-            where=f"{class_col} IN ({listed})",
-        )
-        cover["group"] = cover[class_col].astype(str).map(group_classes)
-        cover = cover[cover["group"].notna()].to_crs(crs)
-        groups = forest.class_fractions(cover, "group", grid)
-
-        step("forest types (CLC IV level)")
-        clc = read_vector(
-            clc_download,
-            raw / types_source_id / region.id,
-            bbox_wgs84=bbox,
-        )
-        clc["habitat"] = clc[clc_field].astype(str).map(type_classes)
-        types = forest.class_fractions(clc[clc["habitat"].notna()], "habitat", grid)
-        used_sources = [groups_source_id, types_source_id]
-    else:
-        step("forest groups and types (CLC IV level alone)")
-        clc = read_vector(
-            clc_download,
-            raw / types_source_id / region.id,
-            bbox_wgs84=bbox,
-        )
-        code = clc[clc_field].astype(str)
-        clc = clc.assign(group=code.map(group_classes), habitat=code.map(type_classes)).to_crs(crs)
-        groups = forest.class_fractions(clc[clc["group"].notna()], "group", grid)
-        types = forest.class_fractions(clc[clc["habitat"].notna()], "habitat", grid)
-        used_sources = [types_source_id]
+    step("forest groups and types")
+    cover = read_forest_cover(
+        forest_config,
+        sources,
+        raw,
+        region_id=region.id,
+        bbox_wgs84=bbox,
+        crs=crs,
+        group_classes=group_classes,
+        type_classes=type_classes,
+    )
+    groups = forest.class_fractions(cover.groups, "group", grid)
+    types = forest.class_fractions(cover.types, "habitat", grid)
+    used_sources = cover.sources
 
     step("woodland mask and habitat composition")
     woodland_groups = tuple(g for g, spec in vocabulary.groups.items() if spec.woodland)
