@@ -602,6 +602,48 @@ def _on_grid(frame: pd.DataFrame) -> pd.DataFrame:
     return out.assign(time=times)
 
 
+def read_snowfall_zip(path: Path, points: pd.DataFrame) -> pd.DataFrame:
+    """Hourly snowfall (``time``, ``lat``, ``lon``, ``sf``) at the land nodes of ``points`` from a
+    gridded CDS zip. Nodes are picked in xarray before any frame is built: an Italy-wide half-year
+    is about 60 million grid-hours."""
+    try:
+        import xarray as xr
+    except ImportError as error:
+        raise RuntimeError("xarray is required: uv sync --group cds") from error
+
+    land = points[points["land"]] if "land" in points.columns else points
+    lats = xr.DataArray(land["lat"].round(2).to_numpy(), dims="node")
+    lons = xr.DataArray(land["lon"].round(2).to_numpy(), dims="node")
+    frames = []
+    with zipfile.ZipFile(path) as zf:
+        for name in zf.namelist():
+            if not name.endswith((".nc", ".nc4")):
+                continue
+            target = path.parent / f".{path.stem}_{Path(name).name}"
+            with zf.open(name) as src, target.open("wb") as dst:
+                dst.write(src.read())
+            try:
+                with xr.open_dataset(target) as ds:
+                    if "sf" not in ds.data_vars:
+                        continue
+                    picked = ds["sf"].sel(
+                        latitude=lats, longitude=lons, method="nearest", tolerance=0.01
+                    )
+                    frame = picked.to_dataframe().reset_index()
+            finally:
+                target.unlink(missing_ok=True)
+            frame = frame.rename(columns={"valid_time": "time"})
+            frames.append(
+                frame.assign(
+                    lat=land["lat"].round(2).to_numpy()[frame["node"].to_numpy()],
+                    lon=land["lon"].round(2).to_numpy()[frame["node"].to_numpy()],
+                )[["time", "lat", "lon", "sf"]]
+            )
+    if not frames:
+        raise ValueError(f"no snowfall in {path}")
+    return pd.concat(frames, ignore_index=True)
+
+
 def backfill_cds_timeseries(
     client: CdsClient,
     store: WeatherStore,
@@ -611,13 +653,17 @@ def backfill_cds_timeseries(
     end: date,
     log: Log = print,
     read: Callable[[Path], pd.DataFrame] = read_hourly_netcdf_zip,
+    snowfall_area: tuple[float, float, float, float] | None = None,
+    read_snowfall: Callable[[Path, pd.DataFrame], pd.DataFrame] = read_snowfall_zip,
 ) -> dict:
     """Fetch ``start..end`` node by node from the ERA5-Land time-series product, with snowfall
     from the gridded dataset, into the daily store under the same source id as ``backfill_cds``.
 
     The node series start a day early so each local day has its evening UTC hours. Snowfall is
-    deaccumulated per node over the whole range at once, so request edges lose nothing; only the
-    range's very first hour counts as carry-over, as in a chunk.
+    requested over ``snowfall_area`` (north, west, south, east), one area shared by every region
+    so they all reuse one cache (CDS cost does not depend on area), else over the nodes' own bbox;
+    it is deaccumulated per node over the whole range at once, so request edges lose nothing and
+    only the range's very first hour counts as carry-over, as in a chunk.
     """
     land = points[points["land"]] if "land" in points.columns else points
     summary: dict = {"method": "timeseries", "rows": 0, "cached": 0, "fetched": 0}
@@ -638,10 +684,12 @@ def backfill_cds_timeseries(
     hourly = pd.concat(series, ignore_index=True)
 
     snow = []
-    for request in snowfall_requests(bbox_of_points(points), start, end):
-        snow.append(
-            _on_grid(subsample_to_points(fetch(request), points))[["time", "lat", "lon", "sf"]]
-        )
+    area = snowfall_area or bbox_of_points(points)
+    for request in snowfall_requests(area, start, end):
+        cached = client.cache_path(request).exists()
+        path = client.ensure(request, log=log)
+        summary["cached" if cached else "fetched"] += 1
+        snow.append(_on_grid(read_snowfall(path, points))[["time", "lat", "lon", "sf"]])
         log(f"CDS snowfall {request.label}")
     snowfall = (
         pd.concat(snow, ignore_index=True)

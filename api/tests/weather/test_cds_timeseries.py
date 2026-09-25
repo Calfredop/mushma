@@ -170,7 +170,15 @@ def test_backfill_writes_every_local_day_per_node_and_reruns_from_cache(tmp_path
     start, end = date(2024, 2, 29), date(2024, 3, 2)
 
     summary = backfill_cds_timeseries(
-        client, store, NODES, "Europe/Rome", start, end, log=lambda m: None, read=fake_read
+        client,
+        store,
+        NODES,
+        "Europe/Rome",
+        start,
+        end,
+        log=lambda m: None,
+        read=fake_read,
+        read_snowfall=lambda path, points: fake_read(path),
     )
 
     assert sorted(label[:16] for label in client.fetched if label.startswith("ts_")) == [
@@ -197,7 +205,15 @@ def test_backfill_writes_every_local_day_per_node_and_reruns_from_cache(tmp_path
 
     client.fetched.clear()
     backfill_cds_timeseries(
-        client, store, NODES, "Europe/Rome", start, end, log=lambda m: None, read=fake_read
+        client,
+        store,
+        NODES,
+        "Europe/Rome",
+        start,
+        end,
+        log=lambda m: None,
+        read=fake_read,
+        read_snowfall=lambda path, points: fake_read(path),
     )
     assert client.fetched == []
 
@@ -216,6 +232,7 @@ def test_first_snowfall_hour_of_the_whole_range_is_not_counted_twice(tmp_path: P
         date(2024, 3, 1),
         log=lambda m: None,
         read=fake_read,
+        read_snowfall=lambda path, points: fake_read(path),
     )
 
     daily = pd.read_parquet(store.partition_path(SOURCE_ID, 2024))
@@ -276,3 +293,58 @@ def test_client_does_not_retry_other_failures(tmp_path, monkeypatch) -> None:
 
     with pytest.raises(RuntimeError, match="too large"):
         client.ensure(request, log=lambda m: None)
+
+
+def test_snowfall_reader_keeps_only_the_regions_nodes_from_a_wider_grid(tmp_path) -> None:
+    """Snowfall comes as one Italy-wide file shared by every region: nodes picked before a frame."""
+    xr = pytest.importorskip("xarray")
+    pytest.importorskip("netCDF4")
+    import zipfile
+
+    from api.weather.cds import read_snowfall_zip
+
+    times = pd.date_range("2024-01-01", periods=3, freq="h")
+    lats = np.round(np.arange(43.2, 42.7, -0.1), 1)  # descending, as CDS writes them
+    lons = np.round(np.arange(12.2, 12.7, 0.1), 1)
+    values = np.arange(len(times) * len(lats) * len(lons), dtype="float32").reshape(
+        len(times), len(lats), len(lons)
+    )
+    ds = xr.Dataset(
+        {"sf": (("valid_time", "latitude", "longitude"), values)},
+        coords={"valid_time": times, "latitude": lats, "longitude": lons},
+    )
+    member = tmp_path / "sf.nc"
+    ds.to_netcdf(member)
+    archive = tmp_path / "sf.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.write(member, "data_stream-oper_stepType-accum.nc")
+
+    frame = read_snowfall_zip(archive, NODES)
+
+    assert sorted(set(zip(frame["lat"], frame["lon"], strict=True))) == [(42.8, 12.6), (43.0, 12.4)]
+    assert len(frame) == 2 * len(times)
+    at = frame[(frame["lat"] == 43.0) & (frame["lon"] == 12.4)].sort_values("time")
+    expected = ds["sf"].sel(latitude=43.0, longitude=12.4).to_numpy()
+    assert at["sf"].to_numpy() == pytest.approx(expected)
+
+
+def test_snowfall_area_is_shared_so_regions_reuse_one_cache(tmp_path) -> None:
+    store = WeatherStore(tmp_path / "store")
+    client = FakeClient(tmp_path)
+    italy = (47.1, 6.6, 35.4, 18.6)
+
+    backfill_cds_timeseries(
+        client,
+        store,
+        NODES,
+        "Europe/Rome",
+        date(2024, 3, 1),
+        date(2024, 3, 2),
+        log=lambda m: None,
+        read=fake_read,
+        snowfall_area=italy,
+        read_snowfall=lambda path, points: fake_read(path),
+    )
+
+    snowfall = [label for label in client.fetched if label.startswith("sf_")]
+    assert snowfall and all(label.endswith("_35.40_6.60_47.10_18.60") for label in snowfall)
