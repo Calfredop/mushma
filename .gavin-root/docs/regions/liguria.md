@@ -104,8 +104,49 @@ Threshold sensitivity (recomputed from stored fractions, a few cells off the bui
   (no `model:` or weather override). Leave-out test on the 0.2° lattice (stride 2), RMSE with the
   national rates vs none vs 6.5 °C/km: mean air temperature 0.40 / 0.97 / 0.46 °C, minimum
   0.58 / 1.10 / 0.55 °C, soil 0.41 / 0.87 / 0.52 °C; wet-day rain RMSE 2.1 mm either way.
-- **Rain scale.** The national `precipitation_scale` (1.28 + 0.29 per km, fitted on SIR Toscana
-  gauges) applies; see Validation for the gauge check.
+- **History** comes from the CDS ERA5-Land time-series product, one request per node for
+  2016-01-01 to 2026-09-14, with snowfall from Italy-wide half-year files of the gridded dataset
+  shared by every region (`cds.snowfall_area`); Open-Meteo's archive and ECMWF IFS forecast fill
+  the days after.
+- **Rain scale: Liguria's own** (`model:` in `liguria.yaml`), from the gauge check below.
+
+### Gauge check (ARPA Liguria)
+
+ARPAL publishes the OMIRL network's daily rain free for "consultazione o elaborazioni automatiche"
+(citing ARPAL), through Regione Liguria's Ambiente in Liguria extraction service: one CSV per year
+with every station. Station positions come from OMIRL's REST station list, joined by code and name
+(`api.weather.arpal`, wired into `api.weather.checks gauges` as the Liguria gauge network). A daily
+value is a UTC day (checked against the hourly values of one station), so the model's local days
+are re-cut by the Rome offset. 172 gauges get a position; 84 sit on woodland cells.
+
+Downscaled **raw** CDS rain against the woodland gauges (pooled model/gauge ratio):
+
+| period | gauges | all | below 400 m | 400–800 m | above 800 m | median daily r | 3-day ≥ 10 mm hit / false alarm |
+|---|---|---|---|---|---|---|---|
+| 2025 | 84 | 0.785 | 0.833 | 0.810 | 0.681 | 0.77 | 0.83 / 0.14 |
+| 2019–2025 | 79 | 0.879 | 0.918 | 0.906 | 0.767 | 0.76 | 0.84 / 0.12 |
+
+The reanalysis is too dry in the hills, as in Tuscany, but less so. The national scale
+(1.28 + 0.29 per km, fitted on Tuscan `era5_seamless` rain in 2025) would make Liguria's rain
+**26 % too wet** over 2019–2025 (13 % in 2025), so the gauge check asks for an override.
+Least squares through the origin of gauge totals on model totals × (a + b × km), the Tuscan
+method:
+
+| fit | a | b per km | pooled on 2019–2025 | by band (< 400 / 400–800 / > 800 m) |
+|---|---|---|---|---|
+| 2019–2025 (**used**) | 1.04 | 0.20 | 1.005 | 0.99 / 1.04 / 0.96 |
+| 2019–2024, checked on 2025 | 1.01 | 0.20 | 0.88 on 2025 | 0.88 / 0.91 / 0.83 |
+| national | 1.28 | 0.29 | 1.26 (2025: 1.13) | 1.23 / 1.30 / 1.21 |
+
+The ratio moves about 10 % from year to year (2025 was a dry year for the model), so the seven-year
+fit is used. It scales totals: timing errors and missed convective cells stay (median daily
+correlation 0.76).
+
+**Foundation issue found here.** The national scale lists `sources: [era5_seamless]`, and
+`api.model.inputs` scales rain only from those sources but scales the rain normals whatever their
+source. For a CDS region, history rain would stay unscaled while `percent_of_normal` divides by
+scaled normals (reading ~30–40 % low). Liguria's override names `era5_land_cds` too. Other CDS
+regions, and Tuscany's 2024 CDS rows, need the same thought (Emilia-Romagna and Umbria lanes told).
 
 ## Sightings
 
