@@ -608,7 +608,7 @@ cd /opt/mushma/deploy && docker compose exec caddy caddy reload --config /etc/ca
   ICMP, from anywhere; outbound open. This is the layer that filters Docker: a port published in
   `deploy/compose.yaml` goes through Docker's own iptables chains, which ufw never sees. So publish
   nothing but Caddy's 80/443, or bind a port to `127.0.0.1`, and open a new public port here
-  first. The project's `generic-firewall-01` belongs to `grimoria-00`, not this server.
+  first. The project's other, shared firewall is not applied to this server.
 - **ufw on the host**, plus the rest of the host guards, from `deploy/harden-server.sh`
   (idempotent; rerun it on a rebuilt server, or to put the config back). SSH is key-only as root
   (the deploy scripts connect as root), with no X11 or agent forwarding. fail2ban reads sshd's
