@@ -348,3 +348,26 @@ def test_snowfall_area_is_shared_so_regions_reuse_one_cache(tmp_path) -> None:
 
     snowfall = [label for label in client.fetched if label.startswith("sf_")]
     assert snowfall and all(label.endswith("_35.40_6.60_47.10_18.60") for label in snowfall)
+
+
+def test_backfill_records_each_nodes_model_height_for_the_lapse_rate(tmp_path: Path) -> None:
+    """Downscaling moves temperatures from the node's model height to the cell's; without a height
+    for the CDS source every CDS temperature would be dropped."""
+    store = WeatherStore(tmp_path / "store")
+
+    backfill_cds_timeseries(
+        FakeClient(tmp_path),
+        store,
+        NODES,
+        "Europe/Rome",
+        date(2024, 2, 29),
+        date(2024, 3, 2),
+        log=lambda m: None,
+        read=fake_read,
+        read_snowfall=lambda path, points: fake_read(path),
+    )
+
+    cells = store.read_point_cells()
+    cds = cells[cells["source"] == SOURCE_ID].set_index("point_id")
+    assert cds["elevation_m"].to_dict() == {"N43.00E012.40": 400.0, "N42.80E012.60": 600.0}
+    assert cds.loc["N43.00E012.40", ["model_lat", "model_lon"]].tolist() == [43.0, 12.4]

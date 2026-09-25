@@ -534,6 +534,7 @@ def backfill_cds(
     """
     north, west, south, east = bbox_of_points(points)
     elevations = point_elevations(points)
+    store.upsert_point_cells(node_heights(points[points["land"]] if "land" in points else points))
     summary: dict = {"chunks": [], "rows": 0, "cached": 0, "fetched": 0}
     # Newest month first so a partial run still validates recent seasons.
     cursor = date(end.year, end.month, 1)
@@ -596,6 +597,22 @@ def backfill_cds(
         + "\n"
     )
     return summary
+
+
+def node_heights(points: pd.DataFrame) -> pd.DataFrame:
+    """``point_cells`` rows for the CDS source: each node is its own ERA5-Land grid cell, at the
+    model height the points step recorded (``grid_elevation_m``). Downscaling moves temperatures
+    from this height to each cell's; a source without heights has its temperatures dropped."""
+    return pd.DataFrame(
+        {
+            "source": SOURCE_ID,
+            "point_id": points["point_id"].astype(str).to_numpy(),
+            "model_lat": points["lat"].round(2).to_numpy(dtype=float),
+            "model_lon": points["lon"].round(2).to_numpy(dtype=float),
+            "elevation_m": points["grid_elevation_m"].to_numpy(dtype=float),
+            "fetched_at": pd.Timestamp.now(tz="UTC"),
+        }
+    )
 
 
 def _on_grid(frame: pd.DataFrame) -> pd.DataFrame:
@@ -710,6 +727,7 @@ def backfill_cds_timeseries(
     hourly = hourly.merge(snowfall, on=["time", "lat", "lon"], how="left")
 
     elevations = point_elevations(points)
+    store.upsert_point_cells(node_heights(land))
     years = []
     for year in range(start.year, end.year + 1):
         first, last = max(start, date(year, 1, 1)), min(end, date(year, 12, 31))
