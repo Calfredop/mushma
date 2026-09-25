@@ -34,6 +34,7 @@ from api.model.rules import load_rules
 from api.regions import history_start_date, list_configured_regions
 from api.timeutil import today_rome
 from api.weather.cds import CdsCredentialsError, resolve_cds_key
+from api.weather.ingest import SETTLE_DAYS
 
 STEP_NAMES = (
     "grid",
@@ -236,6 +237,8 @@ def step_specs(
     root: Path,
 ) -> dict[str, StepSpec]:
     cds_start, cds_end = years.dates(today)
+    # ERA5-Land runs days behind: stop where the ingest's own default does; `update` fills after.
+    cds_end = min(cds_end, today - timedelta(days=SETTLE_DAYS + 1))
     hist_score_start, hist_score_end = history_score_range(region, years, today)
     window_start, window_end = score_window(today)
     return {

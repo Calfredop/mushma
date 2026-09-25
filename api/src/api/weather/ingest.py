@@ -425,14 +425,15 @@ def main() -> None:
 
     points = pd.read_parquet(store.points_path)
     if args.command == "backfill" and args.source == "cds":
-        from api.weather.cds import CdsClient, backfill_cds
+        from api.weather.cds import CdsClient, backfill_cds, backfill_cds_timeseries
 
         if config.cds is None:
             raise SystemExit("weather.yaml has no cds: section")
         end = args.end or today - timedelta(days=SETTLE_DAYS + 1)
         start = args.start or config.cds.start_date
         cds = CdsClient(cache_dir=raw / "cds")
-        summary = backfill_cds(cds, store, points, region.timezone, start, end, log)
+        backfill = backfill_cds_timeseries if config.cds.method == "timeseries" else backfill_cds
+        summary = backfill(cds, store, points, region.timezone, start, end, log)
         log(f"backfill cds: {json.dumps(summary)}")
         return
     if args.command == "backfill":
