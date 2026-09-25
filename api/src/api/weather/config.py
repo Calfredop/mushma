@@ -40,6 +40,9 @@ class CdsSpec:
     # How the hourly values are fetched: "chunks" (gridded, ~weekly bbox requests) or
     # "timeseries" (one request per node, snowfall from the gridded dataset); api.weather.cds.
     method: str = "chunks"
+    # Snowfall area for the timeseries method, (north, west, south, east): one area for every
+    # region so they share one snowfall cache. None = each region's own node bbox.
+    snowfall_area: tuple[float, float, float, float] | None = None
 
 
 CDS_METHODS = ("chunks", "timeseries")
@@ -179,6 +182,9 @@ def _cds(raw: dict | None) -> CdsSpec | None:
         model=str(raw["model"]),
         start_date=date.fromisoformat(str(raw["start_date"])),
         method=method,
+        snowfall_area=(
+            tuple(float(v) for v in raw["snowfall_area"]) if raw.get("snowfall_area") else None
+        ),
     )
 
 

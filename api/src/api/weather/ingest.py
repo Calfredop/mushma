@@ -432,8 +432,19 @@ def main() -> None:
         end = args.end or today - timedelta(days=SETTLE_DAYS + 1)
         start = args.start or config.cds.start_date
         cds = CdsClient(cache_dir=raw / "cds")
-        backfill = backfill_cds_timeseries if config.cds.method == "timeseries" else backfill_cds
-        summary = backfill(cds, store, points, region.timezone, start, end, log)
+        if config.cds.method == "timeseries":
+            summary = backfill_cds_timeseries(
+                cds,
+                store,
+                points,
+                region.timezone,
+                start,
+                end,
+                log,
+                snowfall_area=config.cds.snowfall_area,
+            )
+        else:
+            summary = backfill_cds(cds, store, points, region.timezone, start, end, log)
         log(f"backfill cds: {json.dumps(summary)}")
         return
     if args.command == "backfill":
