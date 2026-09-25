@@ -869,6 +869,21 @@ references:
     verified: verified
     supports: 'Kd by month, January to December: 0.49, 0.46, 0.45, 0.45, 0.44, 0.38, 0.33, 0.35, 0.40, 0.46, 0.53,
       0.53 (points range 0.26–0.78 in single years).'
+  mushma_arpal_gauge_check_2026:
+    citation: 'mushma rain check for Liguria: downscaled CDS ERA5-Land (time-series product) daily precipitation
+      against the ARPA Liguria OMIRL rain gauges inside woodland cells (daily CSVs from the Ambiente in Liguria
+      extraction service, positions from the OMIRL station API), 2019-2025 (79 gauges) and 2025 (84 gauges),
+      valid days only, model days re-cut to the gauges'' UTC days. See .gavin-root/docs/regions/liguria.md, Validation'
+    url: https://www.arpal.liguria.it/tematiche/meteo/servizi-agli-utenti.html
+    kind: analysis
+    region: Liguria
+    verified: verified
+    supports: the CDS reanalysis holds 88 % of gauge rain in Ligurian woodland over 2019-2025 (79 % in 2025),
+      less above 800 m (0.77); the national scale (1.28 + 0.29 per km, fitted on Tuscan era5_seamless rain) makes it
+      26 % too wet (13 % in 2025); a gauge-total fit on 2019-2025 of 1.04 + 0.20 per km brings it to 1.005 overall
+      (0.96-1.04 per band). Fitted on 2019-2024 alone it gives 0.88 on 2025.
+    cited_as:
+    - regions/liguria.md
   mushma_sir_gauge_check_2026:
     citation: 'mushma rain check: downscaled Open-Meteo era5_seamless daily precipitation against the SIR Toscana
       (Servizio Idrologico Regionale) rain gauges inside woodland cells, 2025 (133 gauges) and 2026-01-01 to 09-06

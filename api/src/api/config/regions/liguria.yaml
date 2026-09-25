@@ -60,3 +60,23 @@ soil:
 # 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
 sightings:
   inaturalist_place_id: 96906
+
+# Rain scale (merged onto config/model.yaml): the gauge check asked for it. Against ARPA Liguria's
+# OMIRL gauges in woodland (2019-2025, 79 gauges), the CDS reanalysis holds 88 % of the rain and the
+# national scale, fitted on Tuscan era5_seamless rain, overshoots by 26 %. A gauge-total fit on
+# 2019-2025 gives 1.04 + 0.20 per km (pooled 1.005, 0.96-1.04 per height band). Liguria's history is
+# CDS, so the scale names that source too: the national one scales era5_seamless only, while the rain
+# normals are scaled whatever their source. .gavin-root/docs/regions/liguria.md, Validation.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 1.04
+    per_km: 0.20
+    source: [mushma_arpal_gauge_check_2026]
+    notes: >-
+      Liguria: least squares through the origin of gauge totals on model totals x (a + b x
+      elevation) over the 79 ARPA Liguria woodland gauges of 2019-2025 (CDS era5_land_cds rain, UTC
+      gauge days) gave a = 1.037, b = 0.204 per km: pooled ratio 1.005 (below 400 m 0.99, 400-800 m
+      1.04, above 800 m 0.96). Fitted on 2019-2024 it gives 0.88 on 2025, where the national scale
+      gives 1.13: the ratio moves about 10 % from year to year, so the seven-year fit is used. It
+      scales totals: timing errors and missed convective cells stay.
