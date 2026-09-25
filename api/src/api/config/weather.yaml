@@ -32,6 +32,10 @@ cds:
   # 2016 to today) plus half-yearly snowfall from the gridded dataset, instead of ~630 weekly bbox
   # requests that CDS runs one at a time per account. Same hourly values (weather-history-cds.md).
   method: timeseries
+  # Snowfall (not in the time-series product) comes from the gridded dataset over all of Italy
+  # (north, west, south, east; the basemap's extent): CDS costs by field, not area, and runs one
+  # gridded request per account at a time, so one shared file per half-year serves every region.
+  snowfall_area: [47.1, 6.6, 35.4, 18.6]
 
 # Open-Meteo archive: kept for Tuscany's existing table and as a fallback seam with the forecast.
 # The daily update still refreshes recent reanalysis days from here (CDS is ~5 days behind).
