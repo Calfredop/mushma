@@ -145,7 +145,14 @@ Built with `uv run python -m api.grid.build --region emilia_romagna` (about 3 mi
 
 ## Data
 
-Written by `api.regions.onboard emilia_romagna` once the chain has run.
+- cells: 23231
+- woodland cells: 5900
+- INFC deviation: +3.1% (grid 602,901 ha vs 584,901 ha) — within ±10 %
+- weather nodes: 86
+- years stored: 2016–2026 (11 years)
+- sightings kept: 28
+- backtest AUC (auc_local, model, all): gallinacci 0.813, ovoli 0.554, porcini 0.372
+- sanity contrasts: 10/12 passed
 
 ## Sightings
 
@@ -173,6 +180,72 @@ iNaturalist place 96905 "Emilia-Romagna, IT", resolved by name on 2026-09-25):
 
   **Train seasons 2016–2023: 13 presences** (porcini 8, gallinacci 5, ovoli 0); hold-out 2024–2025:
   9. The card tunes only at 50 or more, so the researched priors ship untuned.
+
+## Validation
+
+**No tuning: the priors ship.** The train seasons (2016-2023) hold 13 usable presences (porcini 8,
+gallinacci 5, ovoli 0), against the card's floor of 50. The species files stay `draft`, with the
+researched windows, bands and affinities (`.gavin-root/docs/species-ecology/emilia_romagna.md`).
+
+Backtest (`api.model.backtest run --region emilia_romagna`; stores under
+`backtest/emilia_romagna/{priors,onboard}`): the model against the calendar baseline (every gate,
+weather taken out) and habitat alone, AUC with the model's 95 % bootstrap interval.
+
+| group | seasons | presences | metric | model (95 % CI) | calendar | habitat |
+|---|---|---|---|---|---|---|
+| porcini | train 2016-23 | 8 | auc_region | 0.84 (0.78-0.89) | 0.80 | 0.50 |
+| | | | auc_local | 0.62 (0.43-0.79) | 0.53 | 0.50 |
+| | | | auc_time_effort | 0.60 (0.51-0.69) | 0.52 | 0.50 |
+| porcini | hold-out 2024-25 | 6 | auc_region | 0.81 (0.74-0.88) | 0.68 | 0.50 |
+| | | | auc_local | 0.37 (0.20-0.57) | 0.42 | 0.50 |
+| | | | auc_time_effort | 0.43 (0.32-0.53) | 0.53 | 0.50 |
+| gallinacci | train | 5 | auc_region | 0.81 (0.73-0.89) | 0.68 | 0.62 |
+| | | | auc_local | 0.31 (0.14-0.46) | 0.28 | 0.54 |
+| | | | auc_time_effort | 0.58 (0.51-0.65) | 0.54 | 0.50 |
+| gallinacci | hold-out | 1 | auc_region / local / time | 0.84 / 0.81 / 0.55 | 0.67 / 0.82 / 0.47 | |
+| ovoli | hold-out | 2 | auc_region / local / time | 0.93 / 0.55 / 0.60 | 0.89 / 0.59 / 0.64 | |
+
+What this supports:
+- **Where and in which season: yes.** `auc_region` is 0.81-0.93 in every group and period, above
+  both habitat alone and the calendar baseline in all five rows.
+- **When, within the season: a hint on train only.** On the train seasons the weather lifts timing
+  a little above the calendar baseline (porcini 0.60, gallinacci 0.58, both intervals above 0.5). On
+  the six hold-out porcini it does not (0.43). One or two sightings move these numbers by 0.1.
+- **Which of the nearby woods: no signal.** `auc_local` straddles 0.5 with intervals 0.3-0.4 wide.
+  Gallinacci sit below it on train. All five records are in beech at 1,200-1,520 m (Ferriere,
+  Sestola, Albareto), on the ramp of the altitude band (full to 1,300 m, zero at 1,800 m), so the
+  lower woods around them outscore them. A hint that the band's top is low for the Emilian
+  beech belt. The card and the PRD keep altitude bands frozen, and five records are no basis to
+  move it: recheck when more records exist.
+
+**Sanity check: 10 of 12 press contrasts hold** (porcini group, `api.model.sanity`, contrasts and
+sources in `api/src/api/config/species/emilia_romagna/sanity.yaml`):
+
+| contrast | higher | lower | holds |
+|---|---|---|---|
+| Cerreto Laghi, early October: 2017 (200 kg) over 2016 (30 kg) | 0.96 | 0.73 | yes |
+| Reggio-Parma crinale, mid-September 2019 against normal years | 0.96 | 0.80 | yes |
+| Mid-September 2019: Reggio side ahead of the Taro and Ceno valleys | 0.96 | 0.77 | yes |
+| First half of August 2018: Val Ceno and Berceto ahead of Albareto | 0.50 | 0.58 | **no** |
+| Taro valley, first half of August 2017: drought, no summer flush (normal over 2017) | 0.60 | 0.20 | yes |
+| Alta Val Nure, late August to mid-September 2022: best in twenty years | 0.95 | 0.63 | yes |
+| Modena Apennines, same window 2022: a record year | 0.93 | 0.61 | yes |
+| Early October 2023: Ligurian border ahead of Modena to San Marino | 0.32 | 0.23 | yes |
+| Pievepelago 2024: mid-July flush over the early-August drought pause | 0.61 | 0.54 | yes |
+| Val Trebbia 2025: early September over the short mid-August flush | 0.98 | 0.64 | yes |
+| Parma Apennines 2020: a rich September over an October stopped by storms and tramontana | 0.66 | 0.87 | **no** |
+| Alto Savio 2024: among the most copious seasons in decades | 0.86 | 0.61 | yes |
+
+The two misses:
+- **Val Ceno vs Albareto, August 2018.** Neighbouring valleys, which the model ranks the other
+  way round (0.50 vs 0.58). One contrast; not investigated further.
+- **October 2020.** No rule reads wind. The drying stopper counts days with ET0 of 4 mm or more
+  in the past week, which a cold October tramontana rarely reaches, so the storms-then-wind spell
+  that stopped the flush still scores well.
+
+Mean September-October porcini score by year follows the press: lowest in 2023 (0.31), when the
+October reports say "quasi assenti", and highest in 2024 (0.87), the Alto Savio's record year.
+The 2017 drought sits low too (0.48), and 2019 and 2022 high (0.73, 0.66).
 
 ## After the deploy
 
