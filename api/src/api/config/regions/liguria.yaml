@@ -1,0 +1,62 @@
+# Liguria: region #2 of the full-Italy rollout (.gavin-root/docs/regions/liguria.md).
+id: liguria
+name: {it: Liguria, en: Liguria}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [7.49, 43.77, 10.08, 44.68]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 7
+
+# Woodland: one regional map gives both layers. Regione Liguria's Tipi forestali 2025 (1:10,000)
+# carries the 2025 land-use code on every polygon (cod_uso: how much of each cell is broadleaf,
+# conifer, mixed forest, macchia or regrowth) and, on wooded land, the IPLA forest category
+# (cod_catfor: which kind). Liguria's land-use IV level differs from CLC's: 3114 is beech and 3115
+# chestnut here. See .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/liguria.md.
+forest:
+  groups:
+    source: rl_tipi_forestali
+    class_column: cod_uso
+    classes:
+      "3111": broadleaf  # bosco xerofilo a prevalenza di sempreverdi
+      "3112": broadleaf  # bosco misto termofilo
+      "3113": broadleaf  # bosco misto mesofilo
+      "3114": broadleaf  # bosco a prevalenza di faggio
+      "3115": broadleaf  # bosco a prevalenza di castagno
+      "3116": broadleaf  # castagneti da frutto
+      "3117": broadleaf  # bosco di specie igrofile
+      "312": conifer
+      "313": mixed
+      "323": macchia
+      "324": transitional
+  types:
+    source: rl_tipi_forestali
+    classes:
+      CA: chestnut            # castagneti
+      FA: beech               # faggete
+      QU: deciduous_oak       # querceti di rovere e di roverella
+      CE: deciduous_oak       # cerrete
+      LE: evergreen_oak       # leccete (and the few sugherete)
+      OS: mixed_broadleaf     # orno-ostrieti
+      LM: mixed_broadleaf     # carpineti, acero-tiglio-frassineti
+      FR: riparian            # saliceti, pioppeti, alneti ripari
+      PC: mediterranean_pine  # pinete di pino marittimo e d'Aleppo
+      PM: mountain_pine       # pinete di pino silvestre (and a little pino uncinato)
+      AB: fir_spruce          # abetine (Alpi liguri)
+      LC: other_conifer       # lariceti
+      RI: other_conifer       # rimboschimenti (mostly pino nero, some douglasia)
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Liguria, IT", admin level
+# 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 96906

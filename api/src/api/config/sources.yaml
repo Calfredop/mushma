@@ -2,7 +2,8 @@
 # `download`, where present, holds what the grid build needs to fetch the data (api/grid/sources.py
 # `read_vector`). Vector download shapes: `url` + `shapefile` (zip, nested 7z ok), `url` +
 # `geopackage`/`layer`, `url` + `member` + `layer` (named layer inside a zip), `arcgis_layer` +
-# `field`, or `wfs` + `type_name`.
+# `field`, or `wfs` + `type_name` (optional `srs`, and `page_size` + `sort_by` for a server that caps
+# GetFeature). `field` names the forest-type column when the source serves `forest.types`.
 
 istat_boundaries:
   name: ISTAT — Confini delle unità amministrative a fini statistici (generalizzati), 1 gennaio 2025
@@ -23,6 +24,25 @@ rt_ucs:
   download:
     url: https://www502.regione.toscana.it/geoscopio/download/tematici/ucs_rt/USO_E_COPERTURA_DEL_SUOLO_REGIONE_TOSCANA.zip
     shapefile: UCS_07_19.shp
+
+rl_tipi_forestali:
+  name: Regione Liguria — Tipi forestali della Regione Liguria sc. 1:10.000, ed. 2025
+  homepage: https://geoportal.regione.liguria.it/catalogo/mappe.html?typeEvent=detailFromHome&idmap=2661
+  license: CC BY 4.0
+  attribution: "Tipi forestali e uso del suolo © Regione Liguria, CC BY 4.0"
+  notes: >-
+    Photo-interpreted at 1:10,000 (0.5 ha minimum unit) from AGEA 2019 and 2022 orthophotos and
+    Sentinel-2. Each of its 52,044 polygons carries the 2025 land-use code (cod_uso, the national
+    Corine-style legend with Liguria's own IV level: 3114 faggio, 3115 castagno) and, on wooded
+    land, the IPLA forest category (cod_catfor) and type (cod_tipofo). GeoServer caps a GetFeature
+    at 5,000 features, hence the paging.
+  download:
+    wfs: https://geoservizi.regione.liguria.it/geoserver/M2661/wfs
+    type_name: M2661:L10450
+    srs: EPSG:25832
+    page_size: 5000
+    sort_by: ogr_fid
+    field: cod_catfor
 
 ispra_clc18_iv:
   name: ISPRA — Corine Land Cover 2018, IV livello (1:100.000)

@@ -189,7 +189,8 @@ def read_vector(
     - ``geopackage`` / ``.gpkg`` url (+ optional ``layer``): GeoPackage file
     - ``member`` + ``layer`` (+ ``url`` zip): named layer inside a file member of a zip
     - ``arcgis_layer`` (+ ``field``, needs ``bbox_wgs84``): ArcGIS REST FeatureServer/MapServer
-    - ``wfs`` (+ ``type_name``, needs ``bbox_wgs84``): OGC WFS GetFeature
+    - ``wfs`` (+ ``type_name``, needs ``bbox_wgs84``): OGC WFS GetFeature; with ``page_size``
+      (+ ``sort_by``) it pages a server that caps the feature count
     """
     import pandas as pd
     import pyogrio
