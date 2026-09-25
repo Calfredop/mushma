@@ -267,12 +267,18 @@ skipped when the grid is not built, e.g. in CI. All 15 pass.
 2. **Forest groups.** Point `forest.groups` at a vector source declared in `sources.yaml`
    (`source`, `class_column`, `classes` mapping land-cover codes → broadleaf / conifer /
    mixed / macchia / transitional). Supported downloads: zip shapefile, GeoPackage, a named
-   layer inside a zip, ArcGIS REST, WFS. Legacy `year_column` is still accepted as an alias
-   for `class_column`. **Omit `forest.groups`** to derive groups from CLC IV alone (311x →
+   layer inside a zip, ArcGIS REST, WFS, or `parts` (several of those read as one source, e.g.
+   one zip per province; `file` names a download whose url does not end in its file name).
+   Legacy `year_column` is still accepted as an alias for `class_column`. `forest.groups` may
+   also be a **list of layers**, each with an optional `where` (OGR SQL) when one column cannot
+   say what is forest on its own: Emilia-Romagna maps forest categories only where the land use
+   is forest, and a second layer maps its "in evoluzione" land use to transitional. **Omit `forest.groups`** to derive groups from CLC IV alone (311x →
    broadleaf, 312x → conifer, 313x → mixed, 3231/3232 → macchia, 324x → transitional).
 3. **Forest types.** `forest.types` names the CLC (or equivalent) source and, when needed,
    `classes` mapping type codes → habitats. If `classes` is omitted, the shared CLC IV
-   defaults are used (`api.grid.forest.CLC_IV_DEFAULT_TYPES`).
+   defaults are used (`api.grid.forest.CLC_IV_DEFAULT_TYPES`). A regional map can supply the
+   types too: set `class_column` (default: the source's `field`, else `clc18`) and optionally
+   `where`.
 4. The build prints the region's forest area against the INFC 2015 "bosco" figure in
    `api/src/api/config/infc2015.yaml` and warns when the difference exceeds ±10 %.
 5. National raw files (ISTAT boundaries and localities, DEM tiles, CLC pages by bbox) are

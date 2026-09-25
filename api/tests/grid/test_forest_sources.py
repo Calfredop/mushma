@@ -2,7 +2,15 @@
 
 import pytest
 
-from api.grid.build import forest_classes, forest_group_column
+from api.grid.build import (
+    GroupLayer,
+    class_filter,
+    forest_classes,
+    forest_group_column,
+    forest_group_layers,
+    forest_type_column,
+    read_group_cover,
+)
 from api.grid.forest import (
     CLC_IV_DEFAULT_TYPES,
     clc_group_for_code,
@@ -82,3 +90,114 @@ def test_forest_area_ha_sums_forest_share_of_region_area() -> None:
 
     # 0.8 * 1.0 * 100 + 1.0 * 0.5 * 100 = 130 ha
     assert forest_area_ha(mask, grid) == pytest.approx(130.0)
+
+
+def test_forest_group_layers_read_a_single_mapping_as_one_layer() -> None:
+    layers = forest_group_layers(load_region("tuscany"), load_vocabulary())
+
+    assert layers is not None
+    assert len(layers) == 1
+    assert layers[0].source == "rt_ucs"
+    assert layers[0].class_column == "ucs19"
+    assert layers[0].classes["324"] == "transitional"
+    assert layers[0].where is None
+
+
+def test_forest_group_layers_are_none_when_groups_are_omitted() -> None:
+    assert forest_group_layers(load_region("umbria"), load_vocabulary()) is None
+
+
+def test_forest_group_layers_take_a_list_with_filters() -> None:
+    region = load_region("tuscany")
+    region.extra["forest"]["groups"] = [
+        {
+            "source": "cf",
+            "class_column": "COD_CAT",
+            "where": "STC_RER IN ('11', '26')",
+            "classes": {"08": "broadleaf", "55": "conifer"},
+        },
+        {"source": "cf", "class_column": "STC_RER", "classes": {"210": "transitional"}},
+    ]
+
+    layers = forest_group_layers(region, load_vocabulary())
+
+    assert [layer.class_column for layer in layers] == ["COD_CAT", "STC_RER"]
+    assert layers[0].where == "STC_RER IN ('11', '26')"
+    assert layers[1].classes == {"210": "transitional"}
+    groups, _ = forest_classes(region, load_vocabulary())
+    assert groups == {"08": "broadleaf", "55": "conifer", "210": "transitional"}
+
+
+def test_forest_group_layers_reject_an_unknown_group() -> None:
+    region = load_region("tuscany")
+    region.extra["forest"]["groups"] = [
+        {"source": "cf", "class_column": "STC_RER", "classes": {"210": "shrubland"}}
+    ]
+
+    with pytest.raises(ValueError, match="shrubland"):
+        forest_group_layers(region, load_vocabulary())
+
+
+def test_class_filter_combines_the_layer_filter_with_its_codes() -> None:
+    assert class_filter("ucs19", ["311", "312"]) == "ucs19 IN ('311', '312')"
+    assert (
+        class_filter("COD_CAT", ["08"], "STC_RER IN ('11')")
+        == "(STC_RER IN ('11')) AND COD_CAT IN ('08')"
+    )
+
+
+def test_forest_type_column_prefers_the_region_config_over_the_source_field() -> None:
+    assert forest_type_column({}, {"field": "clc18"}) == "clc18"
+    assert forest_type_column({}, {}) == "clc18"
+    assert forest_type_column({"class_column": "COD_CAT"}, {"field": "clc18"}) == "COD_CAT"
+
+
+def test_read_group_cover_maps_each_layer_and_drops_filtered_features(tmp_path) -> None:
+    import geopandas as gpd
+    from shapely.geometry import box
+
+    from api.grid.sources import Source
+
+    x0, y0 = 4_400_000, 2_300_000
+    layer = gpd.GeoDataFrame(
+        {
+            "STC_RER": ["11", "11", "210", "22p"],
+            "COD_CAT": ["08", "55", "221", "181"],
+        },
+        geometry=[box(x0 + 100 * i, y0, x0 + 100 * (i + 1), y0 + 100) for i in range(4)],
+        crs="EPSG:3035",
+    )
+    folder = tmp_path / "shp"
+    folder.mkdir()
+    layer.to_file(folder / "cf.shp")
+    archive = tmp_path / "cf.zip"
+    import zipfile
+
+    with zipfile.ZipFile(archive, "w") as zf:
+        for part in folder.iterdir():
+            zf.write(part, part.name)
+    sources = {
+        "cf": Source(
+            id="cf",
+            name="cf",
+            homepage="",
+            license="CC BY 4.0",
+            attribution="cf",
+            download={"url": archive.as_uri(), "shapefile": "cf.shp"},
+        )
+    }
+    layers = [
+        GroupLayer(
+            source="cf",
+            class_column="COD_CAT",
+            classes={"08": "broadleaf", "55": "conifer", "181": "broadleaf"},
+            where="STC_RER IN ('11')",
+        ),
+        GroupLayer(source="cf", class_column="STC_RER", classes={"210": "transitional"}),
+    ]
+
+    cover = read_group_cover(layers, sources, tmp_path / "raw", "EPSG:3035")
+
+    assert sorted(cover["group"]) == ["broadleaf", "conifer", "transitional"]
+    assert list(cover.columns) == ["group", "geometry"]
+    assert cover.crs.to_epsg() == 3035
