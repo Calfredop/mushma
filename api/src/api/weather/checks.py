@@ -7,8 +7,9 @@
 ``lattice`` re-fetches (from the cache, when present) three 14-day windows of 2024 for every 0.1°
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
-with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria:
-``GAUGE_NETWORKS``). Results land in ``$DATA_DIR/weather/<region>/checks/``.
+with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
+the Servizio Idrografico for Umbria: ``GAUGE_NETWORKS``). Results land in
+``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
@@ -25,7 +26,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpal
+from api.weather import arpal, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -253,9 +254,33 @@ def arpa_liguria(raw: Path, start: date, end: date) -> GaugeNetwork:
     )
 
 
+def calendar_days(calendar: pd.Series) -> pd.Series:
+    """Gauge days that are the model's own local calendar days."""
+    return calendar
+
+
+def umbria_sir_network(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """Regione Umbria Servizio Idrografico: open daily CSVs (history zip + current year), no
+    station heights (run_gauges takes the gauge cell's), calendar days (api.weather.umbria_sir)."""
+    folder = raw / "umbria_sir"
+    frames = [
+        umbria_sir.parse_daily(fetch(umbria_sir.HISTORY_URL, folder / "storico_giornalieri.zip"))
+    ]
+    if end.year >= date.today().year:
+        current = fetch(umbria_sir.CURRENT_YEAR_URL, folder / "anno_corrente_giornalieri.csv")
+        frames.append(umbria_sir.parse_daily(current))
+    daily = pd.concat(frames, ignore_index=True).drop_duplicates(["code", "date"], keep="last")
+    return GaugeNetwork(
+        umbria_sir.gauges_covering(daily, start, end),
+        lambda gauge: umbria_sir.series_of(daily, gauge.code),
+        calendar_days,
+    )
+
+
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
+    "umbria": umbria_sir_network,
 }
 
 
@@ -274,6 +299,9 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
         f"1kmE{int(a // size)}N{int(b // size)}" for a, b in zip(x, y, strict=True)
     ]
     cells = pd.read_parquet(grid_dir / "cells.parquet", columns=["cell_id", "elevation_m"])
+    if "elevation_m" not in gauges.columns:
+        # A network without station heights (Umbria): band each gauge by its cell's DEM height.
+        gauges = gauges.merge(cells, on="cell_id", how="left")
     weights = pd.read_parquet(store.weights_path)
     gauges = gauges[gauges["cell_id"].isin(weights["cell_id"])]
     # The reanalysis the model scores with: CDS where stored, else the Open-Meteo archive.
