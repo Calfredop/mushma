@@ -72,6 +72,21 @@ values from the `reanalysis-era5-land-timeseries` product instead:
 - **Queue.** `CdsClient` waits out the "temporarily limited" rejections (2 min, up to
   an hour) instead of failing the backfill. Queued weekly chunks from any rail still
   delay everyone's requests, so rails should not warm chunk caches any more.
+- **When the gridded queue is stuck.** On 2026-09-25 CDS had 9,197 requests queued
+  and no gridded ERA5-Land job of ours started for over an hour, while the
+  time-series requests kept running. Snowfall can then come from the Open-Meteo
+  archive instead (`era5_seamless`, ERA5's snowfall, as Tuscany's whole history
+  has it), because the store takes each variable from the best source that has it:
+
+  ```sh
+  uv run python -m api.weather.ingest backfill --source cds --region <id> --skip-snowfall
+  uv run python -m api.weather.ingest backfill --source open_meteo --region <id> \
+      --variables snowfall_sum --start 2016-01-01 --end <the CDS end date>
+  uv run python -m api.regions.onboard <id> --from update
+  ```
+
+  Umbria (56 nodes) took about 2 min for each backfill and 1,564 weighted
+  Open-Meteo calls. CDS snowfall, if written later, outranks it.
 
 ## Variable map
 
