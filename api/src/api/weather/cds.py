@@ -179,7 +179,6 @@ def aggregate_hourly_frame(
         t_c = g["t2m"].to_numpy(dtype=float) - 273.15
         td_c = g["d2m"].to_numpy(dtype=float) - 273.15
         tp_m = g["tp"].to_numpy(dtype=float)
-        sf_m = g["sf"].to_numpy(dtype=float)
         ssrd_mj = g["ssrd"].to_numpy(dtype=float) / 1e6
         wind_ms = np.hypot(g["u10"].to_numpy(dtype=float), g["v10"].to_numpy(dtype=float))
         day_of_year = date.fromisoformat(str(local_day)).timetuple().tm_yday
@@ -192,7 +191,6 @@ def aggregate_hourly_frame(
             "soil_moisture_0_to_7cm_mean": float(np.nanmean(g["swvl1"])),
             "soil_moisture_7_to_28cm_mean": float(np.nanmean(g["swvl2"])),
             "precipitation_sum": float(np.nansum(tp_m) * 1000.0),
-            "snowfall_sum": float(np.nansum(sf_m) * 100.0),
             "wind_speed_10m_max": float(np.nanmax(wind_ms) * 3.6),
             "vapour_pressure_deficit_max": daily_vpd_max_kpa(t_c, td_c),
             "et0_fao_evapotranspiration": daily_et0_mm(
@@ -206,6 +204,8 @@ def aggregate_hourly_frame(
                 day_of_year,
             ),
         }
+        if "sf" in g.columns:  # absent when snowfall comes from another source
+            values["snowfall_sum"] = float(np.nansum(g["sf"].to_numpy(dtype=float)) * 100.0)
         for variable, value in values.items():
             if value is None or (isinstance(value, float) and not np.isfinite(value)):
                 continue
@@ -678,6 +678,7 @@ def backfill_cds_timeseries(
     read: Callable[[Path], pd.DataFrame] = read_hourly_netcdf_zip,
     snowfall_area: tuple[float, float, float, float] | None = None,
     read_snowfall: Callable[[Path, pd.DataFrame], pd.DataFrame] = read_snowfall_zip,
+    snowfall: bool = True,
 ) -> dict:
     """Fetch ``start..end`` node by node from the ERA5-Land time-series product, with snowfall
     from the gridded dataset, into the daily store under the same source id as ``backfill_cds``.
@@ -686,7 +687,9 @@ def backfill_cds_timeseries(
     requested over ``snowfall_area`` (north, west, south, east), one area shared by every region
     so they all reuse one cache (CDS cost does not depend on area), else over the nodes' own bbox;
     it is deaccumulated per node over the whole range at once, so request edges lose nothing and
-    only the range's very first hour counts as carry-over, as in a chunk.
+    only the range's very first hour counts as carry-over, as in a chunk. With ``snowfall`` off no
+    snowfall is fetched or written, for when another source (the Open-Meteo archive) supplies it:
+    the store takes each variable from the best source that has it.
     """
     land = points[points["land"]] if "land" in points.columns else points
     summary: dict = {"method": "timeseries", "rows": 0, "cached": 0, "fetched": 0}
@@ -706,25 +709,26 @@ def backfill_cds_timeseries(
         log(f"CDS time series {request.label}")
     hourly = pd.concat(series, ignore_index=True)
 
-    snow = []
-    area = snowfall_area or bbox_of_points(points)
-    for request in snowfall_requests(area, start, end):
-        cached = client.cache_path(request).exists()
-        path = client.ensure(request, log=log)
-        summary["cached" if cached else "fetched"] += 1
-        snow.append(_on_grid(read_snowfall(path, points))[["time", "lat", "lon", "sf"]])
-        log(f"CDS snowfall {request.label}")
-    snowfall = (
-        pd.concat(snow, ignore_index=True)
-        .drop_duplicates(["time", "lat", "lon"])
-        .sort_values(["lat", "lon", "time"])
-    )
-    snowfall = snowfall.reset_index(drop=True)
-    snow_hours = pd.to_datetime(snowfall["time"]).dt.hour.to_numpy()
-    snowfall["sf"] = snowfall.groupby(["lat", "lon"], sort=False)["sf"].transform(
-        lambda s: _hourly_accumulation(s.to_numpy(dtype=float), snow_hours[s.index])
-    )
-    hourly = hourly.merge(snowfall, on=["time", "lat", "lon"], how="left")
+    if snowfall:
+        snow = []
+        area = snowfall_area or bbox_of_points(points)
+        for request in snowfall_requests(area, start, end):
+            cached = client.cache_path(request).exists()
+            path = client.ensure(request, log=log)
+            summary["cached" if cached else "fetched"] += 1
+            snow.append(_on_grid(read_snowfall(path, points))[["time", "lat", "lon", "sf"]])
+            log(f"CDS snowfall {request.label}")
+        snow_hourly = (
+            pd.concat(snow, ignore_index=True)
+            .drop_duplicates(["time", "lat", "lon"])
+            .sort_values(["lat", "lon", "time"])
+            .reset_index(drop=True)
+        )
+        snow_hours = pd.to_datetime(snow_hourly["time"]).dt.hour.to_numpy()
+        snow_hourly["sf"] = snow_hourly.groupby(["lat", "lon"], sort=False)["sf"].transform(
+            lambda s: _hourly_accumulation(s.to_numpy(dtype=float), snow_hours[s.index])
+        )
+        hourly = hourly.merge(snow_hourly, on=["time", "lat", "lon"], how="left")
 
     elevations = point_elevations(points)
     store.upsert_point_cells(node_heights(land))
