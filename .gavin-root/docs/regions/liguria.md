@@ -236,10 +236,9 @@ existed), each contrast read against its own group:
 | Arroscia / Alpi Liguri gallinacci 2025 > 2022, 28 Jun–15 Jul | gallinacci | 0.378 | 0.344 | yes |
 
 **9 of 11 hold** (porcini 7/9, ovoli 1/1, gallinacci 1/1). The `Data` section's "8/11" is the
-default run, which scores all 11 on the porcini group. Both misses are in Aveto–Trebbia, and both
-rest on the weakest sources: #1's 2017 side is blog hearsay, and #3 compares two early Septembers
-with the model placing 2021's rain earlier than the report did. See
-`.gavin-root/docs/species-ecology/liguria.md` for each contrast's evidence.
+default run, which scores all 11 on the porcini group. Both misses are in Aveto–Trebbia; the first
+rests on the weakest source (its 2017 side is blog hearsay), and neither has been investigated
+further. See `.gavin-root/docs/species-ecology/liguria.md` for each contrast's evidence.
 
 ## After the deploy: what to verify
 
