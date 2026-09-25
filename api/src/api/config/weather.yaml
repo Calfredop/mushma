@@ -28,6 +28,10 @@ cds:
   dataset: reanalysis-era5-land
   model: era5_land_cds
   start_date: "2016-01-01"
+  # timeseries: one request per weather node from the ERA5-Land time-series product (~35 s for
+  # 2016 to today) plus half-yearly snowfall from the gridded dataset, instead of ~630 weekly bbox
+  # requests that CDS runs one at a time per account. Same hourly values (weather-history-cds.md).
+  method: timeseries
 
 # Open-Meteo archive: kept for Tuscany's existing table and as a fallback seam with the forecast.
 # The daily update still refreshes recent reanalysis days from here (CDS is ~5 days behind).
