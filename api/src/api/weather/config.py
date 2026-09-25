@@ -122,6 +122,12 @@ class WeatherConfig:
         order.append(self.forecast.model)
         return order
 
+    @property
+    def reanalysis_order(self) -> list[str]:
+        """Reanalysis source ids, most trusted first: the source order without the forecast. A
+        region's history is whichever of these it stores (CDS for every region after Tuscany)."""
+        return [source for source in self.source_order if source != self.forecast.model]
+
 
 def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
     raw = yaml.safe_load(path.read_text())
