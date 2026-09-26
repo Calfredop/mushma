@@ -84,6 +84,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Piemonte — Carta forestale regionale 2025',
+    url: 'https://www.geoportale.piemonte.it/geonetwork/srv/api/records/r_piemon:130b499f-3e2d-4388-8cf0-66892cd7ee25',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Copernicus DEM GLO-30',
     url: 'https://registry.opendata.aws/copernicus-dem/',
     use: 'elevation',

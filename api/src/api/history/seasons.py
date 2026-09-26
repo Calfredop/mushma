@@ -200,13 +200,16 @@ def season_scores(
     Runs in DuckDB over a frame or a relation: every stored year is millions of rows."""
     con = con or duckdb.connect()
     days = _days_view(con, area_days)
+    # An area-day is one row per area, species and date (area_day_scores groups by them), so a
+    # row count is the day count. count(DISTINCT date) cannot spill, and this view is read three
+    # times below: with Piemonte's 1,180 comuni it ran the capped connection out of memory.
     con.execute(
         f"""
         CREATE OR REPLACE TEMP VIEW history_season_base AS
         SELECT area_code, species, year, max(date) AS through,
-               count(DISTINCT date)::INTEGER AS days, max(cells)::INTEGER AS cells,
+               count(*)::INTEGER AS days, max(cells)::INTEGER AS cells,
                sum(share) AS good_days,
-               count(DISTINCT date) = CASE WHEN {_LEAP.format(d="max(date)")} THEN 366 ELSE 365 END
+               count(*) = CASE WHEN {_LEAP.format(d="max(date)")} THEN 366 ELSE 365 END
                    AS complete
         FROM {days} GROUP BY area_code, species, year
         """

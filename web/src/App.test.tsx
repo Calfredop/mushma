@@ -117,7 +117,8 @@ describe('centre on my position', () => {
   })
 
   it('leaves the map alone for a fix outside the region, and says why', async () => {
-    mockGeolocation(45.46, 9.19) // Milan
+    // Munich: outside every Italian region's bbox (Milan now falls inside Piemonte's).
+    mockGeolocation(48.14, 11.58)
     window.history.replaceState(null, '', '/toscana')
     render(<App />)
 

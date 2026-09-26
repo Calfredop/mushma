@@ -116,6 +116,23 @@ ispra_clc18_iv:
     arcgis_layer: https://sinacloud.isprambiente.it/arcgisina/rest/services/corine_land_cover/CorineLandCover/MapServer/4
     field: clc18
 
+rp_carta_forestale:
+  name: Regione Piemonte — Carta forestale regionale, edizione 2025 (1:10.000)
+  homepage: https://www.geoportale.piemonte.it/geonetwork/srv/api/records/r_piemon:130b499f-3e2d-4388-8cf0-66892cd7ee25
+  license: CC BY 4.0
+  attribution: "Carta forestale regionale 2025 © Regione Piemonte (IPLA), CC BY 4.0"
+  notes: >-
+    The 2016 Carta forestale (IPLA, 1:10,000) updated with the Carta Forestale d'Italia (CFI 2020)
+    forest limit. 74,021 polygons of forest only, each with its IPLA forest category (ca_1: 21
+    categories, e.g. CA castagneti, FA faggete, LC lariceti e cembrete, RB robinieti) and type
+    (tf_1); 987,175 ha including the subalpine and lowland shrublands (OV, AS). No land-use code
+    and no mixed class: one map gives both the groups and the types, from the category.
+  download:
+    url: https://www.datigeo-piem-download.it/direct/Geoportale/RegionePiemonte/SIFOR/CF_2025.gpkg
+    geopackage: true
+    layer: CF_2025
+    field: ca_1
+
 copernicus_dem_glo30:
   name: Copernicus DEM GLO-30
   homepage: https://registry.opendata.aws/copernicus-dem/

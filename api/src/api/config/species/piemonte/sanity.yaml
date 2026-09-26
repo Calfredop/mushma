@@ -1,0 +1,618 @@
+# Press-contrast sanity check for Piemonte (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025) or provinces (sigle); windows and source URLs written down on
+# 2026-09-25, before any Piemonte score existed. `seasons: normal` expands to `normal_seasons`.
+# All contrasts are porcini (run with the default `--group porcini`). Quotes, second sources and
+# caveats per contrast: .gavin-root/docs/species-ecology/piemonte.md (Press contrasts). Most rest
+# on Funghi Magazine's bulletins, which often reason from rain gauges: those partly test the rain
+# data, not only the fruiting. Picking was banned or restricted in the 2022-2023 African swine
+# fever zone (Ovadese, Acquese, Val Borbera, Val Curone): that thins sightings there, not scores.
+areas:
+  biellese_mountains:
+    comuni:
+    - Piedicavallo
+    - Rosazza
+    - Campiglia Cervo
+    - Sagliano Micca
+    - Andorno Micca
+    - Tavigliano
+    - Biella
+    - Graglia
+    - Sordevolo
+    - Pollone
+    - Muzzano
+    - Valdilana
+    - Veglio
+    - Piatto
+    - Camandona
+    - Callabiana
+    - Portula
+    - Coggiola
+    - Pray
+  valsesia:
+    comuni:
+    - Alagna Valsesia
+    - Mollia
+    - Campertogno
+    - Rassa
+    - Piode
+    - Scopa
+    - Scopello
+    - Pila
+    - Balmuccia
+    - Vocca
+    - Boccioleto
+    - Rossa
+    - Carcoforo
+    - Alto Sermenza
+    - Fobello
+    - Cervatto
+    - Rimella
+    - Cravagliana
+    - Varallo
+  valsesia_ossola:
+    comuni:
+    - Alagna Valsesia
+    - Mollia
+    - Campertogno
+    - Rassa
+    - Piode
+    - Scopa
+    - Scopello
+    - Pila
+    - Balmuccia
+    - Vocca
+    - Boccioleto
+    - Rossa
+    - Carcoforo
+    - Alto Sermenza
+    - Fobello
+    - Cervatto
+    - Rimella
+    - Cravagliana
+    - Varallo
+    - Santa Maria Maggiore
+    - Craveggia
+    - Malesco
+    - Re
+    - Villette
+    - Toceno
+    - Druogno
+    - Trontano
+    - Bognanco
+    - Antrona Schieranco
+    - Borgomezzavalle
+    - Macugnaga
+    - Bannio Anzino
+    - Vanzone con San Carlo
+    - Ceppo Morelli
+    - Crodo
+    - Baceno
+    - Premia
+    - Formazza
+    - Montecrestese
+    - Varzo
+  alto_piemonte:
+    provinces:
+    - BI
+    - VC
+    - 'NO'
+    - VB
+  valsusa_pinerolese_inner:
+    comuni:
+    - Susa
+    - Mompantero
+    - Venaus
+    - Novalesa
+    - Giaglione
+    - Gravere
+    - Chiomonte
+    - Exilles
+    - Salbertrand
+    - Oulx
+    - Bardonecchia
+    - Sauze d'Oulx
+    - Cesana Torinese
+    - Sauze di Cesana
+    - Claviere
+    - Sestriere
+    - Bobbio Pellice
+    - Villar Pellice
+    - Torre Pellice
+    - Angrogna
+    - Prali
+    - Perrero
+    - Salza di Pinerolo
+    - Massello
+    - Fenestrelle
+    - Usseaux
+    - Pragelato
+    - Roure
+  torinese_pedemontano:
+    comuni:
+    - Cumiana
+    - Cantalupa
+    - Frossasco
+    - Roletto
+    - San Pietro Val Lemina
+    - Pinasca
+    - Villar Perosa
+    - San Germano Chisone
+    - Porte
+    - Luserna San Giovanni
+    - Bibiana
+    - Bricherasio
+    - Giaveno
+    - Coazze
+    - Valgioie
+  cuneo_valleys:
+    comuni:
+    - Frabosa Soprana
+    - Frabosa Sottana
+    - Roccaforte Mondovì
+    - Villanova Mondovì
+    - Montaldo di Mondovì
+    - Torre Mondovì
+    - Pamparato
+    - Roburent
+    - Monasterolo Casotto
+    - Viola
+    - Chiusa di Pesio
+    - Boves
+    - Roccavione
+    - Robilante
+    - Vernante
+    - Limone Piemonte
+    - Valdieri
+    - Entracque
+    - Roaschia
+    - Demonte
+    - Aisone
+    - Vinadio
+    - Moiola
+    - Garessio
+    - Ormea
+    - Priola
+    - Bagnasco
+  valle_po:
+    comuni:
+    - Crissolo
+    - Oncino
+    - Ostana
+    - Paesana
+    - Sanfront
+    - Gambasca
+    - Rifreddo
+    - Martiniana Po
+    - Revello
+  cuneo_ligurian_border:
+    comuni:
+    - Ormea
+    - Garessio
+    - Briga Alta
+    - Priola
+    - Pamparato
+    - Frabosa Soprana
+    - Frabosa Sottana
+    - Roccaforte Mondovì
+    - Chiusa di Pesio
+    - Limone Piemonte
+    - Vernante
+  alto_tanaro_monregalese_cebano:
+    comuni:
+    - Ormea
+    - Garessio
+    - Priola
+    - Bagnasco
+    - Nucetto
+    - Perlo
+    - Caprauna
+    - Alto
+    - Pamparato
+    - Roburent
+    - Montaldo di Mondovì
+    - Frabosa Soprana
+    - Frabosa Sottana
+    - Roccaforte Mondovì
+    - Viola
+    - Ceva
+    - Battifollo
+    - Priero
+    - Montezemolo
+    - Lisio
+    - Scagnello
+    - Mombasiglio
+  marittime_occitan_valleys:
+    comuni:
+    - Valdieri
+    - Entracque
+    - Roaschia
+    - Vinadio
+    - Aisone
+    - Demonte
+    - Sambuco
+    - Pietraporzio
+    - Argentera
+    - Chiusa di Pesio
+    - Castelmagno
+    - Pradleves
+    - Monterosso Grana
+    - Acceglio
+    - Prazzo
+    - Stroppo
+    - Macra
+    - San Damiano Macra
+    - Pontechianale
+    - Casteldelfino
+    - Sampeyre
+    - Frassino
+    - Crissolo
+    - Oncino
+    - Paesana
+  alpi_marittime:
+    comuni:
+    - Valdieri
+    - Entracque
+    - Roaschia
+    - Vinadio
+    - Aisone
+    - Demonte
+    - Sambuco
+    - Pietraporzio
+    - Argentera
+    - Vernante
+    - Limone Piemonte
+    - Chiusa di Pesio
+  alta_langa_roero:
+    comuni:
+    - Bossolasco
+    - Murazzano
+    - Cortemilia
+    - Saliceto
+    - Monesiglio
+    - Niella Belbo
+    - Feisoglio
+    - Cravanzana
+    - Mombarcaro
+    - Prunetto
+    - Levice
+    - Castino
+    - Canale
+    - Montà
+    - Santo Stefano Roero
+    - Monteu Roero
+    - Pocapaglia
+    - Sommariva Perno
+    - Baldissero d'Alba
+    - Montaldo Roero
+    - Vezza d'Alba
+    - Castellinaldo d'Alba
+    - Diano d'Alba
+    - Grinzane Cavour
+    - Serralunga d'Alba
+    - Monforte d'Alba
+    - Treiso
+    - Neive
+  cuneo_outside_ligurian_border:
+    provinces:
+    - CN
+    excluding:
+    - Ormea
+    - Garessio
+    - Briga Alta
+    - Priola
+    - Bagnasco
+    - Nucetto
+    - Perlo
+    - Caprauna
+    - Alto
+    - Saliceto
+    - Camerana
+    - Monesiglio
+    - Mombarcaro
+    - Prunetto
+    - Gottasecca
+    - Castelletto Uzzone
+  alessandria_southeast_valleys:
+    comuni:
+    - Cabella Ligure
+    - Carrega Ligure
+    - Roccaforte Ligure
+    - Rocchetta Ligure
+    - Mongiardino Ligure
+    - Albera Ligure
+    - Cantalupo Ligure
+    - Grondona
+    - Arquata Scrivia
+    - Fraconalto
+    - Voltaggio
+    - Fabbrica Curone
+  acquese_upper:
+    comuni:
+    - Ponzone
+    - Pareto
+    - Cartosio
+    - Malvicino
+    - Morbello
+    - Cavatore
+    - Spigno Monferrato
+    - Merana
+  acquese_ovadese:
+    comuni:
+    - Ponzone
+    - Cartosio
+    - Malvicino
+    - Pareto
+    - Morbello
+    - Cavatore
+    - Molare
+    - Cassinelle
+    - Ovada
+    - Belforte Monferrato
+    - Tagliolo Monferrato
+    - Lerma
+    - Casaleggio Boiro
+    - Bosio
+    - Mornese
+    - Rocca Grimalda
+    - Cremolino
+  marcarolo_alto_orba:
+    comuni:
+    - Bosio
+    - Casaleggio Boiro
+    - Lerma
+    - Mornese
+    - Tagliolo Monferrato
+    - Molare
+    - Cassinelle
+    - Belforte Monferrato
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: biellese_2025_2024
+  claim: 'Late August to early September: in the Biellese 2025 the picking started "con 15-20 giorni di
+    anticipo" on 2024, a "buttata" abundant and widespread, "a differenza dello scorso anno, quando i
+    raccolti erano stati localizzati soprattutto nell''Oasi Zegna e limitati nel tempo"; 2024: "la penuria
+    di funghi ha raggiunto livelli difficilmente visti nel recente passato" (La Provincia di Biella, 2024-09-07)'
+  source: https://www.giornalelavoce.it/news/attualita/622291/stagione-dei-funghi-2025-tra-raccolte-anticipate-boom-di-tesserini-e-turismo-culturale.html
+  higher:
+    area: biellese_mountains
+    seasons:
+    - 2025
+    start: 08-18
+    end: 09-07
+  lower:
+    area: biellese_mountains
+    seasons:
+    - 2024
+    start: 08-18
+    end: 09-07
+- id: valsesia_2022_2021
+  claim: 'Late August to mid-September: "Raccolta funghi: il 2022 è un anno record" in the Valsesia woods
+    after the storms; in 2021 dry foehn air "sta inibendo nascite di Porcini anche tra la Valsesia ed
+    il VCO dove non si registra alcuna buttata" (Funghi Magazine, 2021-09-04)'
+  source: https://notiziaoggi.it/attualita/raccolta-funghi-il-2022-e-un-anno-record/
+  higher:
+    area: valsesia
+    seasons:
+    - 2022
+    start: 08-28
+    end: 09-12
+  lower:
+    area: valsesia
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-12
+- id: valsesia_ossola_2023_late
+  claim: '2023: in Valsesia "la stagione è iniziata con un paio di settimane di ritardo"; the mountains
+    of Valsesia and the VCO had "piogge assai inferiori", no porcini "almeno non prima di fine Agosto"
+    (Funghi Magazine, 2023-08-10)'
+  source: https://notiziaoggi.it/attualita/coi-funghi-la-valsesia-incassa-quasi-100mila-euro/
+  higher:
+    area: valsesia_ossola
+    seasons: normal
+    start: 08-15
+    end: 09-08
+  lower:
+    area: valsesia_ossola
+    seasons:
+    - 2023
+    start: 08-15
+    end: 09-08
+- id: alto_piemonte_vs_valsusa_2023
+  claim: 'Mid-September to early October 2023: "Biellese, Vercellese, Novarese e Verbano-Cusio-Ossola
+    strabilianti, con super nascite ovunque, dal piano ai monti"; "Alpi Cozie risultano poco produttive",
+    the inner Val di Susa "con piogge insufficienti"'
+  source: https://funghimagazine.it/aggiornamento-porcini-04-10-2023/
+  higher:
+    area: alto_piemonte
+    seasons:
+    - 2023
+    start: 09-12
+    end: 10-04
+  lower:
+    area: valsusa_pinerolese_inner
+    seasons:
+    - 2023
+    start: 09-12
+    end: 10-04
+- id: torinese_vs_valsesia_ossola_june_2024
+  claim: 'June to early July 2024: red porcini "tutt''altro che degne di nota, addirittura del tutto assenti"
+    in the Val d''Ossola and Valsesia after too much rain, "ancora buoni ritrovamenti nel solito territorio
+    Torinese"; on 2024-06-28 the Torinese "si raccoglie bene ormai da inizio mese"'
+  source: https://funghimagazine.it/aggiornamento-funghi-14-06-2024/
+  higher:
+    area: torinese_pedemontano
+    seasons:
+    - 2024
+    start: 06-10
+    end: 07-10
+  lower:
+    area: valsesia_ossola
+    seasons:
+    - 2024
+    start: 06-10
+    end: 07-10
+- id: cuneo_valleys_2023_2024_vs_2021
+  claim: 'Mid-September: 2023 "È boom di funghi nel Cuneese, specialmente nelle vallate prealpine" in
+    the second and third weeks of September (Coldiretti Cuneo), 2024 "una vera e propria esplosione di
+    funghi, anche se non dappertutto" (Cuneodice, 2024-09-13); 2021 "restano a secco ampie zone del Cuneese"
+    (Funghi Magazine, 2021-09-18) until rain on about 22 September'
+  source: https://www.cuneo24.it/2023/09/con-20-e-boom-di-funghi-nelle-vallate-215096/
+  higher:
+    area: cuneo_valleys
+    seasons:
+    - 2023
+    - 2024
+    start: 09-05
+    end: 09-20
+  lower:
+    area: cuneo_valleys
+    seasons:
+    - 2021
+    start: 09-05
+    end: 09-20
+- id: cuneo_valleys_spring_2022_2021
+  claim: 'Late May to early June: in 2022 the Cuneo valleys, "dopo aver sofferto la siccità per oltre
+    un anno intero, ora stanno tornando alla riscossa", a "splendida parentesi fungina" closed by 10 June;
+    in 2021 red porcini came "sempre col contagocce ... nel Cuneese ed Alpi Marittime" (Funghi Magazine,
+    2021-06-24)'
+  source: https://funghimagazine.it/boom-di-funghi-porcini-estatini-e-rossi-ecco-dove/
+  higher:
+    area: cuneo_valleys
+    seasons:
+    - 2022
+    start: 05-20
+    end: 06-12
+  lower:
+    area: cuneo_valleys
+    seasons:
+    - 2021
+    start: 05-20
+    end: 06-12
+- id: valle_po_2025
+  claim: 'Mid-September 2025: an "eccezionale fioriture di funghi porcini" with prices down to 15 euro
+    a kilo, "vittima dell''abbondanza che ha investito tutta la Valle Po"'
+  source: https://laguida.it/2025/09/17/e-iniziato-a-sanfront-il-quotidiano-mercato-dei-funghi
+  higher:
+    area: valle_po
+    seasons:
+    - 2025
+    start: 09-06
+    end: 09-18
+  lower:
+    area: valle_po
+    seasons: normal
+    start: 09-06
+    end: 09-18
+- id: cuneo_border_july_2024_2025
+  claim: 'Second half of July: in 2024 "nascite massicce di Porcini Rossi-Pinicola ... durata molto più
+    di un mese" on the Ligurian-Cuneo border, with summer porcini flushes; in 2025 "Pochi funghi se non
+    quasi nulla ... Una stagione imprevedibile e incomprensibile, incerta. Ma soprattutto scarsissima"
+    (TargatoCN, 2025-07-31)'
+  source: https://funghimagazine.it/aggiornamento-funghi-25-07-2024/
+  higher:
+    area: cuneo_ligurian_border
+    seasons:
+    - 2024
+    start: 07-15
+    end: 07-31
+  lower:
+    area: cuneo_ligurian_border
+    seasons:
+    - 2025
+    start: 07-15
+    end: 07-31
+- id: alto_tanaro_vs_marittime_2020
+  claim: 'August 2020: "Nel Cuneese discrete nascite in poche zone di confine con la Liguria, soprattutto
+    in alto Monregalese e localmente anche nel Cebano ma siccità ad oltranza verso le Alpi Marittime ...
+    e siccità nelle vallate Occitane fin sul Monviso"'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-14-08-2020/
+  higher:
+    area: alto_tanaro_monregalese_cebano
+    seasons:
+    - 2020
+    start: 08-05
+    end: 08-25
+  lower:
+    area: marittime_occitan_valleys
+    seasons:
+    - 2020
+    start: 08-05
+    end: 08-25
+- id: marittime_vs_langhe_roero_2023
+  claim: 'Mid to late August 2023: "In Piemonte l''unica doccia utile si è avuta sulle Alpi Marittime
+    dove, ora se ne ricavano i primi buoni frutti" (high up); drought and heat persisted "su tutta la
+    fascia del Monferrato-Langhe e Roero" until the 27-29 August rain (Funghi Magazine, 2023-08-30)'
+  source: https://funghimagazine.it/aggiornamento-funghi-17-08-2023/
+  higher:
+    area: alpi_marittime
+    seasons:
+    - 2023
+    start: 08-12
+    end: 08-28
+  lower:
+    area: alta_langa_roero
+    seasons:
+    - 2023
+    start: 08-12
+    end: 08-28
+- id: alessandria_valleys_vs_acquese_2020
+  claim: 'September 2020: on 29 August "a Fraconalto ... cadono bel 241 millimetri di pioggia, a pochissima
+    distanza a Ponzone non si va oltre i 2 millimetri"; "piogge monsoniche" on the Borbera and Staffora
+    basins while "L''Alto Monferrato tutto continua a ricevere piogge effimere" (Funghi Magazine, 2020-09-21);
+    rain back at Ponzone and Pareto only in early October'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2020/
+  higher:
+    area: alessandria_southeast_valleys
+    seasons:
+    - 2020
+    start: 09-05
+    end: 09-30
+  lower:
+    area: acquese_upper
+    seasons:
+    - 2020
+    start: 09-05
+    end: 09-30
+- id: acquese_ovadese_2021
+  claim: 'Late summer 2021: "qua tra Acquese-Ponzonese ed Ovadese non cade una pioggia degna di nota,
+    da almeno 5 mesi"; on 24 September the rain "ancora una volta" skipped southern Piemonte "dove la
+    siccità prosegue ad oltranza" (Funghi Magazine, 2021-09-24)'
+  source: https://funghimagazine.it/funghi-porcini-e-il-turno-del-centro-italia/
+  higher:
+    area: acquese_ovadese
+    seasons: normal
+    start: 08-15
+    end: 09-30
+  lower:
+    area: acquese_ovadese
+    seasons:
+    - 2021
+    start: 08-15
+    end: 09-30
+- id: marcarolo_vs_cuneese_october_2021
+  claim: 'Second half of October 2021, after the 4 October flood on the Alessandria-Liguria border: foragers
+    crowding "il Marcarolo o l''alto Orba"; "Al solito è rimasto a secco quasi tutto il territorio cuneese,
+    poche piogge in poche zone fortunate di confine con il savonese"'
+  source: https://funghimagazine.it/sorpresa-quando-tutti-tacciono-e-perche-nei-boschi-e-pieno-di-funghi-porcini-aggiornamento-meteofunghi-24-10-2021/
+  higher:
+    area: marcarolo_alto_orba
+    seasons:
+    - 2021
+    start: 10-12
+    end: 10-31
+  lower:
+    area: cuneo_outside_ligurian_border
+    seasons:
+    - 2021
+    start: 10-12
+    end: 10-31
