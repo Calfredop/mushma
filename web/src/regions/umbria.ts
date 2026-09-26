@@ -2,8 +2,8 @@ import { SPECIES } from '../state/urlState.js'
 import type { RegionDefinition } from './types.js'
 
 /**
- * Umbria: fixture second region (API multi-region contract). Copy follows Tuscany's pattern
- * with Umbrian areas (Appennino, Valnerina, Monti Sibillini foothills).
+ * Umbria (region-umbria card). Copy follows Tuscany's pattern; the areas and seasons come from
+ * .gavin-root/docs/species-ecology/umbria.md (Places, per-taxon seasons).
  */
 export const umbria: RegionDefinition = {
   slug: 'umbria',
@@ -48,13 +48,13 @@ export const umbria: RegionDefinition = {
       },
       intro: {
         region:
-          "La mappa divide i boschi dell'Umbria — dall'Appennino umbro alla Valnerina e ai piedi dei Monti Sibillini — in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per porcini, ovoli e gallinacci: più è alto, più meteo e bosco sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. Qui ogni cella mostra la specie con le condizioni migliori; scegli una specie per vedere la sua stagione e cosa pesa sul suo indice.",
+          "La mappa divide i boschi dell'Umbria — dalle faggete del Monte Cucco alla Valnerina, dall'Alta Valle del Tevere all'Orvietano — in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per porcini, ovoli e gallinacci: più è alto, più meteo e bosco sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. Qui ogni cella mostra la specie con le condizioni migliori; scegli una specie per vedere la sua stagione e cosa pesa sul suo indice.",
         porcini:
-          "La mappa divide i boschi dell'Umbria in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i porcini: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va soprattutto da fine estate all'autunno, sui castagneti e i faggeti dell'Appennino.",
+          "La mappa divide i boschi dell'Umbria in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i porcini: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va da maggio a novembre, soprattutto da fine agosto a ottobre, nei querceti delle colline e nelle faggete dell'Appennino.",
         ovoli:
-          "La mappa divide i boschi dell'Umbria in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per gli ovoli: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va da giugno a novembre, soprattutto in autunno sulle colline a quercia e castagno.",
+          "La mappa divide i boschi dell'Umbria in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per gli ovoli: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va dall'estate all'autunno, soprattutto a settembre e ottobre, nei boschi di cerro, roverella e castagno sotto i 900 m.",
         gallinacci:
-          "La mappa divide i boschi dell'Umbria in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i gallinacci: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione dura quasi tutto l'anno, con i picchi in primavera e in autunno.",
+          "La mappa divide i boschi dell'Umbria in celle di 1 km e dà a ognuna un indice delle condizioni da 0 a 1 per i gallinacci: più è alto, più meteo, bosco e quota sono adatti in quel giorno. Mostra dove le condizioni sono buone, non dove si trovano i funghi. La stagione va da maggio a novembre, con i picchi a fine primavera e in autunno.",
       },
       dataset: {
         region: 'Indice delle condizioni per porcini, ovoli e gallinacci in Umbria',
@@ -88,13 +88,13 @@ export const umbria: RegionDefinition = {
       },
       intro: {
         region:
-          "The map divides Umbria's woods — from the Umbrian Apennines to the Valnerina and the foothills of the Sibillini — into 1 km cells and gives each one a conditions score from 0 to 1 for porcini, ovoli and gallinacci: the higher it is, the better the weather and woods suit them on that day. It shows where conditions are good, not where the mushrooms are. Here each cell shows the species with the best conditions; pick a species to see its season and what weighs on its score.",
+          "The map divides Umbria's woods — from the beech woods of Monte Cucco to the Valnerina, from the upper Tiber valley to the Orvietano — into 1 km cells and gives each one a conditions score from 0 to 1 for porcini, ovoli and gallinacci: the higher it is, the better the weather and woods suit them on that day. It shows where conditions are good, not where the mushrooms are. Here each cell shows the species with the best conditions; pick a species to see its season and what weighs on its score.",
         porcini:
-          "The map divides Umbria's woods into 1 km cells and gives each one a conditions score from 0 to 1 for porcini: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs mainly from late summer through autumn, in chestnut and beech woods of the Apennines.",
+          "The map divides Umbria's woods into 1 km cells and gives each one a conditions score from 0 to 1 for porcini: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs from May to November, mostly from late August to October, in the oak woods of the hills and the beech woods of the Apennines.",
         ovoli:
-          "The map divides Umbria's woods into 1 km cells and gives each one a conditions score from 0 to 1 for ovoli: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs from June to November, mostly in autumn on oak and chestnut hills.",
+          "The map divides Umbria's woods into 1 km cells and gives each one a conditions score from 0 to 1 for ovoli: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs from summer into autumn, mostly in September and October, in Turkey oak, downy oak and chestnut woods below 900 m.",
         gallinacci:
-          "The map divides Umbria's woods into 1 km cells and gives each one a conditions score from 0 to 1 for gallinacci: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs almost all year, peaking in spring and autumn.",
+          "The map divides Umbria's woods into 1 km cells and gives each one a conditions score from 0 to 1 for gallinacci: the higher it is, the better the weather, woods and altitude suit them on that day. It shows where conditions are good, not where the mushrooms are. The season runs from May to November, peaking in late spring and autumn.",
       },
       dataset: {
         region: 'Conditions index for porcini, ovoli and gallinacci in Umbria',
