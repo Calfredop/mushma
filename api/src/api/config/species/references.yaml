@@ -2245,3 +2245,18 @@ references:
       Schwammerln" after "Die lange Trockenheit und der Regen Anfang August"; picking on even days only.'
     cited_as:
     - species-ecology/trentino_alto_adige.md
+  mushma_taa_gauge_check_2026:
+    citation: 'mushma Trentino-Alto Adige rain check: downscaled ERA5-Land (CDS) daily precipitation against the
+      Provincia di Bolzano''s open daily rain (one workbook per station, CC0) at the 17 South Tyrolean gauges inside
+      woodland cells with 80 % of 2019-2024 days (214-1,883 m), 09:00-09:00 CET days. Trento''s history has no open
+      download. See regions/trentino_alto_adige.md'
+    url: https://data.civis.bz.it/dataset/precipitazioni-giornaliere
+    kind: analysis
+    region: Trentino-Alto Adige
+    verified: verified
+    supports: 'ERA5-Land holds 1.34 of South Tyrolean woodland gauge rain over 2019-2024 (1.16-1.37 by height band,
+      1.20-1.53 by year) and rains 1 mm or more on 59 % of days against the gauges'' 28 %; a gauge-total fit gives
+      scale = 0.75 with no height term (0.73 fitted on 2019-2023 gives 0.87 on the wet 2024), where the national
+      1.28 + 0.29 per km, which scales era5_seamless only, would leave the CDS history unscaled.'
+    cited_as:
+    - regions/trentino_alto_adige.md

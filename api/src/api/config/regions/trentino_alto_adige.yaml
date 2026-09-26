@@ -183,3 +183,26 @@ soil:
 # admin level 10) on 2026-09-26. GBIF history is paged over bbox_wgs84 and clipped to the grid.
 sightings:
   inaturalist_place_id: 10874
+
+# Rain scale (merged onto config/model.yaml): the gauge check asked for it. Against the Provincia di
+# Bolzano's gauges in woodland (2019-2024, 17 gauges, all in South Tyrol: Trento's history has no open
+# download) the CDS reanalysis holds 134 % of the rain, as in Piemonte, and the national scale scales
+# era5_seamless only, so the CDS history would go unscaled while the recent days got x1.7 at these
+# heights. A gauge-total fit gives 0.75 with no height term. The scale names both sources, as
+# Piemonte's does. .gavin-root/docs/regions/trentino_alto_adige.md, Validation.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.75
+    per_km: 0.0
+    source: [mushma_taa_gauge_check_2026]
+    notes: >-
+      Trentino-Alto Adige: least squares through the origin of gauge totals on model totals over the 17
+      Provincia di Bolzano woodland gauges with 80 % of 2019-2024 days (09:00-09:00 CET days) gave 0.746
+      alone, or a = 0.843, b = -0.077 per km: pooled ratio 1.34 -> 1.00, 0.87 below 800 m (two gauges)
+      and 1.01-1.02 above. Fitted on 2019-2023 it gives 0.73 and 0.87 on the wet 2024 (by year the ratio
+      runs 1.20-1.53). The excess is drizzle: the reanalysis has 1 mm or more on 59 % of days against the
+      gauges' 28 %, 5.7 times the gauge rain on gauge days under 5 mm and 0.52 of it on days of 20 mm or
+      more. A factor cannot fix that: at 0.75, 3-day totals of 30 mm or more come on 3.7 % of windows
+      against 7.9 % at the gauges, while 3-day totals of 10 mm or more stay too frequent (30.9 % against
+      25.6 %). Trento's gauges are not in the fit.
