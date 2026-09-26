@@ -64,6 +64,20 @@ def test_complete_days_drops_days_short_of_the_gauges_usual_readings() -> None:
     assert ("97", date(2025, 10, 3)) in kept  # 22 of 24 (92 %)
 
 
+def test_plausible_days_drop_a_day_a_spike_reading_ruined() -> None:
+    # Caino, 22 May 2020: one reading "valid" at 109,499 mm. Heavy real days stay.
+    daily = arpa_lombardia.parse_daily(
+        '"idsensore","day","rain_mm","n"\n'
+        '"8139","2020-05-21T00:00:00.000","12.00","144"\n'
+        '"8139","2020-05-22T00:00:00.000","109499.40","143"\n'
+        '"8139","2020-05-23T00:00:00.000","310.00","144"\n'
+    )
+
+    kept = arpa_lombardia.plausible_days(daily)
+
+    assert list(kept["rain_mm"]) == [12.0, 310.0]
+
+
 def test_daily_url_sums_valid_readings_of_one_year_from_the_right_dataset() -> None:
     older = urllib.parse.parse_qs(urllib.parse.urlsplit(arpa_lombardia.daily_url(2019)).query)
     newer = urllib.parse.urlsplit(arpa_lombardia.daily_url(2025))
@@ -84,16 +98,16 @@ def test_lombardia_reads_arpa_gauges_on_calendar_days(tmp_path) -> None:
     folder = tmp_path / "arpa_lombardia"
     folder.mkdir()
     (folder / "stations.csv").write_text(STATIONS)
-    (folder / "daily_2025.csv").write_text(DAILY)
+    (folder / "daily_2025.csv").write_text(DAILY.replace('"3.00","143"', '"3000.00","143"'))
 
     network = GAUGE_NETWORKS["lombardia"](tmp_path, date(2025, 10, 1), date(2025, 10, 4))
 
     assert sorted(network.gauges["code"]) == ["2417", "97"]
     gauge = next(g for g in network.gauges.itertuples() if g.code == "2417")
+    # 4 Oct is short of readings, 3 Oct is a spike: both dropped.
     assert network.series(gauge).to_dict() == {
         date(2025, 10, 1): 0.0,
         date(2025, 10, 2): 12.4,
-        date(2025, 10, 3): 3.0,
     }
     calendar = network.series(gauge)
     assert network.day_totals(calendar) is calendar

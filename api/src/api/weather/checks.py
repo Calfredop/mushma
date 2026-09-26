@@ -307,7 +307,7 @@ def arpa_lombardia_network(raw: Path, start: date, end: date) -> GaugeNetwork:
         ],
         ignore_index=True,
     )
-    daily = arpa_lombardia.complete_days(daily)
+    daily = arpa_lombardia.plausible_days(arpa_lombardia.complete_days(daily))
     by_code = {code: arpa_lombardia.series_of(daily, code) for code in daily["code"].unique()}
     gauges = stations[stations["code"].isin(by_code)].reset_index(drop=True)
     return GaugeNetwork(gauges, lambda gauge: by_code[gauge.code], calendar_days)

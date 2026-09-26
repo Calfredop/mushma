@@ -6,9 +6,9 @@ WGS84 position) and every rain gauge's validated readings at up to 10-minute ste
 period ("Precipitazioni dal 2011 al 2020", "Precipitazioni dal 2021"). A reading is stamped in CET
 (solar time) at the end of its interval. The portal's SoQL sums the valid readings into days
 server side, one request per year, and counts them: a day is kept when the gauge sent at least 90 %
-of its usual count (144 for a 10-minute gauge, 24 for an hourly one). Days are CET calendar days,
-the model's local days (an hour apart in summer), so :func:`api.weather.checks.calendar_days`
-applies.
+of its usual count (144 for a 10-minute gauge, 24 for an hourly one) and no spike reading flagged
+valid pushed it past 500 mm. Days are CET calendar days, the model's local days (an hour apart in
+summer), so :func:`api.weather.checks.calendar_days` applies.
 """
 
 import io
@@ -25,6 +25,9 @@ STATIONS_URL = f"{PORTAL}/nf78-nj6b.csv?" + urllib.parse.urlencode(
 # VA, VV: valid; NA, NV, NC invalid, NI uncertain, ND missing. -999 marks a missing value.
 VALID_STATES = ("VA", "VV")
 COMPLETE_SHARE = 0.9
+# A few readings flagged valid are counter spikes (Caino 22 May 2020: 109,499 mm in 10 minutes); in
+# 2019-2025 they make 12 gauge-days of 1,625 mm or more, while the wettest real one is 266 mm.
+MAX_DAILY_MM = 500.0
 
 
 def dataset_for(year: int) -> str:
@@ -80,6 +83,11 @@ def complete_days(daily: pd.DataFrame, share: float = COMPLETE_SHARE) -> pd.Data
     """Days on which a gauge sent at least ``share`` of its usual (median) count of readings."""
     usual = daily.groupby("code")["n"].transform("median")
     return daily[daily["n"] >= share * usual].reset_index(drop=True)
+
+
+def plausible_days(daily: pd.DataFrame, max_mm: float = MAX_DAILY_MM) -> pd.DataFrame:
+    """Days no spike reading ruined: at most ``max_mm``."""
+    return daily[daily["rain_mm"] <= max_mm].reset_index(drop=True)
 
 
 def series_of(daily: pd.DataFrame, code: str) -> pd.Series:
