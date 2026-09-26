@@ -5,7 +5,7 @@ from xml.sax.saxutils import escape
 
 import pytest
 
-from api.weather.bolzano_meteo import parse_resources, parse_workbook
+from api.weather.bolzano_meteo import PACKAGE_URL, parse_resources, parse_workbook, read_network
 
 SHEET_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 
@@ -109,3 +109,43 @@ def test_parse_resources_lists_the_station_workbooks() -> None:
             "multiannual-LT-N-daily-temperature-precipitation.xlsx",
         )
     ]
+
+
+def test_read_network_skips_a_station_whose_link_is_dead(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A dead link lands on the weather site's 404 page (HTML), not a workbook; a mangled one
+    is refused outright."""
+    import json
+    import urllib.error
+
+    base = "https://www.provinz.bz.it/wetter/download/"
+    package = {
+        "result": {
+            "resources": [
+                {"url": f"{base}59700MS-Bruneck-Brunico-x.xlsx"},
+                {"url": f"{base}39100MS-Brixen-Vahrn-x.xlsx"},
+                {"url": f"{base}56900MS-M%C2%81hlen-x.xlsx"},
+            ]
+        }
+    }
+    files = {
+        PACKAGE_URL: lambda dest: dest.write_text(json.dumps(package)),
+        f"{base}59700MS-Bruneck-Brunico-x.xlsx": lambda dest: brunico(dest),
+        f"{base}39100MS-Brixen-Vahrn-x.xlsx": lambda dest: dest.write_text("<!DOCTYPE html>"),
+    }
+
+    def fake_fetch(url: str, dest: Path) -> Path:
+        if "%C2%81" in url:  # the portal's own mangled "Mühlen": the server answers 400
+            raise urllib.error.HTTPError(url, 400, "Bad Request", None, None)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        files[url](dest)
+        return dest
+
+    gauges, series = read_network(tmp_path / "bz", fake_fetch)
+
+    assert list(gauges["code"]) == ["59700MS"]
+    assert list(series) == ["59700MS"]
+    out = capsys.readouterr().out
+    assert "39100MS" in out
+    assert "56900MS" in out

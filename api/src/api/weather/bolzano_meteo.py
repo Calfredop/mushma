@@ -102,7 +102,16 @@ def read_network(folder: Path, fetch) -> tuple[pd.DataFrame, dict[str, pd.Series
     package = json.loads(fetch(PACKAGE_URL, folder / "package.json").read_text())
     stations, series = [], {}
     for code, url in parse_resources(package):
-        station, rain = parse_workbook(fetch(url, folder / f"{code}.xlsx"))
+        try:
+            path = fetch(url, folder / f"{code}.xlsx")
+        except OSError as error:  # e.g. a link the portal itself mangled: HTTP 400
+            print(f"bolzano_meteo: {code} could not be downloaded ({error}), skipped: {url}")
+            continue
+        if not zipfile.is_zipfile(path):
+            # A dead link lands on the weather site's 404 page (HTML), cached like the rest.
+            print(f"bolzano_meteo: {code} is not a workbook (dead link?), skipped: {url}")
+            continue
+        station, rain = parse_workbook(path)
         stations.append(station)
         series[station["code"]] = rain
     gauges = pd.DataFrame(stations, columns=COLUMNS)
