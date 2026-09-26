@@ -2021,3 +2021,227 @@ references:
       per km would make it 2.05.'
     cited_as:
     - regions/piemonte.md
+  # ---------------------------------------------------------------------------------------------
+  # Trentino-Alto Adige (region card, 2026-09-26): sources for species/trentino_alto_adige/ and
+  # .gavin-root/docs/species-ecology/trentino_alto_adige.md. Appended as one block; keys carry a
+  # taa_ prefix (or a _taa_ infix for our own analyses) so merges with other region branches do not
+  # collide. The MUSE census pages for B. edulis, B. pinophilus, C. cibarius and B. aereus already
+  # exist above (muse_censimento_*); this block adds only the pages they lack.
+  # ---------------------------------------------------------------------------------------------
+  mushma_occurrence_check_taa_2026:
+    citation: 'mushma Trentino-Alto Adige occurrence check: GBIF occurrence API (gadmGid ITA.17_1, basis of record
+      human observation, preserved specimen, occurrence, observation, machine observation, living specimen; month and
+      dataset facets), iNaturalist histogram and observations APIs (places 10874 Trentino-Alto Adige, 33199 Trento,
+      33198 Bolzano; verifiable), elevations sampled from Copernicus GLO-90 for open records with an accuracy of 1 km
+      or better, provinces from the ISTAT 2025 boundaries, and the MUSE census pages'' map squares counted inside
+      each province; queried 2026-09-26. Aggregates only (counts by month, elevation band and province, elevation
+      quantiles); no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations/histogram
+    kind: analysis
+    region: Trentino-Alto Adige
+    verified: verified
+    supports: 'record counts by month and elevation for the six keys (iNaturalist B. edulis 455, B. reticulatus 42, B.
+      aereus 3, B. pinophilus 45, A. caesarea 12, Cantharellus 206, of which 169 of 191 species-level records are C.
+      cibarius; GBIF adds almost nothing beyond iNaturalist copies), their month enrichment against all 30,261 fungi
+      records of the region, located-record elevations (B. edulis n=227, median 1406 m, p90 1810 m) and the census
+      squares per province (A. caesarea 17 in Trentino, 6 in South Tyrol; B. aereus 6 and 0). See
+      species-ecology/trentino_alto_adige.md.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  mushma_taa_forest_check_2026:
+    citation: 'mushma Trentino-Alto Adige forest check: the region''s woodland grid (api.grid.build, 2026-09-26: 7,698
+      woodland cells from the two provinces'' forest-type maps) joined to the located records of the six taxa (their
+      cells'' habitat fractions and elevations; the habitat and altitude gates under the Tuscan and the regional
+      rules), its woodland slopes and 15 October sun ratios (api.model.terrain); and the Provincia autonoma di Trento
+      forest-type map (Tipi forestali, 2022, 391,787 ha) for Trentino''s categories by area and elevation (Copernicus
+      GLO-30) and for the forest types within 500 m of each located Trentino record against 1,500 area-weighted random
+      woodland points. Aggregates only'
+    url: https://siatservices.provincia.tn.it/idt/vector/p_TN_920383ad-092c-4f8f-8f8a-1c9db904b36f.zip
+    kind: analysis
+    region: Trentino-Alto Adige
+    verified: verified
+    supports: 'Trentino''s woods by category (spruce 31 %, beech 16 %, larch 12 %, fir 10 %, hop-hornbeam 9 %, Scots and
+      black pine 9 %, mountain-pine scrub 4 %, larch-stone pine 3 %, chestnut 0.2 %) and elevation; B. edulis record
+      cells at 1500 m or higher 21 % larch and stone pine and 74 % spruce and fir against 27 % and 67 % of the woodland
+      there, the habitat gate at larch 0.1 averaging 0.98 at those records and 0.95 over the woodland (1.00 and 1.00 at
+      0.3); Trentino record surroundings (Cantharellus at 1000-1500 m: spruce 62 % against 30 % of the woods, beech 7 %
+      against 25 %; B. pinophilus: Scots pine 18 % against 8 %); woodland cell slope median 26.9°, p90 34.5°, max
+      44.7°; 15 October sun ratio below 1000 m p10 73 %, median 98 %, p90 121 %. See
+      species-ecology/trentino_alto_adige.md.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_muse_censimento_caesarea:
+    citation: 'Censimento dei macromiceti (Federazione dei Gruppi Micologici del Trentino-Alto Adige, with the Veneto and
+      Friuli Venezia Giulia federations; hosted by MUSE), species page with text by M. Floriani: Amanita caesarea'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=208468&ar=tv
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: 'relative monthly profile (July 58, August 200, September 179, October 146, November 8); highest record
+      1300 m at Capriana (TN) in a "Bosco misto di pino, abete rosso e larice"; collections at Gocciadoro (Trento, 200
+      m, 1900), Appiano (665 m, 1924-1925), Piné (930 m, 1926), Lago di Restel, Pergine ("sotto pino e quercia", 880
+      m, 2002) and Capriana ("Bosco misto con presenza di querce", 1050 m, 2014); map squares in both provinces.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_muse_censimento_aestivalis:
+    citation: 'Censimento dei macromiceti (hosted by MUSE), species page with text by M. Floriani: Boletus aestivalis
+      (B. reticulatus)'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=172910&ar=tv
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: 'relative monthly profile (May 14, June 142, July 200, August 173, September 94, October 68, November 2);
+      highest record 1927 m in Trentino (29 August 2010); first Trentino record at Passo di Lavazè, 1810 m, in a
+      subalpine spruce wood (1968).'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_pat_tipi_forestali_2018:
+    citation: 'Odasso M., Miori M., Gandolfo C. (eds) (2018) I tipi forestali del Trentino: descrizione e aspetti
+      dinamici. Provincia autonoma di Trento, Servizio Foreste e fauna, Trento, 138 pp.'
+    url: https://forestefauna.provincia.tn.it/content/download/14380/246195/file/volume1.pdf
+    kind: institutional
+    region: Trentino
+    verified: verified
+    supports: 'the three forest districts (esalpica below 1000 m with hop-hornbeam and manna ash; mesalpica around 1000
+      m with fir and beech; endalpica with spruce, larch and stone pine); montane beech "tra 1000 e 1500 m", fir to about
+      1600 m (1800 m at most), spruce from 900-1000 m to "intorno ai 2000 m, con punte massime sino a 2200 m", stone
+      pine 1500 to over 2300 m, larch woods "raramente superano i 2100-2200 m"; secondary larch woods "su potenziale
+      pecceta", sometimes "una struttura biplana di larice su peccio o abete"; sessile oak woods "spesso in contatto e
+      in rapporto di sostituzione con formazioni a dominanza di pino silvestre"; chestnut and robinia woods on the
+      silicate exalpine valleys (Valsugana, Val di Cembra, Valle del Chiese).'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_pat_foreste_trentino:
+    citation: 'Provincia autonoma di Trento, Servizio Foreste. Le foreste in Trentino'
+    url: https://forestefauna.provincia.tn.it/Foreste/Foreste-in-Trentino/Le-foreste-in-Trentino
+    kind: institutional
+    region: Trentino
+    verified: verified
+    supports: '"I boschi in Trentino ricoprono una superficie di 390.463 ettari, pari al 63% del territorio
+      provinciale"; forest types by area: spruce 32 %, beech 14 %, larch 13 %, silver fir 11 %.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_pat_funghi_raccolta:
+    citation: 'Provincia autonoma di Trento, Servizio Foreste. Funghi (picking rules under L.P. 23 maggio 2007, n. 11 and
+      its implementing decree, D.P.P. 26 ottobre 2009, n. 23; deliberations 3287/2009 and 906/2016)'
+    url: https://forestefauna.provincia.tn.it/Foreste/Foreste-in-Trentino/Funghi
+    kind: institutional
+    region: Trentino
+    verified: verified
+    supports: 'picking 7:00-19:00, "due chilogrammi al giorno per persona", authorisation by residence, ownership or a
+      paid permit; no season calendar and no species rule, so the rules give no season prior.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_pat_funghi_limite_2025:
+    citation: 'Provincia autonoma di Trento, Ufficio stampa (2025-08-01) Raccolta funghi, il limite giornaliero passa da
+      2 a 3 chili a persona'
+    url: https://www.ufficiostampa.provincia.tn.it/Comunicati/Raccolta-funghi-il-limite-giornaliero-passa-da-2-a-3-chili-a-persona
+    kind: institutional
+    region: Trentino
+    verified: verified
+    supports: 'the daily limit raised from 2 to 3 kg per person from 2 August 2025; hours 7-19 unchanged.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_bz_waldtypisierung2010:
+    citation: 'Autonome Provinz Bozen-Südtirol, Abteilung Forstwirtschaft (2010) Waldtypisierung Südtirol, Band 1:
+      Waldtypen, Wuchsgebiete, Bestimmungsschlüssel. Bozen'
+    url: https://www.forstverein.it/download/extIHc3rH.pdf
+    kind: institutional
+    region: South Tyrol
+    verified: verified
+    supports: 'the three Wuchsgebiete: the Vinschgau "den trockensten und kontinentalsten Raum der Ostalpen", with "weit
+      ausgedehnte montane Kiefern- und Lärchenwälder am Sonnenhang" and under 600 mm of rain in its larch zone; the
+      southern intermediate area with "Hopfenbuchen- und Flaumeichenwäldern, darüber Eichen-Kiefernwälder und
+      Eichen-Kastanien-Mischwälder"; belts: submontane "sonnseitig von rund 750 bis max. 1150 m", high-montane spruce
+      800-1600 m on shady and 1000-1800 m on sunny slopes, subalpine spruce from 1450-1600 (1700) m shady and 1600-1900
+      m sunny in a 200-400 m belt, then "hochsubalpine Lärchen-Zirbenwald"; annual rain 650 mm (Vinschgau) to 1200 mm.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_bz_hauptbaumarten:
+    citation: 'Autonome Provinz Bozen-Südtirol, Forstdienst. Die Hauptbaumarten Südtirols'
+    url: https://forstdienst.provinz.bz.it/de/wald-holz/hauptbaumarten-suedtirol
+    kind: institutional
+    region: South Tyrol
+    verified: verified
+    supports: 'growing-stock shares: spruce 60 %, larch 19 %, pine 10 % ("in der montanen Höhenstufe weit verbreitet"),
+      stone pine 6 %, silver fir 3 %, broadleaves 2 % (beech, hop-hornbeam, downy oak, manna ash; colline and
+      submontane).'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_bz_wald_flaechen:
+    citation: 'Autonome Provinz Bozen-Südtirol, Forstdienst. Südtirols Wald: Flächen und Zahlen (INFC 2015)'
+    url: https://forstdienst.provinz.bz.it/de/wald-holz/suedtirols-wald-flaechen
+    kind: institutional
+    region: South Tyrol
+    verified: verified
+    supports: '339,270 ha of forest (46 % of the province) and 36,081 ha of other wooded land; most forest between 1000
+      and 2000 m; over two thirds of it on slopes steeper than 40 %.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_bz_pilzesammeln:
+    citation: 'Autonome Provinz Bozen-Südtirol, Forstdienst. Pilzesammeln (Landesgesetz 18/1991)'
+    url: https://forstdienst.provinz.bz.it/de/bestimmungen-zum-pilzesammeln
+    kind: institutional
+    region: South Tyrol
+    verified: verified
+    supports: 'picking regulated by L.P. 18/1991; banned outright in Karneid, Tiers, Welschnofen and on the Kohlern
+      above Bozen; no season calendar.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_bz_pilzsammelgebuehr2024:
+    citation: 'Autonome Provinz Bozen-Südtirol, Landespresseamt (2024-07-09) Pilzsammelgebühr angepasst: Regeln beim
+      Sammeln einhalten'
+    url: https://news.provincia.bz.it/de/news/pilzsammelgebuhr-angepasst-regeln-beim-sammeln-einhalten
+    kind: institutional
+    region: South Tyrol
+    verified: verified
+    supports: 'picking only on even calendar days, 7-19 h; 2 kg in the home comune, 1 kg with the paid permit (fee raised
+      from 8 to 10 euros), 3 kg on one''s own land; banned in protected areas.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_mandolini2025_larix:
+    citation: 'Mandolini E., Bacher M., Peintner U. (2025) Ectomycorrhizal communities of adult and young European larch
+      are diverse and dynamics at high altitudinal sites. Plant and Soil 506: 691-707'
+    doi: 10.1007/s11104-024-06721-8
+    kind: peer_reviewed
+    region: South Tyrol
+    verified: verified
+    supports: 'larch root tips at Prettau (Ahrntal) and Schnals, 1700-1900 m, 100 % mycorrhized by 68 ectomycorrhizal
+      species dominated by larch specialists (Suillus, Lactarius porninsis, Russula laricina); no Boletus and no
+      Cantharellus in the full text, although at Prettau the stands "were interspersed with Pinus cembra and Picea
+      abies individuals" (full text via Europe PMC).'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_mandolini2024_cembra:
+    citation: 'Mandolini E., Bacher M., Peintner U. (2024) Ectomycorrhizal fungal communities of Swiss stone pine (Pinus
+      cembra) depend on climate and tree age in natural forests of the Alps. Plant and Soil 502: 167-180'
+    doi: 10.1007/s11104-022-05497-z
+    kind: peer_reviewed
+    region: South Tyrol
+    verified: verified
+    supports: 'stone pine root tips at four high-altitude South Tyrolean sites; Suillus plorans "the most important
+      symbiotic partner"; no Boletus and no Cantharellus in the full text (via Europe PMC).'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_altoadige_2023_08_08:
+    citation: 'Alto Adige (2023-08-08) Funghi, stagione esplosa. Ma attenzione ai velenosi (interview with C. Rossi,
+      Associazione Micologica Bresadola, Bolzano)'
+    url: https://www.altoadige.it/cronaca/bolzano/funghi-stagione-esplosa-ma-attenzione-ai-velenosi-1.3559689
+    kind: web
+    region: South Tyrol
+    verified: verified
+    supports: '"La stagione è iniziata bene già alla fine di luglio"; "distese di finferli" in the Val Pusteria "e valli
+      limitrofe e in generale tutti i boschi della cresta di confine" after repeated rain and temperatures "non torride
+      come lo scorso anno"; the first porcini.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
+  taa_orf_tirol_2019_08_09:
+    citation: 'ORF Tirol (2019-08-09) Späte Pilzsaison in Südtirol'
+    url: https://tirol.orf.at/stories/3007859/
+    kind: web
+    region: South Tyrol
+    verified: verified
+    supports: '"In einigen Jahren hat die Pilzsaison schon Mitte Juli begonnen"; in 2019 "bisher nur wenige
+      Schwammerln" after "Die lange Trockenheit und der Regen Anfang August"; picking on even days only.'
+    cited_as:
+    - species-ecology/trentino_alto_adige.md
