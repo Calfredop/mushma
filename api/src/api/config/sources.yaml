@@ -107,6 +107,70 @@ rm_rem_vegetazione:
     shapefile: REM_Vegetazione_naturale_50k.shp
     field: SpeciePrev
 
+lr_carta_forestale:
+  name: Regione Lombardia — Carta forestale (perimetro del bosco), tipi forestali reali, 1:10.000
+  homepage: https://geodati.gov.it/resource/id/r_lombar:7ceabf1c-28b2-4c0b-b4ba-4be3d17afa33
+  license: CC BY 4.0
+  attribution: "Carta forestale © Regione Lombardia, CC BY 4.0"
+  notes: >-
+    The forest perimeter of l.r. 31/2008 art. 42 with its real forest types: a mosaic of the Piani
+    di Indirizzo Forestale's type maps (Del Favero's Lombard typology: categoria, tipo, variante)
+    completed with DUSAF where a PIF has no types (revision of 2026-07-16, 1:10,000 equivalent,
+    UTM 32N). Its metadata's use constraint is CC BY 4.0. The shapefile package is behind the
+    Geoportale's download form, so the build reads the Region's ArcGIS REST MapServer, which
+    serves the map as one sublayer per forest category or subcategory (LEGENDA_1), 1,000 features
+    a page: 47 sublayers, 315,943 polygons, 623,778 ha.
+  download:
+    field: LEGENDA_1
+    parts:
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/1, field: LEGENDA_1, geometry_precision: 0}  # Abieteti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/3, field: LEGENDA_1, geometry_precision: 0}  # Aceri-frassineti ed Aceri-tiglieti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/5, field: LEGENDA_1, geometry_precision: 0}  # Alneti di ontano bianco
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/6, field: LEGENDA_1, geometry_precision: 0}  # Alneti di ontano verde
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/7, field: LEGENDA_1, geometry_precision: 0}  # Alneti di ontano nero
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/9, field: LEGENDA_1, geometry_precision: 0}  # Betuleti e Corileti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/11, field: LEGENDA_1, geometry_precision: 0}  # Castagneti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/13, field: LEGENDA_1, geometry_precision: 0}  # Faggete altimontane
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/14, field: LEGENDA_1, geometry_precision: 0}  # Faggete montane
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/15, field: LEGENDA_1, geometry_precision: 0}  # Faggete non classificabili
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/16, field: LEGENDA_1, geometry_precision: 0}  # Faggete primitive
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/17, field: LEGENDA_1, geometry_precision: 0}  # Faggete submontane
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/19, field: LEGENDA_1, geometry_precision: 0}  # Formazioni antropogene non robinieti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/20, field: LEGENDA_1, geometry_precision: 0}  # Formazioni di ciliegio tardivo
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/21, field: LEGENDA_1, geometry_precision: 0}  # Robinieti misti / Robinieti puri
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/22, field: LEGENDA_1, geometry_precision: 0}  # Rimboschimenti recenti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/24, field: LEGENDA_1, geometry_precision: 0}  # Arbusteti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/26, field: LEGENDA_1, geometry_precision: 0}  # Altre formazioni particolari
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/27, field: LEGENDA_1, geometry_precision: 0}  # Saliceti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/29, field: LEGENDA_1, geometry_precision: 0}  # Lariceti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/30, field: LEGENDA_1, geometry_precision: 0}  # Larici-cembreti e Cembrete
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/32, field: LEGENDA_1, geometry_precision: 0}  # Mughete
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/34, field: LEGENDA_1, geometry_precision: 0}  # Aree boscate non classificate
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/36, field: LEGENDA_1, geometry_precision: 0}  # Castagneti da frutto DUSAF
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/37, field: LEGENDA_1, geometry_precision: 0}  # Cespuglieti con presenza significativa di specie arbustive alte ed arboree DUSAF
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/38, field: LEGENDA_1, geometry_precision: 0}  # Conifere DUSAF
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/39, field: LEGENDA_1, geometry_precision: 0}  # Formazioni ripariali DUSAF
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/40, field: LEGENDA_1, geometry_precision: 0}  # Latifoglie DUSAF
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/41, field: LEGENDA_1, geometry_precision: 0}  # Misti DUSAF
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/42, field: LEGENDA_1, geometry_precision: 0}  # Rimboschimenti recenti DUSAF
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/44, field: LEGENDA_1, geometry_precision: 0}  # Orno-ostrieti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/46, field: LEGENDA_1, geometry_precision: 0}  # Peccete altimontane
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/47, field: LEGENDA_1, geometry_precision: 0}  # Peccete di sostituzione e azonali
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/48, field: LEGENDA_1, geometry_precision: 0}  # Peccete montane
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/49, field: LEGENDA_1, geometry_precision: 0}  # Peccete non classificabili
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/50, field: LEGENDA_1, geometry_precision: 0}  # Peccete secondarie
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/52, field: LEGENDA_1, geometry_precision: 0}  # Piceo-faggeti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/54, field: LEGENDA_1, geometry_precision: 0}  # Pinete di pino silvestre montane
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/55, field: LEGENDA_1, geometry_precision: 0}  # Pinete di pino silvestre planiziali
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/57, field: LEGENDA_1, geometry_precision: 0}  # Querceti di cerro
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/58, field: LEGENDA_1, geometry_precision: 0}  # Querceti di farnia
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/59, field: LEGENDA_1, geometry_precision: 0}  # Querceti di leccio
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/60, field: LEGENDA_1, geometry_precision: 0}  # Querceti di rovere
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/61, field: LEGENDA_1, geometry_precision: 0}  # Querceti di roverella
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/62, field: LEGENDA_1, geometry_precision: 0}  # Querceti non classificabili
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/64, field: LEGENDA_1, geometry_precision: 0}  # Carpineti
+      - {arcgis_layer: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer/65, field: LEGENDA_1, geometry_precision: 0}  # Querco-carpineti
+
 ispra_clc18_iv:
   name: ISPRA — Corine Land Cover 2018, IV livello (1:100.000)
   homepage: https://groupware.sinanet.isprambiente.it/uso-copertura-e-consumo-di-suolo/library/copertura-del-suolo/corine-land-cover/corine-land-cover-2018-iv-livello
