@@ -346,6 +346,32 @@ percentage-of-normal ramp and `relative` equals the prior.
   the woods recovering after more than a year of drought; the reanalysis rain of the two springs is
   alike (81 % and 77 % of normal), and the rules keep no memory of a long drought.
 
+## After the deploy: what to verify
+
+The stores were rsync'd to the server on 2026-09-26 (`deploy/rsync-region-data.sh piemonte`, 244
+files, 716 MB, no redeploy). The server serves a region only when its YAML is in the deployed code
+and its stores are on disk, so they stay inert until `main` with `config/regions/piemonte.yaml` is
+deployed by the rail's "Deploy pulled main" step (with the daily job, which brings the weather and
+scores up to that day). Checked right after the sync: `/regions` still lists only Tuscany, and
+`/status?region=piemonte` answers 404.
+
+The merged `main` must carry this branch's fix to `api/src/api/history/seasons.py` (the season
+table under the memory cap): without it the daily job's history step runs out of memory on
+Piemonte's 1,180 comuni, logs `region_failed` and alerts. Then check:
+
+- [ ] `https://mappafunghi.app/piemonte` and `/piemonte/porcini`, `/piemonte/ovoli`,
+  `/piemonte/gallinacci` show real scores for today (not fixtures), and a tapped cell's "why this
+  score" names Piedmontese habitats (larch, spruce, chestnut, robinia).
+- [ ] `https://api.mappafunghi.app/regions` lists `piemonte` with all three species; the hub `/` lists
+  it and colours it from `/overview`.
+- [ ] `https://mappafunghi.app/sitemap.xml` has the four Piemonte URLs (built from the registry).
+- [ ] Lighthouse SEO is 100 on `/piemonte` (prerendered title, description, canonical, og image
+  `og/piemonte.png`, JSON-LD Dataset with `sameAs` Wikidata Q1216).
+- [ ] `/credits` shows "Regione Piemonte — Carta forestale regionale 2025".
+- [ ] The next morning's daily job has a `region_done` line for `piemonte`
+  (`journalctl -u mushma-daily`), no `region_failed` at the history step, and its Open-Meteo call
+  count stays inside the budget.
+
 ## Known limitations
 
 - **Region finder by bbox.** The web registry finds a region by bbox (`findRegionAt`), and
