@@ -1,0 +1,477 @@
+# Press-contrast sanity check for Lombardia (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025); windows and source URLs written down on 2026-09-26, before any
+# Lombardia score existed. `seasons: normal` expands to `normal_seasons`; the two ovoli contrasts list
+# their normal years by hand instead, leaving out the years the sources call unusual for ovoli.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Evidence, second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/lombardia.md.
+# Every main source was opened and its quote checked; outlets whose robots.txt blocks AI agents (Il
+# Giorno, La Provincia Pavese, the Citynews sites, Bresciaoggi, Corriere, ANSA) were not read.
+areas:
+  valtellina:
+    comuni:
+    - Albaredo per San Marco
+    - Bema
+    - Gerola Alta
+    - Pedesina
+    - Rasura
+    - Cosio Valtellino
+    - Talamona
+    - Tartano
+    - Forcola
+    - Colorina
+    - Fusine
+    - Cedrasco
+    - Caiolo
+    - Albosaggia
+    - Civo
+    - Mello
+    - Dazio
+    - Val Masino
+    - Buglio in Monte
+    - Ardenno
+    - Berbenno di Valtellina
+    - Postalesio
+    - Castione Andevenno
+    - Chiesa in Valmalenco
+    - Caspoggio
+    - Lanzada
+    - Torre di Santa Maria
+    - Spriana
+    - Montagna in Valtellina
+    - Ponte in Valtellina
+    - Piateda
+    - Castello dell'Acqua
+    - Teglio
+    - Aprica
+    - Grosio
+    - Grosotto
+    - Mazzo di Valtellina
+    - Tovo di Sant'Agata
+    - Sondalo
+    - Valdisotto
+    - Bormio
+    - Valdidentro
+    - Valfurva
+    - Livigno
+  bassa_valtellina:
+    comuni:
+    - Colico
+    - Piantedo
+    - Delebio
+    - Andalo Valtellino
+    - Rogolo
+    - Cosio Valtellino
+    - Morbegno
+    - Talamona
+    - Traona
+    - Mantello
+    - Cino
+    - Cercino
+    - Dubino
+    - Mello
+    - Civo
+    - Dazio
+    - Ardenno
+    - Buglio in Monte
+    - Forcola
+    - Berbenno di Valtellina
+    - Postalesio
+    - Castione Andevenno
+    - Colorina
+    - Fusine
+    - Cedrasco
+    - Caiolo
+    - Albosaggia
+    - Sondrio
+  orobie_bergamasche:
+    comuni:
+    - Averara
+    - Branzi
+    - Carona
+    - Cassiglio
+    - Cusio
+    - Foppolo
+    - Isola di Fondra
+    - Mezzoldo
+    - Moio de' Calvi
+    - Olmo al Brembo
+    - Ornica
+    - Piazza Brembana
+    - Piazzatorre
+    - Piazzolo
+    - Roncobello
+    - Santa Brigida
+    - Valleve
+    - Valnegra
+    - Valtorta
+    - Lenna
+    - Taleggio
+    - Vedeseta
+    - Valbondione
+    - Gandellino
+    - Gromo
+    - Valgoglio
+    - Ardesio
+    - Oltressenda Alta
+    - Villa d'Ogna
+    - Parre
+    - Castione della Presolana
+    - Schilpario
+    - Vilminore di Scalve
+    - Colere
+    - Azzone
+  valcamonica:
+    comuni:
+    - Ponte di Legno
+    - Temù
+    - Vione
+    - Vezza d'Oglio
+    - Incudine
+    - Monno
+    - Edolo
+    - Corteno Golgi
+    - Sonico
+    - Malonno
+    - Paisco Loveno
+    - Berzo Demo
+    - Cevo
+    - Saviore dell'Adamello
+    - Cedegolo
+    - Sellero
+    - Capo di Ponte
+    - Ono San Pietro
+    - Breno
+    - Borno
+    - Ossimo
+    - Lozio
+    - Niardo
+    - Braone
+    - Losine
+    - Cerveno
+    - Artogne
+    - Pian Camuno
+  alta_valle_staffora:
+    comuni:
+    - Varzi
+    - Brallo di Pregola
+    - Santa Margherita di Staffora
+    - Menconico
+  oltrepo_appennino:
+    comuni:
+    - Varzi
+    - Brallo di Pregola
+    - Santa Margherita di Staffora
+    - Menconico
+    - Romagnese
+    - Zavattarello
+    - Val di Nizza
+    - Ponte Nizza
+    - Bagnaria
+    - Colli Verdi
+    - Cecima
+    - Montesegale
+  varesotto_alto:
+    comuni:
+    - Dumenza
+    - Maccagno con Pino e Veddasca
+    - Curiglia con Monteviasco
+    - Tronzano Lago Maggiore
+    - Agra
+    - Montegrino Valtravaglia
+    - Cadegliano-Viconago
+    - Cremenaga
+    - Marchirolo
+    - Cugliate-Fabiasco
+    - Valganna
+    - Brinzio
+    - Castello Cabiaglio
+    - Orino
+    - Cuveglio
+    - Cuvio
+    - Duno
+    - Rancio Valcuvia
+    - Cassano Valcuvia
+    - Mesenzana
+    - Porto Valtravaglia
+    - Castelveccana
+    - Cunardo
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: valcamonica_2023_2025_2024
+  claim: 'Val Camonica, early August: 2023 "E'' tempo di funghi in Valle Camonica, Valtellina e Orobie ed è
+    un''annata record ... la raccolta è già da record" (Gazzetta delle Valli, 2023-08-18) and 2025 "È
+    fungo-mania in Vallecamonica: da qualche settimana i preziosi frutti del sottobosco stanno crescendo
+    copiosi" (Giornale di Brescia, 2025-08-01); in 2024 "I cercatori hanno ancora i cestini vuoti ... la metà
+    del mese di agosto, generalmente, è uno dei periodi migliori" (Giornale di Brescia, 2024-08-12)'
+  source: https://www.giornaledibrescia.it/cronaca/fa-ancora-troppo-caldo-per-andare-a-funghi-i4d6ldtt
+  higher:
+    area: valcamonica
+    seasons:
+    - 2023
+    - 2025
+    start: 08-01
+    end: 08-12
+  lower:
+    area: valcamonica
+    seasons:
+    - 2024
+    start: 08-01
+    end: 08-12
+- id: valcamonica_2018_2017
+  claim: 'Val Camonica, first three weeks of August: 2018 "raccolte record un po'' ovunque, soprattutto in alta
+    Valcamonica" (Giornale di Brescia, 2018-08-07); "Dopo un 2017 particolarmente negativo per gli effetti
+    della siccità che hanno lasciato a mani vuote molti appassionati ricercatori ... si sono toccati picchi di
+    6/7 kg di funghi raccolti al giorno per persona" (Coldiretti Brescia via RadioVera, 2018-09-20)'
+  source: https://www.radiovera.net/2018/09/20/funghi-boom-di-raccolta-in-valle-camonica/
+  higher:
+    area: valcamonica
+    seasons:
+    - 2018
+    start: 08-01
+    end: 08-20
+  lower:
+    area: valcamonica
+    seasons:
+    - 2017
+    start: 08-01
+    end: 08-20
+- id: orobie_2025_2022_2024
+  claim: 'Alta Val Brembana and Val Seriana, early August: 2025 "“fioccano” sul web le foto di raccoglitori che
+    fanno ricchissimi bottini di porcini e non solo" (Valbrembanaweb, 2025-08-10); 2022 "Purtroppo
+    quest''anno nemmeno l''ombra di porcini, finferli e chiodini ... la stagione è completamente ferma" (Prima
+    Bergamo, 2022-08-13); 2024 "Dopo un periodo ricco di funghi, ora in Val Seriana si soffre l''assenza di
+    porcini" (Prima Bergamo, 2024-08-08)'
+  source: https://valbrembanaweb.com/boom-di-funghi-tesserino-obbligatorio-da-san-giovanni-bianco-fino-a-foppolo/
+  higher:
+    area: orobie_bergamasche
+    seasons:
+    - 2025
+    start: 08-01
+    end: 08-12
+  lower:
+    area: orobie_bergamasche
+    seasons:
+    - 2022
+    - 2024
+    start: 08-01
+    end: 08-12
+- id: orobie_2021_aug_sep
+  claim: 'Bergamo valleys 2021: early August "stanno nascendo tantissimi funghi ... A farla da padrone in Valle
+    Brembana è il porcino" (L''Eco di Bergamo, 2021-08-15); then "Porcini solo a macchia di leopardo per un
+    periodo limitato ... la maggior parte delle fioriture ci sono state tra la fine di luglio e l''inizio di
+    agosto" (L''Eco di Bergamo, 2021-09-13)'
+  source: https://www.ecodibergamo.it/stories/premium/valle-brembana/funghi-stagione-difficile-senza-piogge-e-la-grandine-ha-rovinato-le-fioriture_1406857_11/
+  higher:
+    area: orobie_bergamasche
+    seasons:
+    - 2021
+    start: 07-28
+    end: 08-15
+  lower:
+    area: orobie_bergamasche
+    seasons:
+    - 2021
+    start: 09-01
+    end: 09-15
+- id: valtellina_2025_2022
+  claim: 'Valtellina, early to mid August: 2025 "non solo giallini, come fino a pochi giorni fa, ma anche i
+    prelibati porcini" (La Provincia di Sondrio, 2025-08-10), "i porcini che spuntano in quantità mai viste da
+    anni" (Italia a Tavola, 2025-08-16); 2022 "almeno finora, la nascita dei funghi in provincia è stata
+    pressoché assente ... scarse quantità di finferli (cantharellus cibarius) e rari porcini" (La Provincia di
+    Sondrio, 2022-08-10)'
+  source: https://www.laprovinciaunicatv.it/stories/sondrio/sondrio-e-cintura/caldo-secco-funghi-non-nascono-finora-poco-nulla-deve-piovere-o_1436362_11/
+  higher:
+    area: valtellina
+    seasons:
+    - 2025
+    start: 08-05
+    end: 08-13
+  lower:
+    area: valtellina
+    seasons:
+    - 2022
+    start: 08-05
+    end: 08-13
+- id: valtellina_2021_aug_jul
+  claim: 'Sondrio province 2021: "se fino a due settimane fa, praticamente, i funghi erano “uccel di bosco” ...
+    in questi ultimi giorni sono usciti di botto ... «A luglio è piovuto tantissimo, è vero, però non c''è
+    stata escursione termica fra la notte e il giorno» ... E ora è un tripudio di funghi" (La Provincia di
+    Sondrio, 2021-08-19)'
+  source: https://www.laprovinciaunicatv.it/stories/sondrio/morbegno-e-bassa-valle/sono-arrivati-funghi-e-loro-rischi-lasciate-casa-lansia-o_1404836_11/
+  higher:
+    area: valtellina
+    seasons:
+    - 2021
+    start: 08-08
+    end: 08-19
+  lower:
+    area: valtellina
+    seasons:
+    - 2021
+    start: 07-20
+    end: 08-04
+- id: valtellina_2020_2021_sep
+  claim: 'Valtellina, early September: 2020 "Valtellina non-stop con nascite senza sosta" (Funghi Magazine,
+    2020-09-21) and "nascite di funghi Porcini degne degli annali" (Funghi Magazine, 2020-09-28); 2021 reports
+    from "Valsassina, Val d''Intelvi, Valli Bergamasche e Bresciane, Valtellina ... ci dicono che trovare 3 o 4
+    funghi freschi sta diventando un''impresa da campioni" (Funghi Magazine, 2021-09-04)'
+  source: https://funghimagazine.it/meteofunghi-21-09-2020/
+  higher:
+    area: valtellina
+    seasons:
+    - 2020
+    start: 09-01
+    end: 09-12
+  lower:
+    area: valtellina
+    seasons:
+    - 2021
+    start: 09-01
+    end: 09-12
+- id: staffora_2021_2025
+  claim: 'Upper Valle Staffora, turn of June and July: 2021 "E'' boom di funghi tra la media e l''alta Valle
+    Staffora ... Da ormai una settimana sono molti gli appassionati fungaioli che stanno passando a setaccio i
+    boschi" (oltrepolombardo, 2021-07-03); 2025 "Dopo una stagione avara con i mesi di giugno e luglio con
+    crescite praticamente nulle, come non si ricordava da anni" (oltrepolombardo, 2025-09-09)'
+  source: https://www.oltrepolombardo.com/2025/09/09/boom-di-funghi-in-valle-staffora-centinaia-di-persone-alla-ricerca-dei-prelibati-porcini/
+  higher:
+    area: alta_valle_staffora
+    seasons:
+    - 2021
+    start: 06-26
+    end: 07-10
+  lower:
+    area: alta_valle_staffora
+    seasons:
+    - 2025
+    start: 06-26
+    end: 07-10
+- id: staffora_vs_varesotto_2025
+  claim: 'Early September 2025: upper Valle Staffora "da qualche giorno nei boschi della nostra zona si trovano i
+    porcini" (oltrepolombardo, 2025-09-09); alto Varesotto "sabato 6 settembre ancora sul Lema con qualche
+    ritrovamento ma nulla di significativo ... “Non c''è un fungo a vista”" (VareseNews, 2025-09-09)'
+  source: https://www.oltrepolombardo.com/2025/09/09/boom-di-funghi-in-valle-staffora-centinaia-di-persone-alla-ricerca-dei-prelibati-porcini/
+  higher:
+    area: alta_valle_staffora
+    seasons:
+    - 2025
+    start: 09-02
+    end: 09-09
+  lower:
+    area: varesotto_alto
+    seasons:
+    - 2025
+    start: 09-02
+    end: 09-09
+- id: varesotto_2019_2022
+  claim: 'Alto Varesotto, mid-August: 2019 "grosse raccolte denunciate da molti appassionati fin dal 12/13 agosto
+    ... Le raccolte, come ormai noto a tutti, sono quindi state abbondanti e di elevata qualità" (Luino
+    Notizie, 2019-09-17); 2022 "pronosticassi potenziali buttate di porcini anche prima di ferragosto. Invano
+    ... niente porcini" (VareseNews, 2022-08-26)'
+  source: https://www.varesenews.it/2022/08/porcini-latitanti-cronaca-stagione-particolare/1492499/
+  higher:
+    area: varesotto_alto
+    seasons:
+    - 2019
+    start: 08-12
+    end: 08-25
+  lower:
+    area: varesotto_alto
+    seasons:
+    - 2022
+    start: 08-12
+    end: 08-25
+- id: gallinacci_valtellina_2024_2022
+  claim: 'Sondrio province, late July to early August: 2024 "Enormi distese di giallini, anomale in questa
+    quantità per il periodo, dai 1500 metri di quota in su ... ce n''è un''infinità" (La Provincia di Sondrio,
+    2024-08-04); 2022 "sono state raccolte scarse quantità di finferli (cantharellus cibarius) e rari porcini"
+    (La Provincia di Sondrio, 2022-08-10)'
+  source: https://www.laprovinciaunicatv.it/stories/sondrio/valchiavenna/tanti-funghi-ma-ce-chi-mastica-amaro-o_2402540_11/
+  higher:
+    area: valtellina
+    seasons:
+    - 2024
+    start: 07-22
+    end: 08-04
+  lower:
+    area: valtellina
+    seasons:
+    - 2022
+    start: 07-22
+    end: 08-04
+- id: gallinacci_orobie_2024_2022
+  claim: 'Bergamo Orobie, July: 2024 "Dopo un''abbondante raccolta di gallinacci, ieri sono ritornati alcuni
+    porcini" (Val Brembana forum, 2024-07-20) and "In alto Piemonte e Lombardia montana centrale ... dopo una
+    massiccia buttata di Finferli" (Funghi Magazine, 2024-07-25); 2022 "Purtroppo quest''anno nemmeno l''ombra
+    di porcini, finferli e chiodini" (Prima Bergamo, 2022-08-13)'
+  source: https://primabergamo.it/attualita/caldo-e-siccita-in-bergamasca-non-mancano-solo-i-funghi-non-ce-vita-nel-sottobosco/
+  higher:
+    area: orobie_bergamasche
+    seasons:
+    - 2024
+    start: 07-08
+    end: 07-24
+  lower:
+    area: orobie_bergamasche
+    seasons:
+    - 2022
+    start: 07-08
+    end: 07-24
+- id: ovoli_oltrepo_2025_normal
+  claim: 'Oltrepò hills, first half of September: 2025 "Stessa cosa in Emilia Romagna e Oltrepo'' pavese, anche
+    qua panieri stracolmi" after "le grandi piogge del 28/30 agosto", in "Un''annata eccezionale di funghi
+    arancioni"; in past years ovoli were found "spesso ... in quantità ... nell''Oltrepo'' pavese" (Funghi
+    Magazine, 2025-09-17). Lower side: 2017-2023; 2024 left out ("se ne sono trovate a chili ... persino al
+    Nord Italia", Funghi Magazine, 2024-10-18)'
+  source: https://funghimagazine.it/funghi-arancioni-ovoli-reali-le-finte-uova-che-stanno-facendo-impazzire-i-social/
+  higher:
+    area: oltrepo_appennino
+    seasons:
+    - 2025
+    start: 09-03
+    end: 09-17
+  lower:
+    area: oltrepo_appennino
+    seasons:
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    start: 09-03
+    end: 09-17
+- id: ovoli_bassa_valtellina_2025_normal
+  claim: 'Bassa Valtellina, first half of September 2025: "Ovoli reali abbondanti o mai visti prima anche da
+    Colico-Morbegno fino alle porte di Sondrio" (Funghi Magazine, 2025-09-17). Lower side: 2017-2021 and 2023;
+    2022 left out (ovoli "persino in Valtellina, dove non erano mai stati segnalati prima", Funghi Magazine,
+    2022-11-12) and 2024 (see ovoli_oltrepo_2025_normal)'
+  source: https://funghimagazine.it/funghi-arancioni-ovoli-reali-le-finte-uova-che-stanno-facendo-impazzire-i-social/
+  higher:
+    area: bassa_valtellina
+    seasons:
+    - 2025
+    start: 09-03
+    end: 09-17
+  lower:
+    area: bassa_valtellina
+    seasons:
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2023
+    start: 09-03
+    end: 09-17
