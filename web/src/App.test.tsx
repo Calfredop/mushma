@@ -117,7 +117,7 @@ describe('centre on my position', () => {
   })
 
   it('leaves the map alone for a fix outside the region, and says why', async () => {
-    mockGeolocation(45.46, 9.19) // Milan
+    mockGeolocation(48.14, 11.58) // Munich, outside every Italian region
     window.history.replaceState(null, '', '/toscana')
     render(<App />)
 
@@ -387,14 +387,14 @@ describe('routing', () => {
     ).toHaveLength(1)
     unmount()
 
-    window.history.replaceState(null, '', '/lombardia')
+    window.history.replaceState(null, '', '/baviera')
     render(<App />)
     expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
     expect(webPageUrl()).toBeNull()
   })
 
   it('shows the not-found page for an unknown region, with a link back to the map', async () => {
-    window.history.replaceState(null, '', '/lombardia')
+    window.history.replaceState(null, '', '/baviera')
     render(<App />)
     expect(screen.getByText('Questa pagina non esiste')).toBeInTheDocument()
     expect(screen.queryByTestId('map')).not.toBeInTheDocument()

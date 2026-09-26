@@ -78,6 +78,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Lombardia — Carta forestale e tipi forestali reali',
+    url: 'https://geodati.gov.it/resource/id/r_lombar:7ceabf1c-28b2-4c0b-b4ba-4be3d17afa33',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'ISPRA — Corine Land Cover 2018',
     url: 'https://groupware.sinanet.isprambiente.it/uso-copertura-e-consumo-di-suolo/library/copertura-del-suolo/corine-land-cover/corine-land-cover-2018-iv-livello',
     use: 'landcover',
