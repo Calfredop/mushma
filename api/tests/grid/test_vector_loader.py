@@ -242,6 +242,48 @@ def test_read_vector_pages_a_capped_wfs_layer(tmp_path: Path) -> None:
     assert all(q["COUNT"] == ["2"] and q["SORTBY"] == ["fid"] for q in _FakePagedWFS.requests)
 
 
+def _zip_layer(archive: Path, name: str, layer: gpd.GeoDataFrame) -> Path:
+    shp_dir = archive.parent / f"_{name}"
+    shp_dir.mkdir(parents=True)
+    layer.to_file(shp_dir / f"{name}.shp")
+    archive.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive, "w") as zf:
+        for part in shp_dir.iterdir():
+            zf.write(part, part.name)
+    return archive
+
+
+def test_read_vector_concatenates_parts_saved_under_their_own_names(tmp_path: Path) -> None:
+    # Both provinces are served at a URL ending in ".../@@download/file", so each part names
+    # the local file it is saved as.
+    north = _zip_layer(
+        tmp_path / "srv" / "north" / "file",
+        "north",
+        _frame(box(X0, Y0, X0 + 100, Y0 + 100), code=["11"]),
+    )
+    south = _zip_layer(
+        tmp_path / "srv" / "south" / "file",
+        "south",
+        _frame(box(X0 + 200, Y0, X0 + 300, Y0 + 100), code=["210"]),
+    )
+
+    frames = read_vector(
+        {
+            "parts": [
+                {"url": north.as_uri(), "file": "north.zip", "shapefile": "north.shp"},
+                {"url": south.as_uri(), "file": "south.zip", "shapefile": "south.shp"},
+            ]
+        },
+        tmp_path / "cache",
+        where="code IN ('11', '210')",
+    )
+
+    assert sorted(frames["code"]) == ["11", "210"]
+    assert frames.crs.to_epsg() == 3035
+    assert (tmp_path / "cache" / "north.zip").is_file()
+    assert (tmp_path / "cache" / "south.zip").is_file()
+
+
 def test_read_vector_rejects_an_unknown_download_shape(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="download"):
         read_vector({"url": "https://example.com/x.bin"}, tmp_path / "cache")

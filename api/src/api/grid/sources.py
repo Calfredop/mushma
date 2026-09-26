@@ -191,11 +191,25 @@ def read_vector(
     - ``arcgis_layer`` (+ ``field``, needs ``bbox_wgs84``): ArcGIS REST FeatureServer/MapServer
     - ``wfs`` (+ ``type_name``, needs ``bbox_wgs84``): OGC WFS GetFeature; with ``page_size``
       (+ ``sort_by``) it pages a server that caps the feature count
+    - ``parts``: a list of the url shapes above (e.g. one zip per province), read and concatenated
+
+    A url shape may set ``file``, the name the download is saved under, when the url's last
+    segment does not name it (e.g. ``.../@@download/file``).
     """
     import pandas as pd
     import pyogrio
 
     cache_dir.mkdir(parents=True, exist_ok=True)
+
+    if "parts" in download:
+        frames = [
+            read_vector(part, cache_dir, bbox_wgs84=bbox_wgs84, columns=columns, where=where)
+            for part in download["parts"]
+        ]
+        crs = frames[0].crs if frames else None
+        return gpd.GeoDataFrame(
+            pd.concat([frame.to_crs(crs) for frame in frames], ignore_index=True), crs=crs
+        )
 
     if "arcgis_layer" in download:
         if bbox_wgs84 is None:
@@ -218,7 +232,9 @@ def read_vector(
         return _read_wfs(download, cache_dir, bbox_wgs84)
 
     if "url" not in download:
-        raise ValueError(f"unsupported download shape (need url, arcgis_layer or wfs): {download}")
+        raise ValueError(
+            f"unsupported download shape (need url, parts, arcgis_layer or wfs): {download}"
+        )
 
     if not (
         download.get("geopackage")
@@ -232,7 +248,8 @@ def read_vector(
         )
 
     url = download["url"]
-    local = fetch(url, cache_dir / Path(urllib.parse.urlparse(url).path).name)
+    name = download.get("file") or Path(urllib.parse.urlparse(url).path).name
+    local = fetch(url, cache_dir / name)
 
     if download.get("geopackage") or local.suffix.lower() == ".gpkg":
         kwargs: dict = {}

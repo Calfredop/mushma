@@ -287,6 +287,8 @@ uv run python -m api.weather.ingest backfill --wait
 uv run python -m api.weather.ingest update            # daily: recent reanalysis + 7-day forecast
 uv run python -m api.weather.ingest downscale --start 2026-09-10 --end 2026-09-24
 uv run python -m api.weather.checks gauges --start 2025-01-01 --end 2025-12-31
+# Another region's gauges (api.weather.checks GAUGE_NETWORKS; Emilia-Romagna: ARPAE open data):
+uv run python -m api.weather.checks gauges --region emilia_romagna
 uv run python -m api.weather.checks lattice
 ```
 

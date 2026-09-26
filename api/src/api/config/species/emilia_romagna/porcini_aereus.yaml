@@ -1,0 +1,301 @@
+# Species rules for one key, loaded and validated by api.model.rules (see README.md here).
+# Emilia-Romagna: copied from tuscany/ and retuned where regional evidence says so; what changed and
+# why is in .gavin-root/docs/species-ecology/emilia_romagna.md. Evidence and rule ids (POR-*):
+# .gavin-root/docs/species-ecology.md and species-ecology/porcini.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
+schema_version: 1
+key: porcini_aereus
+group: porcini
+taxon: Boletus aereus
+synonyms: []
+status: draft
+i18n_key: species.porcini_aereus
+records:
+  gbif_taxon_keys: [8733688]
+  inat_taxon_ids: [333772]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    Only 11 Emilia-Romagna iNaturalist records (place 96905, verifiable, 2026-09-25), 10 in September;
+    often confused with B. reticulatus in the field. Validate the porcini group score.
+notes: >-
+  The most xerothermophilous porcino, in Emilia-Romagna a hill species: the Casentinesi park atlas
+  lists it among the thermophilous fungi missing from its mountain forests but expected "nelle aree
+  collinari". No quantitative weather study exists for this taxon: the rain logic is borrowed from
+  B. edulis, and temperature and frost rules are shifted using qualitative sources. Weather rules are
+  Tuscany's, kept unchanged.
+
+# Growth clock (README, "Growth clock"): how fast fruit bodies develop after the rain, day by day.
+# The rain_event lag below is counted in growth days, the sum of these daily paces.
+growth:
+  temperature:
+    variable: soil_temperature_0_to_7cm_mean
+    cardinal_c: [2, 21, 32]
+    reference_c: 17
+  humidity:
+    variable: vapour_pressure_deficit_max
+    trapezoid: [null, null, 1.5, 3.0]
+    floor: 0.5
+  max_lag_days: 40
+  confidence: folklore
+  source: [yan_hunt1999, moore2008_fruit_bodies, kasparavicius2001, bmeteo_funghi_luglio, funghimagazine_giorni_pioggia]
+  derived: true
+  notes: >-
+    POR-R3 for the thermophilic porcino. The pace is 1 at 17 °C of topsoil, the weather the lag
+    window was drawn from. Fruit bodies develop at a lower optimum than mycelium grows in
+    culture (B. edulis 25-28 °C; Moore et al. 2008), hence t_opt 21 °C. Thermophilic porcini
+    appear 8-11 days after warm summer storms (lore); a 12 °C stretch runs at about 65 % pace.
+    Caps stop growing when the day's minimum humidity falls under 40 % and grow well from about
+    60 % (Kasparavičius 2001, B. edulis): open-air daily maximum VPD of 1.5 kPa keeps full pace
+    and 3.0 kPa halves it; the floor stands for the moister air under the canopy. No peer-
+    reviewed days-per-°C figure exists for these species: every number is a prior. The humidity
+    ramp is set higher than for the autumn porcini because it fruits from summer, when open-air
+    VPD is 2 kPa on a median July day.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: upland_summer
+          dates: ["15-06", "01-08", "30-09", "31-10"]
+          elevation_weight: [400, 600, null, null]
+        - label: lowland_autumn
+          dates: ["01-07", "15-08", "31-10", "30-11"]
+          elevation_weight: [null, null, 400, 600]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, appennino4p_funghi, mushma_occurrence_check_2026, mushma_occurrence_check_er_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-S2, split by elevation to resolve a disagreement. The upland window is Tuscany's, kept: the IGP
+      (Val Taro, in this region) says July–September and central-Italy records have no July finds, so it
+      reaches full only on 1 August. The lowland window is moved about two weeks earlier at both ends
+      (emilia_romagna.md ER-POR-S2): the Tuscan autumn peak (Oct–Nov, Lucca and Siena, macchia and holm
+      oak) has no counterpart in Emilia-Romagna, which has almost no macchia; its records are 10 of 11 in
+      September (6.2x vs all fungi, median 504 m) with none in October or November, and the
+      Piacenza-Apennine page puts it in autumn oak woods. Full 15 Aug–31 Oct, zero by 30 November. The
+      400-600 m handover is derived and kept.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        deciduous_oak: 1.0
+        chestnut: 1.0
+        evergreen_oak: 1.0
+        macchia: 1.0
+        transitional_woodland_shrub: 0.6
+        mediterranean_pine: 0.6
+        mixed_broadleaf: 0.3
+        mixed_broadleaf_conifer: 0.3
+        beech: 0.1
+        other_conifer: 0.0
+        mountain_pine: 0.0
+        fir_spruce: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
+      default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, sardegna_foreste_aereus, beugelsdijk2008, oria_de_rueda2008, mushma_habitat_share_2026]
+    derived: true
+    data: available
+    notes: >-
+      Kept from Tuscany: "nei querceti e nei castagneti" (IGP, Val Taro). Macchia and evergreen oak,
+      hosts in Tuscany, are nearly absent here (the holm oak of the Mesola wood, no macchia), so their
+      affinities barely matter. POR-H4. Four levels (2026-09-24, mushma_habitat_share_2026): oak, chestnut and holm oak are named
+      hosts. Macchia is host too, not just dilution: this thermophilic taxon fruits directly in Cistus,
+      Arbutus and Erica scrub in several sources, with Spanish yield data (22.5 kg/ha), and macchia is not
+      one of the three classes design keeps below 1 (mixed broadleaf, mixed broadleaf+conifer, transitional
+      woodland/shrub). Transitional woodland/shrub (oak/chestnut/macchia regrowth) and Mediterranean pine
+      (documented pine-with-Erica-scoparia understorey) are secondary. Mixed broadleaf and mixed
+      broadleaf+conifer are marginal: hornbeam/hazel/ash and conifer components are not this taxon's hosts.
+      Beech, other conifer, mountain pine, fir/spruce, riparian and exotic broadleaf are non-host: cool or
+      wet ground this warm, dry taxon avoids. Saturated to full credit from a host-weighted share of 0.30.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [null, null, 800, 1250]}
+    confidence: plausible
+    source: [matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, arrigoni_viciani_castagneti, mushma_occurrence_check_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-A4, kept from Tuscany. Coast to mid-hill; sunny mid-mountain chestnut is the upper limit.
+      Tuscan iNaturalist records: median 352 m, p90 629 m, max 789 m (n=50); Emilia-Romagna's: median
+      504 m, p75 688 m, p90 1003 m (n=8), inside the band. The Casentinesi atlas has it among the
+      thermophilous fungi missing from the park's mountain forests but expected in the hills. The
+      colder Emilian side (January 0 °C isotherm at 1000 m against 1300 m in Tuscany) is left to the
+      temperature driver rather than a lower band, which would count the cold twice.
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: plausible
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-R1 + POR-R2, transferred from B. edulis.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 30}
+    response: {trapezoid: [50, 125, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, mushma_rain_tuning_2026]
+    derived: true
+    data: derived
+    notes: >-
+      POR-M1, transferred from B. edulis and community studies.
+      Tuned (2026-09-22): the absolute 20->80 mm ramp was full in an ordinary September, so the 30
+      days are scored as a percentage of the cell's own normal for those days (2016-2025 reanalysis,
+      downscaled and rain-scaled like the rain): 0 at 50 %, full from 125 %. It raised the porcini
+      train objective by 0.03 with or without the rain scale, and the hold-out one by 0.013.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [10, 14, 22, 26]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, beugelsdijk2008, matteucci2008_micoponte, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: >-
+      POR-T4. The warmest band: "la specie più xerotermofila". Low confidence within plausible.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d; compare in the backtest.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.75
+    confidence: plausible
+    source: [salerni2023_amiata, andrew2025]
+    derived: true
+    data: derived
+    notes: POR-X1. Milder than for B. edulis (x0.75).
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.4
+    confidence: folklore
+    source: [funghimagazine_fino_quando, muse_censimento_boletus]
+    derived: true
+    data: available
+    notes: POR-X3. Hardier in mild winters without constant frost (x0.4). NE Italy records run to early December.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [borgotaro_igp_rt, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 5, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-X6. ET0 threshold 5 mm/day for a low-altitude summer taxon. All numbers are guesses.
+
+  - id: sun_exposure
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.sun_exposure
+    input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
+    response: {trapezoid: [80, 95, null, null]}
+    floor: 0.9
+    confidence: folklore
+    source: [matteucci2008_micoponte]
+    derived: true
+    data: derived
+    notes: >-
+      Kept from Tuscany. POR-A6. Tolerates or prefers sunny exposures (S x1.0, E/W x1.0, N x0.9): x0.9 at 80 % of
+      flat ground's sun or less, x1 from 95 %. Read on the day's sun ratio, the cell's sun as
+      a percentage of flat ground's (api.model.terrain), so it bites hardest in autumn, when
+      the sun is low. The terrain microclimate already makes sunny slopes warmer and drier for
+      every rule; this line is the species' own preference on top of that, kept soft.
+
+  - id: slope
+    role: stopper
+    kind: static_band
+    i18n_key: factor.slope
+    input: {attribute: slope_deg}
+    response: {trapezoid: [null, null, 25, 40]}
+    floor: 0.8
+    confidence: plausible
+    source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
+    derived: true
+    data: available
+    notes: >-
+      Kept from Tuscany; the grid percentiles quoted are Tuscany's, to recheck on the
+      Emilia-Romagna grid once it is built. Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
+      1979), but a 1 km cell's mean slope is not the slope of the exact spot the mushrooms
+      grow on: normal terrain for Tuscan woodland scores full credit, and only clearly
+      steep cells lose it. Woodland cells on the Tuscan grid run p10 10.2°, p25 12.6°, median
+      16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up to 25°, about the p90, x0.8 from 40°.
+      Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B. edulis
+      yield was highest under about 11° on plots in north-east Turkey (Mumcu Küçüker 2019);
+      two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts on
+      the score only, never on the rain, so the same water is not counted twice.
+
+known_gaps:
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive.
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: soil
+    description: POR-N1. "Heavy loamy, often somewhat calcareous soil" (Dutch sampling); acid loams under Cistus in Spain.
+    needs: [soil_texture, soil_ph]
+    confidence: plausible
+    source: [beugelsdijk2008, alonso_ponce2011]

@@ -54,6 +54,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY-NC 4.0',
   },
   {
+    name: 'Regione Emilia-Romagna — Carta forestale regionale',
+    url: 'https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Regione Toscana — Uso e copertura del suolo',
     url: 'https://www502.regione.toscana.it/geonetwork/srv/api/records/r_toscan:0d4d6640-9a1c-47a4-9a5d-a85cdb36927c',
     use: 'landcover',
