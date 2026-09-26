@@ -19,6 +19,7 @@ import {
   temperatureDelta,
 } from '../history/present'
 import { intlLocale, type Language } from '../i18n'
+import type { RegionDefinition } from '../regions'
 import type { SpeciesOrCombined } from '../state/urlState'
 import { formatDayLong, formatDayMonth, formatMonth, type IsoDate } from '../time/days'
 import panel from './panel.module.css'
@@ -27,6 +28,8 @@ import styles from './SeasonsPanel.module.css'
 
 interface Props {
   species: SpeciesOrCombined
+  /** The region on the map: the whole-region area is called by its name. */
+  region: Pick<RegionDefinition, 'name' | 'whole'>
   comuni: Comune[] | undefined
   comune: string | null
   onComune: (comune: string | null) => void
@@ -58,6 +61,7 @@ function yearsLabel(years: number[]): string {
 
 export function SeasonsPanel({
   species,
+  region,
   comuni,
   comune,
   onComune,
@@ -89,7 +93,7 @@ export function SeasonsPanel({
     Math.max(1, ...rows.flatMap((s) => [s.good_days, s.good_days_typical ?? 0])) * 1.04
   const chosen = rows.find((s) => s.year === selected)
   const areaName =
-    !seasons || seasons.area.kind === 'region' ? t('app.region') : seasons.area.name
+    !seasons || seasons.area.kind === 'region' ? region.name[language] : seasons.area.name
   const threshold = seasons
     ? new Intl.NumberFormat(locale, { minimumFractionDigits: 1 }).format(
         seasons.good_score,
@@ -110,7 +114,12 @@ export function SeasonsPanel({
         </p>
       </header>
 
-      <AreaPicker comuni={comuni} value={comune} onChange={onComune} />
+      <AreaPicker
+        wholeRegion={region.whole[language]}
+        comuni={comuni}
+        value={comune}
+        onChange={onComune}
+      />
       {zone && <PlausibleSpecies plausible={zone} />}
 
       {isLoading && <p className={panel.status}>{t('seasons.loading')}</p>}

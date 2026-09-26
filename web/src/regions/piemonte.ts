@@ -9,6 +9,7 @@ import type { RegionDefinition } from './types.js'
 export const piemonte: RegionDefinition = {
   slug: 'piemonte',
   name: { it: 'Piemonte', en: 'Piedmont' },
+  whole: { it: 'Tutto il Piemonte', en: 'All of Piedmont' },
   bounds: [
     [6.62, 44.06],
     [9.22, 46.47],

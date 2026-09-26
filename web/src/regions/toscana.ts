@@ -5,6 +5,7 @@ import type { RegionDefinition } from './types.js'
 export const toscana: RegionDefinition = {
   slug: 'toscana',
   name: { it: 'Toscana', en: 'Tuscany' },
+  whole: { it: 'Tutta la Toscana', en: 'All of Tuscany' },
   bounds: [
     [9.68, 42.23],
     [12.38, 44.48],

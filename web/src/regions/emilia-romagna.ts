@@ -8,6 +8,7 @@ import type { RegionDefinition } from './types.js'
 export const emiliaRomagna: RegionDefinition = {
   slug: 'emilia-romagna',
   name: { it: 'Emilia-Romagna', en: 'Emilia-Romagna' },
+  whole: { it: "Tutta l'Emilia-Romagna", en: 'All of Emilia-Romagna' },
   bounds: [
     [9.19, 43.73],
     [12.76, 45.14],

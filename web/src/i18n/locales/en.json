@@ -1,7 +1,6 @@
 {
   "app": {
-    "name": "Mappa Funghi",
-    "region": "Tuscany"
+    "name": "Mappa Funghi"
   },
   "language": {
     "label": "Language",
@@ -402,7 +401,7 @@
     "sections": {
       "service": {
         "title": "The service",
-        "body": "Mappa Funghi estimates, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in Tuscany. The service is provided free of charge, as is, and can change or stop at any time without notice."
+        "body": "Mappa Funghi estimates, cell by cell, how much the weather, woodland and terrain favour porcini, ovoli and gallinacci fruiting in the Italian regions we cover. The service is provided free of charge, as is, and can change or stop at any time without notice."
       },
       "scoreNature": {
         "title": "The conditions score is not a guarantee",
@@ -487,7 +486,7 @@
   "seo": {
     "credits": {
       "title": "Data and credits | Mappa Funghi",
-      "description": "The public data sources and open-source software Mappa Funghi uses to estimate mushroom conditions in Tuscany."
+      "description": "The public data sources and open-source software Mappa Funghi uses to estimate mushroom conditions in the Italian regions we cover."
     },
     "terms": {
       "title": "Terms and conditions | Mappa Funghi",
@@ -568,7 +567,6 @@
   },
   "area": {
     "label": "Area",
-    "region": "All of Tuscany",
     "comune": "{{name}} ({{province}})"
   },
   "plausible": {

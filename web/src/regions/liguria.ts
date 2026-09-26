@@ -9,6 +9,7 @@ import type { RegionDefinition } from './types.js'
 export const liguria: RegionDefinition = {
   slug: 'liguria',
   name: { it: 'Liguria', en: 'Liguria' },
+  whole: { it: 'Tutta la Liguria', en: 'All of Liguria' },
   bounds: [
     [7.49, 43.77],
     [10.08, 44.68],

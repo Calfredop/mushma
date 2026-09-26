@@ -795,6 +795,7 @@ function MapScreen() {
                   {app.view === 'seasons' && (
                     <SeasonsPanel
                       species={app.species}
+                      region={app.region}
                       comuni={comuni.data?.comuni}
                       comune={app.comune}
                       onComune={chooseComune}
@@ -814,6 +815,7 @@ function MapScreen() {
                   {app.view === 'outlook' && (
                     <OutlookPanel
                       species={app.species}
+                      region={app.region}
                       onSpecies={handleSpeciesChange}
                       comuni={comuni.data?.comuni}
                       comune={app.comune}

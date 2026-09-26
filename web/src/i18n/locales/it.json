@@ -1,7 +1,6 @@
 {
   "app": {
-    "name": "Mappa Funghi",
-    "region": "Toscana"
+    "name": "Mappa Funghi"
   },
   "language": {
     "label": "Lingua",
@@ -402,7 +401,7 @@
     "sections": {
       "service": {
         "title": "Il servizio",
-        "body": "Mappa Funghi stima, cella per cella, quanto il meteo, il bosco e il terreno favoriscono la crescita di porcini, ovoli e gallinacci in Toscana. Il servizio è offerto gratuitamente, così com'è, e può cambiare o interrompersi in qualsiasi momento senza preavviso."
+        "body": "Mappa Funghi stima, cella per cella, quanto il meteo, il bosco e il terreno favoriscono la crescita di porcini, ovoli e gallinacci nelle regioni italiane coperte. Il servizio è offerto gratuitamente, così com'è, e può cambiare o interrompersi in qualsiasi momento senza preavviso."
       },
       "scoreNature": {
         "title": "L'indice delle condizioni non è una garanzia",
@@ -487,7 +486,7 @@
   "seo": {
     "credits": {
       "title": "Dati e crediti | Mappa Funghi",
-      "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi in Toscana."
+      "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi nelle regioni italiane coperte."
     },
     "terms": {
       "title": "Termini e condizioni | Mappa Funghi",
@@ -568,7 +567,6 @@
   },
   "area": {
     "label": "Zona",
-    "region": "Tutta la Toscana",
     "comune": "{{name}} ({{province}})"
   },
   "plausible": {

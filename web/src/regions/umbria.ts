@@ -8,6 +8,7 @@ import type { RegionDefinition } from './types.js'
 export const umbria: RegionDefinition = {
   slug: 'umbria',
   name: { it: 'Umbria', en: 'Umbria' },
+  whole: { it: "Tutta l'Umbria", en: 'All of Umbria' },
   bounds: [
     [11.89, 42.36],
     [13.27, 43.62],
