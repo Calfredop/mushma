@@ -8,8 +8,8 @@
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
 with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
-the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna: ``GAUGE_NETWORKS``). Results land
-in ``$DATA_DIR/weather/<region>/checks/``.
+the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Lombardia for Lombardia:
+``GAUGE_NETWORKS``). Results land in ``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
@@ -26,7 +26,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpal, umbria_sir
+from api.weather import arpa_lombardia, arpal, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -291,11 +291,34 @@ def umbria_sir_network(raw: Path, start: date, end: date) -> GaugeNetwork:
     )
 
 
+def arpa_lombardia_network(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """ARPA Lombardia: CC0 open data summed into days server side, one CSV per year, CET
+    calendar days (api.weather.arpa_lombardia)."""
+    folder = raw / "arpa_lombardia"
+    stations = arpa_lombardia.parse_stations(
+        fetch(arpa_lombardia.STATIONS_URL, folder / "stations.csv").read_text()
+    )
+    daily = pd.concat(
+        [
+            arpa_lombardia.parse_daily(
+                fetch(arpa_lombardia.daily_url(year), folder / f"daily_{year}.csv").read_text()
+            )
+            for year in range(start.year, end.year + 1)
+        ],
+        ignore_index=True,
+    )
+    daily = arpa_lombardia.complete_days(daily)
+    by_code = {code: arpa_lombardia.series_of(daily, code) for code in daily["code"].unique()}
+    gauges = stations[stations["code"].isin(by_code)].reset_index(drop=True)
+    return GaugeNetwork(gauges, lambda gauge: by_code[gauge.code], calendar_days)
+
+
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
     "umbria": umbria_sir_network,
     "emilia_romagna": arpae_emilia_romagna,
+    "lombardia": arpa_lombardia_network,
 }
 
 
