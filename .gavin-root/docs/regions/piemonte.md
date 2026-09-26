@@ -183,7 +183,14 @@ allows (see Data); CDS snowfall, if the queued Italy-wide requests ever finish, 
 
 ## Data
 
-(written by `api.regions.onboard piemonte`)
+- cells: 26148
+- woodland cells: 9537
+- INFC deviation: +6.7% (grid 949,734 ha vs 890,433 ha) — within ±10 %
+- weather nodes: 125
+- years stored: 2016–2026 (11 years)
+- sightings kept: 104
+- backtest AUC (auc_local, model, all): gallinacci 0.519, ovoli 0.558, porcini 0.558
+- sanity contrasts: 9/14 passed
 
 ## Validation
 
@@ -231,3 +238,91 @@ sides.
   everywhere but makes 30 mm events a fifth too rare. The totals fit ships. Correcting the drizzle
   itself (a wet-day threshold or quantile mapping per region, from every region's open gauges) is a
   cross-region follow-up, like the calibration step at the Tuscan–Umbrian border.
+
+### Backtest (priors: rules version `4c220f432f29`)
+
+Run 2026-09-26 on the stores above: the onboard's hold-out run (`backtest/piemonte/onboard/`) and
+the train seasons (`--seasons train --label onboard-train`). Scores cover 9,537 cells × 3,845 days
+(2016-03-18 to 2026-09-26), none without weather.
+
+**Usable presences (unique, unobscured group-cell-day sightings on woodland cells) in the train
+seasons 2016–2023: 53** (porcini 37, gallinacci 9, ovoli 7; none in 2016–2017), just over the 50 the
+card asks before tuning, so the pre-registered tuning ran (Tuning, below). The hold-out 2024–2025
+holds 27 (porcini 15, gallinacci 9, ovoli 3).
+
+| group | split | n | `auc_local` model | habitat | `auc_time_effort` model | calendar | `auc_region` model | habitat |
+|---|---|---|---|---|---|---|---|---|
+| porcini | train | 37 | 0.523 (0.46–0.59) | 0.529 | 0.459 (0.39–0.53) | 0.481 | 0.695 | 0.533 |
+| ovoli | train | 7 | 0.753 (0.63–0.86) | 0.633 | 0.769 (0.67–0.86) | 0.605 | 0.950 | 0.720 |
+| gallinacci | train | 9 | 0.564 (0.42–0.70) | 0.567 | 0.551 (0.44–0.66) | 0.514 | 0.836 | 0.542 |
+| porcini | hold-out | 15 | 0.558 (0.48–0.64) | 0.561 | 0.543 (0.45–0.64) | 0.514 | 0.795 | 0.533 |
+| ovoli | hold-out | 3 | 0.558 (0.34–0.77) | 0.645 | 0.272 (0.20–0.34) | 0.442 | 0.888 | 0.720 |
+| gallinacci | hold-out | 9 | 0.519 (0.37–0.66) | 0.540 | 0.498 (0.36–0.63) | 0.564 | 0.801 | 0.542 |
+
+- **Where, region-wide:** the model ranks the finders' cells well against the whole region
+  (`auc_region` 0.70–0.95), well above habitat alone (0.53–0.72): the altitude bands and season
+  windows put the Piedmontese sightings in the right belts.
+- **Where, locally, and when:** within 20 km on the day (`auc_local`) and across the season at the
+  finder's cell (`auc_time_effort`) the model is at habitat or calendar level for porcini and
+  gallinacci, as in Tuscany and Liguria. Ovoli's train figures are the best of any group so far but
+  rest on 7 presences, and its 3 hold-out presences go the other way on timing.
+- Combined-score winners over the hold-out cell-days that have one: gallinacci 51 %, porcini 39 %,
+  ovoli 10 %; 46 % of cell-days have no group in season (the Alpine winter is long).
+
+### Press contrasts (`sanity.yaml`, porcini, `backtest/piemonte/onboard/sanity_porcini.csv`)
+
+**9 of 14 hold.**
+
+| contrast | higher | lower | holds |
+|---|---|---|---|
+| `biellese_2025_2024` | 0.703 | 0.107 | yes |
+| `valsesia_2022_2021` | 0.553 | 0.467 | yes |
+| `valsesia_ossola_2023_late` | 0.585 | 0.580 | yes (barely) |
+| `alto_piemonte_vs_valsusa_2023` | 0.756 | 0.671 | yes |
+| `torinese_vs_valsesia_ossola_june_2024` | 0.727 | 0.788 | no |
+| `cuneo_valleys_2023_2024_vs_2021` | 0.762 | 0.216 | yes |
+| `cuneo_valleys_spring_2022_2021` | 0.345 | 0.535 | no |
+| `valle_po_2025` | 0.933 | 0.635 | yes |
+| `cuneo_border_july_2024_2025` | 0.520 | 0.203 | yes |
+| `alto_tanaro_vs_marittime_2020` | 0.439 | 0.491 | no |
+| `marittime_vs_langhe_roero_2023` | 0.026 | 0.178 | no |
+| `alessandria_valleys_vs_acquese_2020` | 0.473 | 0.539 | no |
+| `acquese_ovadese_2021` | 0.415 | 0.153 | yes |
+| `marcarolo_vs_cuneese_october_2021` | 0.732 | 0.204 | yes |
+
+- The good and bad years hold, often by wide margins (Biellese 2025/2024, Cuneo valleys 2023–24/2021,
+  the 2021 drought in the Acquese and the Cuneese against the October flood near Marcarolo).
+- **Three misses are rain the reanalysis does not resolve** (factor breakdown re-scored in memory):
+  - `marittime_vs_langhe_roero_2023`: on the Alpi Marittime cells (440, median 1,355 m) the 3-day
+    rain trigger is 0 on 78–87 % of cell-days (median 3-day total about 7 mm) and the 30-day rain is
+    41 % of normal; season, habitat, altitude and temperature are open. The "unica doccia utile" was
+    local storms a ~9 km reanalysis misses.
+  - `alessandria_valleys_vs_acquese_2020`: the 241 mm at Fraconalto on 29 August, with 2 mm "a
+    pochissima distanza", is not in the reanalysis: the south-eastern valleys get 76 % of their
+    normal 30-day rain against the upper Acquese's 87 %.
+  - `alto_tanaro_vs_marittime_2020`: both sides get about their normal rain (104 % and 106 %), so the
+    local drought "verso le Alpi Marittime" is not there to score.
+- **One is a gap in the rules:** `torinese_vs_valsesia_ossola_june_2024` claims too much rain held
+  red porcini back in Valsesia and the Ossola (30-day rain 132 % of normal, 3-day totals of about
+  40 mm); no rule lowers a score for excess rain, so the wetter side scores higher.
+- **One the weather cannot show:** `cuneo_valleys_spring_2022_2021` credits the spring 2022 flush to
+  the woods recovering after more than a year of drought; the reanalysis rain of the two springs is
+  alike (81 % and 77 % of normal), and the rules keep no memory of a long drought.
+
+## Known limitations
+
+- **Region finder by bbox.** The web registry finds a region by bbox (`findRegionAt`), and
+  Piemonte's bbox (6.62–9.22° E, 44.06–46.47° N) takes in western Lombardy (Milan, Varese, Pavia),
+  Genoa, the Aosta Valley and parts of Switzerland and France. Until those regions are served, a GPS
+  fix or a search there is offered Piemonte (Genoa goes to Liguria once it is registered before
+  Piemonte). The web test for "a fix outside every region" moved from Milan to Munich for this
+  reason. A boundary-polygon lookup would fix it for every pair of neighbours.
+- **Drizzle.** The reanalysis rains too often and too little when it pours (Validation, rain
+  gauges); a factor cannot fix both.
+- **Convective rain.** Local summer storms that a ~9 km reanalysis misses cost three press contrasts.
+- **Larch.** A pure larch cell gets full *B. edulis* habitat credit, because the habitat factor
+  saturates at a 0.3 affinity share and larch (`other_conifer`) sits at 0.3
+  (`species-ecology/piemonte.md`). If Alpine cells score too high once the season can be watched,
+  larch at 0.1 is the first knob.
+- **Lapse rates.** Minimum temperature cools 1.04 °C/km faster with height than the national rate
+  (Config, Lapse rates), without a measurable downscaling gain from the regional rate.
