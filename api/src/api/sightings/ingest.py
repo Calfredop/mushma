@@ -6,9 +6,10 @@ woodland cells, filter for quality, and store per-cell counts.
     uv run python -m api.sightings.ingest fetch          # GBIF history + recent iNaturalist
     uv run python -m api.sightings.ingest profile        # counts, licenses, town-proximity bias
 
-Raw responses are cached under ``$DATA_DIR/raw/{gbif,inaturalist}/`` (see ``api.sightings.http``);
-delete a taxon's cache directory to re-fetch it. The normalized table lives in
-``$DATA_DIR/sightings/<region>/`` (``api.sightings.store``). Every command is safe to re-run.
+Raw responses are cached under ``$DATA_DIR/raw/{gbif,inaturalist}/<region>/`` (see
+``api.sightings.http``); delete a taxon's cache directory to re-fetch it. The normalized table
+lives in ``$DATA_DIR/sightings/<region>/`` (``api.sightings.store``). Every command is safe to
+re-run.
 """
 
 import argparse
@@ -25,7 +26,7 @@ from api.grid.places import read_istat_localities
 from api.grid.region import load_region
 from api.grid.sources import data_dir, load_sources
 from api.grid.sources import fetch as download
-from api.sightings.config import SightingsConfig, load_sightings_config
+from api.sightings.config import SightingsConfig, inaturalist_place_id, load_sightings_config
 from api.sightings.filters import deduplicate_inaturalist, drop_low_quality, flag_near_localities
 from api.sightings.gbif import (
     OCCURRENCE_COLUMNS,
@@ -132,8 +133,14 @@ def fetch_gbif(
     cache_root: Path,
     fetched_at: datetime,
     log: Log = print,
+    *,
+    cache_scope: str,
 ) -> pd.DataFrame:
-    """GBIF occurrence records for every configured taxon, across Tuscany's bbox."""
+    """GBIF occurrence records for every configured taxon, across a region's bbox.
+
+    Cached under ``gbif/<cache_scope>/<taxon>``: the pages hold one bbox's records, so each region
+    keeps its own (a shared cache would hand a second region the first one's pages).
+    """
     frames = []
     for species in config.species.values():
         for taxon in species.taxa:
@@ -143,7 +150,7 @@ def fetch_gbif(
                 bbox_wgs84=bbox,
                 page_size=config.gbif.page_size,
             )
-            cache_dir = cache_root / "gbif" / str(taxon.gbif_taxon_key)
+            cache_dir = cache_root / "gbif" / cache_scope / str(taxon.gbif_taxon_key)
             pages = fetch_pages(
                 client,
                 lambda offset, t=template: t.at_offset(offset).url(),
@@ -166,10 +173,14 @@ def fetch_inaturalist(
     cache_root: Path,
     fetched_at: datetime,
     log: Log = print,
+    *,
+    place_id: int,
+    cache_scope: str,
 ) -> pd.DataFrame:
-    """The most recent iNaturalist observations for every configured taxon.
+    """The most recent iNaturalist observations in ``place_id`` for every configured taxon.
 
-    Cached under ``<taxon>/<since>``: ``since`` moves forward with every run (``today -
+    Cached under ``<cache_scope>/<taxon>/<since>``, one scope per region because each region asks
+    for its own place. ``since`` moves forward with every run (``today -
     recent_days``), so a cache directory is never reused across two different windows, and a
     same-day re-run that hits an already-complete cache is caught by tomorrow's overlapping
     window instead of re-fetching mid-day.
@@ -180,7 +191,7 @@ def fetch_inaturalist(
             template = ObservationRequest(
                 endpoint=config.inaturalist.endpoint,
                 taxon_id=taxon.inaturalist_taxon_id,
-                place_id=config.inaturalist.place_id,
+                place_id=place_id,
                 since=since,
                 quality_grades=config.inaturalist.quality_grades,
                 page_size=config.inaturalist.page_size,
@@ -193,7 +204,11 @@ def fetch_inaturalist(
                 return t.at_page(offset // size + 1).url()
 
             cache_dir = (
-                cache_root / "inaturalist" / str(taxon.inaturalist_taxon_id) / since.isoformat()
+                cache_root
+                / "inaturalist"
+                / cache_scope
+                / str(taxon.inaturalist_taxon_id)
+                / since.isoformat()
             )
             pages = fetch_pages(
                 client, url_for_offset, cache_dir, page_size, inaturalist_is_last_page
@@ -233,9 +248,20 @@ def run_fetch(
     fetched_at = datetime.now(UTC)
     cache_root = root / "raw"
 
-    gbif_raw = fetch_gbif(client, config, region.bbox_wgs84, cache_root, fetched_at, log)
+    gbif_raw = fetch_gbif(
+        client, config, region.bbox_wgs84, cache_root, fetched_at, log, cache_scope=region.id
+    )
     since = today - timedelta(days=config.inaturalist.recent_days)
-    inaturalist_raw = fetch_inaturalist(client, config, since, cache_root, fetched_at, log)
+    inaturalist_raw = fetch_inaturalist(
+        client,
+        config,
+        since,
+        cache_root,
+        fetched_at,
+        log,
+        place_id=inaturalist_place_id(region, config),
+        cache_scope=region.id,
+    )
 
     gbif_rows = normalize_gbif(gbif_raw, config)
     inaturalist_rows = normalize_inaturalist(inaturalist_raw, config)

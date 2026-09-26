@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from api.weather.arpal import utc_day_totals
 from api.weather.checks import compare_gauge, lapse_regression, leave_out_errors
 from api.weather.points import point_id
 from api.weather.sir import gauge_day_totals
@@ -68,3 +69,48 @@ def test_compare_gauge_measures_bias_and_agreement_on_gauge_days() -> None:
     assert metrics["ratio"] == pytest.approx(0.8)
     assert metrics["daily_corr"] == pytest.approx(1.0)
     assert metrics["wet3_hit_rate"] <= 1.0
+
+
+def test_compare_gauge_takes_the_gauge_network_day_cut() -> None:
+    days = pd.date_range("2025-01-01", periods=60).date
+    rng = np.random.default_rng(5)
+    calendar = pd.Series(rng.gamma(0.4, 12, len(days)), index=days)
+    gauge = utc_day_totals(calendar)
+
+    metrics = compare_gauge(0.5 * calendar, gauge, day_totals=utc_day_totals)
+
+    assert metrics["days"] == 59
+    assert metrics["ratio"] == pytest.approx(0.5)
+    assert metrics["daily_corr"] == pytest.approx(1.0)
+
+
+def test_umbria_reads_the_servizio_idrografico_network(tmp_path) -> None:
+    import zipfile
+    from datetime import date
+
+    from api.weather.checks import GAUGE_NETWORKS
+
+    header = (
+        '"ID_SENSORE_DETTAGLIO","ID_TIPOLOGIA_SENSORE","STRUMENTO","TIPO_STRUMENTO",'
+        '"UNITA_MISURA","ID_STAZIONE","NOME_STAZIONE","COMUNE","LATITUDINE","LONGITUDINE",'
+        '"ANNO","MESE","GIORNO","CUMDAY"\n'
+    )
+    rows = "".join(
+        f'1,"20207","Pluviometro","Pluviometro","mm",485400,"Castelluccio di Norcia","NORCIA",'
+        f"42.829,13.214,2025,1,{day},{day / 10}\n"
+        for day in range(1, 11)
+    )
+    folder = tmp_path / "umbria_sir"
+    folder.mkdir()
+    with zipfile.ZipFile(folder / "storico_giornalieri.zip", "w") as archive:
+        archive.writestr("rilevazioni.csv", header + rows)
+
+    network = GAUGE_NETWORKS["umbria"](tmp_path, date(2025, 1, 1), date(2025, 1, 10))
+
+    assert network.gauges["code"].tolist() == ["485400"]
+    assert {"lat", "lon", "name"} <= set(network.gauges.columns)
+    gauge = next(network.gauges.itertuples())
+    series = network.series(gauge)
+    assert series[date(2025, 1, 3)] == pytest.approx(0.3)
+    days = pd.Series([1.0, 2.0], index=[date(2025, 1, 1), date(2025, 1, 2)])
+    assert network.day_totals(days).tolist() == pytest.approx([1.0, 2.0])

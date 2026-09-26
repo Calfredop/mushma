@@ -1,5 +1,4 @@
-# Umbria: CLC IV level alone (no regional forest map configured yet).
-# Groups come from CLC prefixes; types use the shared CLC IV defaults.
+# Umbria (region-umbria card). Source ids resolve in ../sources.yaml.
 id: umbria
 name: {it: Umbria, en: Umbria}
 timezone: Europe/Rome
@@ -15,11 +14,35 @@ boundary:
   source: istat_boundaries
   region_code: 10
 
-# No forest.groups: the build derives broadleaf/conifer/mixed/macchia/transitional from CLC IV
-# codes (311x, 312x, 313x, 3231/3232, 324x). Types use the shared CLC IV defaults.
+# Woodland: ISPRA CLC 2018 IV level alone. No Umbrian forest or land-use map has an open licence
+# (UmbriaGeo data need written authorization to publish; CFI2020 and Carta della Natura are on
+# request), so there is no forest.groups: the build derives broadleaf/conifer/mixed/macchia/
+# transitional from CLC IV codes (311x, 312x, 313x, 3231/3232, 324x), and types use the shared CLC
+# IV defaults. Forest area is -20 % vs INFC 2015: .gavin-root/docs/regions/umbria.md, Sources.
 forest:
   types:
     source: ispra_clc18_iv
 
 soil:
   source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Umbria, IT", admin level
+# 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 10875
+
+# Rain scale fitted to Umbrian gauges (the gauge check asked for it: .gavin-root/docs/regions/umbria.md,
+# Validation). Umbria's history is ERA5-Land from the CDS, which the national block does not scale,
+# so both reanalysis sources are listed.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.89
+    per_km: 0.33
+    source: [mushma_umbria_gauge_check_2026]
+    notes: >-
+      Least squares through the origin of gauge totals on model totals x (a + b x elevation) over the
+      8 Regione Umbria Servizio Idrografico gauges in woodland cells with 2019-2025 data (402-1,053 m)
+      gave a = 0.892, b = 0.326 per km, moving the pooled model/gauge ratio from 0.88 to 1.00. The
+      national 1.28 + 0.29 per km (Tuscan gauges, 2025) would make Umbrian rain 32 % too wet. With
+      so few gauges the slope is loosely held (2025 alone: 0.92 + 0.41 per km); the intercept agrees.

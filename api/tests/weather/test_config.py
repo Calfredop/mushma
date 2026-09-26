@@ -81,3 +81,23 @@ def test_an_unknown_downscaling_method_is_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="kriging"):
         load_weather_config(path)
+
+
+def test_cds_history_comes_from_the_time_series_product() -> None:
+    from api.weather.config import load_weather_config
+
+    assert load_weather_config().cds.method == "timeseries"
+
+
+def test_cds_method_must_be_a_known_one(tmp_path) -> None:
+    import yaml
+
+    from api.weather.config import WEATHER_FILE, load_weather_config
+
+    raw = yaml.safe_load(WEATHER_FILE.read_text())
+    raw["cds"]["method"] = "carrier_pigeon"
+    path = tmp_path / "weather.yaml"
+    path.write_text(yaml.safe_dump(raw))
+
+    with pytest.raises(ValueError, match="cds.method"):
+        load_weather_config(path)

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -301,3 +301,43 @@ def test_tuscany_dry_run_skips_everything_when_data_is_present(
     modules = [c[2] for c in calls]
     assert "api.grid.build" not in modules
     assert not any("cds" in c for c in calls)
+
+
+def test_cds_step_stops_where_the_reanalysis_has_settled(tmp_path: Path) -> None:
+    """ERA5-Land runs days behind: the CDS step ends where the ingest's own default does, and the
+    Open-Meteo update step fills the days after."""
+    from api.weather.ingest import SETTLE_DAYS
+
+    today = date(2026, 9, 25)
+    specs = onboard.step_specs("tuscany", onboard.YearsRange(2016, 2026), today, tmp_path)
+
+    args = specs["cds"].args_lists[0]
+    end = date.fromisoformat(args[args.index("--end") + 1])
+    assert end == today - timedelta(days=SETTLE_DAYS + 1)
+    assert args[args.index("--start") + 1] == "2016-01-01"
+
+
+def test_cds_step_keeps_a_past_years_end() -> None:
+    today = date(2026, 9, 25)
+    specs = onboard.step_specs("tuscany", onboard.YearsRange(2016, 2024), today, Path("/nowhere"))
+
+    args = specs["cds"].args_lists[0]
+    assert args[args.index("--end") + 1] == "2024-12-31"
+
+
+def test_update_is_not_skipped_because_cds_wrote_this_year(tmp_path: Path) -> None:
+    """The CDS backfill writes this year's partition too; only the forecast source means the
+    Open-Meteo update (recent days and the +7-day forecast) has run."""
+    today = date(2026, 9, 25)
+    daily = tmp_path / "weather" / "liguria" / "daily"
+    cds = daily / "source=era5_land_cds" / "year=2026"
+    cds.mkdir(parents=True)
+    (cds / "data.parquet").write_bytes(b"")
+
+    assert not onboard.update_ready(tmp_path, "liguria", today)
+
+    forecast = daily / "source=ecmwf_ifs" / "year=2026"
+    forecast.mkdir(parents=True)
+    (forecast / "data.parquet").write_bytes(b"")
+
+    assert onboard.update_ready(tmp_path, "liguria", today)

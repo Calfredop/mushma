@@ -1,0 +1,324 @@
+# Press-contrast sanity check for Umbria (api.model.sanity).
+# Areas by comuni or provinces; windows and source URLs written down before any area
+# score was looked at (2026-09-25, before Umbria had any scores). `seasons: normal` expands to
+# `normal_seasons`. Quotes, dates and caveats per contrast: .gavin-root/docs/species-ecology/umbria.md
+# (Press contrasts). marche_border_2021 and umbria_2021_early_september share one article.
+areas:
+  umbria:
+    provinces:
+    - '*'
+  valnerina:
+    comuni:
+    - Arrone
+    - Cascia
+    - Cerreto di Spoleto
+    - Ferentillo
+    - Montefranco
+    - Monteleone di Spoleto
+    - Norcia
+    - Poggiodomo
+    - Polino
+    - Preci
+    - Sant'Anatolia di Narco
+    - Scheggino
+    - Vallo di Nera
+  umbria_outside_valnerina:
+    provinces:
+    - '*'
+    excluding:
+    - Arrone
+    - Cascia
+    - Cerreto di Spoleto
+    - Ferentillo
+    - Montefranco
+    - Monteleone di Spoleto
+    - Norcia
+    - Poggiodomo
+    - Polino
+    - Preci
+    - Sant'Anatolia di Narco
+    - Scheggino
+    - Vallo di Nera
+  alta_valnerina:
+    comuni:
+    - Cascia
+    - Cerreto di Spoleto
+    - Monteleone di Spoleto
+    - Norcia
+    - Poggiodomo
+    - Preci
+    - Vallo di Nera
+  umbria_marche_apennine:
+    comuni:
+    - San Giustino
+    - Pietralunga
+    - Gubbio
+    - Scheggia e Pascelupo
+    - Costacciaro
+    - Sigillo
+    - Fossato di Vico
+    - Gualdo Tadino
+    - Nocera Umbra
+    - Foligno
+    - Sellano
+  umbria_inland:
+    provinces:
+    - '*'
+    excluding:
+    - San Giustino
+    - Pietralunga
+    - Gubbio
+    - Scheggia e Pascelupo
+    - Costacciaro
+    - Sigillo
+    - Fossato di Vico
+    - Gualdo Tadino
+    - Nocera Umbra
+    - Foligno
+    - Sellano
+    - Cascia
+    - Cerreto di Spoleto
+    - Monteleone di Spoleto
+    - Norcia
+    - Poggiodomo
+    - Preci
+    - Vallo di Nera
+  orvieto_border:
+    comuni:
+    - Allerona
+    - Castel Giorgio
+    - Castel Viscardo
+    - Città della Pieve
+    - Fabro
+    - Monteleone d'Orvieto
+    - Orvieto
+  orvietano:
+    comuni:
+    - Allerona
+    - Baschi
+    - Castel Giorgio
+    - Castel Viscardo
+    - Fabro
+    - Ficulle
+    - Montecchio
+    - Montegabbione
+    - Monteleone d'Orvieto
+    - Orvieto
+    - Parrano
+    - Porano
+    - San Venanzo
+  alta_valle_tevere:
+    comuni:
+    - Citerna
+    - Città di Castello
+    - Lisciano Niccone
+    - Monte Santa Maria Tiberina
+    - Montone
+    - Pietralunga
+    - San Giustino
+    - Umbertide
+  acquasparta_sellano:
+    comuni:
+    - Acquasparta
+    - Sellano
+  umbria_outside_acquasparta_sellano:
+    provinces:
+    - '*'
+    excluding:
+    - Acquasparta
+    - Sellano
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: valnerina_2023
+  claim: '2023: good porcini in Valnerina from late August to early September, ''dove le piogge sono
+    state più copiose''; the rest of Umbria was still ''aspettando i porcini'''
+  source: https://www.umbria24.it/umbria/funghi-aspettando-i-porcini-e-il-momento-degli-ovoli-buonissime-previsioni-per-il-tartufo-bianco/
+  higher:
+    area: valnerina
+    seasons:
+    - 2023
+    start: 08-25
+    end: 09-10
+  lower:
+    area: umbria_outside_valnerina
+    seasons:
+    - 2023
+    start: 08-25
+    end: 09-10
+- id: alta_valnerina_october_2023
+  claim: 'Early October 2023: ''in Umbria non si sta raccogliendo più quasi nulla'' outside the Apennine
+    border sectors; still ''qualche discreta nascita'' along the Nera and the upper Corno'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: alta_valnerina
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+  lower:
+    area: umbria_inland
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+- id: orvietano_2023
+  claim: 'Orvietano 2023: ''una stagione micologica non particolarmente generosa'' as of late November'
+  source: https://www.orvietonews.it/cronaca/2023/11/23/porcino-record-da-oltre-un-chilo-nei-boschi-dell-orvietano-105681.html
+  higher:
+    area: orvietano
+    seasons: normal
+    start: 09-15
+    end: 11-20
+  lower:
+    area: orvietano
+    seasons:
+    - 2023
+    start: 09-15
+    end: 11-20
+- id: umbria_2022_summer
+  claim: 'Summer 2022: porcini ''a macchia di leopardo'' until mid-June, ''poi la siccità ha bloccato
+    tutto''; by early September Umbria was ''in ritardo'' on other regions'
+  source: https://www.umbria24.it/gusto24/umbria-regione-con-piu-boschi-in-italia-raddoppiati-dagli-anni-50-attesa-per-il-porcino-autunnale/
+  higher:
+    area: umbria
+    seasons: normal
+    start: 06-20
+    end: 09-04
+  lower:
+    area: umbria
+    seasons:
+    - 2022
+    start: 06-20
+    end: 09-04
+- id: umbria_2022_autumn
+  claim: 'September to early October 2022: ''per porcini e ovoli è una stagione eccezionale'', baskets
+    full within hours over the past month'
+  source: https://www.umbria24.it/attualita/porcini-e-ovuli-lesperto-stagione-eccezionale-regole-da-rispettare/
+  higher:
+    area: umbria
+    seasons:
+    - 2022
+    start: 09-10
+    end: 10-03
+  lower:
+    area: umbria
+    seasons: normal
+    start: 09-10
+    end: 10-03
+- id: marche_border_2021
+  claim: 'Early September 2021, after late-August storms: ''meglio al confine tra Marche ed Umbria, meno
+    bene al confine tra Umbria-Toscana-Lazio'''
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-10-09-2021-tanti-funghi-porcini/
+  higher:
+    area: umbria_marche_apennine
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-10
+  lower:
+    area: orvieto_border
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-10
+- id: umbria_2021_early_september
+  claim: 'Early September 2021: ''tra Marche ed Umbria situazione difficile''; the Perugia storm ''non
+    ha sortito alcuna nascita di funghi'''
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-10-09-2021-tanti-funghi-porcini/
+  higher:
+    area: umbria
+    seasons: normal
+    start: 08-28
+    end: 09-10
+  lower:
+    area: umbria
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-10
+- id: apennine_august_2019
+  claim: 'Mid-August 2019: ''Appennino umbro marchigiano in pole'' with ''buone nascite''; the rest of
+    central Italy had ''nascite sporadiche'''
+  source: https://funghimagazine.it/buone-nascite-di-funghi-porcini-vediamo-dove-le-piogge-caduta-in-italia/
+  higher:
+    area: umbria_marche_apennine
+    seasons:
+    - 2019
+    start: 08-05
+    end: 08-16
+  lower:
+    area: umbria_inland
+    seasons:
+    - 2019
+    start: 08-05
+    end: 08-16
+- id: umbria_2024_autumn
+  claim: 'Late September to early October 2024: ''ancora festa grande'' in Umbria, ''nascite di Porcini
+    senza sosta'''
+  source: https://funghimagazine.it/aggiornamento-nascite-funghi-27-09-2024/
+  higher:
+    area: umbria
+    seasons:
+    - 2024
+    start: 09-20
+    end: 10-06
+  lower:
+    area: umbria
+    seasons: normal
+    start: 09-20
+    end: 10-06
+- id: alta_valle_tevere_2024
+  claim: 'October 2024: ''raccolte da record'' in quantity and quality ''in tutto il territorio dell''Alta
+    Valle del Tevere'''
+  source: https://corrierediarezzo.it/news/valtiberina/310388/fungo-porcino-da-record-quasi-un-chilo-e-200-grammi-l-ha-trovato-la-signora-luisella-e-destinato-a-finire-fritto.html
+  higher:
+    area: alta_valle_tevere
+    seasons:
+    - 2024
+    start: 10-01
+    end: 10-29
+  lower:
+    area: alta_valle_tevere
+    seasons: normal
+    start: 10-01
+    end: 10-29
+- id: umbria_2025_early
+  claim: '2025: the porcini season started in late August, ''raccolti sopra la media'', ''abbastanza
+    uniforme in tutta la regione'''
+  source: https://www.umbria24.it/gusto24/funghi-porcini-stagione-da-record-in-umbria-per-la-raccolta/
+  higher:
+    area: umbria
+    seasons:
+    - 2025
+    start: 08-25
+    end: 09-25
+  lower:
+    area: umbria
+    seasons: normal
+    start: 08-25
+    end: 09-25
+- id: acquasparta_sellano_2025
+  claim: 'Early September 2025: ''raccolte record'' around Acquasparta and Sellano, ''per ora a macchia
+    di leopardo''; rain had not fallen evenly across the region'
+  source: https://corrieredellumbria.it/news/attualita/386482/raccolta-funghi-e-stagione-da-record-cestini-pieni-di-porcini-e-ovuli-ma-gia-tre-intossicati.html
+  higher:
+    area: acquasparta_sellano
+    seasons:
+    - 2025
+    start: 09-01
+    end: 09-13
+  lower:
+    area: umbria_outside_acquasparta_sellano
+    seasons:
+    - 2025
+    start: 09-01
+    end: 09-13

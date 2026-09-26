@@ -37,6 +37,7 @@ import duckdb
 import numpy as np
 import pandas as pd
 
+from api.grid.region import load_region
 from api.grid.sources import data_dir
 from api.model import metrics
 from api.model.arrays import Cells, Weather
@@ -52,7 +53,7 @@ from api.model.engine import (
 from api.model.inputs import load_cells, load_normals, load_weather
 from api.model.pipeline import rules_version
 from api.model.rules import RuleSet, load_rules
-from api.sightings.config import load_sightings_config
+from api.sightings.config import inaturalist_place_id, load_sightings_config
 from api.sightings.http import JsonClient
 from api.sightings.store import SightingsStore
 from api.weather.config import load_weather_config
@@ -326,7 +327,7 @@ def prepare(
             con, weather_store, chunk, weights, start, end, weather_config, model_config, normals
         )
 
-    place_id = load_sightings_config().inaturalist.place_id
+    place_id = inaturalist_place_id(load_region(region), load_sightings_config())
     effort = daily_effort(
         JsonClient(), place_id, sorted(seasons), raw_dir / "inaturalist" / "effort"
     )

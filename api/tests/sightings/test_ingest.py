@@ -247,12 +247,44 @@ def test_fetch_gbif_pages_every_taxon_and_caches_under_its_own_key(tmp_path: Pat
     )
 
     rows = fetch_gbif(
-        client, CONFIG, bbox=(9.68, 42.23, 12.38, 44.48), cache_root=tmp_path, fetched_at=FETCHED
+        client,
+        CONFIG,
+        bbox=(9.68, 42.23, 12.38, 44.48),
+        cache_root=tmp_path,
+        fetched_at=FETCHED,
+        cache_scope="tuscany",
     )
 
     total_taxa = sum(len(s.taxa) for s in CONFIG.species.values())
     assert len(rows) == total_taxa
-    assert (tmp_path / "gbif" / "5954958" / ".complete").exists()
+    assert (tmp_path / "gbif" / "tuscany" / "5954958" / ".complete").exists()
+
+
+def test_fetch_gbif_never_reuses_another_regions_pages(tmp_path: Path) -> None:
+    """The cache is per region: a second region's bbox is fetched, not read from the first's."""
+    payload = {"results": [], "endOfRecords": True}
+    client = FakeClient({"taxonKey=": payload})
+
+    fetch_gbif(
+        client,
+        CONFIG,
+        bbox=(9.68, 42.23, 12.38, 44.48),
+        cache_root=tmp_path,
+        fetched_at=FETCHED,
+        cache_scope="tuscany",
+    )
+    first = len(client.urls)
+    fetch_gbif(
+        client,
+        CONFIG,
+        bbox=(11.89, 42.36, 13.27, 43.62),
+        cache_root=tmp_path,
+        fetched_at=FETCHED,
+        cache_scope="umbria",
+    )
+
+    assert len(client.urls) == 2 * first
+    assert all("11.89" in url for url in client.urls[first:])
 
 
 def test_fetch_inaturalist_pages_every_taxon(tmp_path: Path) -> None:
@@ -280,11 +312,19 @@ def test_fetch_inaturalist_pages_every_taxon(tmp_path: Path) -> None:
     )
 
     rows = fetch_inaturalist(
-        client, CONFIG, since=date(2026, 9, 1), cache_root=tmp_path, fetched_at=FETCHED
+        client,
+        CONFIG,
+        since=date(2026, 9, 1),
+        cache_root=tmp_path,
+        fetched_at=FETCHED,
+        place_id=10875,
+        cache_scope="umbria",
     )
 
     total_taxa = sum(len(s.taxa) for s in CONFIG.species.values())
     assert len(rows) == total_taxa
+    assert all("place_id=10875" in url for url in client.urls)
+    assert (tmp_path / "inaturalist" / "umbria" / "48701" / "2026-09-01" / ".complete").exists()
 
 
 # --- profile ------------------------------------------------------------------------------------

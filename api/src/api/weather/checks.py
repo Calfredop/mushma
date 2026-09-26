@@ -7,12 +7,15 @@
 ``lattice`` re-fetches (from the cache, when present) three 14-day windows of 2024 for every 0.1°
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
-with the SIR Toscana gauges inside them. Results land in ``$DATA_DIR/weather/<region>/checks/``.
+with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
+the Servizio Idrografico for Umbria: ``GAUGE_NETWORKS``). Results land in
+``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
 import json
-from dataclasses import replace
+from collections.abc import Callable
+from dataclasses import dataclass, replace
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -23,6 +26,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
+from api.weather import arpal, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -105,9 +109,14 @@ def leave_out_errors(
     return pd.DataFrame.from_dict(rows, orient="index")
 
 
-def compare_gauge(model_calendar: pd.Series, gauge: pd.Series) -> dict:
-    """Downscaled calendar-day rain against a gauge's 09:00-09:00 days."""
-    model = gauge_day_totals(model_calendar)
+def compare_gauge(
+    model_calendar: pd.Series,
+    gauge: pd.Series,
+    day_totals: Callable[[pd.Series], pd.Series] = gauge_day_totals,
+) -> dict:
+    """Downscaled calendar-day rain against a gauge's days, re-cut by ``day_totals`` (SIR
+    Toscana's 09:00-09:00 days by default)."""
+    model = day_totals(model_calendar)
     days = model.index.intersection(gauge.index)
     model, gauge = model[days], gauge[days]
     full = pd.Index(
@@ -199,14 +208,90 @@ def run_lattice(region_id: str) -> None:
     errors.to_csv(out / "lattice_errors.csv", index=False)
 
 
-def run_gauges(region_id: str, start: date, end: date) -> None:
-    region = load_region(region_id)
-    grid_dir, store, raw = region_paths(region.id)
-    config = load_weather_config()
+@dataclass(frozen=True)
+class GaugeNetwork:
+    """A region's rain gauges: one row per gauge (``code``, ``name``, ``elevation_m``, ``lon``,
+    ``lat``), each gauge's daily rain, and how the network cuts its days."""
+
+    gauges: pd.DataFrame
+    series: Callable[[object], pd.Series]
+    day_totals: Callable[[pd.Series], pd.Series]
+
+
+def sir_toscana(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """SIR Toscana: open JSON per station, 09:00-09:00 days."""
     sir = raw / "sir_toscana"
     stations = json.loads(fetch(STATIONS_URL, sir / "stations.json").read_text())
     years = {str(y) for y in range(start.year, end.year + 1)}
-    gauges = parse_stations(stations, years)
+
+    def series(gauge: object) -> pd.Series:
+        path = fetch(gauge.url, sir / f"{gauge.code}.json")
+        return parse_series(json.loads(path.read_text()))
+
+    return GaugeNetwork(parse_stations(stations, years), series, gauge_day_totals)
+
+
+def arpa_liguria(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """ARPA Liguria (OMIRL): a regional CSV per year, UTC days (api.weather.arpal)."""
+    cache = raw / "arpal"
+    report = pd.concat(
+        [
+            arpal.parse_daily_report(arpal.fetch_daily_report(year, cache).read_text())
+            for year in range(start.year, end.year + 1)
+        ],
+        ignore_index=True,
+    )
+    stations = arpal.parse_station_list(arpal.fetch_station_list(cache).read_text())
+    omirl_path = fetch(arpal.OMIRL_STATIONS_URL, cache / "omirl_pluvio.json")
+    omirl = arpal.parse_omirl_stations(json.loads(omirl_path.read_text()))
+    by_name = {
+        name: rows.set_index("date")["rain_mm"] for name, rows in report.groupby("station_name")
+    }
+    return GaugeNetwork(
+        arpal.gauge_stations(report, stations, omirl),
+        lambda gauge: by_name[gauge.name],
+        arpal.utc_day_totals,
+    )
+
+
+def calendar_days(calendar: pd.Series) -> pd.Series:
+    """Gauge days that are the model's own local calendar days."""
+    return calendar
+
+
+def umbria_sir_network(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """Regione Umbria Servizio Idrografico: open daily CSVs (history zip + current year), no
+    station heights (run_gauges takes the gauge cell's), calendar days (api.weather.umbria_sir)."""
+    folder = raw / "umbria_sir"
+    frames = [
+        umbria_sir.parse_daily(fetch(umbria_sir.HISTORY_URL, folder / "storico_giornalieri.zip"))
+    ]
+    if end.year >= date.today().year:
+        current = fetch(umbria_sir.CURRENT_YEAR_URL, folder / "anno_corrente_giornalieri.csv")
+        frames.append(umbria_sir.parse_daily(current))
+    daily = pd.concat(frames, ignore_index=True).drop_duplicates(["code", "date"], keep="last")
+    return GaugeNetwork(
+        umbria_sir.gauges_covering(daily, start, end),
+        lambda gauge: umbria_sir.series_of(daily, gauge.code),
+        calendar_days,
+    )
+
+
+GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
+    "tuscany": sir_toscana,
+    "liguria": arpa_liguria,
+    "umbria": umbria_sir_network,
+}
+
+
+def run_gauges(region_id: str, start: date, end: date) -> None:
+    region = load_region(region_id)
+    if region.id not in GAUGE_NETWORKS:
+        raise SystemExit(f"no rain gauge network wired for {region.id!r} (GAUGE_NETWORKS)")
+    grid_dir, store, raw = region_paths(region.id)
+    config = load_weather_config()
+    network = GAUGE_NETWORKS[region.id](raw, start, end)
+    gauges = network.gauges.copy()
     to_laea = Transformer.from_crs(4326, region.grid.crs, always_xy=True)
     x, y = to_laea.transform(gauges["lon"].to_numpy(), gauges["lat"].to_numpy())
     size = region.grid.cell_size_m
@@ -214,8 +299,13 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
         f"1kmE{int(a // size)}N{int(b // size)}" for a, b in zip(x, y, strict=True)
     ]
     cells = pd.read_parquet(grid_dir / "cells.parquet", columns=["cell_id", "elevation_m"])
+    if "elevation_m" not in gauges.columns:
+        # A network without station heights (Umbria): band each gauge by its cell's DEM height.
+        gauges = gauges.merge(cells, on="cell_id", how="left")
     weights = pd.read_parquet(store.weights_path)
     gauges = gauges[gauges["cell_id"].isin(weights["cell_id"])]
+    # The reanalysis the model scores with: CDS where stored, else the Open-Meteo archive.
+    reanalysis = [s for s in config.source_order if s != config.forecast.model]
     con = duckdb.connect()
     model = cell_weather(
         con,
@@ -223,15 +313,14 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
         cells[cells["cell_id"].isin(gauges["cell_id"])],
         weights,
         start - timedelta(days=1),
-        end,
+        end + timedelta(days=1),
         {"precipitation_sum": config.variables["precipitation_sum"]},
-        [config.history.model],
+        reanalysis,
     ).df()
     model["date"] = pd.to_datetime(model["date"]).dt.date
     rows = []
     for gauge in gauges.itertuples():
-        path = fetch(gauge.url, sir / f"{gauge.code}.json")
-        series = parse_series(json.loads(path.read_text()))
+        series = network.series(gauge)
         series = series[(series.index >= start) & (series.index <= end)]
         cell = model[model["cell_id"] == gauge.cell_id].set_index("date")["value"]
         if cell.empty or len(series) < 0.8 * ((end - start).days + 1):
@@ -242,7 +331,7 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
                 "name": gauge.name,
                 "elevation_m": gauge.elevation_m,
                 "cell_id": gauge.cell_id,
-                **compare_gauge(cell, series),
+                **compare_gauge(cell, series, network.day_totals),
             }
         )
     results = pd.DataFrame(rows)
