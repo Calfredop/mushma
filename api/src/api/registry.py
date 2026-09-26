@@ -23,7 +23,7 @@ from api.regions import (
     require_served,
     species_for_region,
 )
-from api.repository import ScoresRepository
+from api.repository import DateOutOfRange, ScoresRepository
 from api.species import SpeciesOrCombined
 
 
@@ -78,9 +78,16 @@ def get_overview_response(
     root = root or data_dir()
     good_score = load_history_config().good_score
     rows = []
+    out_of_range: DateOutOfRange | None = None
     for region_id in list_served_region_ids(root):
         repo = _live_repository(region_id, str(root))
-        mean, good_share, updated_at = repo.overview_row(species, target_date, good_score)
+        try:
+            mean, good_share, updated_at = repo.overview_row(species, target_date, good_score)
+        except DateOutOfRange as exc:
+            # A region whose scores stop short of the date (just rsync'd, before the server's
+            # daily job catches it up) is left out rather than taking the whole hub down.
+            out_of_range = exc
+            continue
         rows.append(
             RegionOverview(
                 region=region_id,
@@ -89,4 +96,6 @@ def get_overview_response(
                 updated_at=updated_at,
             )
         )
+    if not rows and out_of_range is not None:
+        raise out_of_range
     return OverviewResponse(species=species, date=target_date, good_score=good_score, regions=rows)
