@@ -90,6 +90,18 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Provincia autonoma di Trento — Tipi forestali PAT integrati 2021',
+    url: 'https://siatservices.provincia.tn.it/geonetwork/srv/api/records/p_TN:920383ad-092c-4f8f-8f8a-1c9db904b36f',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
+    name: 'Provincia autonoma di Bolzano — Tipologie forestali dell’Alto Adige',
+    url: 'https://geonetwork1.civis.bz.it/geonetwork/srv/ita/catalog.search#/metadata/p_bz:Forestry:ForestTypes',
+    use: 'landcover',
+    license: 'CC0 1.0',
+  },
+  {
     name: 'Copernicus DEM GLO-30',
     url: 'https://registry.opendata.aws/copernicus-dem/',
     use: 'elevation',

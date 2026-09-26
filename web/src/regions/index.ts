@@ -8,6 +8,7 @@ import { liguria } from './liguria.js'
 import { marche } from './marche.js'
 import { piemonte } from './piemonte.js'
 import { toscana } from './toscana.js'
+import { trentinoAltoAdige } from './trentino-alto-adige.js'
 import type { Bounds, RegionDefinition } from './types.js'
 import { umbria } from './umbria.js'
 
@@ -20,6 +21,7 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [emiliaRomagna.slug]: emiliaRomagna,
   [marche.slug]: marche,
   [piemonte.slug]: piemonte,
+  [trentinoAltoAdige.slug]: trentinoAltoAdige,
 }
 
 export const DEFAULT_REGION_SLUG = toscana.slug
