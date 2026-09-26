@@ -3,10 +3,10 @@ import type { RegionDefinition } from '../regions'
 import { regionMask } from './dataLayers'
 import { type MapPadding, mergePadding } from './padding'
 
-/** What the map takes from a region: where it opens and how far it lets you go. */
+/** What the map takes from a region: its name, where it opens and how far it lets you go. */
 export type MapRegion = Pick<
   RegionDefinition,
-  'bounds' | 'maxBounds' | 'minZoom' | 'maxZoom'
+  'name' | 'locative' | 'bounds' | 'maxBounds' | 'minZoom' | 'maxZoom'
 >
 
 /** A region is framed with a margin, and clear of `padding` when there is one. */

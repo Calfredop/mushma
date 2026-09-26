@@ -82,7 +82,7 @@
     "next": "Later days"
   },
   "map": {
-    "label": "Map of conditions scores across Tuscany",
+    "label": "Map of conditions scores {{where}}",
     "hint": "Tap a wood to see its spot forecast",
     "loading": "Loading conditions scores…",
     "loadError": "Couldn't load conditions scores. Check your connection and try again.",

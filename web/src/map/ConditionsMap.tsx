@@ -19,6 +19,7 @@ import {
   TERRAIN_URL,
 } from '../config'
 import type { Language } from '../i18n'
+import { regionLocative } from '../regions'
 import type { CameraRequest } from '../state/AppState'
 import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
@@ -575,7 +576,7 @@ export function ConditionsMap({
         ref={containerRef}
         className={styles.map}
         role="region"
-        aria-label={t('map.label')}
+        aria-label={t('map.label', { where: regionLocative(region, lang) })}
       />
       <div className={styles.zoom}>
         <button

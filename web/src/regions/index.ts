@@ -35,7 +35,10 @@ export function findRegion(slug: string): RegionDefinition | undefined {
 }
 
 /** "In the region" in `lang`: the region's `locative`, or `in <name>`. */
-export function regionLocative(region: RegionDefinition, lang: 'it' | 'en'): string {
+export function regionLocative(
+  region: Pick<RegionDefinition, 'name' | 'locative'>,
+  lang: 'it' | 'en',
+): string {
   return region.locative?.[lang] ?? `in ${region.name[lang]}`
 }
 

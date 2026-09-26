@@ -82,7 +82,7 @@
     "next": "Giorni successivi"
   },
   "map": {
-    "label": "Mappa dell'indice delle condizioni in Toscana",
+    "label": "Mappa dell'indice delle condizioni {{where}}",
     "hint": "Tocca un bosco per vedere la previsione del punto",
     "loading": "Carico l'indice delle condizioni…",
     "loadError": "Non riesco a caricare l'indice delle condizioni. Controlla la connessione e riprova.",
