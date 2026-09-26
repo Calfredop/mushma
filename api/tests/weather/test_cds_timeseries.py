@@ -398,3 +398,48 @@ def test_backfill_can_leave_snowfall_to_another_source(tmp_path: Path) -> None:
     assert {"precipitation_sum", "temperature_2m_mean", "et0_fao_evapotranspiration"} <= set(
         daily["variable"]
     )
+
+
+def test_snowfall_reader_lends_a_node_just_past_the_file_its_edge_row(tmp_path) -> None:
+    """The shared Italy-wide file stops at 47.1° N; Trentino-Alto Adige's northern nodes sit at
+    47.2° N. A node within one ERA5-Land step (0.1°) of the edge takes the edge row; further out
+    is an error."""
+    xr = pytest.importorskip("xarray")
+    pytest.importorskip("netCDF4")
+    import zipfile
+
+    from api.weather.cds import read_snowfall_zip
+
+    times = pd.date_range("2024-01-01", periods=2, freq="h")
+    lats = np.round(np.arange(47.1, 46.75, -0.1), 1)
+    lons = np.round(np.arange(11.8, 12.25, 0.1), 1)
+    values = np.arange(len(times) * len(lats) * len(lons), dtype="float32").reshape(
+        len(times), len(lats), len(lons)
+    )
+    ds = xr.Dataset(
+        {"sf": (("valid_time", "latitude", "longitude"), values)},
+        coords={"valid_time": times, "latitude": lats, "longitude": lons},
+    )
+    member = tmp_path / "sf.nc"
+    ds.to_netcdf(member)
+    archive = tmp_path / "sf.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.write(member, "data_stream-oper_stepType-accum.nc")
+    nodes = pd.DataFrame(
+        {"point_id": ["N47.20E012.00", "N47.00E012.00"], "lat": [47.2, 47.0], "lon": [12.0, 12.0]}
+    )
+
+    frame = read_snowfall_zip(archive, nodes)
+
+    north = frame[frame["lat"] == 47.2].sort_values("time")
+    assert north["sf"].to_numpy() == pytest.approx(
+        ds["sf"].sel(latitude=47.1, longitude=12.0).to_numpy()
+    )
+    inside = frame[frame["lat"] == 47.0].sort_values("time")
+    assert inside["sf"].to_numpy() == pytest.approx(
+        ds["sf"].sel(latitude=47.0, longitude=12.0).to_numpy()
+    )
+
+    far = pd.DataFrame({"point_id": ["N47.40E012.00"], "lat": [47.4], "lon": [12.0]})
+    with pytest.raises(KeyError):
+        read_snowfall_zip(archive, far)

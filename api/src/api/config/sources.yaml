@@ -133,6 +133,47 @@ rp_carta_forestale:
     layer: CF_2025
     field: ca_1
 
+pat_tipi_forestali:
+  name: Provincia autonoma di Trento — Tipi forestali PAT integrati, elaborazione statica 2021
+  homepage: https://siatservices.provincia.tn.it/geonetwork/srv/api/records/p_TN:920383ad-092c-4f8f-8f8a-1c9db904b36f
+  license: CC BY 4.0
+  attribution: "Tipi forestali PAT integrati 2021 © Provincia autonoma di Trento — Servizio Foreste, CC BY 4.0"
+  notes: >-
+    The real forest type (tipo forestale reale) of every forest unit in the management plans of the
+    public and large private forests (SIGFAT), harmonised and filled in from other surveys where no
+    plan exists, so it covers all of Trentino's forest: 56,531 polygons, 391,745 ha (the Province
+    counts 390,463 ha of forest), 15 categories and 54 types of the Trentino typology (label:
+    PE pecceta, FA faggeta, LA lariceto, AB abieteto, PS pineta, MU mugheta, OA ontaneta di ontano
+    verde, ...). Valid from 2022-01-01. Forest only, so one map gives both groups and types.
+  download:
+    url: https://siatservices.provincia.tn.it/idt/vector/p_TN_920383ad-092c-4f8f-8f8a-1c9db904b36f.zip
+    member: p_TN_920383ad-092c-4f8f-8f8a-1c9db904b36f/tipi_forestali_pat_v.gpkg
+    layer: tipi_forestali_pat_v
+    field: label
+
+pbz_tipologie_forestali:
+  name: Provincia autonoma di Bolzano — Tipologie forestali dell'Alto Adige (Waldtypisierung Südtirol)
+  homepage: https://geonetwork1.civis.bz.it/geonetwork/srv/ita/catalog.search#/metadata/p_bz:Forestry:ForestTypes
+  license: CC0 1.0
+  attribution: "Tipologie forestali © Provincia autonoma di Bolzano — Ufficio Pianificazione forestale, CC0 1.0"
+  notes: >-
+    The forest-type map of the Waldtypisierung Südtirol (2010; published 2011): the forest area of
+    South Tyrol typed by its site, derived from the geological map, the DTM and the technical map
+    and calibrated on field plots. 94,671 polygons, 356,188 ha, 86 types in 14 groups (WGRU_BEZ_I:
+    Peccete subalpine, Piceo-abieteti, Larici-cembrete, Faggete, ...); the riparian woods and the
+    green-alder and mountain-pine scrub have a group name but no group code. A type names the
+    trees its site carries (e.g. Piceo-abieti-faggeta), which in South Tyrol's largely near-natural
+    forests is close to what grows there. Forest only, so one map gives both groups and types.
+    CC0 per the provincial open-data portal (data.civis.bz.it, "Foreste: tipi forestali").
+    GeoServer truncates large GetFeature responses, hence pages of 2,000.
+  download:
+    wfs: https://geoservices6.civis.bz.it/geoserver/p_bz-Forestry/ows
+    type_name: p_bz-Forestry:ForestTypes
+    srs: EPSG:25832
+    page_size: 2000
+    sort_by: ID
+    field: WGRU_BEZ_I
+
 copernicus_dem_glo30:
   name: Copernicus DEM GLO-30
   homepage: https://registry.opendata.aws/copernicus-dem/
