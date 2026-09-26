@@ -1,0 +1,292 @@
+# Trentino-Alto Adige
+
+Region card: `region-trentino-alto-adige.md` (region #9 of `feat-full-italy-coverage.md`). API id
+`trentino_alto_adige`, web slug `/trentino-alto-adige`, ISTAT COD_REG 4, names "Trentino-Alto Adige"
+/ en "Trentino-South Tyrol". Two autonomous provinces, Trento (6,208 km², 166 comuni) and Bolzano /
+South Tyrol (7,399 km², 116 comuni, bilingual Italian and German names). The most Alpine region so
+far: more than half the woodland lies between 1,000 and 2,000 m, mostly spruce, with larch and
+stone pine up to the tree line, silver fir and beech in southern Trentino, Scots pine on the dry
+slopes of the inner valleys (Val Venosta, Valle Isarco), and oak, hop-hornbeam, chestnut and holm
+oak only low down on the Adige, Sarca and Valsugana slopes and around Lake Garda.
+
+## Sources
+
+**Decision: each province's own forest-type map, one layer per province for both the groups and
+the types.** Checked 2026-09-26:
+
+| candidate | what it is | verdict |
+|---|---|---|
+| **Tipi forestali PAT integrati, elaborazione statica 2021** (Provincia autonoma di Trento, Servizio Foreste) | The real forest type (*tipo forestale reale*) of every forest unit in the management plans of the public and large private forests (SIGFAT), harmonised and filled in from other surveys where there is no plan, so it covers all of Trentino's forest. 56,531 polygons, 15 categories and 54 types of the Trentino typology (Odasso), valid from 2022-01-01. GeoNetwork record `p_TN:920383ad-…`: CC BY 4.0, "nessuna limitazione", zip with a GeoPackage and a shapefile (136 MB) | **used** (`pat_tipi_forestali`) |
+| Tipi forestali — SIGFAT (same office) | The latest management-plan units only (public and large private forests), updated continuously | not complete: the integrated map fills its gaps |
+| **Tipologie forestali dell'Alto Adige** (Provincia autonoma di Bolzano, Ufficio Pianificazione forestale; *Waldtypisierung Südtirol*) | The forest area typed by site: 94,671 polygons, 86 types in 14 groups, derived from the geological map, the DTM and the technical map and calibrated on field plots (2010, published 2011). Open-data portal "Foreste: tipi forestali": CC0 1.0; WFS `p_bz-Forestry:ForestTypes` on the provincial GeoServer | **used** (`pbz_tipologie_forestali`) |
+| ISPRA CLC 2018 IV level | National fallback, 25 ha minimum unit | not needed: both provinces have open, finer, typed maps |
+
+Both maps cover forest only, so each gives both the broad groups (how much of each cell is
+woodland) and the habitats (which kind), from its own class. The two classifications differ, so
+`forest.types` became a list of layers, one per source, like `forest.groups` already was
+(`api.grid.build.read_layered_cover`; the card's "follow-up for the foundation's forest card" is
+this change, made here with its tests). A group layer and a types layer on the same source are read
+once.
+
+- **Trento** is mapped by type (`label`), 54 codes. Its map says what grows there: *peccete
+  secondarie* (spruce that replaced beech or fir) and *lariceti secondari* are their own types.
+- **Bolzano** is mapped by group (`WGRU_BEZ_I`), 14 names. Its map types a stand by its site and
+  names the trees that site carries (e.g. *Piceo-abieti-faggeta*, spruce-fir-beech); in South
+  Tyrol's largely near-natural forests that is close to what grows there, but a site typed as beech
+  forest may in fact carry planted spruce. The riparian woods and the green-alder and
+  mountain-pine scrub have a group name but no group code, hence the name.
+- **Mountain-pine krummholz (*mughete*) and green-alder scrub are not forest.** INFC counts them as
+  *arbusteti subalpini* (other wooded land), and a prostrate mugo pine does not reach the 5 m a
+  forest needs. They go to the transitional group, which does not count toward the woodland mask
+  (Trento MU 13,866 ha and OA 8,590 ha; Bolzano 13,194 ha).
+- **Mixed.** The Bolzano spruce-fir-beech group and the oak-Scots pine group (*Querco-pinete*), and
+  Trento's *faggeta mesalpica con conifere*, go to `mixed` (`mixed_broadleaf_conifer`).
+
+Map areas by group (from the polygons; the grid's rasterized totals are in Grid):
+
+| group | Trento | Bolzano |
+|---|---|---|
+| conifer | 254,314 ha | 278,642 ha |
+| broadleaf | 99,691 ha | 33,585 ha |
+| mixed | 15,284 ha | 30,767 ha |
+| transitional (not forest) | 22,455 ha | 13,194 ha |
+| **forest (conifer + broadleaf + mixed)** | **369,289 ha** | **342,994 ha** |
+| INFC 2015 bosco | 373,259 ha | 339,270 ha |
+
+The Trento total, 391,745 ha with the scrub, matches the Province's own 390,463 ha of forest.
+
+| Trento type (`label`) | ha | group | habitat |
+|---|---|---|---|
+| PE, PEX, PE_* peccete | 119,522 | conifer | fir_spruce |
+| FA_* faggete (not FA_con) | 46,982 | broadleaf | beech |
+| LA, LAX, LA_* lariceti | 48,066 | conifer | other_conifer |
+| AB, AB_* abieteti | 37,557 | conifer | fir_spruce |
+| PS_* pinete (silvestre, nero) | 34,714 | conifer | mountain_pine |
+| OO, OO_pri orno-ostrieti | 23,490 | broadleaf | mixed_broadleaf |
+| FA_con faggeta mesalpica con conifere | 15,284 | mixed | mixed_broadleaf_conifer |
+| MU_* mughete | 13,866 | transitional | transitional_woodland_shrub |
+| LC_*, CB_* larici-cembrete, cembrete | 14,455 | conifer | other_conifer |
+| OQ ostrio-querceto, QC querco-carpineto, QR querceto | 12,644 | broadleaf | deciduous_oak |
+| OA ontaneta di ontano verde | 8,590 | transitional | transitional_woodland_shrub |
+| TR formazioni transitorie (corileti, betuleti) | 5,895 | broadleaf | mixed_broadleaf |
+| RO robinieto | 4,965 | broadleaf | exotic_broadleaf |
+| AF, AF_ob, AT aceri-frassineti, aceri-tiglieti | 1,881 | broadleaf | mixed_broadleaf |
+| LE_* leccete (Alto Garda) | 1,739 | broadleaf | evergreen_oak |
+| OB, ON ontanete di ontano bianco e nero | 1,342 | broadleaf | riparian |
+| CS, CS_ro castagneti | 754 | broadleaf | chestnut |
+
+| Bolzano group (`WGRU_BEZ_I`) | ha | group | habitat |
+|---|---|---|---|
+| Peccete subalpine | 91,929 | conifer | fir_spruce |
+| Peccete montane | 67,563 | conifer | fir_spruce |
+| Piceo-abieteti | 54,808 | conifer | fir_spruce |
+| Larici-cembrete | 46,735 | conifer | other_conifer |
+| Piceo-abieti-faggete | 20,453 | mixed | mixed_broadleaf_conifer |
+| Mughete e bassofusti di ontano verde | 13,194 | transitional | transitional_woodland_shrub |
+| Faggete | 11,512 | broadleaf | beech |
+| Querceti | 11,292 | broadleaf | deciduous_oak |
+| Querco-pinete | 10,314 | mixed | mixed_broadleaf_conifer |
+| Lariceti | 9,003 | conifer | other_conifer |
+| Pinete | 8,604 | conifer | mountain_pine |
+| Orno-ostrieti | 7,651 | broadleaf | mixed_broadleaf |
+| Boschi ripariali | 2,319 | broadleaf | riparian |
+| Boschi di latifoglie (frassino-tiglieti) | 811 | broadleaf | mixed_broadleaf |
+
+**Chestnut is nearly absent from both maps** (754 ha in Trento; no chestnut group in Bolzano, whose
+site typology puts chestnut inside two oak types, Ei2 *querceto di rovere silicatico a castagno*
+and Ei5 *bosco misto di querce e castagno*, 7,661 ha together, mapped here as `deciduous_oak`). Chestnut dominates
+only 7 woodland cells (Storo, Borgo Chiese, Arco). Ovoli and *B. aereus* lean on chestnut, so their
+habitat credit here comes from the oak and hop-hornbeam woods (species research).
+
+A YAML trap found on the way: PyYAML reads a bare `ON` (Trento's *ontaneta di ontano nero*) as the
+boolean `true`, so the code matched nothing. It is quoted now, and the loader rejects a class code
+read as a boolean (`api.grid.build.class_codes`).
+
+Credits: both maps are added to the app's credits list (`web/src/credits.ts`). The South Tyrolean
+rain gauges feed a check only, never the app.
+
+## Config
+
+`api/src/api/config/regions/trentino_alto_adige.yaml`:
+
+- **Boundary.** ISTAT COD_REG 4; bbox `[10.38, 45.67, 12.48, 47.1]`, the ISTAT 2025 boundary's
+  extent (10.3858, 45.6745, 12.4777, 47.0916) rounded outward to 0.01°. Region area 13,606 km².
+- **Forest.** Two layers in both `forest.groups` and `forest.types`: `pat_tipi_forestali` by
+  `label` and `pbz_tipologie_forestali` by `WGRU_BEZ_I`, mapping above. The Bolzano WFS is read in
+  pages of 2,000 sorted by `ID`: the GeoServer cut responses of 5,000 features short at about
+  4.2 MB after a few requests.
+- **iNaturalist place** 10874, "Trentino-Alto Adige, IT" (admin level 10), resolved by name on
+  2026-09-26 (`api.inaturalist.org/v1/places/autocomplete?q=Trentino`).
+- **Gauges.** `api.weather.checks gauges --region trentino_alto_adige` reads the Provincia di
+  Bolzano's open daily rain (`api.weather.bolzano_meteo`, Validation). Trento's history is not
+  openly downloadable (Validation).
+- **`model:` overrides:** the rain scale, ×0.75 over `era5_land_cds` and `era5_seamless`
+  (Validation, rain gauges). The gauge check asked for it: the reanalysis is wetter than the South
+  Tyrolean gauges, as in Piemonte, and the national scale covers `era5_seamless` only, so without
+  an override the CDS history would go unscaled while the recent days got ×1.7 at these heights.
+- **Weather points.** 81 land nodes on the 0.2° lattice (81 candidates), all woodland cells within
+  reach.
+
+### Lapse rates (`api.weather.checks lattice --region trentino_alto_adige`)
+
+230 ERA5-Land land nodes at 0.1° (532–2,836 m), three 14-day windows of 2024 (Jan, Jul, Oct), run
+2026-09-26. Cooling per km of height, median of the daily fits:
+
+| variable | Jan | Jul | Oct | all | national config | difference |
+|---|---|---|---|---|---|---|
+| Tmin | 6.93 | 5.42 | 4.59 | **5.26** | 4.2 | **+1.06** |
+| Tmax | 6.03 | 5.72 | 4.69 | **5.38** | 4.5 | +0.88 |
+| Tmean | 6.30 | 5.86 | 4.80 | **5.56** | 4.5 | **+1.06** |
+| soil 0–7 cm | 0.17 | 4.76 | 3.60 | **3.60** | 3.7 | −0.10 |
+
+Tmax and soil are within 1 °C/km; **Tmin and Tmean sit just over the line (+1.06)**, the same case as
+Piemonte's Tmin (+1.04). January cools fastest (a stable, snow-covered valley atmosphere; the soil
+under snow barely cools with height at all, 0.17). **The national rates are kept**, because the
+leave-out test shows no gain from the region's own rates on the lattice the app serves:
+
+| leave-out RMSE | Tmin | Tmax | Tmean | soil |
+|---|---|---|---|---|
+| served lattice (0.2°, stride 2), national | 0.547 °C | 0.394 °C | 0.395 °C | 0.721 °C |
+| served lattice, fitted (5.26 / 5.38 / 5.56 / 3.60) | 0.538 °C | 0.401 °C | 0.401 °C | 0.721 °C |
+| stride 3 (0.3°), national | 0.927 °C | 0.555 °C | 0.659 °C | 1.033 °C |
+| stride 3, fitted | 0.898 °C | 0.536 °C | 0.642 °C | 1.036 °C |
+
+A 0.009 °C gain for Tmin and a 0.006 °C loss for Tmean on the served lattice do not justify a
+per-region rate. Leave-out at the 0.2° lattice with no lapse correction: 0.86 / 0.75 / 0.77 /
+0.88 °C (Tmin, Tmax, Tmean, soil), with 6.5 °C/km 0.58 / 0.46 / 0.45 / 0.81 °C: the national
+rates are the best of the three. Errors are about 20 % larger than Piemonte's (0.45 °C Tmin): the
+relief between nodes is steeper still.
+
+## Grid
+
+`uv run python -m api.grid.build --region trentino_alto_adige` (3.6 min the first time, with the
+Bolzano WFS pages, the Trento zip, the DEM tiles and SoilGrids fetched; 1 min cached):
+
+- **Cells 14,088; woodland 7,698** (54.6 %, the highest share so far). Threshold sensitivity
+  (forest share of the cell, before the 0.25 km² floor): 0.3 → 9,156, 0.4 → 8,502, **0.5 → 7,772**,
+  0.6 → 6,922, 0.7 → 5,898. Trento 4,002 woodland cells, Bolzano 3,696.
+- **INFC 2015: −0.1 %** (grid 712,120 ha vs 712,529 ha bosco), well inside ±10 %. The provinces
+  agree on their own (the maps' forest 369,289 ha vs INFC 373,259 ha in Trento, 342,994 ha vs
+  339,270 ha in Bolzano), because the subalpine scrub is left out of the forest as INFC leaves it.
+- **Habitats on woodland cells** (share of wooded area; cells where dominant; their mean height):
+
+| habitat | share | dominant cells | mean elevation |
+|---|---|---|---|
+| fir_spruce (spruce, silver fir) | 53.1 % | 4,532 | 1,493 m |
+| other_conifer (larch, stone pine) | 14.2 % | 953 | 1,819 m |
+| beech | 8.4 % | 665 | 1,033 m |
+| mixed_broadleaf_conifer (spruce-fir-beech, oak-Scots pine) | 6.7 % | 483 | 1,111 m |
+| mountain_pine (Scots pine, black pine) | 5.9 % | 382 | 907 m |
+| mixed_broadleaf (hop-hornbeam, ash-maple, hazel-birch) | 5.4 % | 358 | 679 m |
+| deciduous_oak | 3.2 % | 228 | 665 m |
+| transitional_woodland_shrub (mugo, green alder) | 1.6 % | 26 | 1,561 m |
+| exotic_broadleaf (robinia) | 0.6 % | 46 | 682 m |
+| riparian | 0.4 % | 1 | 899 m |
+| evergreen_oak (holm oak, Alto Garda) | 0.2 % | 17 | 445 m |
+| chestnut | 0.1 % | 7 | 720 m |
+
+  The belts are in the right order: holm oak by Lake Garda at 450 m, oaks, hop-hornbeam and robinia
+  at 650–700 m, Scots and black pine at 900 m, beech and the mixed woods at 1,000–1,100 m, spruce
+  and fir at 1,500 m, larch and stone pine at 1,800 m. The dominant habitat covers a median 75 % of
+  the wooded area (Piemonte 71 %, Tuscany 89 %). `borrowed_type_fraction` is 0 everywhere (groups
+  and types come from the same maps).
+- **Terrain.** Woodland cells: median elevation 1,407 m (Piemonte 838 m), 95th percentile 1,992 m,
+  max 2,427 m, min 231 m; 196 cells below 500 m, 1,414 at 500–1,000 m, 2,852 at 1,000–1,500 m,
+  2,885 at 1,500–2,000 m and 351 above. Median slope 26.9°. All have terrain; 71 have no aspect.
+- **Soil pH.** Median 6.28 (5th–95th percentile 5.31–6.66); lowest under spruce and fir (5.90),
+  highest under holm oak (6.67).
+- **Places.** 282 comuni get cells; 2 cells fall outside every comune polygon. Nearest locality
+  median 2.2 km, max 12.8 km (Piemonte 1.0 and 8.8 km: fewer villages up high). Comune names are
+  ISTAT's bilingual forms (`Renon/Ritten`).
+- **Spot checks:**
+
+| place | cell | woodland | forest | top habitats | elev. m | comune |
+|---|---|---|---|---|---|---|
+| Foresta di Paneveggio | `1kmE4455N2578` | yes | 0.79 | fir_spruce 1.00 | 1538 | Primiero San Martino di Castrozza (TN) |
+| Latemar above Obereggen | `1kmE4438N2585` | yes | 0.86 | fir_spruce 1.00 | 1741 | Nova Ponente/Deutschnofen (BZ) |
+| Val di Funes | `1kmE4454N2613` | yes | 0.97 | fir_spruce 0.85, other_conifer 0.14 | 1777 | Funes/Villnöß (BZ) |
+| Bosco di Dobbiaco | `1kmE4490N2625` | yes | 0.80 | fir_spruce 0.89, riparian 0.11 | 1275 | Dobbiaco/Toblach (BZ) |
+| Sonnenberg above Naturno (Val Venosta) | `1kmE4397N2616` | yes | 0.68 | deciduous_oak 0.98 | 748 | Naturno/Naturns (BZ) |
+| Scots pine above Sluderno (Val Venosta) | `1kmE4367N2617` | yes | 0.73 | fir_spruce 0.60, mountain_pine 0.23 | 1394 | Sluderno/Schluderns (BZ) |
+| Lavarone plateau | `1kmE4417N2538` | yes | 0.93 | fir_spruce 0.69, beech 0.28 | 1148 | Lavarone (TN) |
+| Monte Bondone | `1kmE4403N2544` | yes | 0.96 | fir_spruce 0.38, beech 0.30 | 1173 | Garniga Terme (TN) |
+| Robinia and chestnut above Roncegno | `1kmE4430N2547` | yes | 0.99 | exotic_broadleaf 0.69, fir_spruce 0.23 | 797 | Roncegno Terme (TN) |
+| Chestnut woods of Storo | `1kmE4362N2524` | yes | 0.68 | chestnut 0.57, exotic_broadleaf 0.34 | 551 | Storo (TN) |
+| Holm oak above Torbole | `1kmE4388N2526` | yes | 0.82 | evergreen_oak 1.00 | 264 | Nago-Torbole (TN) |
+| Bolzano (city) | `1kmE4425N2599` | no | 0.07 | — | 284 | Bolzano/Bozen (BZ) |
+| Trento (city) | `1kmE4407N2551` | no | 0.09 | — | 204 | Trento (TN) |
+
+## Weather history
+
+From the Copernicus CDS, 2016-01-01 to 2026-09-14, through the ERA5-Land time-series product
+(`cds.method: timeseries`): 81 node requests, 16 of them already cached by Lombardia's lane (the
+nodes the two regions share), 65 fetched at about 37 s each (40 min). The days after 2026-09-14 come from the Open-Meteo update
+step, as for every region.
+
+**Snowfall** comes from the shared Italy-wide gridded files (`sf_*_35.40_6.60_47.10_18.60`), cached
+by the Lombardia lane earlier the same day. That area stops at 47.1° N, the basemap's extent, and
+five of the region's nodes sit at 47.2° N (the 0.2° lattice around the Ahrntal, the upper Val
+Pusteria and the Val di Vizze, whose cells reach 47.09° N): the snowfall read failed on them. A
+node at most one ERA5-Land step (0.1°) past the file now takes the file's edge row
+(`api.weather.cds.read_snowfall_zip`), which is nearer the cells those nodes serve than the nodes
+themselves; further out is still an error. No new gridded request was needed.
+
+**Open-Meteo.** The update stored `era5_seamless` for 2026-09-12 to 09-20; the forecast call then
+hit Open-Meteo's daily limit (HTTP 429, "Daily API request limit exceeded"), spent on 2026-09-26 by
+the three region lanes and this card's species research (elevation lookups). The served window
+(today −6 to +7, with factors) and the seasonal tendencies wait for the next day's quota; the
+server's daily job fetches them anyway once the region is deployed.
+
+## Data
+
+(written by `api.regions.onboard`)
+
+## Validation
+
+### Rain gauges (`api.weather.checks gauges --region trentino_alto_adige`)
+
+**South Tyrol only.** The Provincia di Bolzano publishes one workbook of daily rain per station
+("Tageswerte Temperaturen und Niederschläge", data.civis.bz.it, CC0 1.0), 1981–2024, a day being
+the rain from 09:00 CET of the day before to 09:00 CET of the labelled day (the SIR Toscana cut,
+`sir.gauge_day_totals`). `api.weather.bolzano_meteo` reads them with the standard library. Of the
+portal's 58 station links, 8 land on the weather site's 404 page and one is mangled in the portal's
+own metadata (`M%C2%81hlen`, HTTP 400): 49 stations read, 43 with 80 % of 2019–2024, **17 in
+woodland cells** (214–1,883 m; one below 400 m, one at 400–800 m, 15 above).
+
+**Trento's gauges are not in the check.** Meteotrentino's history is open (CC BY 4.0, "Dati
+storici stazioni meteorologiche" on dati.trentino.it) but served only through an interactive
+Hydstra WEB app (storico.meteotrentino.it) whose JSON web service answers 404; its `service.asmx`
+gives only the last week; and the Open Data Hub (NOI), which carries Meteotrentino's stations,
+limits anonymous requests to 5-day ranges (about 440 requests per station for 2019–2024) and
+labels its daily series with an undocumented cut. So the scale is fitted on South Tyrol and
+applied to Trentino too; the Prealps south of Trento are wetter, and whether ERA5-Land's excess
+holds there is not checked.
+
+- **ERA5-Land (CDS) holds 1.34 of the gauge rain** (pooled 2019–2024; median per gauge 1.31, daily
+  correlation 0.68, 3-day wet-window hit rate 0.89, false alarms 0.24). By height band: 1.17
+  (the one gauge below 400 m), 1.16 (400–800 m), 1.35 (800–1,200 m), 1.37 above; by year 1.20 (wet
+  2024) to 1.53 (dry 2022). The same excess as Piemonte (1.33).
+- **It rains too often, and too little when it pours.** The reanalysis has 1 mm or more on 59 % of
+  days against the gauges' 28 %, and 5 mm or more on 1.7 times as many days. On gauge days under
+  5 mm it gives 5.7 times the gauge rain; on gauge days of 20 mm or more, 0.52 of it.
+- **The fit.** Least squares of gauge totals on model totals × (a + b × km, capped at 1.7 km as
+  the national scale is) over 2019–2024 gives **a = 0.843, b = −0.077 per km**; a factor alone
+  gives **0.746**. So `trentino_alto_adige.yaml` sets `model.precipitation_scale` to **0.75, no
+  height term**, over both `era5_land_cds` and `era5_seamless`. Pooled ratio 1.34 → 1.00, bands
+  0.87 (the two gauges below 800 m) and 1.01–1.02 above. Fitted on 2019–2023 alone it gives 0.73
+  and 0.87 on the wet 2024 (Piemonte's held at 1.02): with 17 gauges the year-to-year spread is
+  most of the uncertainty.
+- **What a factor cannot fix.** Share of windows at or above each rule threshold:
+
+| | gauges | raw | × 0.75 (shipped) | × 0.85 |
+|---|---|---|---|---|
+| 3-day ≥ 10 mm | 25.6 % | 40.6 % | 30.9 % | 35.5 % |
+| 3-day ≥ 30 mm | 7.9 % | 8.2 % | 3.7 % | 5.5 % |
+| 30-day ≥ 25 mm | 82.4 % | 95.1 % | 91.8 % | 93.6 % |
+| 30-day ≥ 75 mm | 47.4 % | 69.3 % | 52.6 % | 60.8 % |
+
+  The raw reanalysis already meets the 30 mm trigger as often as the gauges; ×0.75 halves it, while
+  the 10 mm step and the 30-day thresholds stay too often met. ×0.85 is no better overall. The
+  totals fit ships, the method every region so far used; porcini's 30-day rain is scored against
+  each cell's own normal and is unaffected. Correcting the drizzle itself (a wet-day threshold or
+  quantile mapping per region) is the cross-region follow-up Piemonte named.
