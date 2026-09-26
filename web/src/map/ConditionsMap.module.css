@@ -45,13 +45,14 @@
   }
 }
 
+/* A MapLibre marker element: MapLibre positions it absolutely, which also anchors the pointer
+   below. Setting its position here would put the pins in the page's flow, each one pushed down by
+   the pins before it. */
 .hotspot {
-  position: relative;
   display: grid;
   place-items: center;
   min-width: 1.625rem;
   height: 1.625rem;
-  margin-bottom: 7px; /* the pointer below marks the spot */
   padding: 0 0.25rem;
   border: 2px solid var(--carta);
   border-radius: 999px;

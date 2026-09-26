@@ -167,6 +167,43 @@ test('analysis mode: two factors on the map, played through the days', async ({
   await expect(page.getByRole('button', { name: 'Riproduci i giorni' })).toBeVisible()
 })
 
+test('each hot place pin points at its own place, not stacked under the one before', async ({
+  page,
+}) => {
+  const response = page.waitForResponse((r) => r.url().includes('/hotspots?'))
+  await page.goto('/toscana')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
+  const { hotspots } = (await (await response).json()) as {
+    hotspots: { lat: number; lon: number }[]
+  }
+  expect(hotspots.length).toBeGreaterThan(2)
+  await page.waitForFunction(() => window.__mushmaMap?.loaded())
+
+  const pins = page.locator('.maplibregl-marker[aria-label^="Mostra"]')
+  await expect(pins).toHaveCount(hotspots.length)
+  const offsets = await page.evaluate((places) => {
+    const map = window.__mushmaMap!
+    const markers = [
+      ...document.querySelectorAll('.maplibregl-marker[aria-label^="Mostra"]'),
+    ]
+    return places.map((place, index) => {
+      const spot = map.project([place.lon, place.lat])
+      const canvas = map.getCanvas().getBoundingClientRect()
+      const pin = markers[index].getBoundingClientRect()
+      // Anchored at its bottom: the pin's foot is on the place.
+      return {
+        dx: pin.left + pin.width / 2 - (canvas.left + spot.x),
+        dy: pin.bottom - (canvas.top + spot.y),
+      }
+    })
+  }, hotspots)
+  for (const { dx, dy } of offsets) {
+    expect(Math.abs(dx)).toBeLessThan(2)
+    expect(Math.abs(dy)).toBeLessThan(2)
+  }
+})
+
 test('hub at / lists regions and enters one', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Ho capito' }).click()
