@@ -8,8 +8,8 @@
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
 with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
-the Servizio Idrografico for Umbria: ``GAUGE_NETWORKS``). Results land in
-``$DATA_DIR/weather/<region>/checks/``.
+the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna: ``GAUGE_NETWORKS``). Results land
+in ``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
@@ -218,6 +218,20 @@ class GaugeNetwork:
     day_totals: Callable[[pd.Series], pd.Series]
 
 
+def arpae_emilia_romagna(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """ARPAE-SIMC: monthly line-delimited JSON, 09:00-09:00 (CET) days (api.weather.arpae)."""
+    import gzip
+
+    from api.weather import arpae
+
+    frames = []
+    for month, url in arpae.month_urls(start, end):
+        with gzip.open(fetch(url, raw / "arpae" / f"{month}.json.gz"), "rt") as lines:
+            frames.append(arpae.parse_daily_rain(lines))
+    gauges, by_code = arpae.gauge_series(pd.concat(frames, ignore_index=True))
+    return GaugeNetwork(gauges, lambda gauge: by_code[gauge.code], gauge_day_totals)
+
+
 def sir_toscana(raw: Path, start: date, end: date) -> GaugeNetwork:
     """SIR Toscana: open JSON per station, 09:00-09:00 days."""
     sir = raw / "sir_toscana"
@@ -281,6 +295,7 @@ GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
     "umbria": umbria_sir_network,
+    "emilia_romagna": arpae_emilia_romagna,
 }
 
 

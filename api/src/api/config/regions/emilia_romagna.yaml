@@ -1,0 +1,173 @@
+# Emilia-Romagna. Source ids resolve in ../sources.yaml.
+id: emilia_romagna
+name: {it: Emilia-Romagna, en: Emilia-Romagna}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [9.19, 43.73, 12.76, 45.14]
+
+# EEA reference grid: ETRS89-LAEA (EPSG:3035), 1 km cells named by their lower-left corner.
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 8
+
+# Woodland: the regional forest map (Carta forestale regionale 2025, 1:10,000, AGEA 2023) gives both
+# how much and which kind. Its land use (STC_RER) says what is forest; its INFC forest category
+# (COD_CAT) says broadleaf or conifer, and which forest type. See
+# .gavin-root/docs/regions/emilia_romagna.md → "Forest source".
+#
+# Forest land uses: 11 bosco, 12b/12c/12d/12f wooded areas temporarily bare, owed or compensatory
+# replanting, or along infrastructure, 26 chestnut orchards, 99 boschetto. Left out, like the
+# inventory's "bosco": 21/22a/22p/23 tree farming and poplar plantations, 25 hazel orchards,
+# 27 grassland, 28 heath and scrub, 44 parks.
+forest:
+  groups:
+    - source: rer_carta_forestale
+      class_column: COD_CAT
+      where: "STC_RER IN ('11', '12b', '12c', '12d', '12f', '26', '99')"
+      classes:
+        # broadleaf: beech, oaks, chestnut, hop-hornbeam and other deciduous, riparian, holm oak,
+        # robinia, broadleaf plantations and the few shrub categories mapped inside woods
+        "08": broadleaf
+        "91": broadleaf
+        "92": broadleaf
+        "93": broadleaf
+        "94": broadleaf
+        "102": broadleaf
+        "105": broadleaf
+        "111": broadleaf
+        "112": broadleaf
+        "121": broadleaf
+        "123": broadleaf
+        "131": broadleaf
+        "132": broadleaf
+        "133": broadleaf
+        "134": broadleaf
+        "135": broadleaf
+        "141": broadleaf
+        "145": broadleaf
+        "146": broadleaf
+        "147": broadleaf
+        "152": broadleaf
+        "153": broadleaf
+        "181": broadleaf
+        "191": broadleaf
+        "215": broadleaf
+        "221": broadleaf
+        "222": broadleaf
+        "223": broadleaf
+        "225": broadleaf
+        "226": broadleaf
+        "235": broadleaf
+        # no category recorded (temporarily bare woods): typed from the neighbouring cells
+        "X": broadleaf
+        # conifer: larch, spruce, fir (incl. fir-beech), pines, cypress, exotic conifers
+        "14": conifer
+        "23": conifer
+        "32": conifer
+        "34": conifer
+        "44": conifer
+        "45": conifer
+        "46": conifer
+        "55": conifer
+        "61": conifer
+        "62": conifer
+        "71": conifer
+        "72": conifer
+        "201": conifer
+        "202": conifer
+        "204": conifer
+    # "Area a vegetazione boschiva ed arbustiva in evoluzione" is CLC 324's own name.
+    - source: rer_carta_forestale
+      class_column: STC_RER
+      classes:
+        "210": transitional
+  types:
+    source: rer_carta_forestale
+    class_column: COD_CAT
+    where: "STC_RER IN ('11', '12b', '12c', '12d', '12f', '26', '99')"
+    classes:
+      "08": beech # Faggete
+      "91": deciduous_oak # Boschi di Rovere
+      "92": deciduous_oak # Boschi di Roverella
+      "93": deciduous_oak # Boschi di Farnia
+      "94": deciduous_oak # Popolamenti artificiali di Rovere, Roverella o Farnia
+      "102": deciduous_oak # Cerrete
+      "105": deciduous_oak # Popolamenti artificiali di Cerro
+      "111": chestnut # Castagneti da legno
+      "112": chestnut # Castagneti da frutto, selve castanili
+      "121": mixed_broadleaf # Boschi di Carpino nero e Orniello
+      "123": mixed_broadleaf # Boschi di Carpino bianco
+      "141": mixed_broadleaf # Acero-tilieti di monte e boschi a Frassino
+      "145": mixed_broadleaf # Betuleti
+      "147": mixed_broadleaf # Altre formazioni caducifoglie
+      "221": mixed_broadleaf # Pruneti e corileti
+      "222": mixed_broadleaf # Altri arbusteti di clima temperato
+      "223": mixed_broadleaf # Arbusteti a Ginestra odorosa
+      "225": mixed_broadleaf # Formazioni di Ginestra dei carbonai
+      "226": mixed_broadleaf # Arbusteti a Ginepro
+      "131": riparian # Boschi di Frassino ossifillo e Olmo
+      "132": riparian # Boschi di Ontano bianco
+      "133": riparian # Boschi di Ontano nero
+      "134": riparian # Pioppeti naturali (boschi igrofili)
+      "135": riparian # Saliceti ripariali
+      "215": riparian # Saliceti arbustivi appenninici
+      "146": exotic_broadleaf # Robinieti e ailanteti
+      "181": exotic_broadleaf # Pioppeti artificiali
+      "191": exotic_broadleaf # Piantagioni di latifoglie
+      "152": evergreen_oak # Bosco costiero-planiziale a prevalenza di Leccio
+      "153": evergreen_oak # Lecceta rupicola
+      "235": evergreen_oak # Arbusteti mediterranei sempreverdi
+      "44": mountain_pine # Pinete di Pino silvestre
+      "45": mountain_pine # Pinete di Pino montano
+      "46": mountain_pine # Popolamenti artificiali a Pino silvestre e montano
+      "55": mountain_pine # Formazioni a Pino nero
+      "61": mediterranean_pine # Pinete di Pino marittimo
+      "62": mediterranean_pine # Pinete di Pino domestico
+      "71": mediterranean_pine # Formazioni a Cipresso
+      "23": fir_spruce # Popolamenti artificiali di Abete rosso
+      "32": fir_spruce # Abetine e abieti-faggeti
+      "34": fir_spruce # Popolamenti artificiali di Abete bianco
+      "14": other_conifer # Popolamenti artificiali di Larice e Cembro
+      "72": other_conifer # Formazioni di conifere esotiche
+      "201": other_conifer # Piantagioni di conifere indigene
+      "202": other_conifer # Piantagioni di Pseudotsuga menziesii
+      "204": other_conifer # Altre piantagioni di conifere esotiche
+
+# Topsoil pH (0-30 cm, depth-weighted) from SoilGrids. Not used by the v1 rules (PRD known gaps).
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Emilia-Romagna, IT",
+# admin level 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid.
+sightings:
+  inaturalist_place_id: 96905
+
+# Model overrides (merged onto config/model.yaml). The national lapse rates apply (lattice check in
+# the region doc). The national rain scale does not: it was fitted on Tuscan gauges for the Open-Meteo
+# archive, while this region's history is ERA5-Land from the CDS, and on ARPAE's gauges it would
+# make woodland rain 18-23 % too wet. Refitted on them:
+model:
+  precipitation_scale:
+    enabled: true
+    # era5_seamless too: the daily update bridges the CDS lag with a few days of it, and the snowfall
+    # history comes from it (snowfall is not scaled).
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.62
+    per_km: 0.80
+    max_elevation_m: 1700
+    confidence: plausible
+    source: [mushma_arpae_gauge_check_2026]
+    notes: >-
+      Ordinary least squares of each woodland gauge's gauge/model ratio on its elevation, over the
+      66 ARPAE gauges of 2025 with at least 80 % of days: a = 0.621, b = 0.802 per km. Tuscany's
+      method (least squares of totals through the origin) gave a = 0.534, b = 0.881: the same pooled
+      fit, but the few gauges below 400 m came out 16 % dry; the ratio fit gives every gauge the same
+      weight. On the 66 gauges of 2026 (January-August) it moves the pooled model/gauge ratio from
+      0.79 to 0.97 (below 400 m 1.06 -> 0.91, 400-800 m 0.89 -> 0.99, above 800 m 0.66 -> 0.96).
+      Gauges span 183-1535 m; the factor is extrapolated below and above.

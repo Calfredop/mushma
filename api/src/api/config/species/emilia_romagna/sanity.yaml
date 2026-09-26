@@ -1,0 +1,376 @@
+# Press-contrast sanity check for Emilia-Romagna (api.model.sanity), porcini group.
+# Areas by comuni (ISTAT names, as the grid's comune_name carries them); windows and source URLs
+# written down from the sources before any area score existed (the region was not yet scored).
+# `seasons: normal` expands to `normal_seasons`; one-year-vs-normal contrasts list the normal years
+# without the year under test. Evidence and caveats: .gavin-root/docs/species-ecology/emilia_romagna.md,
+# Sanity contrasts.
+areas:
+  ventasso:
+    comuni:
+    - Ventasso
+  crinale_reggio_parma:
+    comuni:
+    - Ventasso
+    - Villa Minozzo
+    - Monchio delle Corti
+    - Corniglio
+  val_taro_ceno:
+    comuni:
+    - Albareto
+    - Bardi
+    - Bedonia
+    - Berceto
+    - Bore
+    - Borgo Val di Taro
+    - Compiano
+    - Tornolo
+    - Valmozzola
+    - Varsi
+  albareto:
+    comuni:
+    - Albareto
+  ceno_berceto_corniglio:
+    comuni:
+    - Bardi
+    - Varsi
+    - Berceto
+    - Corniglio
+  parma_est:
+    comuni:
+    - Calestano
+    - Corniglio
+    - Langhirano
+    - Lesignano de' Bagni
+    - Monchio delle Corti
+    - Neviano degli Arduini
+    - Palanzano
+    - Tizzano Val Parma
+  val_nure:
+    comuni:
+    - Farini
+    - Ferriere
+  val_trebbia_bobbio:
+    comuni:
+    - Bobbio
+    - Coli
+  modena_apennines:
+    comuni:
+    - Fanano
+    - Fiumalbo
+    - Frassinoro
+    - Lama Mocogno
+    - Montecreto
+    - Montefiorino
+    - Montese
+    - Palagano
+    - Pavullo nel Frignano
+    - Pievepelago
+    - Polinago
+    - Riolunato
+    - Sestola
+  alto_frignano:
+    comuni:
+    - Pievepelago
+    - Riolunato
+  ligurian_border:
+    comuni:
+    - Ottone
+    - Zerba
+    - Cerignale
+    - Ferriere
+    - Bedonia
+    - Tornolo
+    - Albareto
+    - Compiano
+    - Borgo Val di Taro
+  east_apennines:
+    comuni:
+    - Fanano
+    - Fiumalbo
+    - Frassinoro
+    - Lama Mocogno
+    - Montecreto
+    - Montefiorino
+    - Montese
+    - Palagano
+    - Pavullo nel Frignano
+    - Pievepelago
+    - Polinago
+    - Riolunato
+    - Sestola
+    - Lizzano in Belvedere
+    - Gaggio Montano
+    - Alto Reno Terme
+    - Camugnano
+    - Castel di Casio
+    - Castiglione dei Pepoli
+    - San Benedetto Val di Sambro
+    - Monghidoro
+    - Loiano
+    - Monzuno
+    - Grizzana Morandi
+    - Vergato
+    - Castel d'Aiano
+    - Monterenzio
+    - Castel del Rio
+    - Bagno di Romagna
+    - Santa Sofia
+    - Premilcuore
+    - Portico e San Benedetto
+    - Tredozio
+    - Verghereto
+    - Galeata
+    - Rocca San Casciano
+    - Modigliana
+    - Sarsina
+    - Civitella di Romagna
+    - Brisighella
+    - Casola Valsenio
+    - Pennabilli
+    - Casteldelci
+    - Sant'Agata Feltria
+    - Novafeltria
+    - San Leo
+    - Maiolo
+    - Talamello
+  alto_savio:
+    comuni:
+    - Bagno di Romagna
+    - Verghereto
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: cerreto_2017_2016
+  claim: 'Cerreto Laghi, early October (Mondiale del fungo): 30 kg from the beech woods in 2016, ''oltre
+    200 chili'' in 2017'
+  source: https://blogfunghi.parcoappennino.it/un-mondiale-da-sogno/
+  higher:
+    area: ventasso
+    seasons:
+    - 2017
+    start: 10-01
+    end: 10-09
+  lower:
+    area: ventasso
+    seasons:
+    - 2016
+    start: 10-01
+    end: 10-09
+- id: crinale_2019
+  claim: 'Reggio and Parma crinale, mid-September 2019: ''in cinquant''anni che vado per funghi, una nascita
+    del genere non l''avevo mai vista'''
+  source: https://blogfunghi.parcoappennino.it/il-troppo-stroppia-o-no/
+  higher:
+    area: crinale_reggio_parma
+    seasons:
+    - 2019
+    start: 09-06
+    end: 09-20
+  lower:
+    area: crinale_reggio_parma
+    seasons:
+    - 2017
+    - 2018
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+    - 2025
+    start: 09-06
+    end: 09-20
+- id: reggio_vs_valtaro_2019
+  claim: 'Mid-September 2019: the Reggio side and the Parma border strip lead, ''Valtaro e Valceno sono in
+    ritardo'''
+  source: https://blogfunghi.parcoappennino.it/sfogatevi-popolo-di-fungaioli/
+  higher:
+    area: crinale_reggio_parma
+    seasons:
+    - 2019
+    start: 09-08
+    end: 09-16
+  lower:
+    area: val_taro_ceno
+    seasons:
+    - 2019
+    start: 09-08
+    end: 09-16
+- id: ceno_vs_albareto_2018
+  claim: 'First half of August 2018: abundant summer porcini in Val Ceno, around Berceto and Corniglio;
+    ''qui ad Albareto invece il porcino ancora è latitante'''
+  source: https://blogfunghi.parcoappennino.it/venerdi-17-ma-non-per-tutti/
+  higher:
+    area: ceno_berceto_corniglio
+    seasons:
+    - 2018
+    start: 08-01
+    end: 08-17
+  lower:
+    area: albareto
+    seasons:
+    - 2018
+    start: 08-01
+    end: 08-17
+- id: valtaro_aug_2017
+  claim: 'First half of August 2017, in the drought: ''uno, due o forse tre funghi, ma di buttate da estivo
+    manco l''ombra'''
+  source: https://blogfunghi.parcoappennino.it/eccoci-qui/
+  higher:
+    area: val_taro_ceno
+    seasons:
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+    - 2025
+    start: 08-01
+    end: 08-16
+  lower:
+    area: val_taro_ceno
+    seasons:
+    - 2017
+    start: 08-01
+    end: 08-16
+- id: valnure_2022
+  claim: 'Alta Val Nure, late August to mid-September 2022: ''Era da vent''anni che non si raccoglieva così
+    tanto'''
+  source: https://liberta.it/news/attualita/cronaca/lalta-val-nure-torna-il-paradiso-dei-fungaiolima-fioccano-le-multe/7242
+  higher:
+    area: val_nure
+    seasons:
+    - 2022
+    start: 08-25
+    end: 09-11
+  lower:
+    area: val_nure
+    seasons:
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2023
+    - 2024
+    - 2025
+    start: 08-25
+    end: 09-11
+- id: modena_2022
+  claim: 'Modena Apennines, late August to mid-September 2022: ''un''annata record'', after seasons ''spesso
+    scarse o addirittura prive di prodotto'''
+  source: https://www.parks.it/parco.frignano/dettaglio.php?id=71099
+  higher:
+    area: modena_apennines
+    seasons:
+    - 2022
+    start: 08-20
+    end: 09-13
+  lower:
+    area: modena_apennines
+    seasons:
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2023
+    - 2024
+    - 2025
+    start: 08-20
+    end: 09-13
+- id: west_vs_east_2023
+  claim: 'Early October 2023: still ''discrete nascite'' by the Ligurian border, ''quasi assenti'' around
+    Modena, ''del tutto assenti da Bologna a San Marino'''
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: ligurian_border
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+  lower:
+    area: east_apennines
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+- id: frignano_2024_timing
+  claim: 'Pievepelago, 2024: an ''exploit'' of porcini in mid-July, then a pause in growth blamed on the
+    prolonged drought (6 August)'
+  source: https://www.ilrestodelcarlino.it/economia/boom-porcini-appennino-mirtilli-0794c3f3
+  higher:
+    area: alto_frignano
+    seasons:
+    - 2024
+    start: 07-10
+    end: 07-20
+  lower:
+    area: alto_frignano
+    seasons:
+    - 2024
+    start: 07-28
+    end: 08-06
+- id: valtrebbia_2025_timing
+  claim: 'Val Trebbia 2025: a moderate flush just before Ferragosto ''esaurita in fretta'', then the season
+    started with the rain of 1 September: a record ''buttata'' around Bobbio and Perino'
+  source: https://liberta.it/news/attualita/record-di-porcini-in-val-trebbia-una-buttata-eccezionale/99289
+  higher:
+    area: val_trebbia_bobbio
+    seasons:
+    - 2025
+    start: 09-01
+    end: 09-08
+  lower:
+    area: val_trebbia_bobbio
+    seasons:
+    - 2025
+    start: 08-16
+    end: 08-31
+- id: parma_est_2020_timing
+  claim: 'Parma Apennines 2020: ''un settembre ricco e felice'' after the August rains, then violent storms
+    and tramontana ''hanno letteralmente bloccato la crescita dei funghi porcini'' in October'
+  source: https://www.ilparmense.net/raccolta-funghi-2020-ottima-stagione-appennino-parmense/
+  higher:
+    area: parma_est
+    seasons:
+    - 2020
+    start: 09-01
+    end: 09-30
+  lower:
+    area: parma_est
+    seasons:
+    - 2020
+    start: 10-03
+    end: 10-20
+- id: alto_savio_2024
+  claim: 'Bagno di Romagna and the Alto Savio: the 2024 season was ''fra le più copiose degli ultimi decenni'''
+  source: https://www.ilrestodelcarlino.it/cesena/cronaca/tesserini-per-la-raccolta-funghi-771c9e32
+  higher:
+    area: alto_savio
+    seasons:
+    - 2024
+    start: 09-01
+    end: 10-31
+  lower:
+    area: alto_savio
+    seasons:
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2025
+    start: 09-01
+    end: 10-31

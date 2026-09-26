@@ -2,8 +2,10 @@
 # `download`, where present, holds what the grid build needs to fetch the data (api/grid/sources.py
 # `read_vector`). Vector download shapes: `url` + `shapefile` (zip, nested 7z ok), `url` +
 # `geopackage`/`layer`, `url` + `member` + `layer` (named layer inside a zip), `arcgis_layer` +
-# `field`, or `wfs` + `type_name` (optional `srs`, and `page_size` + `sort_by` for a server that caps
-# GetFeature). `field` names the forest-type column when the source serves `forest.types`.
+# `field`, `wfs` + `type_name` (optional `srs`, and `page_size` + `sort_by` for a server that caps
+# GetFeature), or `parts` (a list of url shapes read and concatenated; `file` names a download whose
+# url does not end in its file name). `field` names the forest-type column when the source serves
+# `forest.types`.
 
 istat_boundaries:
   name: ISTAT — Confini delle unità amministrative a fini statistici (generalizzati), 1 gennaio 2025
@@ -15,6 +17,47 @@ istat_boundaries:
     regions: Reg01012025_g/Reg01012025_g_WGS84.shp
     provinces: ProvCM01012025_g/ProvCM01012025_g_WGS84.shp
     comuni: Com01012025_g/Com01012025_g_WGS84.shp
+
+rer_carta_forestale:
+  name: Regione Emilia-Romagna — Carta forestale regionale 2025 (1:10.000)
+  homepage: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale
+  license: CC BY 4.0
+  attribution: "Carta forestale regionale © Regione Emilia-Romagna, CC BY 4.0"
+  notes: >-
+    Photo-interpreted from the AGEA 2023 flight (approved by Determinazione n. 6273 of 31/03/2026),
+    minimum unit 0.16 ha. Each polygon has its land use (STC_RER: bosco, arbusteti in evoluzione,
+    arboricoltura…) and INFC forest category (COD_CAT: faggete, cerrete, castagneti…). Published as
+    one shapefile per province (RDN2008 / UTM 32N); the site's legal notes release its contents
+    under CC BY 4.0.
+  download:
+    parts:
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalepc.zip/@@download/file
+        file: CartaForestale2025PC.zip
+        shapefile: CartaForestale2025PC.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalepr.zip/@@download/file
+        file: CartaForestale2025PR.zip
+        shapefile: CartaForestale2025PR.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalere.zip/@@download/file
+        file: CartaForestale2025RE.zip
+        shapefile: CartaForestale2025RE.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalemo.zip/@@download/file
+        file: CartaForestale2025MO.zip
+        shapefile: CartaForestale2025MO.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalebo.zip/@@download/file
+        file: CartaForestale2025BO.zip
+        shapefile: CartaForestale2025BO.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalefe.zip/@@download/file
+        file: CartaForestale2025FE.zip
+        shapefile: CartaForestale2025FE.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalera.zip/@@download/file
+        file: CartaForestale2025RA.zip
+        shapefile: CartaForestale2025RA.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalefc.zip/@@download/file
+        file: CartaForestale2025FC.zip
+        shapefile: CartaForestale2025FC.shp
+      - url: https://ambiente.regione.emilia-romagna.it/it/parchi-natura2000/foreste/quadro-conoscitivo/sistema-informativo-regionale/carta-forestale-regionale/cartaforestalern.zip/@@download/file
+        file: CartaForestale2025RN.zip
+        shapefile: CartaForestale2025RN.shp
 
 rt_ucs:
   name: Regione Toscana — Uso e copertura del suolo 2007-2019 (1:10.000)
