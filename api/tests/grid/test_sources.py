@@ -70,6 +70,24 @@ def test_download_context_trusts_the_intermediates_some_servers_leave_out() -> N
     assert context.check_hostname
 
 
+def test_download_context_trusts_the_mozilla_roots_whatever_the_os_bundle(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # www.istat.it chains to HARICA TLS RSA Root CA 2021, which macOS's /etc/ssl/cert.pem (the
+    # bundle uv's Python reads) lacks: the boundaries download failed there on 2026-09-26.
+    empty = tmp_path / "empty.pem"
+    empty.write_text("")
+    monkeypatch.setenv("SSL_CERT_FILE", str(empty))
+    monkeypatch.setenv("SSL_CERT_DIR", str(tmp_path))
+    names = {
+        dict(pair[0] for pair in cert["subject"]).get("commonName")
+        for cert in download_ssl_context().get_ca_certs()
+    }
+
+    assert "HARICA TLS RSA Root CA 2021" in names
+    assert "ISRG Root X1" in names
+
+
 def test_fetch_verifies_https_with_the_download_context(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

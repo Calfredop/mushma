@@ -18,6 +18,7 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+import certifi
 import geopandas as gpd
 import yaml
 from shapely.geometry.base import BaseGeometry
@@ -52,8 +53,14 @@ def data_dir() -> Path:
 
 
 def download_ssl_context() -> ssl.SSLContext:
-    """The default verifying context, plus the intermediate CAs in ``config/certs/``."""
+    """The default verifying context, plus certifi's Mozilla roots and the intermediate CAs in
+    ``config/certs/``.
+
+    The default roots are the OS's OpenSSL bundle, which on macOS (uv's Python reads
+    ``/etc/ssl/cert.pem``) lacks newer roots such as HARICA TLS RSA Root CA 2021, www.istat.it's.
+    """
     context = ssl.create_default_context()
+    context.load_verify_locations(cafile=certifi.where())
     for pem in sorted(CERTS_DIR.glob("*.pem")):
         context.load_verify_locations(cafile=pem)
     return context
