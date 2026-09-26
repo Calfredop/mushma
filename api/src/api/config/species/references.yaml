@@ -63,6 +63,20 @@ references:
     supports: mesothermal, Mediterranean, humid climatic niche; strongly acid loam soils.
     cited_as:
     - porcini.md R33
+  ambrosio2024_dendrobiology:
+    citation: 'Ambrosio E., Pietras M., Feest A. (2024) Biotic and abiotic factors influencing macrofungal diversity
+      and biomass in Mediterranean forests with a focus on the Porcini group. Dendrobiology 91: 16–31'
+    doi: 10.12657/denbio.091.002
+    url: http://agro.icm.edu.pl/agro/element/bwmeta1.element.agro-d8064368-8e1c-4750-b65a-4f8585cf66c2/c/16-31.pdf
+    kind: peer_reviewed
+    region: Liguria (Sassello)
+    verified: verified
+    supports: 'three porcini sites in Sassello (SV), surveyed 2012–2014 in Apr–Jun and Sep–Nov: a young chestnut
+      coppice at 420–450 m (B. edulis), a Turkey-oak high forest at 340–380 m (B. aereus, B. reticulatus) and a
+      beech high forest at 1000 m (B. edulis, B. reticulatus); 32, 50 and 73 porcini fruit bodies; soil pH 4.2–5.8
+      on calcschist, serpentine schist and conglomerate; Sassello station rainfall 97–155 mm a month on average
+      (ARPAL); local climate not significant at plot scale, while soil geochemistry was; at European scale the
+      rain of the driest month was the main climatic predictor of B. edulis occurrence (MaxEnt).'
   ambrosio_zotti2015:
     citation: 'Ambrosio E., Zotti M. (2015) Mycobiota of three Boletus edulis (and allied species) productive sites.
       Sydowia 67: 197–216'
@@ -125,6 +139,17 @@ references:
       not seen. Not in GBIF, which is why Umbrian GBIF records are so few.'
     cited_as:
     - species-ecology/umbria.md
+  arpal_atlante_clima2013:
+    citation: 'ARPAL – Centro Funzionale Meteoidrologico di Protezione Civile (Agrillo G., Bonati V., eds.) (2013)
+      Atlante climatico della Liguria (1961–2010). Progetto Res-Mar, Programma Italia-Francia Marittimo 2007–2013'
+    url: https://www.arpal.liguria.it/contenuti_statici/clima/atlante/Atlante_climatico_della_Liguria.pdf
+    kind: institutional
+    region: Liguria
+    verified: verified
+    supports: 'Levante much rainier than Ponente (totals, rainy days, daily intensity); in autumn 1981–2010 was
+      rainier than 1961–1990 (totals, rainy days, intensity), other seasons drier; the province of Genova (outside
+      Tigullio and Val d''Aveto) most exposed to intense daily rain; Ponente milder than Levante; smaller daily
+      temperature range on the coast than inland.'
   arrigoni_viciani_castagneti:
     citation: 'Arrigoni P.V., Viciani D. Caratteri fisionomici e fitosociologici dei castagneti toscani. Parlatorea
       5: 55–99 (year not verified)'
@@ -296,6 +321,15 @@ references:
       early-summer flush after a rainy June.
     cited_as:
     - gallinacci.md R31
+  cacciatoridifunghi_liguria2023:
+    citation: Cacciatoridifunghi.it (2023-06-16). Periodo funghi porcini – Liguria
+    url: https://www.cacciatoridifunghi.it/blog/altro/periodo-funghi-porcini-liguria/
+    kind: web
+    region: Liguria
+    verified: verified
+    supports: 'Ligurian porcini "da maggio fino alla fine di ottobre"; summer porcino already in May on south-facing
+      slopes; "porcino nero" July to late September; mountain "porcino rosso" September to early November; B.
+      edulis in the lowlands from late September to late October, earlier in the mountains.'
   cano_cajigas2015:
     citation: Cano Cajigas J.M. (2015). Respuesta molecular de Amanita caesarea (Scop.:Fr.) Pers. frente a distintas
       cepas rizobacterianas. Proyecto Fin de Carrera, Universidad Politécnica de Madrid
@@ -504,6 +538,16 @@ references:
     supports: B. edulis s.l. as a complex; hosts in Fagaceae, Pinaceae, Betulaceae.
     cited_as:
     - porcini.md R22
+  ilgiornale_boschi_liguri2010:
+    citation: Casabella F. (2010-08-31). La mappa dei boschi liguri alla scoperta dei nostri funghi. il Giornale
+    url: https://www.ilgiornale.it/news/mappa-dei-boschi-liguri-scoperta-dei-nostri-funghi.html
+    kind: web
+    region: Liguria
+    verified: verified
+    supports: 'porcini areas by valley (Val d''Aveto, Fontanabuona to Torriglia, Valle Scrivia chestnut woods,
+      Triora to Monte Ceppo and Colle di Nava chestnut and beech woods); "porcini e ovoli" above Voltri (Mele)
+      and in the Val Polcevera; porcini, ovoli and finferli in the Beigua park; galletti at Santo Stefano
+      d''Aveto.'
   innatura_ovolo:
     citation: InNatura (content credited to AMINT). Ovolo buono
     url: https://www.innatura.info/amanita-caesarea-2/
@@ -521,6 +565,14 @@ references:
     supports: native range, hosts, habitats, "only seldom above 1200 m", threats.
     cited_as:
     - ovoli.md R7
+  iucn_pinophilus2019:
+    citation: 'Dahlberg A. (2019, errata 2022). Boletus pinophilus. The IUCN Red List of Threatened Species 2019:
+      e.T122090237A222968707'
+    url: https://redlist.info/iucn/species_view/309751
+    kind: institutional
+    verified: verified
+    supports: ectomycorrhizal with Pinus; "pine forests and pine plantations of all ages", typically on acid, sandy
+      soil, rarely in spruce forests; common in temperate to boreal Europe.
   ivanochko2021:
     citation: 'Ivanochko G., Svendsen E., Hrycan W., Tanino K. (2021). Characterization of chanterelle (Cantharellus
       cibarius) and pine mushrooms (Tricholoma magnivelare) in northern Saskatchewan. Canadian Journal of Plant
@@ -633,6 +685,17 @@ references:
     supports: Amiata black pine survey edible species list without porcini (weak).
     cited_as:
     - porcini.md R43
+  liguriafood_funghi2018:
+    citation: Liguria Food (2018-10-18). Liguria, la regione dei funghi
+    url: https://www.liguriafood.it/2018/10/18/liguria-la-regione-dei-funghi/
+    kind: web
+    region: Liguria
+    verified: verified
+    supports: 'B. edulis "in piena estate ... fino ai primi freddi", mainly beech, also fir; B. aestivalis
+      "tipicamente estiva, ma può essere incontrata già a Maggio", hill chestnut; B. aereus in thermophilous oak
+      and chestnut, "anche in lecceta a pochi passi dal mare"; B. pinophilus "in tardo autunno, inverno fino
+      all''inizio della primavera", under beech and fir; A. caesarea late summer–autumn, acid soils, chestnut and
+      oak, warm dry sites; a picking season of 10–11 months a year.'
   lilleskov2009:
     citation: 'Lilleskov E.A., Bruns T.D., Dawson T.E., Camacho F.J. (2009) Water sources and controls on water-loss
       rates of epigeous ectomycorrhizal fungal sporocarps during summer drought. New Phytologist 182: 483–494'
@@ -649,6 +712,17 @@ references:
     kind: peer_reviewed
     verified: snippet-only
     supports: the isotropic-sky model, in which a plane tilted by beta sees (1 + cos beta) / 2 of the diffuse sky.
+  lr_liguria_17_2014:
+    citation: Regione Liguria. Legge regionale 11 luglio 2014, n. 17, Disciplina della raccolta e commercializzazione
+      dei funghi epigei spontanei (as amended by L.R. 1 marzo 2022, n. 1)
+    url: https://lrv.regione.liguria.it/liguriass_prod/articolo?urndoc=urn:nir:regione.liguria:legge:2014-07-11%3B17&pr=idx,0%3Bartic,1%3Barticparziale,0
+    kind: institutional
+    region: Liguria
+    verified: verified
+    supports: 'daily limits of 3 kg per person (porcini B. reticulatus, edulis, aereus, pinicola: 3 kg) and 1 kg
+      for Amanita caesarea (art. 4); picking A. caesarea "allo stato di ovolo chiuso" forbidden (art. 8); no
+      picking from sunset to sunrise; mayors may set opening and closing dates (art. 6), so there is no fixed
+      regional calendar; paid tesserini (art. 9).'
   martinez_de_aragon2007:
     citation: 'Martínez de Aragón J., Bonet J.A., Fischer C.R., Colinas C. (2007) Productivity of ectomycorrhizal
       and selected edible saprotrophic fungi in pine forests of the pre-Pyrenees mountains, Spain: predictive equations
@@ -773,6 +847,19 @@ references:
     - ovoli.md OVO-02
     - gallinacci.md GAL-05
     - model-v1-validation.md
+  mushma_liguria_forest_composition_2026:
+    citation: 'mushma Liguria woodland composition: forest area by IPLA category and land-use class in the Regione
+      Liguria "Tipi forestali ed. 2025" map (1:10,000, CC BY), measured 2026-09-25 for the Liguria region card'
+    url: https://www.regione.liguria.it/homepage-opendata/opendata-per-tipo/opendata-cartografia/item/43711-tipi-forestali-liguria-2025.html
+    kind: analysis
+    region: Liguria
+    verified: verified
+    supports: 'forest land-use classes 311x+312+313 cover 352,600 ha: chestnut (CA) 120,900 ha, hop-hornbeam (OS)
+      62,900, beech (FA) 44,800, downy and sessile oak (QU) 42,900, maritime and Aleppo pine (PC) 29,400, holm oak
+      (LE) 22,300, Scots pine (PM) 9,200, Turkey oak (CE) 8,800, reforestation (RI, mostly black pine, some
+      Douglas fir and Norway spruce) 6,700, larch (LC) 1,900, riparian (FR) 1,400, silver fir (AB) 900, mesophile
+      broadleaf (LM) 500; land-use 313 mixed woods (mostly chestnut or oak with maritime or Scots pine) 54,600 ha,
+      323 macchia 13,500 ha, 324 regrowth 22,800 ha.'
   mushma_occurrence_check_2026:
     citation: 'mushma occurrence cross-check: GBIF occurrence and species APIs, iNaturalist observations and histogram
       APIs, and the Open-Meteo elevation API, queried 2026-09-17. Aggregates only (counts by month, elevation quantiles);
@@ -790,6 +877,22 @@ references:
     - ovoli.md R15
     - gallinacci.md R25
     - gallinacci.md R26
+  mushma_occurrence_check_liguria_2026:
+    citation: 'mushma Liguria occurrence cross-check: GBIF occurrence API (gadmGid ITA.9_1, basis of record human
+      observation, preserved specimen, occurrence, observation; month facet), iNaturalist histogram and
+      observations APIs (place 96906, verifiable; elevations only for open, accurate records) and the Open-Meteo
+      elevation API, queried 2026-09-25. Aggregates only (counts by month, elevation quantiles); no coordinates
+      are stored or published'
+    url: https://api.gbif.org/v1/occurrence/search
+    kind: analysis
+    region: Liguria
+    verified: verified
+    supports: 'Ligurian record counts by month and elevation for the six keys (B. edulis GBIF 10 / iNat 12, B.
+      reticulatus 14 / 14, B. aereus 3 / 4, B. pinophilus 1 / 1, A. caesarea 11 / 24, Cantharellus 29 / 46) and
+      their month enrichment against all 5,132 Ligurian iNaturalist fungi records. See
+      species-ecology/liguria.md.'
+    cited_as:
+    - species-ecology/liguria.md
   mushma_pvgis_kd_2026:
     citation: 'mushma diffuse-fraction check: PVGIS 5.3 monthly radiation (MRcalc, SARAH3 satellite record 2005–2023)
       at seven Tuscan points (Firenze, Siena, Casentino, Garfagnana, Amiata, Lunigiana, Mugello), queried
@@ -800,6 +903,21 @@ references:
     verified: verified
     supports: 'Kd by month, January to December: 0.49, 0.46, 0.45, 0.45, 0.44, 0.38, 0.33, 0.35, 0.40, 0.46, 0.53,
       0.53 (points range 0.26–0.78 in single years).'
+  mushma_arpal_gauge_check_2026:
+    citation: 'mushma rain check for Liguria: downscaled CDS ERA5-Land (time-series product) daily precipitation
+      against the ARPA Liguria OMIRL rain gauges inside woodland cells (daily CSVs from the Ambiente in Liguria
+      extraction service, positions from the OMIRL station API), 2019-2025 (79 gauges) and 2025 (84 gauges),
+      valid days only, model days re-cut to the gauges'' UTC days. See .gavin-root/docs/regions/liguria.md, Validation'
+    url: https://www.arpal.liguria.it/tematiche/meteo/servizi-agli-utenti.html
+    kind: analysis
+    region: Liguria
+    verified: verified
+    supports: the CDS reanalysis holds 88 % of gauge rain in Ligurian woodland over 2019-2025 (79 % in 2025),
+      less above 800 m (0.77); the national scale (1.28 + 0.29 per km, fitted on Tuscan era5_seamless rain) makes it
+      26 % too wet (13 % in 2025); a gauge-total fit on 2019-2025 of 1.04 + 0.20 per km brings it to 1.005 overall
+      (0.96-1.04 per band). Fitted on 2019-2024 alone it gives 0.88 on 2025.
+    cited_as:
+    - regions/liguria.md
   mushma_sir_gauge_check_2026:
     citation: 'mushma rain check: downscaled Open-Meteo era5_seamless daily precipitation against the SIR Toscana
       (Servizio Idrologico Regionale) rain gauges inside woodland cells, 2025 (133 gauges) and 2026-01-01 to 09-06
@@ -926,6 +1044,23 @@ references:
     supports: B. edulis and B. aereus fruit in Cistus ladanifer scrub (37.8 and 22.5 kg/ha).
     cited_as:
     - porcini.md R32
+  parco_aveto_porcini:
+    citation: Parco Naturale Regionale dell'Aveto. Funghi porcini (prodotti del Parco)
+    url: https://www.parcoaveto.it/prodotti_dettaglio.php?id=3175
+    kind: institutional
+    region: Liguria (Val d'Aveto)
+    verified: verified
+    supports: '"La raccolta dei funghi avviene in boschi di castagno, cerro, faggio, carpino e frassino" in all the
+      park''s valleys; beech porcini white and elongated, chestnut porcini darker with a red stem.'
+  parco_beigua_funghi2015:
+    citation: Parco Naturale Regionale del Beigua (2015-09-02). Inizia la stagione dei funghi nei boschi del Beigua
+    url: https://www.parcobeigua.it/dettaglio.php?id=32309
+    kind: institutional
+    region: Liguria (Beigua, Sassello, Urbe)
+    verified: verified
+    supports: '"soprattutto porcini ed ovoli" in the Beigua hinterland, which "dopo le prime piogge di fine estate e
+      per tutto il periodo autunnale nascono in grande abbondanza"; picking permits for the Foresta della Deiva
+      (Sassello).'
   parlade2017:
     citation: 'Parladé J., Martínez-Peña F., Pera J. (2017) Effects of forest management and climatic variables
       on the mycelium dynamics and sporocarp production of the ectomycorrhizal fungus Boletus edulis. Forest Ecology
@@ -1020,6 +1155,29 @@ references:
     supports: under a beech canopy, May–September, a south-facing plot averaged 13.1 °C air and 15.1 °C soil (10 cm)
       against 10.4 and 11.1 °C on a north-west plot 200 m higher; after the lapse rate about 1.4 °C (air) and
       2.8 °C (soil) are due to aspect, for a 0.17 difference in relative radiation.
+  rl_fotoatlante_tipi_forestali:
+    citation: Regione Liguria. Allegato interpretativo alla carta dei tipi forestali in scala 1:25000 (Fotoatlante
+      dei tipi forestali, IPLA legend; carta aggiornata 2013)
+    url: https://srvcarto.regione.liguria.it/repertoriocartografico/documentazione/Fotoatlante_TPFORESTALI.pdf
+    kind: institutional
+    region: Liguria
+    verified: verified
+    supports: 'altitude, aspect and substrate per Ligurian forest type: fruit chestnut 300–1000 m, thermophilous
+      chestnut (var. maritime pine) 100–500 m, acidophilous chestnut 300–1000 m, neutrophilous chestnut 500–900 m;
+      oligotrophic beech 700–1600 m, mesotrophic and eutrophic beech 500–1500 m, calcicolous beech 800–1200 m;
+      silver fir 1300–1700 m (Alpi liguri and Apennine); larch 1000–2000 m; Turkey oak 200–1000 m; sessile oak
+      500–1100 m, downy oak 100–900 m; hop-hornbeam 100–1000 m; holm oak 0–600 m, cork oak 0–200 m; Aleppo pine
+      0–300 m, coastal maritime pine 0–600 m, inland maritime pine on ophiolites 300–800 m; Scots pine 500–1600 m,
+      mountain pine (P. uncinata) 1400–1800 m.'
+  rl_tipi_forestali_2008:
+    citation: 'Camerano P., Grieco C., Mensio F., Varese P. (2008) I Tipi forestali della Liguria. Regione Liguria,
+      Erga Edizioni, Genova: 336 pp. (introductory chapters)'
+    url: https://www.agriligurianet.it/it/vetrina/boschi-e-foreste/tipi-forestali/item/download/2236_d2bf87ec144fac743df2b634eb599c90.html
+    kind: institutional
+    region: Liguria
+    verified: verified
+    supports: the IPLA forest-type classification used for the Ligurian map (categories defined by at least 50 %
+      cover of the main species, variants at 25–50 %); altitudinal belts and substrates as classification criteria.
   rochon2011:
     citation: 'Rochon C., Paré D., Pélardy N., Khasa D.P., Fortin J.A. (2011). Ecology and productivity of Cantharellus
       cibarius var. roseocanus in two eastern Canadian jack pine stands. Botany 89(10): 663–675'
@@ -1220,3 +1378,13 @@ references:
     verified: verified
     supports: 'the development-rate curve r = ((Tmax − T) / (Tmax − Topt)) × ((T − Tmin) / (Topt − Tmin)) ^ ((Topt −
       Tmin) / (Tmax − Topt)): 0 at Tmin and Tmax, 1 at Topt (eq. 4A); the growth clock''s temperature pace.'
+  zotti2008_checklist_liguria:
+    citation: 'Zotti M., Vizzini A., Traverso M., Boccardo F., Pavarino M., Mariotti M.G. (2008) The macrofungi
+      checklist of Liguria (Italy): the current status of surveys. Mycotaxon 105: 167–170 (full checklist online)'
+    url: http://www.mycotaxon.com/resources/checklists/zotti-v105-checklist.pdf
+    kind: peer_reviewed
+    region: Liguria
+    verified: verified
+    supports: 'Liguria holds more than 36 % of the Italian macrofungal species on about 2 % of the territory, with
+      only about half of it surveyed; Cantharellus cibarius var. alborufescens in holm-oak wood at 50 m on 26
+      November 2003 and var. rufipes in holm-oak wood at 190 m on 23 October 2001.'

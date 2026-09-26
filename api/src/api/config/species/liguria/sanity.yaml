@@ -1,0 +1,282 @@
+# Press-contrast sanity check for Liguria (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025) or provinces; windows and source URLs written down on
+# 2026-09-25, before any Liguria score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Evidence, second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/liguria.md.
+# Picking was restricted in the 2022-2023 African swine fever zone (Beigua, Valle Stura, Torriglia):
+# that thins sightings there, not the scores these contrasts compare.
+areas:
+  aveto_trebbia:
+    comuni:
+    - Santo Stefano d'Aveto
+    - Rezzoaglio
+    - Borzonasca
+    - Mezzanego
+    - Ne
+    - Rovegno
+    - Fontanigorda
+    - Gorreto
+    - Montebruno
+    - Fascia
+    - Rondanina
+    - Propata
+    - Torriglia
+  beigua_stura:
+    comuni:
+    - Sassello
+    - Urbe
+    - Stella
+    - Pontinvrea
+    - Tiglieto
+    - Rossiglione
+    - Campo Ligure
+    - Masone
+    - Mele
+  valbormida:
+    comuni:
+    - Calizzano
+    - Bardineto
+    - Murialdo
+    - Osiglia
+    - Massimino
+    - Bormida
+    - Millesimo
+    - Roccavignale
+    - Cengio
+    - Cosseria
+    - Plodio
+    - Mallare
+    - Pallare
+  arroscia_alpi_liguri:
+    comuni:
+    - Mendatica
+    - Montegrosso Pian Latte
+    - Cosio d'Arroscia
+    - Pornassio
+    - Rezzo
+    - Pieve di Teco
+    - Aquila d'Arroscia
+    - Armo
+    - Borghetto d'Arroscia
+    - Ranzo
+    - Vessalico
+    - Triora
+    - Molini di Triora
+  levante_inland:
+    comuni:
+    - Santo Stefano d'Aveto
+    - Rezzoaglio
+    - Borzonasca
+    - Mezzanego
+    - Ne
+    - Rovegno
+    - Fontanigorda
+    - Gorreto
+    - Montebruno
+    - Fascia
+    - Rondanina
+    - Propata
+    - Torriglia
+    - Varese Ligure
+    - Maissana
+    - Sesta Godano
+    - Zignago
+    - Carro
+    - Carrodano
+    - Rocchetta di Vara
+    - Calice al Cornoviglio
+    - Brugnato
+    - Borghetto di Vara
+    - Beverino
+    - Pignone
+  savona:
+    provinces:
+    - SV
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: aveto_2016_2017
+  claim: 'Early October: 2016 a "timida nascita" after months of drought, "in tremendo ritardo"
+    (LevanteNews, 2016-10-09); 2017 a flush from 30 September to mid-October on the border with
+    Emilia and Piemonte'
+  source: https://prevedereuscitaporcini.blogspot.com/2017/12/racconti-dai-boschi-della-liguria-con.html
+  higher:
+    area: aveto_trebbia
+    seasons:
+    - 2017
+    start: 09-30
+    end: 10-15
+  lower:
+    area: aveto_trebbia
+    seasons:
+    - 2016
+    start: 09-30
+    end: 10-15
+- id: aveto_2021_timing
+  claim: '2021: drought until the end of September ("il perdurare della siccità"), then "l''esplosione
+    delle nascite" from Sunday 3 October, up to 1500 m'
+  source: https://www.levantenews.it/2021/10/06/funghi-raccolta-al-via-le-regole-i-consorzi-le-sanzioni/
+  higher:
+    area: aveto_trebbia
+    seasons:
+    - 2021
+    start: 10-03
+    end: 10-20
+  lower:
+    area: aveto_trebbia
+    seasons:
+    - 2021
+    start: 08-25
+    end: 09-25
+- id: aveto_2019_2021_early_september
+  claim: 'Early September: "in questi giorni è esplosa la nascita di funghi" in 2019; in 2021 no rain
+    for months and picking suspended in the Aveto park forests (Mentelocale, 2021-09-11)'
+  source: https://www.levantenews.it/2019/09/09/raccolta-funghi-le-regole-da-seguire/
+  higher:
+    area: aveto_trebbia
+    seasons:
+    - 2019
+    start: 09-01
+    end: 09-14
+  lower:
+    area: aveto_trebbia
+    seasons:
+    - 2021
+    start: 09-01
+    end: 09-14
+- id: aveto_july_2022_2024
+  claim: 'July: summer porcini (B. reticulatus) peaking in the eastern Genovesato and the
+    Ligurian-Emilian Apennine in 2024; July 2022 dry, "ad eccezione della Liguria" (FM, 2022-08-02)'
+  source: https://funghimagazine.it/aggiornamento-funghi-25-07-2024/
+  higher:
+    area: aveto_trebbia
+    seasons:
+    - 2024
+    start: 07-01
+    end: 07-25
+  lower:
+    area: aveto_trebbia
+    seasons:
+    - 2022
+    start: 07-01
+    end: 07-25
+- id: sassello_2021_2022
+  claim: 'Sassello, first half of September: "cestini ricolmi di porcini e ovuli", a "stagione boom" in
+    2022; no rain at Sassello and no porcini yet in 2021 (IVG, 2021-09-16)'
+  source: https://www.redazionenews.it/economia/2022/09/15/sassello-dopo-la-festa-amaretto-sotto-coi-funghi-stagione-boom/
+  higher:
+    area: beigua_stura
+    seasons:
+    - 2022
+    start: 09-01
+    end: 09-15
+  lower:
+    area: beigua_stura
+    seasons:
+    - 2021
+    start: 09-01
+    end: 09-15
+- id: ovoli_savonese_2021_2022
+  claim: 'Ovoli, late August to mid-September: "una gettata eccezionale anche di Amanita Caesarea nel
+    savonese" in 2022; in 2021 a few after Ferragosto that dried out, then nothing (IVG, 2021-09-16)'
+  source: https://www.basilico.it/2022/10/25/raccolta-funghi-in-liguria-nel-2022-annata-record-ma-lambiente-soffre/
+  higher:
+    area: beigua_stura
+    seasons:
+    - 2022
+    start: 08-28
+    end: 09-15
+  lower:
+    area: beigua_stura
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-15
+- id: sassello_july_2025
+  claim: 'Late July 2025: "buttate estive straordinarie" of summer porcini in the Sassello woods,
+    where foragers had got used to waiting until late August'
+  source: https://www.ivg.it/2025/07/un-luglio-anomalo-e-piovoso-regala-buttate-di-porcini-estivi-nel-sassellese-e-in-alta-valbormida/
+  higher:
+    area: beigua_stura
+    seasons:
+    - 2025
+    start: 07-15
+    end: 07-29
+  lower:
+    area: beigua_stura
+    seasons: normal
+    start: 07-15
+    end: 07-29
+- id: valbormida_2024
+  claim: 'Bardineto and Calizzano, mid-September 2024: "non accadeva da anni che ci fosse un clima così
+    propizio"; picking banned 18-22 September to protect the coming flush'
+  source: https://www.ivg.it/2024/09/a-bardineto-e-calizzano-vietato-raccogliere-funghi-fino-a-domenica-22-settembre/
+  higher:
+    area: valbormida
+    seasons:
+    - 2024
+    start: 09-12
+    end: 10-05
+  lower:
+    area: valbormida
+    seasons: normal
+    start: 09-12
+    end: 10-05
+- id: bormida_vs_beigua_2020
+  claim: 'September 2020: still good picking in the upper Bormida valleys; the Savonese patchy, and the
+    Beigua and upper Orba only wetted in early October (FM, 2020-10-08)'
+  source: https://funghimagazine.it/meteofunghi-21-09-2020/
+  higher:
+    area: valbormida
+    seasons:
+    - 2020
+    start: 09-01
+    end: 09-20
+  lower:
+    area: beigua_stura
+    seasons:
+    - 2020
+    start: 09-01
+    end: 09-20
+- id: levante_vs_savona_2023
+  claim: 'Early October 2023: "ancora ottimamente bene sui settori di Levante", good or very good in the
+    Spezzino above 1000-1200 m; "nascite scarsissime o assenti nel Savonese"'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: levante_inland
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+  lower:
+    area: savona
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+- id: gallinacci_arroscia_2022_2025
+  claim: 'Gallinacci, late June to mid-July: "Porcini estivi e Finferli già raccolti" on the upper
+    Arroscia-Centa and Tanaro border in 2025 after frequent rain; July 2022 hot and dry in Liguria
+    (FM, 2022-08-02)'
+  source: https://funghimagazine.it/aggiornamento-nascite-funghi-27-06-2025/
+  higher:
+    area: arroscia_alpi_liguri
+    seasons:
+    - 2025
+    start: 06-28
+    end: 07-15
+  lower:
+    area: arroscia_alpi_liguri
+    seasons:
+    - 2022
+    start: 06-28
+    end: 07-15

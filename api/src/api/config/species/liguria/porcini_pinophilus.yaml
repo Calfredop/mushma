@@ -1,0 +1,307 @@
+# Species rules for one key in LIGURIA, loaded and validated by api.model.rules (see README.md here).
+# Copied from tuscany/ and retuned from Ligurian sources: .gavin-root/docs/species-ecology/liguria.md.
+# Tuscan evidence and rule ids (POR-*): .gavin-root/docs/species-ecology.md and species-ecology/porcini.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
+schema_version: 1
+key: porcini_pinophilus
+group: porcini
+taxon: Boletus pinophilus
+synonyms: [Boletus pinicola]
+status: draft
+i18n_key: species.porcini_pinophilus
+records:
+  gbif_taxon_keys: [5954949]
+  inat_taxon_ids: [335942]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    Only 3 GBIF and 7 iNaturalist Tuscan records (2026-09-17), and 1 GBIF and 1 iNaturalist record in
+    Liguria (2026-09-25). "Boletus pinicola" does not match in the GBIF backbone (it resolves to class
+    level), so map verbatim names to 5954949 by hand in the ingest.
+notes: >-
+  Liguria. The most cold-tolerant porcino, and the earliest and latest to fruit. Hosts disagree
+  between sources (pines in the IUCN assessment and the Netherlands, beech, fir and chestnut in
+  Italy). Liguria has 29,400 ha of maritime-pine and 9,200 ha of Scots-pine woods, often in contact
+  with chestnut and beech, so both views are used here: the Italian hosts stay, and the pine classes
+  move up (see habitat). The altitude band follows the lower Ligurian beech belt. Weather rules are
+  Tuscany's unchanged.
+
+# Growth clock (README, "Growth clock"): how fast fruit bodies develop after the rain, day by day.
+# The rain_event lag below is counted in growth days, the sum of these daily paces.
+growth:
+  temperature:
+    variable: soil_temperature_0_to_7cm_mean
+    cardinal_c: [0, 18, 30]
+    reference_c: 15
+  humidity:
+    variable: vapour_pressure_deficit_max
+    trapezoid: [null, null, 1.0, 2.0]
+    floor: 0.5
+  max_lag_days: 40
+  confidence: folklore
+  source: [yan_hunt1999, moore2008_fruit_bodies, kasparavicius2001, blog_prevedere_porcini, funghimagazine_giorni_pioggia]
+  derived: true
+  notes: >-
+    POR-R3, transferred from B. edulis (the cool-climate porcino, earliest and latest in the
+    year). The pace is 1 at 15 °C of topsoil, the weather the lag window was drawn from. Fruit
+    bodies develop at a lower optimum than mycelium grows in culture (B. edulis 25-28 °C; Moore
+    et al. 2008), hence t_opt 18 °C. A 9 °C stretch runs at about 65 % pace. Caps stop growing
+    when the day's minimum humidity falls under 40 % and grow well from about 60 %
+    (Kasparavičius 2001, B. edulis): open-air daily maximum VPD of 1.0 kPa keeps full pace and
+    2.0 kPa halves it; the floor stands for the moister air under the canopy. No peer-reviewed
+    days-per-°C figure exists for these species: every number is a prior.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: spring
+          dates: ["01-05", "20-05", "30-06", "20-07"]
+        - label: autumn
+          dates: ["15-08", "15-09", "15-11", "15-12"]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, micoweb_pinophilus, liguriafood_funghi2018, cacciatoridifunghi_liguria2023]
+    derived: true
+    data: available
+    notes: >-
+      POR-S4. A summer form from June in chestnut and an autumn form under beech and fir (IGP). The
+      spring flush is the least certain part. Too few records to cross-check. Liguria: kept. Ligurian
+      pages disagree: "in tardo autunno, inverno fino all'inizio della primavera, generalmente sotto
+      faggi e abeti" against the mountain "porcino rosso" from September to early November; the one
+      Ligurian record is from September.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        beech: 1.0
+        fir_spruce: 1.0
+        chestnut: 1.0
+        mountain_pine: 1.0
+        mixed_broadleaf_conifer: 0.6
+        other_conifer: 0.6
+        mediterranean_pine: 0.6
+        deciduous_oak: 0.3
+        mixed_broadleaf: 0.3
+        transitional_woodland_shrub: 0.3
+        evergreen_oak: 0.1
+        macchia: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
+      default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, beugelsdijk2008, mushma_habitat_share_2026, iucn_pinophilus2019, rl_fotoatlante_tipi_forestali, mushma_liguria_forest_composition_2026]
+    derived: true
+    data: available
+    notes: >-
+      Liguria (2026-09-25): the IUCN assessment gives pines as the host ("pine forests and pine
+      plantations of all ages", acid sandy soil; rarely spruce), as does the Dutch phylogeny paper,
+      while Italian sources name beech, fir and chestnut. Both are used: `mountain_pine` (Scots pine,
+      acidophilous and calcicolous, 500-1600 m) moves from secondary 0.6 to host 1.0;
+      `mediterranean_pine` (mostly maritime pine, coastal and inland on ophiolites at 300-800 m,
+      often with chestnut) from marginal 0.3 to secondary 0.6, below host because the coastal stands
+      are warmer than this cool-climate taxon likes (the altitude gate cuts them too); `other_conifer`
+      (mostly black-pine reforestation, IGP-eligible, plus larch) from 0.3 to 0.6. The rest is
+      Tuscany's POR-H2 (four levels, 2026-09-24, mushma_habitat_share_2026): beech, fir and chestnut
+      are the Italian-source hosts ("mainly with beech, fir and chestnut") -> host; mixed
+      broadleaf+conifer secondary (chestnut or oak with pine here, capped below host for dilution);
+      deciduous oak, mixed broadleaf and transitional woodland/shrub marginal ("also broadleaves" is
+      named only generically, and the mixed/transitional classes are diluted by design); evergreen oak,
+      macchia, riparian and exotic broadleaf non-host (no source support for this cool, humid taxon).
+      Saturated to full credit from a host-weighted share of 0.30.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [250, 600, 1600, 1900]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, matteucci2008_micoponte, muse_censimento_boletus, rl_fotoatlante_tipi_forestali, rl_tipi_forestali_2008, mushma_occurrence_check_liguria_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-A2 moved onto the Ligurian belts (Tuscany: 300 -> 800 ... 1600 -> 1900). Cool, humid
+      mountain sites; the summer form also in mid-altitude chestnut. Placed on the Ligurian forest-type
+      atlas: beech from 500 m (mesotrophic and eutrophic) or 700 m (oligotrophic) to 1500-1600 m,
+      Scots pine 500-1600 m, acidophilous chestnut 300-1000 m, so full from 600 m and zero at 250 m.
+      The single located Ligurian record is at 1056 m.
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: plausible
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-R1 + POR-R2, transferred from B. edulis.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 30}
+    response: {trapezoid: [50, 125, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, mushma_rain_tuning_2026]
+    derived: true
+    data: derived
+    notes: >-
+      POR-M1, transferred from B. edulis and community studies.
+      Tuned (2026-09-22): the absolute 20->80 mm ramp was full in an ordinary September, so the 30
+      days are scored as a percentage of the cell's own normal for those days (2016-2025 reanalysis,
+      downscaled and rain-scaled like the rain): 0 at 50 %, full from 125 %. It raised the porcini
+      train objective by 0.03 with or without the rain scale, and the hold-out one by 0.013.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [4, 8, 15, 20]}
+    confidence: plausible
+    source: [muse_censimento_boletus, matteucci2008_micoponte, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: POR-T2. The coolest band, from "copes better with cool climates". Low confidence within plausible.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d; compare in the backtest.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.5
+    confidence: plausible
+    source: [salerni2023_amiata, andrew2025]
+    derived: true
+    data: derived
+    notes: POR-X1, as for B. edulis.
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.2
+    confidence: folklore
+    source: [borgotaro_igp_rt, brejon_hoffman2026_preprint, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X3.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [borgotaro_igp_rt, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 4, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-X6. All numbers are guesses.
+
+  - id: sun_exposure
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.sun_exposure
+    input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
+    response: {trapezoid: [null, null, 105, 125]}
+    floor: 0.8
+    where: {attribute: elevation_m, trapezoid: [null, null, 900, 1100]}
+    confidence: folklore
+    source: [rt_tipi_forestali_p4, bmeteo_pioggia_funghi, bonet2008, mumcu_kucuker2019]
+    derived: true
+    data: derived
+    notes: >-
+      Liguria: kept from Tuscany; any grid percentiles quoted are the Tuscan grid's, not rechecked here.
+      POR-A5. Below 1000 m, north-facing slopes keep moisture in hot spells and hold the
+      conifer hosts (N x1.0, E/W x0.9, S x0.8), but flat, east- and west-facing ground is
+      normal for Tuscan woodland and scores full credit: only clearly sunny slopes lose it.
+      On 15 Oct the cell's sun ratio (its clear-sky sun as a % of flat ground's) runs p10 89
+      %, p25 95 %, median 100 %, p75 105 %, p90 111 % (2026-09-24): x1 up to 105 %, about the
+      p90, x0.8 from 125 %, fading out between 900 and 1100 m. North aspect raised production
+      in dry Pyrenean pine (Bonet 2008), while a humid Turkish forest found north slopes
+      worst for B. edulis (Mumcu Küçüker 2019): the preference is kept to low altitude, where
+      water limits fruiting. Read on the day's sun ratio, the cell's sun as a percentage of
+      flat ground's (api.model.terrain), so it bites hardest in autumn, when the sun is low.
+      The terrain microclimate already makes sunny slopes warmer and drier for every rule;
+      this line is the species' own preference on top of that, kept soft.
+
+  - id: slope
+    role: stopper
+    kind: static_band
+    i18n_key: factor.slope
+    input: {attribute: slope_deg}
+    response: {trapezoid: [null, null, 25, 40]}
+    floor: 0.8
+    confidence: plausible
+    source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
+    derived: true
+    data: available
+    notes: >-
+      Liguria: kept from Tuscany. The percentiles below are the Tuscan grid's; Ligurian woods are
+      steeper, so recheck them on the Liguria grid before reading much into this factor there.
+      Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
+      1979), but a 1 km cell's mean slope is not the slope of the exact spot the mushrooms
+      grow on: normal terrain for Tuscan woodland scores full credit, and only clearly
+      steep cells lose it. Woodland cells on the Tuscan grid run p10 10.2°, p25 12.6°, median
+      16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up to 25°, about the p90, x0.8 from 40°.
+      Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B. edulis
+      yield was highest under about 11° on plots in north-east Turkey (Mumcu Küçüker 2019);
+      two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts on
+      the score only, never on the rain, so the same water is not counted twice.
+
+known_gaps:
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive.
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: soil
+    description: POR-N1. "Poor, acid, sandy soil" in Dutch sampling.
+    needs: [soil_ph, soil_texture]
+    confidence: plausible
+    source: [beugelsdijk2008]

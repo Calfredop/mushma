@@ -1,0 +1,82 @@
+# Liguria: region #2 of the full-Italy rollout (.gavin-root/docs/regions/liguria.md).
+id: liguria
+name: {it: Liguria, en: Liguria}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [7.49, 43.77, 10.08, 44.68]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 7
+
+# Woodland: one regional map gives both layers. Regione Liguria's Tipi forestali 2025 (1:10,000)
+# carries the 2025 land-use code on every polygon (cod_uso: how much of each cell is broadleaf,
+# conifer, mixed forest, macchia or regrowth) and, on wooded land, the IPLA forest category
+# (cod_catfor: which kind). Liguria's land-use IV level differs from CLC's: 3114 is beech and 3115
+# chestnut here. See .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/liguria.md.
+forest:
+  groups:
+    source: rl_tipi_forestali
+    class_column: cod_uso
+    classes:
+      "3111": broadleaf  # bosco xerofilo a prevalenza di sempreverdi
+      "3112": broadleaf  # bosco misto termofilo
+      "3113": broadleaf  # bosco misto mesofilo
+      "3114": broadleaf  # bosco a prevalenza di faggio
+      "3115": broadleaf  # bosco a prevalenza di castagno
+      "3116": broadleaf  # castagneti da frutto
+      "3117": broadleaf  # bosco di specie igrofile
+      "312": conifer
+      "313": mixed
+      "323": macchia
+      "324": transitional
+  types:
+    source: rl_tipi_forestali
+    classes:
+      CA: chestnut            # castagneti
+      FA: beech               # faggete
+      QU: deciduous_oak       # querceti di rovere e di roverella
+      CE: deciduous_oak       # cerrete
+      LE: evergreen_oak       # leccete (and the few sugherete)
+      OS: mixed_broadleaf     # orno-ostrieti
+      LM: mixed_broadleaf     # carpineti, acero-tiglio-frassineti
+      FR: riparian            # saliceti, pioppeti, alneti ripari
+      PC: mediterranean_pine  # pinete di pino marittimo e d'Aleppo
+      PM: mountain_pine       # pinete di pino silvestre (and a little pino uncinato)
+      AB: fir_spruce          # abetine (Alpi liguri)
+      LC: other_conifer       # lariceti
+      RI: other_conifer       # rimboschimenti (mostly pino nero, some douglasia)
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Liguria, IT", admin level
+# 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 96906
+
+# Rain scale (merged onto config/model.yaml): the gauge check asked for it. Against ARPA Liguria's
+# OMIRL gauges in woodland (2019-2025, 79 gauges), the CDS reanalysis holds 88 % of the rain and the
+# national scale, fitted on Tuscan era5_seamless rain, overshoots by 26 %. A gauge-total fit on
+# 2019-2025 gives 1.04 + 0.20 per km (pooled 1.005, 0.96-1.04 per height band). Liguria's history is
+# CDS, so the scale names that source too: the national one scales era5_seamless only, while the rain
+# normals are scaled whatever their source. .gavin-root/docs/regions/liguria.md, Validation.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 1.04
+    per_km: 0.20
+    source: [mushma_arpal_gauge_check_2026]
+    notes: >-
+      Liguria: least squares through the origin of gauge totals on model totals x (a + b x
+      elevation) over the 79 ARPA Liguria woodland gauges of 2019-2025 (CDS era5_land_cds rain, UTC
+      gauge days) gave a = 1.037, b = 0.204 per km: pooled ratio 1.005 (below 400 m 0.99, 400-800 m
+      1.04, above 800 m 0.96). Fitted on 2019-2024 it gives 0.88 on 2025, where the national scale
+      gives 1.13: the ratio moves about 10 % from year to year, so the seven-year fit is used. It
+      scales totals: timing errors and missed convective cells stay.
