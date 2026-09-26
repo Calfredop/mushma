@@ -113,7 +113,7 @@ function createMap(
   lang: Language,
   locale: Record<string, string>,
   region: MapRegion,
-  padding: MapPadding | undefined,
+  framePadding: MapPadding | undefined,
   callbacks: { current: MapCallbacks },
 ): MapLibreMap {
   registerPmtiles()
@@ -124,8 +124,7 @@ function createMap(
       region.bounds,
     ),
     bounds: region.bounds,
-    // The region opens in the part of the map nothing covers.
-    fitBoundsOptions: { padding: regionPadding(padding) },
+    fitBoundsOptions: { padding: regionPadding(framePadding) },
     maxBounds: region.maxBounds,
     minZoom: region.minZoom,
     maxZoom: region.maxZoom,
@@ -207,6 +206,11 @@ interface Props {
   region?: MapRegion
   /** What covers the map's edges (the sheet, the controls): camera moves keep clear of it. */
   padding?: MapPadding
+  /**
+   * What a region is framed clear of, when the map opens on it and when it switches to it alike.
+   * Omitted, the region gets only a margin.
+   */
+  framePadding?: MapPadding
   onCellClick: (cellId: string, lat: number, lon: number) => void
   onPointClick: (lat: number, lon: number) => void
   onHotspotClick: (hotspot: Hotspot) => void
@@ -225,6 +229,7 @@ export function ConditionsMap({
   lang,
   region = REGIONS[DEFAULT_REGION_SLUG],
   padding,
+  framePadding,
   onCellClick,
   onPointClick,
   onHotspotClick,
@@ -247,10 +252,15 @@ export function ConditionsMap({
   /** The region the live map was last set up for, as its key. */
   const shownRegion = useRef<string | null>(null)
   const paddingRef = useRef(padding)
+  const framePaddingRef = useRef(framePadding)
 
   useEffect(() => {
     paddingRef.current = padding
   }, [padding])
+
+  useEffect(() => {
+    framePaddingRef.current = framePadding
+  }, [framePadding])
 
   useEffect(() => {
     regionRef.current = region
@@ -280,7 +290,7 @@ export function ConditionsMap({
           initialLang.current,
           initialLocale.current,
           regionRef.current,
-          paddingRef.current,
+          framePaddingRef.current,
           callbacks,
         )
         shownRegion.current = regionKey(regionRef.current)
@@ -461,7 +471,7 @@ export function ConditionsMap({
     const map = mapRef.current
     if (!map || !ready || wantedRegion === shownRegion.current) return
     shownRegion.current = wantedRegion
-    showRegion(map, regionRef.current, paddingRef.current)
+    showRegion(map, regionRef.current, framePaddingRef.current)
   }, [wantedRegion, ready])
 
   // Camera requests (search, GPS, hot places, a tap). Declared before the spot effect so a

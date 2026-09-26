@@ -552,6 +552,9 @@ function MapScreen() {
             lang={language}
             region={app.region}
             padding={mapPadding}
+            // A region looks the same whether you open its page or switch to it: clear of the
+            // panel and chrome on a desktop, on the whole map on a phone.
+            framePadding={desktop ? mapPadding : undefined}
             // No zoom: the map only moves if the sheet opening over it would hide the tap.
             onCellClick={(cellId, lat, lon) =>
               openSpot({ kind: 'cell', cellId }, 'map', { lat, lon })

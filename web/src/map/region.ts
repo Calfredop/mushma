@@ -9,7 +9,7 @@ export type MapRegion = Pick<
   'bounds' | 'maxBounds' | 'minZoom' | 'maxZoom'
 >
 
-/** A region is framed in the part of the map nothing covers. */
+/** A region is framed with a margin, and clear of `padding` when there is one. */
 export function regionPadding(padding: MapPadding | undefined): MapPadding {
   return mergePadding({ top: 24, bottom: 24, left: 24, right: 24 }, padding)
 }
