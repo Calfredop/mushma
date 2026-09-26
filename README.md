@@ -137,8 +137,8 @@ interval, so the changes stay on as priors, not results.
   [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to install it)
 - [uv](https://docs.astral.sh/uv/) (installs the pinned Python itself)
 - [Docker](https://www.docker.com/) if you want to build the `api/` image locally
-- [wrangler](https://developers.cloudflare.com/workers/wrangler/) (`pnpm dlx wrangler`) to upload
-  the basemap and deploy its tile Worker
+- [wrangler](https://developers.cloudflare.com/workers/wrangler/) (`pnpm dlx wrangler`) to deploy
+  the basemap's tile Worker (the extracts themselves go up with `web/scripts/upload-basemap.py`)
 
 ## web/
 
@@ -197,9 +197,7 @@ cd web && scripts/extract-basemap.sh          # Italy → italy.pmtiles + italy-
 
 The Italy extract is about **2.7 GB** total (`italy.pmtiles` ≈ 2.14 GB,
 `italy-terrain.pmtiles` ≈ 399 MB; recorded 2026-09-24, Protomaps build 20260924).
-That fits Cloudflare R2's 10 GB free tier with room for the old Tuscany files during
-cut-over. The rail holds for you to upload them and repoint Vercel before it pushes
-(see Deploying → Basemap).
+That fits Cloudflare R2's 10 GB free tier. Deploying → Basemap has how to upload it.
 
 The dev server serves them at `/basemap/`. Without them, leave
 `VITE_BASEMAP_URL` and `VITE_TERRAIN_URL` empty and the map draws a plain land
@@ -468,10 +466,11 @@ the scheduled job machine could never share its stores with the API machine.
 variables (Production and Preview):
 
 - `VITE_API_BASE_URL=https://api.mappafunghi.app`
-- `VITE_BASEMAP_URL=https://tiles.mappafunghi.app/italy.json`
-- `VITE_TERRAIN_URL=https://tiles.mappafunghi.app/italy-terrain.json`
+- `VITE_BASEMAP_URL=https://tiles.mappafunghi.app/italy.json?v=20260924`
+- `VITE_TERRAIN_URL=https://tiles.mappafunghi.app/italy-terrain.json?v=20260924`
 
-They are baked in at build time, so changing one needs a redeploy. `mappafunghi.app` and
+`?v=` is the extract's Protomaps build date (`web/data/basemap/italy.build`); the tile Worker
+ignores it (Basemap below). They are baked in at build time, so changing one needs a redeploy. `mappafunghi.app` and
 `www.mappafunghi.app` are CNAMEs to Vercel on Cloudflare, "DNS only" (not proxied).
 
 Three more (`web/.env.example`) are set for **Production only**, never Preview:
@@ -492,30 +491,34 @@ and z/x/y tiles on the custom domain `tiles.mappafunghi.app`, where Cloudflare's
 `PUBLIC_HOSTNAME = "tiles.mappafunghi.app"`, `ALLOWED_ORIGINS` the production origins plus
 `localhost:5173`/`4173`, and a `custom_domain` route for the hostname.
 
-**Italy cut-over (foundation rail hold).** After `scripts/extract-basemap.sh` finishes, upload the
-Italy files and repoint the Vercel env *before* the rail pushes main:
+The bucket holds `italy.pmtiles` and `italy-terrain.pmtiles`, which replaced the Tuscany extract on
+2026-09-26 (Protomaps build 20260924); the Worker serves each archive as `<name>.json` plus
+`<name>/{z}/{x}/{y}`, and ignores a query string.
 
-```sh
-cd web && scripts/extract-basemap.sh    # italy.pmtiles + italy-terrain.pmtiles
-ls -lh data/basemap/italy*.pmtiles      # confirm sizes fit R2 free tier (10 GB)
-pnpm dlx wrangler r2 object put mushma-tiles/italy.pmtiles --file data/basemap/italy.pmtiles --remote
-pnpm dlx wrangler r2 object put mushma-tiles/italy-terrain.pmtiles --file data/basemap/italy-terrain.pmtiles --remote
-```
+**Uploading or refreshing the extract.** `wrangler r2 object put` stops at 300 MiB and
+`italy.pmtiles` is 2.2 GiB, so the extracts go up through R2's S3 API with
+`web/scripts/upload-basemap.py`, in 64 MiB parts:
 
-Then in the Vercel project (Production): set `VITE_BASEMAP_URL` /
-`VITE_TERRAIN_URL` to the `italy.json` / `italy-terrain.json` TileJSON URLs above (replacing
-`tuscany.*`). The next production build after the push picks them up. Keep the old `tuscany.*`
-objects in R2 until that deploy is verified.
+1. Cloudflare dashboard → R2 → Manage API Tokens → Create Account API token: Object Read & Write,
+   the `mushma-tiles` bucket only, TTL 24 hours. It shows its S3 credentials once.
+2. Extract and upload (the script checks each upload's size against the file on disk):
 
-To refresh later:
+   ```sh
+   cd web && scripts/extract-basemap.sh    # italy.pmtiles + italy-terrain.pmtiles
+   ls -lh data/basemap/italy*.pmtiles      # confirm sizes fit R2 free tier (10 GB)
+   export R2_ENDPOINT=https://<account id>.r2.cloudflarestorage.com R2_ACCESS_KEY_ID=<key id>
+   read -rs R2_SECRET_ACCESS_KEY && export R2_SECRET_ACCESS_KEY   # paste it; not echoed
+   uv run scripts/upload-basemap.py
+   ```
 
-```sh
-cd web && scripts/extract-basemap.sh
-pnpm dlx wrangler r2 object put mushma-tiles/italy.pmtiles --file data/basemap/italy.pmtiles --remote
-pnpm dlx wrangler r2 object put mushma-tiles/italy-terrain.pmtiles --file data/basemap/italy-terrain.pmtiles --remote
-```
+3. In Vercel, set `?v=` on `VITE_BASEMAP_URL` and `VITE_TERRAIN_URL` to the new build date
+   (`cat data/basemap/italy.build`) and redeploy production.
 
-Tiles stay cached for a day (`CACHE_CONTROL`) and in the PWA's own cache for 30.
+Why the `?v=`: the Worker's responses stay cached at Cloudflare's edge for a day (`CACHE_CONTROL`),
+a 404 too. A TileJSON URL fetched before its archive was uploaded keeps answering 404 until it
+expires, and a refreshed archive keeps its old TileJSON; a new `?v=` is a URL the edge hasn't seen.
+The z/x/y tiles carry no version, so after a refresh they catch up within a day at the edge, and
+within 30 days in the PWA's own cache.
 
 `api.mappafunghi.app` sends `X-Robots-Tag: noindex` (`deploy/Caddyfile`); `tiles.mappafunghi.app`
 doesn't, since the stock Protomaps Worker has no config option for custom response headers and
