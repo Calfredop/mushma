@@ -322,3 +322,21 @@ def test_cds_reanalysis_days_are_not_flagged_as_forecast(cds_root: Path) -> None
 
     weather = HistoryStore(cds_root / "history" / REGION).read_area_weather([2025])
     assert not weather["forecast"].any()
+
+
+def test_normals_downscale_with_the_regions_own_weather_config(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A region's lapse rates (weather.lapse_rates in its YAML) must reach its normals and seasons.
+    from api.history import build
+
+    calls: list[dict] = []
+
+    def spy(*args: object, **kwargs: object):
+        calls.append(kwargs)
+        return load_weather_config(*args, **kwargs)
+
+    monkeypatch.setattr(build, "load_weather_config", spy)
+    build_normals(REGION, root)
+
+    assert calls and all(call.get("region") == REGION for call in calls)

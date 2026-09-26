@@ -237,8 +237,8 @@ def main() -> None:
     parser.add_argument("--per-day", type=float, help="override the daily call budget")
     args = parser.parse_args()
 
-    config = load_weather_config()
     region = load_region(args.region)
+    config = load_weather_config(region=region.id)
     _, store, raw = region_paths(region.id)
     budget = RateBudget(
         per_minute=config.budget.per_minute,

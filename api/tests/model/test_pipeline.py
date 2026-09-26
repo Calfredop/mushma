@@ -229,3 +229,23 @@ def test_rules_that_read_normals_are_refused_before_the_normals_are_built(tmp_pa
 
     with pytest.raises(ValueError, match="api.history.build normals"):
         run_scoring("tuscany", START, END, data_root=root)
+
+
+def test_scoring_downscales_with_the_regions_own_weather_config(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A region's lapse rates (weather.lapse_rates in its YAML) must reach the downscaling.
+    from api.model import pipeline
+    from api.weather.config import load_weather_config
+
+    calls: list[dict] = []
+
+    def spy(*args: object, **kwargs: object):
+        calls.append(kwargs)
+        return load_weather_config(*args, **kwargs)
+
+    monkeypatch.setattr(pipeline, "load_weather_config", spy)
+    root = _data_root(tmp_path, FIRST, 86)
+    run_scoring("tuscany", START, END, data_root=root)
+
+    assert calls and all(call.get("region") == "tuscany" for call in calls)

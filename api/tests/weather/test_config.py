@@ -101,3 +101,46 @@ def test_cds_method_must_be_a_known_one(tmp_path) -> None:
 
     with pytest.raises(ValueError, match="cds.method"):
         load_weather_config(path)
+
+
+def test_a_region_can_set_its_own_lapse_rates(tmp_path: Path) -> None:
+    (tmp_path / "alpine.yaml").write_text(
+        "id: alpine\nweather:\n  lapse_rates:\n    temperature_2m_min: 5.9\n"
+        "    temperature_2m_mean: 5.7\n"
+    )
+
+    national = load_weather_config()
+    regional = load_weather_config(region="alpine", regions_dir=tmp_path)
+
+    assert regional.variables["temperature_2m_min"].lapse_rate_c_per_km == 5.9
+    assert regional.variables["temperature_2m_mean"].lapse_rate_c_per_km == 5.7
+    for name in ("temperature_2m_max", "soil_temperature_0_to_7cm_mean", "precipitation_sum"):
+        assert (
+            regional.variables[name].lapse_rate_c_per_km
+            == national.variables[name].lapse_rate_c_per_km
+        )
+
+
+def test_a_region_without_lapse_rates_keeps_the_national_ones(tmp_path: Path) -> None:
+    (tmp_path / "plain.yaml").write_text("id: plain\n")
+
+    assert load_weather_config(region="plain", regions_dir=tmp_path) == load_weather_config()
+    assert load_weather_config(region="missing", regions_dir=tmp_path) == load_weather_config()
+
+
+def test_a_regional_lapse_rate_needs_a_nationally_corrected_variable(tmp_path: Path) -> None:
+    (tmp_path / "wet.yaml").write_text("weather:\n  lapse_rates:\n    precipitation_sum: 2.0\n")
+
+    with pytest.raises(ValueError, match="precipitation_sum"):
+        load_weather_config(region="wet", regions_dir=tmp_path)
+
+
+def test_lombardia_cools_faster_with_height_than_the_national_air_rates() -> None:
+    # .gavin-root/docs/regions/lombardia.md, Weather: the lattice fit and its leave-out test.
+    national = load_weather_config().variables
+    lombardia = load_weather_config(region="lombardia").variables
+
+    for name in ("temperature_2m_min", "temperature_2m_mean", "temperature_2m_max"):
+        assert lombardia[name].lapse_rate_c_per_km > national[name].lapse_rate_c_per_km
+    soil = "soil_temperature_0_to_7cm_mean"
+    assert lombardia[soil].lapse_rate_c_per_km == national[soil].lapse_rate_c_per_km

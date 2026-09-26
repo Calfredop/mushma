@@ -155,7 +155,7 @@ def run_lattice(region_id: str) -> None:
     region = load_region(region_id)
     grid_dir, store, raw = region_paths(region.id)
     out = store.root / "checks"
-    config = load_weather_config()
+    config = load_weather_config(region=region.id)
     native = replace(config, points=replace(config.points, stride=1))
     check_store = WeatherStore(out / "lattice")
     client = _client(raw)
@@ -327,7 +327,7 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
     if region.id not in GAUGE_NETWORKS:
         raise SystemExit(f"no rain gauge network wired for {region.id!r} (GAUGE_NETWORKS)")
     grid_dir, store, raw = region_paths(region.id)
-    config = load_weather_config()
+    config = load_weather_config(region=region.id)
     network = GAUGE_NETWORKS[region.id](raw, start, end)
     gauges = network.gauges.copy()
     to_laea = Transformer.from_crs(4326, region.grid.crs, always_xy=True)

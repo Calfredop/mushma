@@ -83,7 +83,9 @@ requests:
 # Daily variables, in Open-Meteo's names and default units (requests pin the units).
 #   downscale            bilinear (4 surrounding nodes) or nearest (1 node)
 #   lapse_rate_c_per_km  cooling per km of height, applied between the node's model height and the
-#                        cell's DEM height. Only temperatures are corrected (see lapse_rates).
+#                        cell's DEM height. Only temperatures are corrected (see lapse_rates). A
+#                        region's YAML may replace these with its own (weather.lapse_rates) when
+#                        its lattice check fits them better (Lombardia).
 variables:
   precipitation_sum: {unit: mm, downscale: bilinear}
   snowfall_sum: {unit: cm, downscale: bilinear}
