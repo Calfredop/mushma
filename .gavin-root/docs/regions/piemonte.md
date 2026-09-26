@@ -247,7 +247,8 @@ the train seasons (`--seasons train --label onboard-train`). Scores cover 9,537 
 
 **Usable presences (unique, unobscured group-cell-day sightings on woodland cells) in the train
 seasons 2016–2023: 53** (porcini 37, gallinacci 9, ovoli 7; none in 2016–2017), just over the 50 the
-card asks before tuning, so the pre-registered tuning ran (Tuning, below). The hold-out 2024–2025
+card asks before tuning, so the pre-registered tuning ran (Tuning, below); nothing it found held on
+the hold-out, so the priors ship. The hold-out 2024–2025
 holds 27 (porcini 15, gallinacci 9, ovoli 3).
 
 | group | split | n | `auc_local` model | habitat | `auc_time_effort` model | calendar | `auc_region` model | habitat |
@@ -268,6 +269,42 @@ holds 27 (porcini 15, gallinacci 9, ovoli 3).
   rest on 7 presences, and its 3 hold-out presences go the other way on timing.
 - Combined-score winners over the hold-out cell-days that have one: gallinacci 51 %, porcini 39 %,
   ovoli 10 %; 46 % of cell-days have no group in season (the Alpine winter is long).
+
+### Tuning (pre-registered rain search, 2026-09-26)
+
+With 53 usable train presences the card's protocol applies, as Model v1 ran it for Tuscany (55):
+`api.model.tuning --region piemonte --search rain`, one pass of coordinate descent on the train
+seasons 2016–2023, an alternative kept only if it raises the group's objective (mean of pooled
+`auc_local` and `auc_time_effort`) by at least 0.02, season windows, altitude bands and habitat
+affinities frozen; run once with the rain scale as configured (`tuned-rain`) and once without
+(`tuned-rain-scale-off`); a winner judged once on the hold-out. Porcini's 30-day rain was already
+relative to the cell's normal (Tuscany's tuning), so its `higher` alternatives move a
+percentage-of-normal ramp and `relative` equals the prior.
+
+| trial (train objective) | scale on (×0.74) | scale off |
+|---|---|---|
+| start | porcini 0.491, ovoli 0.761, gallinacci 0.557 | 0.482, 0.724, 0.562 |
+| porcini trigger ×1.5 / ×2 | 0.502 / 0.475 | 0.491 / 0.502 |
+| porcini `rain_30d` higher / much higher | 0.486 / 0.490 | 0.483 / 0.487 |
+| porcini clock cooler / warmer | 0.482 / 0.481 | 0.480 / 0.494 |
+| ovoli trigger ×1.5 / ×2 | 0.774 / 0.726 | 0.767 / **0.773** (kept) |
+| ovoli `rain_30d` ×1.5 / ×2 / relative | 0.705 / 0.623 / 0.724 | 0.762 / 0.737 / 0.758 |
+| ovoli clock cooler / warmer | 0.760 / 0.747 | 0.775 / 0.686 |
+| gallinacci trigger ×1.5 / ×2 | 0.507 / 0.501 | 0.543 / 0.491 |
+| gallinacci `rain_30d` ×1.5 / ×2 / **relative** | 0.570 / 0.587 / **0.595** (kept) | 0.565 / 0.586 / **0.612** (kept) |
+| gallinacci clock cooler / warmer | 0.609 / 0.580 | 0.613 / 0.608 |
+| gallinacci sun line off | 0.595 | 0.611 |
+
+- **The rain scale stays on.** The runs end at a mean of 0.616 (scale on) and 0.622 (scale off), 0.006
+  apart, under the margin; the scale is fitted to gauges, not sightings. Without it, ovoli ask for
+  a doubled trigger ramp (+0.049), which is what the ×0.74 scale already does to the rain (with it,
+  the same change gains only +0.013).
+- **The one candidate, gallinacci's 30-day rain relative to the cell's normal** (0 at 50 %, full from
+  125 %), won under both scalings, on 9 presences. **On the hold-out it lost**: objective 0.508 →
+  0.483 (`auc_local` 0.519 → 0.454, `auc_time_effort` 0.498 → 0.512; 9 presences,
+  `backtest/piemonte/tuned-holdout/`). A change the hold-out does not confirm is not shipped (as
+  Tuscany's ovoli trigger), so **nothing is tuned: the researched priors ship** (rules version
+  `4c220f432f29`, the one the stores were scored with).
 
 ### Press contrasts (`sanity.yaml`, porcini, `backtest/piemonte/onboard/sanity_porcini.csv`)
 
