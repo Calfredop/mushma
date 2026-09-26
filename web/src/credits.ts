@@ -72,6 +72,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Marche — Rete Ecologica Marche, Vegetazione naturale 1:50.000',
+    url: 'https://www.regione.marche.it/Entra-in-Regione/Rete-Ecologica-Marche-REM/Cartografia-shapefile',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'ISPRA — Corine Land Cover 2018',
     url: 'https://groupware.sinanet.isprambiente.it/uso-copertura-e-consumo-di-suolo/library/copertura-del-suolo/corine-land-cover/corine-land-cover-2018-iv-livello',
     use: 'landcover',

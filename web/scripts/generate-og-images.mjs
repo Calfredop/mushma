@@ -39,7 +39,7 @@ function listIt(words) {
 }
 
 function regionCards(region) {
-  const where = `in ${region.name.it}`
+  const where = registry.regionLocative(region, 'it')
   const labels = region.species.map((species) => SPECIES_LABEL[species])
   const [first, ...rest] = labels
   return [

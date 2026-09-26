@@ -87,6 +87,26 @@ rl_tipi_forestali:
     sort_by: ogr_fid
     field: cod_catfor
 
+rm_rem_vegetazione:
+  name: Regione Marche — Rete Ecologica Marche (REM), Vegetazione naturale 1:50.000
+  homepage: https://www.regione.marche.it/Entra-in-Regione/Rete-Ecologica-Marche-REM/Cartografia-shapefile
+  license: Open by default (CAD, D.Lgs. 82/2005, art. 52 c. 2); reused as CC BY 4.0
+  attribution: "Vegetazione naturale REM © Regione Marche, CC BY 4.0"
+  notes: >-
+    The phytosociological vegetation map of the regional ecological network (edition of March
+    2019): 17,949 polygons of natural and semi-natural vegetation, each with its physiognomy
+    (TipoFisio: bosco deciduo, rimboschimento a pino nero, arbusteto…) and dominant species
+    (SpeciePrev), so one layer gives both the broad groups and the forest types. The download
+    page states no licence; Italian public data published without one are open by default (CAD
+    art. 52 c. 2), and CC BY 4.0 is the reference licence of AgID's open-data guidelines. Regione
+    Marche's own open-data land-use map (Carta dell'uso del suolo 2007, CC BY 4.0) is published
+    only at Corine level 2 (no broadleaf/conifer split), so it serves as a cross-check of the
+    forest area in .gavin-root/docs/regions/marche.md.
+  download:
+    url: https://static.regione.marche.it/portals/0/Ambiente/Rete%20Ecologica%20regionale%20REM/CanaleREM/Shape%20files%20geoportale/Strati%20cartografici%20REM/REM_Vegetazione_naturale_50k.zip
+    shapefile: REM_Vegetazione_naturale_50k.shp
+    field: SpeciePrev
+
 ispra_clc18_iv:
   name: ISPRA — Corine Land Cover 2018, IV livello (1:100.000)
   homepage: https://groupware.sinanet.isprambiente.it/uso-copertura-e-consumo-di-suolo/library/copertura-del-suolo/corine-land-cover/corine-land-cover-2018-iv-livello

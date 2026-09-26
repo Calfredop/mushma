@@ -60,6 +60,7 @@ import {
   SIGHTINGS_WINDOW_DAYS,
   findRegionAt,
   listRegions,
+  regionLocative,
   rememberRegion,
   servedBounds,
 } from './config'
@@ -597,7 +598,9 @@ function MapScreen() {
           </div>
           {offeredRegion && (
             <p className={styles.status} role="status">
-              {t('locate.switchOffer', { region: offeredRegion.name[language] })}
+              {t('locate.switchOffer', {
+                where: regionLocative(offeredRegion, language),
+              })}
               <button type="button" onClick={acceptSwitch}>
                 {t('locate.switch', { region: offeredRegion.name[language] })}
               </button>
