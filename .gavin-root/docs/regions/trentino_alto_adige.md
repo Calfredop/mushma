@@ -232,8 +232,9 @@ node at most one ERA5-Land step (0.1°) past the file now takes the file's edge 
 themselves; further out is still an error. No new gridded request was needed.
 
 **Open-Meteo.** The update stored `era5_seamless` for 2026-09-12 to 09-20; the forecast call then
-hit Open-Meteo's daily limit (HTTP 429, "Daily API request limit exceeded"), spent on 2026-09-26 by
-the three region lanes and this card's species research (elevation lookups). The served window
+hit Open-Meteo's daily limit (HTTP 429, "Daily API request limit exceeded"): the free quota is per
+IP, shared by every lane on this machine, and it was spent by mid-afternoon on 2026-09-26 (the
+species research found the elevation API at its limit too and used the DEM tiles instead). The served window
 (today −6 to +7, with factors) and the seasonal tendencies wait for the next day's quota; the
 server's daily job fetches them anyway once the region is deployed.
 
