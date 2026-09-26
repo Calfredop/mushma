@@ -282,6 +282,12 @@ skipped when the grid is not built, e.g. in CI. All 15 pass.
    types too: set `class_column` (default: the source's `field`, else `clc18`) and optionally
    `where`. When a single unfiltered `forest.groups` layer names the same source as
    `forest.types` (Liguria's forest-type map carries both codes), it is read once.
+   `forest.types` may also be a **list of layers**, one per source, when a region's forest is
+   mapped by more than one map with different classifications: Trentino-Alto Adige has one layer
+   per autonomous province in both lists. Each types layer is paired with the unfiltered group
+   layer on the same source and read once with it; codes shared by two layers must map to the
+   same habitat. Quote codes YAML reads as booleans (`"ON"`, `"NO"`, `"YES"`): the build rejects
+   them unquoted.
 4. The build prints the region's forest area against the INFC 2015 "bosco" figure in
    `api/src/api/config/infc2015.yaml` and warns when the difference exceeds ±10 %.
 5. National raw files (ISTAT boundaries and localities, DEM tiles, CLC pages by bbox) are
