@@ -331,6 +331,43 @@ hold-out 2024–2025 holds 65 (porcini 38, gallinacci 26, ovoli 1). The most of 
   and sits near habitat otherwise, as in Tuscany and Piemonte.
 - Ovoli: 4 train presences and 1 hold-out; no conclusion.
 
+### Tuning (pre-registered rain search, 2026-09-26)
+
+With 122 usable train presences the card's protocol applies, as Model v1 ran it for Tuscany (55)
+and Piemonte (53): `api.model.tuning --region trentino_alto_adige --search rain`, one pass of
+coordinate descent on the train seasons 2016–2023, an alternative kept only if it raises the
+group's objective (mean of pooled `auc_local` and `auc_time_effort`) by at least 0.02, season
+windows, altitude bands and habitat affinities frozen; run once with the rain scale as configured
+(`tuned-rain`, ×0.75) and once without (`tuned-rain-scale-off`); a winner judged once on the
+hold-out. Porcini's 30-day rain was already relative to the cell's normal, so its `relative`
+alternative equals the prior.
+
+| trial (train objective) | scale on (×0.75) | scale off |
+|---|---|---|
+| start | porcini 0.574, ovoli 0.638, gallinacci 0.571 | 0.558, 0.614, 0.552 |
+| porcini trigger higher / much higher | 0.571 / 0.556 | 0.570 / 0.571 |
+| porcini `rain_30d` higher / much higher | 0.567 / 0.570 | 0.559 / 0.557 |
+| porcini clock cooler / warmer | 0.551 / 0.562 | 0.542 / 0.562 |
+| ovoli trigger higher / much higher | 0.568 / 0.590 | 0.608 / 0.545 |
+| ovoli `rain_30d` higher / much higher / relative | 0.630 / 0.645 / 0.630 | **0.635** (kept) / 0.601 / 0.591 |
+| ovoli clock cooler / warmer | 0.611 / 0.639 | 0.610 / 0.637 |
+| gallinacci trigger higher / much higher | 0.566 / 0.569 | 0.559 / 0.552 |
+| gallinacci `rain_30d` higher / much higher / relative | 0.569 / 0.567 / 0.584 | 0.560 / 0.554 / 0.568 |
+| gallinacci clock cooler / warmer | 0.565 / 0.575 | 0.551 / 0.556 |
+| gallinacci sun line off | 0.571 | 0.552 |
+
+- **The rain scale stays on.** With it every group starts higher (porcini +0.015, ovoli +0.024,
+  gallinacci +0.018), and the runs end at a mean of 0.594 (scale on) against 0.582 (scale off). The
+  scale is fitted to gauges, not sightings; the sightings agree with it here.
+- **Nothing clears the margin with the scale on**, the configuration that ships. The best gains are
+  gallinacci's 30-day rain relative to the cell's normal (+0.013, also the Piemonte candidate) and
+  ovoli's much higher 30-day rain (+0.007), both under 0.02.
+- **The one change kept, ovoli's higher 30-day rain, exists only without the scale** (+0.021 on 4
+  presences), where it undoes the scale's cut to the ovoli rain; with the scale on the same change
+  loses 0.008. There is no candidate in the shipped configuration, and 1 hold-out ovoli presence
+  could not judge one. **Nothing is tuned: the researched priors ship** (rules version
+  `2e812362221d`, the one the stores were scored with).
+
 ### Press contrasts (`sanity.yaml`, `backtest/trentino_alto_adige/onboard/sanity_porcini.csv`)
 
 **11 of 16 hold.**
