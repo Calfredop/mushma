@@ -374,3 +374,60 @@ hold-out 2024–2025 holds 65 (porcini 38, gallinacci 26, ovoli 1). The most of 
 - **One is a tie:** `vallagarina_low_2024` (0.702 against 0.708). The low Vallagarina got 117 % of
   its normal rain and ran 1.7 °C warm in late July 2024; "gran caldo alternato a forti temporali"
   is there, but the storms outweigh the heat in the score.
+
+## After the deploy: what to verify
+
+The stores were rsync'd to the server on 2026-09-26 (`deploy/rsync-region-data.sh
+trentino_alto_adige`, 480 files, 436 MB, no redeploy). Checked right after the sync: `/regions`
+lists the six live regions without this one, and `/status?region=trentino_alto_adige` answers 404.
+The server serves a region only when its YAML is
+in the deployed code and its stores are on disk, so they stay inert until `main` with
+`config/regions/trentino_alto_adige.yaml` is deployed by the rail's "Deploy pulled main" step, with
+the daily job. **The stores stop at 2026-09-20**: Open-Meteo's daily limit was spent on 2026-09-26
+before the forecast and the seasonal tendencies could be fetched, so the served window (today −6 to
++7, with factors) and the outlook come from the server's first daily job for the region. The merged
+`main` must carry this branch's fix to `/overview` (`api/src/api/registry.py`): without it the hub's
+overview answers 404 for every region until that job has scored Trentino-Alto Adige through today.
+Then check:
+
+- [ ] The daily job after the deploy has a `region_done` line for `trentino_alto_adige`
+  (`journalctl -u mushma-daily`), with the weather update filling 2026-09-21 onward, the served
+  window scored with factors, the seasonal fetch and the outlook built; its Open-Meteo call count
+  stays inside the budget.
+- [ ] `https://mappafunghi.app/trentino-alto-adige` and `/trentino-alto-adige/porcini`, `/ovoli`,
+  `/gallinacci` show real scores for today (not fixtures), and a tapped cell's "why this score"
+  names the region's habitats (spruce and fir, larch and stone pine, Scots pine, beech).
+- [ ] `https://api.mappafunghi.app/regions` lists `trentino_alto_adige` with all three species; the
+  hub `/` lists it and colours it from `/overview`.
+- [ ] `https://mappafunghi.app/sitemap.xml` has the four Trentino-Alto Adige URLs (built from the
+  registry).
+- [ ] Lighthouse SEO is 100 on `/trentino-alto-adige` (prerendered title, description, canonical,
+  og image `og/trentino-alto-adige.png`, JSON-LD Dataset with `sameAs` Wikidata Q1237).
+- [ ] `/credits` shows "Provincia autonoma di Trento — Tipi forestali PAT integrati 2021" and
+  "Provincia autonoma di Bolzano — Tipologie forestali dell'Alto Adige".
+- [ ] The next morning's daily job has a `region_done` line for `trentino_alto_adige` again, and no
+  `region_failed`.
+
+## Known limitations
+
+- **Rain scale from South Tyrol alone.** 17 woodland gauges, all in the province of Bolzano; the
+  scale is applied to Trentino too, whose Prealps are wetter (Validation, rain gauges). Fitted on
+  2019–2023 it held the wet 2024 at 0.87.
+- **Drizzle.** The reanalysis rains on 59 % of days against the gauges' 28 % and gives half the rain
+  of the heavy days; at ×0.75 a 3-day total of 30 mm comes half as often as at the gauges.
+- **Bolzano's forest types are site types.** The map names the trees a site carries, not a survey of
+  what grows there; spruce planted on beech or fir sites is typed by the site. Trento's map is a
+  survey of the real types.
+- **Chestnut is barely mapped** (7 cells where dominant): Trento's map holds 754 ha of castagneti,
+  Bolzano's has no chestnut group (chestnut sits inside two oak types). Ovoli and *B. aereus* lean on
+  oak here instead.
+- **Region finder by bbox.** The web registry finds a region by bbox (`findRegionAt`). This bbox
+  (10.38–12.48° E, 45.67–47.10° N) takes in Belluno, Cortina and the Asiago plateau (Veneto), the
+  Garda shore of Lombardy and Val Müstair (Switzerland); and Lombardia's bbox, on its own branch,
+  takes in most of Trentino, Trento city included, so once both are served a fix in Trento from the
+  hub goes to whichever comes first in the registry. Added to `fix-region-lookup-by-boundary.md`.
+- **Lapse rates.** Minimum and mean temperature cool 1.06 °C/km faster with height than the
+  national rates, without a measurable downscaling gain from the region's own (Config, Lapse
+  rates).
+- **Snowfall at the northern edge.** The five nodes at 47.2° N take the Italy-wide snowfall file's
+  47.1° N row (Weather history).
