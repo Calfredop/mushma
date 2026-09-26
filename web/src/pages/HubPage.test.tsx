@@ -44,7 +44,8 @@ describe('HubPage', () => {
   it('lists every served region as a link, with its share of favourable woods and mean score', () => {
     renderHub()
     const list = screen.getByRole('list')
-    const [toscana, umbria] = within(list).getAllByRole('link')
+    const toscana = within(list).getByRole('link', { name: /^Toscana/ })
+    const umbria = within(list).getByRole('link', { name: /^Umbria/ })
     expect(toscana).toHaveAttribute('href', '/toscana')
     expect(toscana).toHaveTextContent('89% dei boschi in condizioni favorevoli')
     expect(

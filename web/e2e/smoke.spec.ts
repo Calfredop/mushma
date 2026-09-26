@@ -173,6 +173,9 @@ test('hub at / lists regions and enters one', async ({ page }) => {
   await page.getByRole('button', { name: 'Rifiuta' }).click()
   await expect(page).toHaveURL(/\/$/)
   await expect(page.getByRole('heading', { name: 'Regioni coperte' })).toBeVisible()
+  // The sheet opens at half; the whole list is a pull (or a tap on the handle) away.
+  await page.getByRole('button', { name: 'Espandi il pannello' }).click()
+  await expect(page.getByRole('complementary')).toHaveAttribute('data-snap', 'full')
   await page.getByRole('link', { name: /^Toscana/ }).click()
   await expect(page).toHaveURL(/\/toscana$/)
   await expect(page.getByRole('radio', { name: 'Tutte' })).toBeVisible()
