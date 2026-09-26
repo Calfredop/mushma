@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from api.weather.arpal import utc_day_totals
 from api.weather.checks import compare_gauge, lapse_regression, leave_out_errors
 from api.weather.points import point_id
 from api.weather.sir import gauge_day_totals
@@ -68,3 +69,16 @@ def test_compare_gauge_measures_bias_and_agreement_on_gauge_days() -> None:
     assert metrics["ratio"] == pytest.approx(0.8)
     assert metrics["daily_corr"] == pytest.approx(1.0)
     assert metrics["wet3_hit_rate"] <= 1.0
+
+
+def test_compare_gauge_takes_the_gauge_network_day_cut() -> None:
+    days = pd.date_range("2025-01-01", periods=60).date
+    rng = np.random.default_rng(5)
+    calendar = pd.Series(rng.gamma(0.4, 12, len(days)), index=days)
+    gauge = utc_day_totals(calendar)
+
+    metrics = compare_gauge(0.5 * calendar, gauge, day_totals=utc_day_totals)
+
+    assert metrics["days"] == 59
+    assert metrics["ratio"] == pytest.approx(0.5)
+    assert metrics["daily_corr"] == pytest.approx(1.0)

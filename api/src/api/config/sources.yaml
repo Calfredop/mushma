@@ -2,7 +2,8 @@
 # `download`, where present, holds what the grid build needs to fetch the data (api/grid/sources.py
 # `read_vector`). Vector download shapes: `url` + `shapefile` (zip, nested 7z ok), `url` +
 # `geopackage`/`layer`, `url` + `member` + `layer` (named layer inside a zip), `arcgis_layer` +
-# `field`, or `wfs` + `type_name`.
+# `field`, or `wfs` + `type_name` (optional `srs`, and `page_size` + `sort_by` for a server that caps
+# GetFeature). `field` names the forest-type column when the source serves `forest.types`.
 
 istat_boundaries:
   name: ISTAT — Confini delle unità amministrative a fini statistici (generalizzati), 1 gennaio 2025
@@ -23,6 +24,45 @@ rt_ucs:
   download:
     url: https://www502.regione.toscana.it/geoscopio/download/tematici/ucs_rt/USO_E_COPERTURA_DEL_SUOLO_REGIONE_TOSCANA.zip
     shapefile: UCS_07_19.shp
+
+rl_tipi_forestali:
+  name: Regione Liguria — Tipi forestali della Regione Liguria sc. 1:10.000, ed. 2025
+  homepage: https://geoportal.regione.liguria.it/catalogo/mappe.html?typeEvent=detailFromHome&idmap=2661
+  license: CC BY 4.0
+  attribution: "Tipi forestali e uso del suolo © Regione Liguria, CC BY 4.0"
+  notes: >-
+    Photo-interpreted at 1:10,000 (0.5 ha minimum unit) from AGEA 2019 and 2022 orthophotos and
+    Sentinel-2. Each of its 52,044 polygons carries the 2025 land-use code (cod_uso, the national
+    Corine-style legend with Liguria's own IV level: 3114 faggio, 3115 castagno) and, on wooded
+    land, the IPLA forest category (cod_catfor) and type (cod_tipofo). GeoServer caps a GetFeature
+    at 5,000 features, hence the paging.
+  download:
+    wfs: https://geoservizi.regione.liguria.it/geoserver/M2661/wfs
+    type_name: M2661:L10450
+    srs: EPSG:25832
+    page_size: 5000
+    sort_by: ogr_fid
+    field: cod_catfor
+
+rm_rem_vegetazione:
+  name: Regione Marche — Rete Ecologica Marche (REM), Vegetazione naturale 1:50.000
+  homepage: https://www.regione.marche.it/Entra-in-Regione/Rete-Ecologica-Marche-REM/Cartografia-shapefile
+  license: Open by default (CAD, D.Lgs. 82/2005, art. 52 c. 2); reused as CC BY 4.0
+  attribution: "Vegetazione naturale REM © Regione Marche, CC BY 4.0"
+  notes: >-
+    The phytosociological vegetation map of the regional ecological network (edition of March
+    2019): 17,949 polygons of natural and semi-natural vegetation, each with its physiognomy
+    (TipoFisio: bosco deciduo, rimboschimento a pino nero, arbusteto…) and dominant species
+    (SpeciePrev), so one layer gives both the broad groups and the forest types. The download
+    page states no licence; Italian public data published without one are open by default (CAD
+    art. 52 c. 2), and CC BY 4.0 is the reference licence of AgID's open-data guidelines. Regione
+    Marche's own open-data land-use map (Carta dell'uso del suolo 2007, CC BY 4.0) is published
+    only at Corine level 2 (no broadleaf/conifer split), so it serves as a cross-check of the
+    forest area in .gavin-root/docs/regions/marche.md.
+  download:
+    url: https://static.regione.marche.it/portals/0/Ambiente/Rete%20Ecologica%20regionale%20REM/CanaleREM/Shape%20files%20geoportale/Strati%20cartografici%20REM/REM_Vegetazione_naturale_50k.zip
+    shapefile: REM_Vegetazione_naturale_50k.shp
+    field: SpeciePrev
 
 ispra_clc18_iv:
   name: ISPRA — Corine Land Cover 2018, IV livello (1:100.000)

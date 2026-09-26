@@ -112,7 +112,7 @@
     "denied": "Location access is off. Allow it in your browser settings, or search a place instead.",
     "unavailable": "Couldn't find your location. Try again, or search a place.",
     "outside": "You're outside the regions Mappa Funghi covers.",
-    "switchOffer": "You're in {{region}}.",
+    "switchOffer": "You're {{where}}.",
     "switch": "Switch to {{region}}",
     "dismissSwitch": "Stay here"
   },

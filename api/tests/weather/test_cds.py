@@ -17,10 +17,10 @@ from api.weather.store import WeatherStore
 def _hourly_day(
     lat: float = 43.8, lon: float = 11.8, rain_m_per_hour: float = 0.001
 ) -> pd.DataFrame:
-    """24 UTC hours on 2024-07-15, already per-hour increments (not cumulative)."""
+    """24 UTC hours on 2024-07-15, with rain and radiation cumulative as ERA5-Land stores them."""
     times = pd.date_range("2024-07-15", periods=24, freq="h", tz="UTC")
-    # Cumulative-looking precip that resets: use increasing-then-reset pattern.
-    cum_tp = np.cumsum(np.full(24, rain_m_per_hour))
+    # ERA5-Land convention: 00 UTC carries the previous day's total, then h x the hourly rain.
+    cum_tp = np.array([24 * rain_m_per_hour if h == 0 else h * rain_m_per_hour for h in range(24)])
     return pd.DataFrame(
         {
             "time": times,
@@ -211,3 +211,24 @@ def test_resolve_cds_key_errors_when_missing(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("api.weather.cds.Path.home", lambda: tmp_path)
     with pytest.raises(Exception, match="CDS API key"):
         resolve_cds_key()
+
+
+def test_hourly_accumulation_resets_at_01_utc_even_when_the_first_hour_is_large() -> None:
+    """ERA5-Land accumulates from 00 UTC: the 01 UTC value is that hour's own amount, even when it
+    is more than half the previous day's total (Emilia-Romagna, 10 Sep 2026: 4.44 mm was lost)."""
+    from api.weather.cds import _hourly_accumulation
+
+    cum = np.array([4.500, 4.627, 4.440, 4.900, 4.900])  # 23, 00, 01, 02, 03 UTC
+    hours = np.array([23, 0, 1, 2, 3])
+
+    inc = _hourly_accumulation(cum, hours)
+
+    assert inc.tolist() == pytest.approx([0.0, 0.127, 4.440, 0.460, 0.0])
+
+
+def test_hourly_accumulation_keeps_a_series_that_starts_at_01_utc() -> None:
+    from api.weather.cds import _hourly_accumulation
+
+    inc = _hourly_accumulation(np.array([0.2, 0.5]), np.array([1, 2]))
+
+    assert inc.tolist() == pytest.approx([0.2, 0.3])

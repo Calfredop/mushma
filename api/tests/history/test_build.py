@@ -281,3 +281,44 @@ def test_a_comune_whose_woodland_has_no_weather_is_not_listed(root: Path) -> Non
 
     areas = HistoryStore(root / "history" / REGION).read_areas()
     assert "053012" not in set(areas["area_code"])
+
+
+@pytest.fixture
+def cds_root(tmp_path: Path) -> Path:
+    """A region whose history is the CDS reanalysis only (every region after Tuscany)."""
+    write_grid(tmp_path)
+    write_points(tmp_path)
+    cds = load_weather_config().cds.model
+    for year in (2024, 2025):
+        write_weather(
+            tmp_path,
+            date(year, 1, 1),
+            date(year, 12, 31),
+            rain=RAIN,
+            temperature=TEMPERATURE,
+            source=cds,
+        )
+    write_scores(tmp_path, "porcini", date(2025, 1, 1), date(2025, 12, 31), _porcini)
+    write_scores(tmp_path, "combined", date(2025, 1, 1), date(2025, 12, 31), _porcini)
+    for key in ("ovoli", "gallinacci"):
+        write_scores(tmp_path, key, date(2025, 1, 1), date(2025, 12, 31), lambda c, d: 0.2)
+    write_sightings(tmp_path, [])
+    return tmp_path
+
+
+def test_normals_come_from_the_cds_reanalysis_when_that_is_the_history(cds_root: Path) -> None:
+    summary = build_normals(REGION, cds_root)
+
+    assert summary["years"] == [2024, 2025]
+    normals = ClimatologyStore(cds_root / "climatology" / REGION).read_normals()
+    rain = normals[(normals["variable"] == "precipitation_sum") & (normals["point_id"] == "Q")]
+    assert rain["normal"].tolist() == pytest.approx([4.0] * 365)
+
+
+def test_cds_reanalysis_days_are_not_flagged_as_forecast(cds_root: Path) -> None:
+    build_normals(REGION, cds_root)
+
+    update_history(REGION, [2025], cds_root)
+
+    weather = HistoryStore(cds_root / "history" / REGION).read_area_weather([2025])
+    assert not weather["forecast"].any()

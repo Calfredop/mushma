@@ -23,3 +23,8 @@ forest:
 
 soil:
   source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Umbria, IT", admin level
+# 10) on 2026-09-25. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 10875

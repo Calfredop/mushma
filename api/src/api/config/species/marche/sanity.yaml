@@ -1,0 +1,258 @@
+# Press-contrast sanity check for the Marche (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025) or provinces; windows and source URLs written down on
+# 2026-09-25, before any Marche score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Evidence, second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/marche.md.
+# Marche local press on mushroom seasons is thin; the best-dated source is a forager blog on the
+# Teramo (Abruzzo) side of the Monti della Laga (Ceppo, Valle Castellana), read here onto the Marche
+# side of the same massif (Acquasanta Terme, which borders Valle Castellana, and Arquata del Tronto).
+# The 2016-2017 earthquakes closed parts of the Sibillini and Laga: that thins sightings there, not
+# the scores these contrasts compare.
+areas:
+  laga:
+    comuni:
+    - Acquasanta Terme
+    - Arquata del Tronto
+  laga_montegallo:
+    comuni:
+    - Acquasanta Terme
+    - Arquata del Tronto
+    - Montegallo
+  catria_nerone:
+    comuni:
+    - Cagli
+    - Cantiano
+    - Frontone
+    - Serra Sant'Abbondio
+    - Apecchio
+    - Piobbico
+    - Acqualagna
+  southern_marche:
+    provinces:
+    - MC
+    - FM
+    - AP
+  marche:
+    provinces:
+    - '*'
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: laga_montegallo_2019_2017
+  claim: 'Early September: "Ultimi quattro giorni da record per i fungaioli piceni", porcini
+    exploding "soprattutto sui Monti Sibillini (zona di Montegallo in primis) e della Laga
+    (Acquasanta e dintorni)" in 2019; in 2017 the Laga woods "tremendamente secco" through the summer,
+    rain only in mid-September, "stagioni così devastanti" (Funghi Teramani, 2017-09-14)'
+  source: https://www.cronachepicene.it/2019/09/09/funghi-raccolta-boom-nel-piceno-e-la-vendemmia-dei-porcini/147166/
+  higher:
+    area: laga_montegallo
+    seasons:
+    - 2019
+    start: 09-02
+    end: 09-09
+  lower:
+    area: laga_montegallo
+    seasons:
+    - 2017
+    start: 09-02
+    end: 09-09
+- id: laga_2016_2017_turn_of_october
+  claim: 'Turn of September and October, Laga beech woods: in 2016 "il momento migliore" for B.
+    edulis in the last week of September and the first of October, "un''annata molto soddisfacente";
+    in 2017 "hanno trovato pochissimo e spesso niente ... un bosco che in molti hanno definito
+    morto" (Funghi Teramani, 2017-10-02)'
+  source: https://funghiteramani.blogspot.com/2016/10/aggiornamento-del-0210il-clou-dei.html
+  higher:
+    area: laga
+    seasons:
+    - 2016
+    start: 09-25
+    end: 10-10
+  lower:
+    area: laga
+    seasons:
+    - 2017
+    start: 09-25
+    end: 10-10
+- id: laga_july_2016_2017
+  claim: 'Early July, Laga: "tantissimi porcini", "più o meno in ogni bosco" in 2016; in 2017 a
+    season "estremamente deficitaria" and "funghi non ne vedo" (Funghi Teramani, 2017-07-12 and
+    2017-07-21)'
+  source: https://funghiteramani.blogspot.com/2016/07/aggiornamento-dinizio-lugliotantissimi.html
+  higher:
+    area: laga
+    seasons:
+    - 2016
+    start: 07-01
+    end: 07-20
+  lower:
+    area: laga
+    seasons:
+    - 2017
+    start: 07-01
+    end: 07-20
+- id: laga_august_2018_2017
+  claim: 'Second half of August, Laga: in 2018 "buone nascite di boleti", "molto probabile,
+    effettuare dei buoni raccolti ovunque si andrà"; in 2017 "tutto il resto è tremendamente secco",
+    first-altitude beeches shedding leaves (Funghi Teramani, 2017-08-09)'
+  source: https://funghiteramani.blogspot.com/2018/08/quarto-aggiornamento-di-agostoporcini.html
+  higher:
+    area: laga
+    seasons:
+    - 2018
+    start: 08-15
+    end: 08-31
+  lower:
+    area: laga
+    seasons:
+    - 2017
+    start: 08-15
+    end: 08-31
+- id: laga_2024_2020_late_august
+  claim: 'Late August to early September, Laga: in 2024 "I boschi sono letteralmente tappezzati di
+    funghi porcini", "riportare 3 kg di porcini vuol dire che ti è andata proprio male"; in 2020 the
+    woods "in uno stato di secco mai visto, dei funghi nemmeno l''ombra" until the rain of 23-24
+    August, with the first flush in the warm woods only after the rain of 6 September (Funghi
+    Teramani, 2020-08-24 and 2020-09-11)'
+  source: https://www.aspassotralenuvole.it/post/cosa-succede-nei-nostri-boschi
+  higher:
+    area: laga
+    seasons:
+    - 2024
+    start: 08-28
+    end: 09-06
+  lower:
+    area: laga
+    seasons:
+    - 2020
+    start: 08-28
+    end: 09-06
+- id: laga_2025_timing
+  claim: '2025, Laga: a flush "localizzata prevalentemente sui Monti della Laga ed in particolare al
+    Ceppo" under beech in mid-September (A spasso tra le nuvole, 2025-09-14); by 11 October "il
+    bosco è totalmente privo di funghi, parliamo del faggio", dry below 1000 m, after "il freddo
+    molto intenso per una settimana buona"'
+  source: https://www.aspassotralenuvole.it/post/game-over
+  higher:
+    area: laga
+    seasons:
+    - 2025
+    start: 09-08
+    end: 09-20
+  lower:
+    area: laga
+    seasons:
+    - 2025
+    start: 10-01
+    end: 10-12
+- id: catria_vs_southern_marche_2021
+  claim: 'Early September 2021, after the late-August storms: "Meglio al confine tra Marche ed
+    Umbria" (the Catria-Nerone side is "di nuovo un felice paradiso per i porcini", Corriere
+    Adriatico, 2021-09-10), while "Bollino rosso per ... Marche meridionali"; on Monte San Vicino and
+    Canfaito "è polvere dappertutto" (reader report, Funghi Magazine, 2021-09-07)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-10-09-2021-tanti-funghi-porcini/
+  higher:
+    area: catria_nerone
+    seasons:
+    - 2021
+    start: 09-01
+    end: 09-12
+  lower:
+    area: southern_marche
+    seasons:
+    - 2021
+    start: 09-01
+    end: 09-12
+- id: marche_october_2022
+  claim: 'October 2022: "le grandi nascite in atto al momento in Toscana, Umbria, Marche ..." (mostly
+    black porcini, Funghi Magazine, 2022-10-13); "bell''annata veramente per le Marche" (Funghi
+    Magazine, 2022-10-30)'
+  source: https://funghimagazine.it/meteo-funghi-13-10-2022/
+  higher:
+    area: marche
+    seasons:
+    - 2022
+    start: 10-05
+    end: 10-25
+  lower:
+    area: marche
+    seasons: normal
+    start: 10-05
+    end: 10-25
+- id: ovoli_laga_2024
+  claim: 'Ovoli, late August to early September 2024, Laga: "la Amanita caesarea, in pochi la
+    cercavano, era difficile incontrarla, alcuni anni non si vedeva proprio. Oggi è invadente"'
+  source: https://www.aspassotralenuvole.it/post/cosa-succede-nei-nostri-boschi
+  higher:
+    area: laga
+    seasons:
+    - 2024
+    start: 08-25
+    end: 09-06
+  lower:
+    area: laga
+    seasons: normal
+    start: 08-25
+    end: 09-06
+- id: ovoli_laga_2020_timing
+  claim: 'Ovoli, 2020, Laga: August "secco mai visto, dei funghi nemmeno l''ombra" (Funghi Teramani,
+    2020-08-24); by 11 September "Nei boschi caldi hanno fatto la comparsa le Amanita caesarea insieme
+    ai Boletus aereus e Boletus aestivalis", the Valle Castellana basin the most productive'
+  source: https://funghiteramani.blogspot.com/2020/09/pare-che-ci-siamo.html
+  higher:
+    area: laga
+    seasons:
+    - 2020
+    start: 09-07
+    end: 09-15
+  lower:
+    area: laga
+    seasons:
+    - 2020
+    start: 08-05
+    end: 08-24
+- id: gallinacci_laga_june_2016_2025
+  claim: 'Gallinacci, mid-June, Laga: "molti i Cantharellus cibarius" in 2016 (Funghi Teramani,
+    2016-06-13, and "buona presenza" on 2016-06-10); in 2025 the gallucci started, "ma poi il buio
+    ... a metà Giugno, non vedere un fungo presente ... zero assoluto" (A spasso tra le nuvole,
+    2025-06-16)'
+  source: https://funghiteramani.blogspot.com/2016/06/aggiornamento-del-12-giugnoancora-acqua.html
+  higher:
+    area: laga
+    seasons:
+    - 2016
+    start: 06-08
+    end: 06-20
+  lower:
+    area: laga
+    seasons:
+    - 2025
+    start: 06-08
+    end: 06-20
+- id: gallinacci_marche_june_2022_2024
+  claim: 'Gallinacci, last decade of June: in 2022 finferli (C. pallens) "si sono già diffusamente
+    raccolti dalle Marche al Molise ... nell''ultima decade di giugno"; in 2024 "Marche prive di
+    segnalazioni" (2024-06-14) and, for Umbria and Marche, "molto sporadici i Finferli ormai al
+    capolina per eccesso di siccità" (Funghi Magazine, 2024-06-28)'
+  source: https://funghimagazine.it/molti-porcini-a-breve-vediamo-dove-01-07-2022/
+  higher:
+    area: marche
+    seasons:
+    - 2022
+    start: 06-20
+    end: 06-30
+  lower:
+    area: marche
+    seasons:
+    - 2024
+    start: 06-20
+    end: 06-30

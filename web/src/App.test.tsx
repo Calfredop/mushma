@@ -329,6 +329,16 @@ describe('routing', () => {
     expect(window.location.pathname).toBe('/umbria')
   })
 
+  it('names the offered region with its own preposition (nelle Marche, not in Marche)', async () => {
+    mockGeolocation(43.3, 13.45) // Macerata
+    window.history.replaceState(null, '', '/toscana')
+    render(<App />)
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Centra sulla mia posizione' }),
+    )
+    expect(await screen.findByText(/Sei nelle Marche\./)).toBeInTheDocument()
+  })
+
   it('navigates to the species path when the switcher is used, and tracks the switch', async () => {
     window.history.replaceState(null, '', '/toscana')
     render(<App />)

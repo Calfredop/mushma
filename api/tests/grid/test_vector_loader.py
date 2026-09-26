@@ -176,6 +176,72 @@ def test_read_vector_fetches_a_wfs_layer(tmp_path: Path) -> None:
     assert list(frames["code"]) == ["3231"]
 
 
+class _FakePagedWFS(BaseHTTPRequestHandler):
+    """A WFS 2.0 server that caps every response at two features, like GeoServer's maxFeatures."""
+
+    total = 5
+    cap = 2
+    requests: list[dict[str, list[str]]] = []
+
+    def do_GET(self) -> None:  # noqa: N802
+        query = parse_qs(urlparse(self.path).query)
+        type(self).requests.append(query)
+        start = int(query.get("STARTINDEX", ["0"])[0])
+        count = min(int(query.get("COUNT", [str(self.cap)])[0]), self.cap)
+        features = [
+            {
+                "type": "Feature",
+                "properties": {"fid": i, "code": f"31{i}"},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [11.0 + i, 43.0],
+                            [11.1 + i, 43.0],
+                            [11.1 + i, 43.1],
+                            [11.0 + i, 43.1],
+                            [11.0 + i, 43.0],
+                        ]
+                    ],
+                },
+            }
+            for i in range(start, min(start + count, self.total))
+        ]
+        body = {"type": "FeatureCollection", "features": features}
+        payload = json.dumps(body).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def log_message(self, *args: object) -> None:
+        pass
+
+
+def test_read_vector_pages_a_capped_wfs_layer(tmp_path: Path) -> None:
+    _FakePagedWFS.requests = []
+    server = HTTPServer(("127.0.0.1", 0), _FakePagedWFS)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    download = {
+        "wfs": f"http://127.0.0.1:{server.server_port}/wfs",
+        "type_name": "forest:types",
+        "page_size": 2,
+        "sort_by": "fid",
+    }
+    try:
+        frames = read_vector(download, tmp_path / "cache", bbox_wgs84=(10.9, 42.9, 16.2, 43.2))
+        # A second read comes from the cached pages, not the server.
+        again = read_vector(download, tmp_path / "cache", bbox_wgs84=(10.9, 42.9, 16.2, 43.2))
+    finally:
+        server.shutdown()
+
+    assert sorted(frames["fid"]) == [0, 1, 2, 3, 4]
+    assert len(again) == 5
+    assert len(_FakePagedWFS.requests) == 3
+    assert [q["STARTINDEX"][0] for q in _FakePagedWFS.requests] == ["0", "2", "4"]
+    assert all(q["COUNT"] == ["2"] and q["SORTBY"] == ["fid"] for q in _FakePagedWFS.requests)
+
+
 def test_read_vector_rejects_an_unknown_download_shape(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="download"):
         read_vector({"url": "https://example.com/x.bin"}, tmp_path / "cache")

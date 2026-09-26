@@ -112,26 +112,21 @@ def build_normals(
     points = points[points["land"]] if "land" in points else points
     point_ids = sorted(points["point_id"])
     variables = list(config.normals.variables)
-    source = weather_config.history.model
+    # The best reanalysis per point and day, as scoring reads it: CDS where stored, else the
+    # Open-Meteo archive (a CDS region stores no archive history at all).
+    sources = weather_config.reanalysis_order
     first, last = config.baseline.start_year, config.baseline.end_year
 
     rows = pd.DataFrame(columns=["point_id", "date", "variable", "value"])
-    files = [str(p) for p in weather.daily_files() if f"source={source}" in str(p)]
-    if files:
-        rows = con.execute(
-            f"""
-            SELECT point_id, date, variable, value
-            FROM read_parquet({files!r}, hive_partitioning=false)
-            WHERE source = ? AND variable IN (SELECT unnest(?))
-              AND year(date) BETWEEN ? AND ?
-            """,
-            [source, variables, first, last],
-        ).df()
+    if weather.daily_files():
+        rows = weather.best_daily(
+            con, date(first, 1, 1), date(last, 12, 31), sources, variables
+        ).df()[["point_id", "date", "variable", "value"]]
     years = complete_years(rows, point_ids, variables)
     normals = daily_normals(rows, years, config.normals.window_days)
     meta = {
         "written_at": datetime.now(UTC).isoformat(timespec="seconds"),
-        "source": source,
+        "sources": sources,
         "variables": variables,
         "window_days": config.normals.window_days,
         "baseline": [first, last],
@@ -233,7 +228,7 @@ def _area_weather_year(
         temperature.rename(columns={"value": TEMPERATURE}), on=["area_code", "date"], how="outer"
     )
     # A day leans on the forecast when any point's value came from it.
-    forecast_days = set(best.loc[best["source"] != weather_config.history.model, "date"])
+    forecast_days = set(best.loc[best["source"] == weather_config.forecast.model, "date"])
     frame["forecast"] = frame["date"].isin(forecast_days)
     frame["doy"] = day_of_year(pd.to_datetime(frame["date"]).to_numpy().astype("datetime64[D]"))
     frame = frame.merge(area_normals, on=["area_code", "doy"], how="left").drop(columns="doy")

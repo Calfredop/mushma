@@ -37,6 +37,15 @@ class CdsSpec:
     dataset: str
     model: str
     start_date: date
+    # How the hourly values are fetched: "chunks" (gridded, ~weekly bbox requests) or
+    # "timeseries" (one request per node, snowfall from the gridded dataset); api.weather.cds.
+    method: str = "chunks"
+    # Snowfall area for the timeseries method, (north, west, south, east): one area for every
+    # region so they share one snowfall cache. None = each region's own node bbox.
+    snowfall_area: tuple[float, float, float, float] | None = None
+
+
+CDS_METHODS = ("chunks", "timeseries")
 
 
 @dataclass(frozen=True)
@@ -113,6 +122,12 @@ class WeatherConfig:
         order.append(self.forecast.model)
         return order
 
+    @property
+    def reanalysis_order(self) -> list[str]:
+        """Reanalysis source ids, most trusted first: the source order without the forecast. A
+        region's history is whichever of these it stores (CDS for every region after Tuscany)."""
+        return [source for source in self.source_order if source != self.forecast.model]
+
 
 def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
     raw = yaml.safe_load(path.read_text())
@@ -165,10 +180,17 @@ def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
 def _cds(raw: dict | None) -> CdsSpec | None:
     if raw is None:
         return None
+    method = str(raw.get("method", "chunks"))
+    if method not in CDS_METHODS:
+        raise ValueError(f"cds.method must be one of {CDS_METHODS}, got {method!r}")
     return CdsSpec(
         dataset=str(raw["dataset"]),
         model=str(raw["model"]),
         start_date=date.fromisoformat(str(raw["start_date"])),
+        method=method,
+        snowfall_area=(
+            tuple(float(v) for v in raw["snowfall_area"]) if raw.get("snowfall_area") else None
+        ),
     )
 
 

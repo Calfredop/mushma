@@ -32,6 +32,11 @@ export interface RegionDefinition {
   /** Path segment (`/toscana`) and registry key. */
   slug: string
   name: { it: string; en: string }
+  /**
+   * "In the region" with the region's own preposition, when `in <name>` is wrong: Italian says
+   * "nelle Marche", "nel Lazio". Omitted, it is `in <name>` (see `regionLocative`).
+   */
+  locative?: { it: string; en: string }
   bounds: [[number, number], [number, number]]
   maxBounds: LngLatBoundsLike
   minZoom: number

@@ -1,7 +1,12 @@
-"""CLC-only forest groups and the INFC 2015 bosco check."""
+"""CLC-only forest groups, one-map regional sources and the INFC 2015 bosco check."""
 
+from pathlib import Path
+
+import geopandas as gpd
 import pytest
+from shapely.geometry import box
 
+from api.grid import build
 from api.grid.build import forest_classes, forest_group_column
 from api.grid.forest import (
     CLC_IV_DEFAULT_TYPES,
@@ -12,6 +17,7 @@ from api.grid.forest import (
 from api.grid.habitats import load_vocabulary
 from api.grid.infc import load_infc_bosco
 from api.grid.region import load_region
+from api.grid.sources import Source
 
 
 def test_clc_group_for_code_follows_the_documented_prefixes() -> None:
@@ -82,3 +88,52 @@ def test_forest_area_ha_sums_forest_share_of_region_area() -> None:
 
     # 0.8 * 1.0 * 100 + 1.0 * 0.5 * 100 = 130 ha
     assert forest_area_ha(mask, grid) == pytest.approx(130.0)
+
+
+def _source(source_id: str, download: dict) -> Source:
+    return Source(
+        id=source_id, name=source_id, homepage="", license="", attribution="", download=download
+    )
+
+
+def test_one_regional_map_gives_groups_and_types_from_a_single_read(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Liguria's forest-type map carries both the land-use code and the forest category."""
+    layer = gpd.GeoDataFrame(
+        {"cod_uso": ["3115", "312", "223"], "cod_catfor": ["CA", "PC", "NA"]},
+        geometry=[
+            box(500_000 + i * 100, 4_900_000, 500_100 + i * 100, 4_900_100) for i in range(3)
+        ],
+        crs="EPSG:25832",
+    )
+    calls: list[dict] = []
+
+    def fake_read_vector(download: dict, cache_dir: Path, **kwargs: object) -> gpd.GeoDataFrame:
+        calls.append(kwargs)
+        return layer.copy()
+
+    monkeypatch.setattr(build, "read_vector", fake_read_vector)
+    forest_config = {
+        "groups": {"source": "rl_forest", "class_column": "cod_uso", "classes": {}},
+        "types": {"source": "rl_forest"},
+    }
+    sources = {"rl_forest": _source("rl_forest", {"wfs": "x", "field": "cod_catfor"})}
+
+    cover = build.read_forest_cover(
+        forest_config,
+        sources,
+        tmp_path,
+        region_id="liguria",
+        bbox_wgs84=(7.4, 43.7, 10.1, 44.7),
+        crs="EPSG:3035",
+        group_classes={"3115": "broadleaf", "312": "conifer"},
+        type_classes={"CA": "chestnut", "PC": "mediterranean_pine"},
+    )
+
+    assert len(calls) == 1
+    assert calls[0]["bbox_wgs84"] == (7.4, 43.7, 10.1, 44.7)
+    assert list(cover.groups["group"]) == ["broadleaf", "conifer"]
+    assert list(cover.types["habitat"]) == ["chestnut", "mediterranean_pine"]
+    assert cover.groups.crs == cover.types.crs == "EPSG:3035"
+    assert cover.sources == ["rl_forest"]
