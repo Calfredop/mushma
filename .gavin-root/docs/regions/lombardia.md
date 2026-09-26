@@ -12,6 +12,18 @@ loader twice; the merge keeps Emilia-Romagna's group layers (`forest.groups` as 
 its `where`) and Liguria's one-map read (a single unfiltered group layer that is also the types
 source is read once), in `api.grid.build.read_forest_cover`.
 
+**Data rebuilt once.** At about 12:40 on 2026-09-26 the shared data root lost its `grid`,
+`weather`, `raw` and `sightings` folders. They were symlinks into the `mushma-backend` worktree,
+which was removed with the other finished worktrees, taking every region's local data with it
+(the server's stores were untouched). They are real folders in the root checkout now (memory card
+`memory-data-root-real-folders.md`). Lombardia's inputs were rebuilt from the same sources: the grid
+came out identical (24,715 cells, 6,018 woodland, 592,446 ha), the 101 CDS node series and the
+Italy-wide snowfall were fetched again (CDS served most from its own cache), and the gauges and
+sightings were re-read. The weather points, the Open-Meteo days after 2026-09-14 and the scoring
+waited for the next day's Open-Meteo quota: the three lanes had spent it on 2026-09-26. The
+rebuild also found that uv's Python on macOS does not trust www.istat.it's HARICA root; source
+downloads now also trust certifi's Mozilla roots.
+
 ## Sources
 
 | need | source | licence | notes |
