@@ -5,6 +5,7 @@ attribution the app must show. Downloads land under ``$DATA_DIR/raw/`` (gitignor
 fetched once; delete a file to fetch it again.
 """
 
+import hashlib
 import json
 import math
 import os
@@ -150,8 +151,15 @@ def fetch_arcgis_features(
     out_fields: str,
     out_crs: int = 3035,
     page_size: int = 2000,
+    geometry_precision: int | None = None,
 ) -> list[Path]:
-    """Page through an ArcGIS REST layer's features in a bbox, caching each page as GeoJSON."""
+    """Page through an ArcGIS REST layer's features in a bbox, caching each page as GeoJSON.
+
+    The next page starts after the features the server actually returned: a server whose
+    ``maxRecordCount`` is below ``page_size`` answers fewer and flags ``exceededTransferLimit``.
+    ``geometry_precision`` (decimal places in ``out_crs`` units) trims coordinates the build
+    rasterizes at 20 m anyway.
+    """
     marker = out_dir / ".complete"
     if marker.exists():
         return sorted(out_dir.glob("page_*.geojson"))
@@ -159,22 +167,23 @@ def fetch_arcgis_features(
     pages = []
     offset = 0
     while True:
-        params = urllib.parse.urlencode(
-            {
-                "where": "1=1",
-                "geometry": f"{lon_min},{lat_min},{lon_max},{lat_max}",
-                "geometryType": "esriGeometryEnvelope",
-                "inSR": 4326,
-                "spatialRel": "esriSpatialRelIntersects",
-                "outFields": out_fields,
-                "returnGeometry": "true",
-                "outSR": out_crs,
-                "orderByFields": "objectid",
-                "resultOffset": offset,
-                "resultRecordCount": page_size,
-                "f": "geojson",
-            }
-        )
+        query: dict[str, str | int] = {
+            "where": "1=1",
+            "geometry": f"{lon_min},{lat_min},{lon_max},{lat_max}",
+            "geometryType": "esriGeometryEnvelope",
+            "inSR": 4326,
+            "spatialRel": "esriSpatialRelIntersects",
+            "outFields": out_fields,
+            "returnGeometry": "true",
+            "outSR": out_crs,
+            "orderByFields": "objectid",
+            "resultOffset": offset,
+            "resultRecordCount": page_size,
+            "f": "geojson",
+        }
+        if geometry_precision is not None:
+            query["geometryPrecision"] = geometry_precision
+        params = urllib.parse.urlencode(query)
         page = fetch(f"{layer_url}/query?{params}", out_dir / f"page_{len(pages):04d}.geojson")
         pages.append(page)
         data = json.loads(page.read_text())
@@ -182,9 +191,9 @@ def fetch_arcgis_features(
             page.unlink()
             raise OSError(f"ArcGIS query failed: {data['error']}")
         features = data.get("features", [])
-        if not data.get("exceededTransferLimit", len(features) == page_size):
+        if not features or not data.get("exceededTransferLimit", len(features) == page_size):
             break
-        offset += page_size
+        offset += len(features)
     marker.touch()
     return pages
 
@@ -218,7 +227,13 @@ def read_vector(
 
     if "parts" in download:
         frames = [
-            read_vector(part, cache_dir, bbox_wgs84=bbox_wgs84, columns=columns, where=where)
+            read_vector(
+                part,
+                _part_cache_dir(part, cache_dir),
+                bbox_wgs84=bbox_wgs84,
+                columns=columns,
+                where=where,
+            )
             for part in download["parts"]
         ]
         crs = frames[0].crs if frames else None
@@ -234,6 +249,7 @@ def read_vector(
             bbox_wgs84,
             cache_dir,
             out_fields=download.get("field", "*"),
+            geometry_precision=download.get("geometry_precision"),
         )
         frame = pd.concat([gpd.read_file(p) for p in pages], ignore_index=True)
         if len(pages):
@@ -285,6 +301,15 @@ def read_vector(
         )
 
     return _read_zip_shapefile(local, cache_dir, download["shapefile"], columns, where)
+
+
+def _part_cache_dir(part: dict, cache_dir: Path) -> Path:
+    """A part's cache: its own folder for a bbox query (ArcGIS pages and their ``.complete``
+    marker, WFS pages named by bbox, would otherwise collide), the shared one for a download."""
+    if "arcgis_layer" not in part and "wfs" not in part:
+        return cache_dir
+    key = json.dumps(part, sort_keys=True).encode()
+    return cache_dir / f"part_{hashlib.sha1(key).hexdigest()[:10]}"
 
 
 def _read_wfs(
