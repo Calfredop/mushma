@@ -1,190 +1,277 @@
-import {
-  addProtocol,
-  Map as MapLibreMap,
-  type MapMouseEvent,
-  type GeoJSONSource,
-} from 'maplibre-gl'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import { Protocol } from 'pmtiles'
-import { useEffect, useRef } from 'react'
+import { LazyMotion } from 'motion/react'
+import { type MouseEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { RegionOverview } from '../api/queries'
-import { BASEMAP_URL, TERRAIN_URL } from '../config'
-import { currentLanguage, type Language } from '../i18n'
-import { ITALY_BOUNDS, listRegions, REGIONS, type RegionDefinition } from '../regions'
-import { scoreColor } from '../score/scale'
-import { buildMapStyle } from '../map/basemap'
+import { ChevronIcon, GitHubIcon } from '../components/icons'
+import { InfoMenu } from '../components/InfoMenu'
+import { ScoreChip } from '../components/ScoreChip'
+import { Sheet, type SheetLayout } from '../components/Sheet'
+import { REPO_URL } from '../config'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import { intlLocale, type Language } from '../i18n'
+import { HubMap } from '../map/HubMap'
+import type { MapPadding } from '../map/padding'
+import { regionPath } from '../routes'
+import { SCORE_CLASSES } from '../score/scale'
+import { type Snap, visibleAt } from '../sheet/snaps'
 import styles from './HubPage.module.css'
+import { type HubRegion, hubRegions } from './hubRegions'
 
-let pmtilesRegistered = false
-function registerPmtiles() {
-  if (pmtilesRegistered) return
-  addProtocol('pmtiles', new Protocol({ metadata: false }).tile)
-  pmtilesRegistered = true
-}
+/** Motion's animation features come after first paint (PRD → Mobile performance). */
+const loadMotionFeatures = () =>
+  import('../motionFeatures').then((module) => module.default)
 
-function regionPolygon(region: RegionDefinition): GeoJSON.Feature {
-  const [[west, south], [east, north]] = region.bounds
-  return {
-    type: 'Feature',
-    properties: { slug: region.slug, apiRegionId: region.apiRegionId },
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [west, south],
-          [east, south],
-          [east, north],
-          [west, north],
-          [west, south],
-        ],
-      ],
-    },
-  }
-}
+/** The floating panel (--panel-width, inset --space-4) on a desktop's left. */
+const PANEL_INSET = 16 + 400 + 16
+const MARGIN = 16
 
-function overviewCollection(
-  overview: RegionOverview[] | undefined,
-): GeoJSON.FeatureCollection {
-  const byId = new Map((overview ?? []).map((row) => [row.region, row]))
-  return {
-    type: 'FeatureCollection',
-    features: listRegions().map((region) => {
-      const row = byId.get(region.apiRegionId)
-      const feature = regionPolygon(region)
-      feature.properties = {
-        ...feature.properties,
-        mean_score: row?.mean_score ?? 0,
-        served: row !== undefined,
-        color: row ? scoreColor(row.mean_score) : 'transparent',
-      }
-      return feature
-    }),
-  }
-}
+const FOOTER_PAGES = [
+  { path: '/credits', label: 'footer.credits' },
+  { path: '/terms', label: 'footer.terms' },
+  { path: '/privacy', label: 'footer.privacy' },
+] as const
 
-interface Props {
-  overview: RegionOverview[] | undefined
-  onSelectRegion: (slug: string) => void
-}
-
-export function HubMap({ overview, onSelectRegion }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<MapLibreMap | null>(null)
-  const onSelectRef = useRef(onSelectRegion)
-  const language = currentLanguage() as Language
-
-  useEffect(() => {
-    onSelectRef.current = onSelectRegion
-  }, [onSelectRegion])
-
-  useEffect(() => {
-    if (!containerRef.current || mapRef.current) return
-    registerPmtiles()
-    void TERRAIN_URL // reserved when the national terrain extract is pointed at
-    const map = new MapLibreMap({
-      container: containerRef.current,
-      style: buildMapStyle({ lang: language, basemapUrl: BASEMAP_URL }),
-      bounds: ITALY_BOUNDS,
-      fitBoundsOptions: { padding: 24 },
-      attributionControl: { compact: true },
-    })
-    mapRef.current = map
-
-    map.on('load', () => {
-      map.addSource('hub-regions', {
-        type: 'geojson',
-        data: overviewCollection(undefined),
-      })
-      map.addLayer({
-        id: 'hub-regions-fill',
-        type: 'fill',
-        source: 'hub-regions',
-        paint: {
-          'fill-color': ['get', 'color'],
-          'fill-opacity': 0.72,
-        },
-      })
-      map.addLayer({
-        id: 'hub-regions-outline',
-        type: 'line',
-        source: 'hub-regions',
-        paint: {
-          'line-color': '#1C211D',
-          'line-width': 1.5,
-          'line-opacity': 0.55,
-        },
-      })
-    })
-
-    const onClick = (event: MapMouseEvent) => {
-      const hits = map.queryRenderedFeatures(event.point, {
-        layers: ['hub-regions-fill'],
-      })
-      const slug = hits[0]?.properties?.slug
-      if (typeof slug === 'string' && REGIONS[slug]) onSelectRef.current(slug)
-    }
-    map.on('click', onClick)
-    map.on('mouseenter', 'hub-regions-fill', () => {
-      map.getCanvas().style.cursor = 'pointer'
-    })
-    map.on('mouseleave', 'hub-regions-fill', () => {
-      map.getCanvas().style.cursor = ''
-    })
-
-    return () => {
-      map.remove()
-      mapRef.current = null
-    }
-    // Mount once; language/basemap changes are rare on the hub.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map?.isStyleLoaded()) return
-    const source = map.getSource('hub-regions') as GeoJSONSource | undefined
-    source?.setData(overviewCollection(overview))
-  }, [overview])
-
-  return <div ref={containerRef} className={styles.map} role="presentation" />
-}
+const plainClick = (event: MouseEvent) =>
+  event.button === 0 &&
+  !event.metaKey &&
+  !event.ctrlKey &&
+  !event.shiftKey &&
+  !event.altKey
 
 interface HubPageProps {
   overview: RegionOverview[] | undefined
+  /** Today's overview is still on its way: the rows wait for their numbers. */
+  overviewPending: boolean
   onSelectRegion: (slug: string) => void
+  onNavigate: (path: string) => void
+  onDisclaimer: () => void
+  onCookies: () => void
 }
 
-export function HubPage({ overview, onSelectRegion }: HubPageProps) {
+/**
+ * `/`: Italy on a full-bleed map, every region with its real boundary, the served ones coloured
+ * by today's mean conditions score. The picker floats over it like the region's own panel: a
+ * card on the left from 900px, a sheet to drag up on a phone.
+ */
+export function HubPage({
+  overview,
+  overviewPending,
+  onSelectRegion,
+  onNavigate,
+  onDisclaimer,
+  onCookies,
+}: HubPageProps) {
   const { t, i18n } = useTranslation()
   const language = (i18n.resolvedLanguage ?? 'it') as Language
+  const desktop = useMediaQuery('(min-width: 900px)')
+  // The list is the point of the page: a phone opens with it half up.
+  const [snap, setSnap] = useState<Snap>('half')
+  const [sheetLayout, setSheetLayout] = useState<SheetLayout | null>(null)
+  const [highlighted, setHighlighted] = useState<string | null>(null)
+  /** A region tapped on the map that the app doesn't serve yet. */
+  const [uncovered, setUncovered] = useState<string | null>(null)
+  const mapAreaRef = useRef<HTMLElement>(null)
+
+  const regions = useMemo(() => hubRegions(overview, language), [overview, language])
+
+  const padding = useMemo<MapPadding | undefined>(() => {
+    if (desktop) return { top: MARGIN, right: MARGIN, bottom: MARGIN, left: PANEL_INSET }
+    if (!sheetLayout) return undefined
+    return {
+      top: sheetLayout.clearTop + MARGIN,
+      right: MARGIN,
+      left: MARGIN,
+      // Full leaves too little map to frame Italy in: it stays framed as at half.
+      bottom: visibleAt(snap === 'full' ? 'half' : snap, sheetLayout) + MARGIN,
+    }
+  }, [desktop, sheetLayout, snap])
+
+  const select = (slug: string) => {
+    setUncovered(null)
+    onSelectRegion(slug)
+  }
+
+  const infoMenu = (
+    <InfoMenu
+      placement="below"
+      className={styles.headerButton}
+      onDisclaimer={onDisclaimer}
+      onCookies={onCookies}
+      onNavigate={onNavigate}
+    />
+  )
 
   return (
-    <div className={styles.hub}>
-      <header className={styles.header}>
-        <h1 className={styles.wordmark}>{t('app.name')}</h1>
-        <p className={styles.lede}>{t('hub.lede')}</p>
-      </header>
-      <HubMap overview={overview} onSelectRegion={onSelectRegion} />
-      <section className={styles.list} aria-label={t('hub.regions')}>
-        <h2 className={styles.listTitle}>{t('hub.regions')}</h2>
-        <ul className={styles.regionList}>
-          {listRegions().map((region) => (
-            <li key={region.slug}>
-              <button
-                type="button"
-                className={styles.regionCard}
-                onClick={() => onSelectRegion(region.slug)}
-              >
-                <span className={styles.regionName}>{region.name[language]}</span>
-                <span className={styles.regionIntro}>
-                  {region.copy[language].intro.region}
-                </span>
+    <LazyMotion features={loadMotionFeatures} strict>
+      <div className={styles.hub} data-sheet={desktop ? undefined : snap}>
+        <main ref={mapAreaRef} className={styles.mapArea}>
+          <HubMap
+            regions={regions}
+            highlighted={highlighted}
+            padding={padding}
+            lang={language}
+            onHover={setHighlighted}
+            onSelect={select}
+            onUnserved={setUncovered}
+          />
+          {uncovered && (
+            <p className={styles.status} role="status">
+              {t('hub.notCovered', {
+                region: t(`italyRegions.${uncovered}` as 'italyRegions.toscana'),
+              })}
+              <button type="button" onClick={() => setUncovered(null)}>
+                {t('hub.dismiss')}
               </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+            </p>
+          )}
+        </main>
+
+        <Sheet
+          mode={desktop ? 'panel' : 'sheet'}
+          snap={snap}
+          onSnap={setSnap}
+          onGeometry={setSheetLayout}
+          stage={mapAreaRef}
+          label={t('hub.regions')}
+          header={
+            <>
+              <div className={styles.brand}>
+                <h1 className={styles.wordmark}>{t('app.name')}</h1>
+                {infoMenu}
+              </div>
+              <p className={styles.lede}>{t('hub.lede')}</p>
+            </>
+          }
+        >
+          <section aria-labelledby="hub-regions-title">
+            <div className={styles.listHead}>
+              <h2 id="hub-regions-title" className={styles.listTitle}>
+                {t('hub.regions')}
+              </h2>
+              <ScaleKey />
+            </div>
+            <ul className={styles.regionList}>
+              {regions.map((entry) => (
+                <li key={entry.region.slug}>
+                  <RegionRow
+                    entry={entry}
+                    language={language}
+                    pending={overviewPending}
+                    highlighted={highlighted === entry.region.slug}
+                    onHighlight={setHighlighted}
+                    onSelect={select}
+                  />
+                </li>
+              ))}
+            </ul>
+            <p className={styles.more}>{t('hub.more')}</p>
+          </section>
+          <footer className={styles.footer}>
+            <p>{t('disclaimer.short')}</p>
+            <nav className={styles.links} aria-label={t('footer.links')}>
+              {FOOTER_PAGES.map(({ path, label }) => (
+                <a
+                  key={path}
+                  href={path}
+                  onClick={(event) => {
+                    if (!plainClick(event)) return
+                    event.preventDefault()
+                    onNavigate(path)
+                  }}
+                >
+                  {t(label)}
+                </a>
+              ))}
+              <button type="button" onClick={onDisclaimer}>
+                {t('footer.disclaimer')}
+              </button>
+              <button type="button" onClick={onCookies}>
+                {t('footer.cookies')}
+              </button>
+              <a
+                className={styles.github}
+                href={REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('nav.github')}
+                title={t('nav.github')}
+              >
+                <GitHubIcon />
+              </a>
+            </nav>
+          </footer>
+        </Sheet>
+      </div>
+    </LazyMotion>
+  )
+}
+
+/** What the colours on the map and the chips in the list mean. */
+function ScaleKey() {
+  const { t } = useTranslation()
+  return (
+    <div className={styles.scaleKey}>
+      <span>{t('hub.scaleTitle')}</span>
+      <span className={styles.scale} aria-hidden="true">
+        {SCORE_CLASSES.map((c) => (
+          <span key={c.min} style={{ background: c.color }} />
+        ))}
+      </span>
     </div>
+  )
+}
+
+interface RegionRowProps {
+  entry: HubRegion
+  language: Language
+  pending: boolean
+  highlighted: boolean
+  onHighlight: (slug: string | null) => void
+  onSelect: (slug: string) => void
+}
+
+function RegionRow({
+  entry,
+  language,
+  pending,
+  highlighted,
+  onHighlight,
+  onSelect,
+}: RegionRowProps) {
+  const { t } = useTranslation()
+  const { region, meanScore, goodShare } = entry
+  const percent = new Intl.NumberFormat(intlLocale(language), {
+    style: 'percent',
+    maximumFractionDigits: 0,
+  })
+  const summary =
+    goodShare !== undefined
+      ? t('hub.goodShare', { share: percent.format(goodShare) })
+      : pending
+        ? t('hub.loading')
+        : t('hub.noScore')
+
+  return (
+    <a
+      href={regionPath(region.slug)}
+      className={styles.region}
+      data-highlighted={highlighted || undefined}
+      onClick={(event) => {
+        if (!plainClick(event)) return
+        event.preventDefault()
+        onSelect(region.slug)
+      }}
+      onMouseEnter={() => onHighlight(region.slug)}
+      onMouseLeave={() => onHighlight(null)}
+      onFocus={() => onHighlight(region.slug)}
+      onBlur={() => onHighlight(null)}
+    >
+      <span className={styles.regionText}>
+        <span className={styles.regionName}>{region.name[language]}</span>
+        <span className={styles.regionSummary}>{summary}</span>
+      </span>
+      {meanScore !== undefined && <ScoreChip score={meanScore} />}
+      <ChevronIcon direction="right" />
+    </a>
   )
 }

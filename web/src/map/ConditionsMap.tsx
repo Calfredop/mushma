@@ -1,5 +1,4 @@
 import {
-  addProtocol,
   type ExpressionSpecification,
   type GeoJSONSource,
   Map as MapLibreMap,
@@ -7,9 +6,7 @@ import {
   Marker,
 } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { Protocol } from 'pmtiles'
 import { useEffect, useRef, useState } from 'react'
-import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import type { Hotspot } from '../api/queries'
 import type { components } from '../api/schema'
@@ -28,6 +25,7 @@ import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
 import styles from './ConditionsMap.module.css'
 import { inView, type MapPadding, mergePadding } from './padding'
+import { mapLocale, registerPmtiles } from './setup'
 import {
   type ActiveIndicator,
   ANALYSIS_CELL_LAYERS,
@@ -72,14 +70,6 @@ declare global {
     /** Dev-only handle for the end-to-end test. */
     __mushmaMap?: MapLibreMap
   }
-}
-
-let pmtilesRegistered = false
-function registerPmtiles() {
-  if (pmtilesRegistered) return
-  // No metadata request: the style already names the layers and the attribution.
-  addProtocol('pmtiles', new Protocol({ metadata: false }).tile)
-  pmtilesRegistered = true
 }
 
 const CLICK_TOLERANCE_PX = 10
@@ -220,16 +210,6 @@ interface Props {
   onCellClick: (cellId: string, lat: number, lon: number) => void
   onPointClick: (lat: number, lon: number) => void
   onHotspotClick: (hotspot: Hotspot) => void
-}
-
-/** MapLibre's own UI strings (canvas label, attribution button), from i18n. */
-function mapLocale(t: TFunction): Record<string, string> {
-  return {
-    'Map.Title': t('map.canvas'),
-    'AttributionControl.ToggleAttribution': t('map.toggleAttribution'),
-    'AttributionControl.MapFeedback': t('map.feedback'),
-    'Marker.Title': t('map.marker'),
-  }
 }
 
 export function ConditionsMap({

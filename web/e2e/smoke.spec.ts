@@ -170,12 +170,38 @@ test('analysis mode: two factors on the map, played through the days', async ({
 test('hub at / lists regions and enters one', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
   await expect(page).toHaveURL(/\/$/)
   await expect(page.getByRole('heading', { name: 'Regioni coperte' })).toBeVisible()
-  await page
-    .getByRole('button', { name: /Toscana/ })
-    .first()
-    .click()
+  await page.getByRole('link', { name: /^Toscana/ }).click()
   await expect(page).toHaveURL(/\/toscana$/)
   await expect(page.getByRole('radio', { name: 'Tutte' })).toBeVisible()
+})
+
+test('a region on the hub map is drawn to its border and opens on a tap', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
+  await page.waitForFunction(() => {
+    const map = window.__mushmaMap
+    return !!map?.getLayer('hub-regions-fill') && map.loaded()
+  })
+  // Every Italian region's real boundary is there, not a box: served or not.
+  const regions = await page.evaluate(() => {
+    const features = window.__mushmaMap!.querySourceFeatures('hub-regions')
+    return new Set(features.map((f) => String(f.properties.slug))).size
+  })
+  expect(regions).toBe(20)
+
+  // Tuscany's label point is inside it, above the half-open sheet.
+  const tuscany = await page.evaluate(() => {
+    const map = window.__mushmaMap!
+    const point = map.project([11.25, 43.42])
+    const box = map.getCanvas().getBoundingClientRect()
+    return { x: box.left + point.x, y: box.top + point.y }
+  })
+  await page.mouse.click(tuscany.x, tuscany.y)
+  await expect(page).toHaveURL(/\/toscana$/)
 })

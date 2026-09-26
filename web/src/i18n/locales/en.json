@@ -667,9 +667,39 @@
   },
   "hub": {
     "lede": "Pick a region to see conditions cell by cell.",
-    "regions": "Covered regions"
+    "regions": "Covered regions",
+    "mapLabel": "Map of the regions",
+    "scaleTitle": "Today's mean score",
+    "goodShare": "{{share}} of the woods in favourable conditions",
+    "loading": "Loading today's score…",
+    "noScore": "No score for today yet",
+    "more": "Regions only outlined on the map aren't covered yet.",
+    "notCovered": "{{region}} isn't covered yet.",
+    "dismiss": "Close"
   },
   "regions": {
     "label": "Region"
+  },
+  "italyRegions": {
+    "piemonte": "Piedmont",
+    "valle-d-aosta": "Aosta Valley",
+    "lombardia": "Lombardy",
+    "trentino-alto-adige": "Trentino-South Tyrol",
+    "veneto": "Veneto",
+    "friuli-venezia-giulia": "Friuli-Venezia Giulia",
+    "liguria": "Liguria",
+    "emilia-romagna": "Emilia-Romagna",
+    "toscana": "Tuscany",
+    "umbria": "Umbria",
+    "marche": "Marche",
+    "lazio": "Lazio",
+    "abruzzo": "Abruzzo",
+    "molise": "Molise",
+    "campania": "Campania",
+    "puglia": "Apulia",
+    "basilicata": "Basilicata",
+    "calabria": "Calabria",
+    "sicilia": "Sicily",
+    "sardegna": "Sardinia"
   }
 }

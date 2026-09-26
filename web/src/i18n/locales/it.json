@@ -667,9 +667,39 @@
   },
   "hub": {
     "lede": "Scegli una regione per vedere le condizioni cella per cella.",
-    "regions": "Regioni coperte"
+    "regions": "Regioni coperte",
+    "mapLabel": "Mappa delle regioni",
+    "scaleTitle": "Indice medio di oggi",
+    "goodShare": "{{share}} dei boschi in condizioni favorevoli",
+    "loading": "Carico l'indice di oggi…",
+    "noScore": "Indice di oggi non ancora disponibile",
+    "more": "Le regioni solo bordate sulla mappa non sono ancora coperte.",
+    "notCovered": "{{region}} non è ancora coperta.",
+    "dismiss": "Chiudi"
   },
   "regions": {
     "label": "Regione"
+  },
+  "italyRegions": {
+    "piemonte": "Piemonte",
+    "valle-d-aosta": "Valle d'Aosta",
+    "lombardia": "Lombardia",
+    "trentino-alto-adige": "Trentino-Alto Adige",
+    "veneto": "Veneto",
+    "friuli-venezia-giulia": "Friuli-Venezia Giulia",
+    "liguria": "Liguria",
+    "emilia-romagna": "Emilia-Romagna",
+    "toscana": "Toscana",
+    "umbria": "Umbria",
+    "marche": "Marche",
+    "lazio": "Lazio",
+    "abruzzo": "Abruzzo",
+    "molise": "Molise",
+    "campania": "Campania",
+    "puglia": "Puglia",
+    "basilicata": "Basilicata",
+    "calabria": "Calabria",
+    "sicilia": "Sicilia",
+    "sardegna": "Sardegna"
   }
 }

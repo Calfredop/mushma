@@ -21,6 +21,7 @@ import {
   factorsQuery,
   type Hotspot,
   isClientError,
+  type RegionOverview,
   useComuni,
   useFactors,
   useForestTypeCells,
@@ -929,6 +930,7 @@ function Root() {
     return (
       <HubShell
         overview={overview.data?.regions}
+        overviewPending={overview.isPending}
         onSelectRegion={(slug) => {
           rememberRegion(slug)
           app.navigate(regionPath(slug))
@@ -942,9 +944,11 @@ function Root() {
 /** Hub with the same first-visit disclaimer and cookie banner as the map. */
 function HubShell({
   overview,
+  overviewPending,
   onSelectRegion,
 }: {
-  overview: import('./api/queries').RegionOverview[] | undefined
+  overview: RegionOverview[] | undefined
+  overviewPending: boolean
   onSelectRegion: (slug: string) => void
 }) {
   const { navigate } = useAppState()
@@ -953,7 +957,14 @@ function HubShell({
 
   return (
     <>
-      <HubPage overview={overview} onSelectRegion={onSelectRegion} />
+      <HubPage
+        overview={overview}
+        overviewPending={overviewPending}
+        onSelectRegion={onSelectRegion}
+        onNavigate={navigate}
+        onDisclaimer={() => setDisclaimerOpen(true)}
+        onCookies={() => setCookieBannerOpen(true)}
+      />
       <DisclaimerDialog open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
       <CookieBanner
         open={cookieBannerOpen}
