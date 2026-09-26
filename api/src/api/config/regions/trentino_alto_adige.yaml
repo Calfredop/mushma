@@ -1,0 +1,185 @@
+# Trentino-Alto Adige: region #9 of the full-Italy rollout (.gavin-root/docs/regions/trentino_alto_adige.md).
+id: trentino_alto_adige
+name: {it: Trentino-Alto Adige, en: Trentino-South Tyrol}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [10.38, 45.67, 12.48, 47.1]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 4
+
+# Woodland: the two autonomous provinces each map their own forest, so each map is one layer of
+# both lists; a map covers forest only and its class says both which broad group a polygon is (how
+# much of each cell is broadleaf, conifer or mixed woodland) and which habitat (which kind).
+# Mountain-pine krummholz (mughete) and green-alder scrub are not forest (INFC counts them as
+# arbusteti subalpini, altre terre boscate), so they go to the transitional group, which does not
+# count toward the woodland mask. See .gavin-root/docs/woodland-grid.md and
+# .gavin-root/docs/regions/trentino_alto_adige.md (Sources).
+forest:
+  groups:
+    # Trento: the real forest type of the Trentino typology (label), 54 types in 15 categories.
+    - source: pat_tipi_forestali
+      class_column: label
+      classes:
+        LE_cn: broadleaf        # lecceta con carpino nero (Alto Garda)
+        LE_tb: broadleaf        # lecceta xerica a terebinto
+        OO_pri: broadleaf       # orno-ostrieto primitivo
+        OO: broadleaf           # orno-ostrieto tipico
+        OQ: broadleaf           # ostrio-querceto
+        QC_ca: broadleaf        # querco-carpineto
+        QR: broadleaf           # querceto di rovere (o cerro)
+        CS_ro: broadleaf        # castagneto-robinieto
+        CS: broadleaf           # castagneto
+        RO: broadleaf           # robinieto
+        AF: broadleaf           # aceri-frassineto
+        AF_ob: broadleaf        # aceri-frassineto con ontano
+        AT: broadleaf           # aceri-tiglieto
+        TR: broadleaf           # formazioni transitorie (corileti, betuleti, boschi di neoformazione)
+        OB: broadleaf           # ontaneta di ontano bianco
+        "ON": broadleaf         # ontaneta di ontano nero (quoted: YAML reads a bare ON as true)
+        FA_gra: broadleaf       # faggeta silicicola a luzula o graminacee
+        FA: broadleaf           # faggeta tipica a dentarie
+        FA_alt: broadleaf       # faggeta altimontana
+        FA_cn: broadleaf        # faggeta con carpino nero
+        FA_ta: broadleaf        # faggeta con tasso o agrifoglio
+        FA_con: mixed           # faggeta mesalpica con conifere (abete bianco, abete rosso)
+        PS_xer: conifer         # pineta xerica endalpica
+        PS_ar: conifer          # pineta tipica con abete rosso
+        PS_igr: conifer         # pineta igrofila
+        PS_or: conifer          # pineta con orniello
+        PS_fa: conifer          # pineta con faggio o specie nobili
+        PS_pri: conifer         # pineta pioniera
+        PS_pn: conifer          # pineta di pino nero
+        AB_fa: conifer          # abieteto calcicolo con faggio
+        AB: conifer             # abieteto dei suoli fertili
+        AB_gra: conifer         # abieteto silicicolo dei suoli acidi
+        PE_sf: conifer          # pecceta igrofila a sfagni o molinia
+        PE_ps: conifer          # pecceta a erica con pino silvestre
+        PE_xer: conifer         # pecceta altimontana xerica
+        PE: conifer             # pecceta altimontana tipica
+        PE_sub: conifer         # pecceta subalpina
+        PE_oa: conifer          # pecceta a megaforbie con ontano verde
+        PEX: conifer            # pecceta secondaria o sostitutiva
+        LAX: conifer            # lariceto secondario o sostitutivo
+        LA_rf: conifer          # lariceto tipico a rododendro
+        LA_xer: conifer         # lariceto xerico a ginepro
+        LA_oa: conifer          # lariceto con ontano verde
+        LC_rf: conifer          # larici-cembreta tipica a rododendro
+        LC_xer: conifer         # larici-cembreta xerica a ginepro
+        LC_oa: conifer          # larici-cembreta con ontano verde
+        CB_rf: conifer          # cembreta tipica a rododendro
+        CB_xer: conifer         # cembreta xerica a ginepro
+        CB_oa: conifer          # cembreta con ontano verde
+        MU_rf: transitional     # mugheta a rododendro ferrugineo
+        MU_sc: transitional     # mugheta acidofila di invasione su pascolo
+        MU_rod: transitional    # mugheta a rododendri
+        MU_er: transitional     # mugheta a erica
+        OA: transitional        # ontaneta di ontano verde
+    # Bolzano: the site forest type of the Waldtypisierung Südtirol, by its group (WGRU_BEZ_I).
+    - source: pbz_tipologie_forestali
+      class_column: WGRU_BEZ_I
+      classes:
+        Peccete subalpine: conifer
+        Peccete montane: conifer
+        Piceo-abieteti: conifer
+        Larici-cembrete: conifer
+        Lariceti: conifer
+        Pinete: conifer                 # pino silvestre (Venosta, Isarco), pino nero
+        Piceo-abieti-faggete: mixed     # spruce, silver fir and beech
+        Querco-pinete: mixed            # oaks with Scots pine (and larch) on the dry slopes
+        Faggete: broadleaf
+        Querceti: broadleaf             # rovere, roverella, with chestnut in places
+        Orno-ostrieti: broadleaf
+        Boschi di latifoglie: broadleaf # frassino-tiglieti
+        Boschi ripariali: broadleaf     # ontano bianco, salici
+        Mughete e bassofusti di ontano verde: transitional
+  types:
+    - source: pat_tipi_forestali
+      class_column: label
+      classes:
+        LE_cn: evergreen_oak
+        LE_tb: evergreen_oak
+        OO_pri: mixed_broadleaf
+        OO: mixed_broadleaf
+        OQ: deciduous_oak       # roverella with hop-hornbeam
+        QC_ca: deciduous_oak
+        QR: deciduous_oak
+        CS_ro: chestnut
+        CS: chestnut
+        RO: exotic_broadleaf
+        AF: mixed_broadleaf
+        AF_ob: mixed_broadleaf
+        AT: mixed_broadleaf
+        TR: mixed_broadleaf
+        OB: riparian
+        "ON": riparian
+        FA_gra: beech
+        FA: beech
+        FA_alt: beech
+        FA_cn: beech
+        FA_ta: beech
+        FA_con: mixed_broadleaf_conifer
+        PS_xer: mountain_pine
+        PS_ar: mountain_pine
+        PS_igr: mountain_pine
+        PS_or: mountain_pine
+        PS_fa: mountain_pine
+        PS_pri: mountain_pine
+        PS_pn: mountain_pine    # pino nero
+        AB_fa: fir_spruce
+        AB: fir_spruce
+        AB_gra: fir_spruce
+        PE_sf: fir_spruce
+        PE_ps: fir_spruce
+        PE_xer: fir_spruce
+        PE: fir_spruce
+        PE_sub: fir_spruce
+        PE_oa: fir_spruce
+        PEX: fir_spruce
+        LAX: other_conifer      # larch, stone pine
+        LA_rf: other_conifer
+        LA_xer: other_conifer
+        LA_oa: other_conifer
+        LC_rf: other_conifer
+        LC_xer: other_conifer
+        LC_oa: other_conifer
+        CB_rf: other_conifer
+        CB_xer: other_conifer
+        CB_oa: other_conifer
+        MU_rf: transitional_woodland_shrub
+        MU_sc: transitional_woodland_shrub
+        MU_rod: transitional_woodland_shrub
+        MU_er: transitional_woodland_shrub
+        OA: transitional_woodland_shrub
+    - source: pbz_tipologie_forestali
+      class_column: WGRU_BEZ_I
+      classes:
+        Peccete subalpine: fir_spruce
+        Peccete montane: fir_spruce
+        Piceo-abieteti: fir_spruce
+        Larici-cembrete: other_conifer
+        Lariceti: other_conifer
+        Pinete: mountain_pine
+        Piceo-abieti-faggete: mixed_broadleaf_conifer
+        Querco-pinete: mixed_broadleaf_conifer
+        Faggete: beech
+        Querceti: deciduous_oak
+        Orno-ostrieti: mixed_broadleaf
+        Boschi di latifoglie: mixed_broadleaf
+        Boschi ripariali: riparian
+        Mughete e bassofusti di ontano verde: transitional_woodland_shrub
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Trentino-Alto Adige, IT",
+# admin level 10) on 2026-09-26. GBIF history is paged over bbox_wgs84 and clipped to the grid.
+sightings:
+  inaturalist_place_id: 10874
