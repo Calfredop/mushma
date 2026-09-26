@@ -245,3 +245,35 @@ test('a region on the hub map is drawn to its border and opens on a tap', async 
   await page.mouse.click(tuscany.x, tuscany.y)
   await expect(page).toHaveURL(/\/toscana$/)
 })
+
+test('switching region from a region page moves the map there, with its limits', async ({
+  page,
+}) => {
+  await page.goto('/toscana')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
+  await page.waitForFunction(() => window.__mushmaMap?.loaded())
+
+  await page.getByRole('button', { name: 'Regione' }).click()
+  await page.getByRole('option', { name: 'Piemonte' }).click()
+  await expect(page).toHaveURL(/\/piemonte$/)
+  await page.waitForFunction(() => {
+    const map = window.__mushmaMap
+    return !!map?.loaded() && !map.isMoving()
+  })
+
+  const view = await page.evaluate(() => {
+    const map = window.__mushmaMap!
+    const { lng, lat } = map.getCenter()
+    return { lng, lat, maxBounds: map.getMaxBounds()?.toArray() }
+  })
+  // Centred on Piemonte (its registry bounds), and the map holds you there, not in Tuscany.
+  expect(view.lng).toBeGreaterThan(6.62)
+  expect(view.lng).toBeLessThan(9.22)
+  expect(view.lat).toBeGreaterThan(44.06)
+  expect(view.lat).toBeLessThan(46.47)
+  expect(view.maxBounds).toEqual([
+    [5.3, 43.3],
+    [10.5, 47.2],
+  ])
+})

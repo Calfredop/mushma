@@ -18,13 +18,13 @@ import {
   REGIONS,
   TERRAIN_URL,
 } from '../config'
-import type { RegionDefinition } from '../regions'
 import type { Language } from '../i18n'
 import type { CameraRequest } from '../state/AppState'
 import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
 import styles from './ConditionsMap.module.css'
 import { inView, type MapPadding, mergePadding } from './padding'
+import { type MapRegion, regionPadding, showRegion } from './region'
 import { mapLocale, registerPmtiles } from './setup'
 import {
   type ActiveIndicator,
@@ -104,7 +104,9 @@ interface MapCallbacks {
   cellLayers: string[]
 }
 
-type MapRegion = Pick<RegionDefinition, 'bounds' | 'maxBounds' | 'minZoom' | 'maxZoom'>
+/** A region as the map sees it: a new key means the map has another region to move to. */
+const regionKey = (region: MapRegion) =>
+  JSON.stringify([region.bounds, region.maxBounds, region.minZoom, region.maxZoom])
 
 function createMap(
   container: HTMLDivElement,
@@ -123,9 +125,7 @@ function createMap(
     ),
     bounds: region.bounds,
     // The region opens in the part of the map nothing covers.
-    fitBoundsOptions: {
-      padding: mergePadding({ top: 24, bottom: 24, left: 24, right: 24 }, padding),
-    },
+    fitBoundsOptions: { padding: regionPadding(padding) },
     maxBounds: region.maxBounds,
     minZoom: region.minZoom,
     maxZoom: region.maxZoom,
@@ -203,7 +203,7 @@ interface Props {
   /** The visitor's last GPS fix, or null before one. */
   userPosition: { lat: number; lon: number } | null
   lang: Language
-  /** Defaults to the default region. Read once, at map creation. */
+  /** Defaults to the default region. Another region moves the map there, with its limits. */
   region?: MapRegion
   /** What covers the map's edges (the sheet, the controls): camera moves keep clear of it. */
   padding?: MapPadding
@@ -243,12 +243,18 @@ export function ConditionsMap({
   })
   const initialLang = useRef(lang)
   const initialLocale = useRef(mapLocale(t))
-  const initialRegion = useRef(region)
+  const regionRef = useRef(region)
+  /** The region the live map was last set up for, as its key. */
+  const shownRegion = useRef<string | null>(null)
   const paddingRef = useRef(padding)
 
   useEffect(() => {
     paddingRef.current = padding
   }, [padding])
+
+  useEffect(() => {
+    regionRef.current = region
+  }, [region])
 
   useEffect(() => {
     callbacks.current = {
@@ -273,10 +279,11 @@ export function ConditionsMap({
           container,
           initialLang.current,
           initialLocale.current,
-          initialRegion.current,
+          regionRef.current,
           paddingRef.current,
           callbacks,
         )
+        shownRegion.current = regionKey(regionRef.current)
         mapRef.current = map
       })
     })
@@ -445,6 +452,17 @@ export function ConditionsMap({
       .addTo(map)
     return () => void marker.remove()
   }, [userPosition, ready, t])
+
+  // Another region (the switcher, or a GPS fix taken up in another region): the map moves there
+  // as if it had opened there. Declared before the camera requests so a spot in the new region
+  // still wins.
+  const wantedRegion = regionKey(region)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready || wantedRegion === shownRegion.current) return
+    shownRegion.current = wantedRegion
+    showRegion(map, regionRef.current, paddingRef.current)
+  }, [wantedRegion, ready])
 
   // Camera requests (search, GPS, hot places, a tap). Declared before the spot effect so a
   // framed spot-and-cell view wins over the fly-to. The padding keeps the place clear of what
