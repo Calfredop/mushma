@@ -461,3 +461,29 @@ def test_the_tables_build_the_same_from_parquet_relations(tmp_path) -> None:
         pd.testing.assert_frame_equal(
             frames.reset_index(drop=True), relations.reset_index(drop=True), check_dtype=False
         )
+
+
+def test_seasons_stay_inside_a_small_memory_cap_with_many_areas(tmp_path) -> None:
+    # Piemonte has 1,180 comuni: ten years of area-days ran the season table out of memory under
+    # the history build's cap. The same connection settings as api.history.build, a smaller cap.
+    con = duckdb.connect(
+        config={
+            "memory_limit": "32MB",
+            "temp_directory": str(tmp_path),
+            "preserve_insertion_order": False,
+            "threads": 2,
+        }
+    )
+    days = con.sql(
+        """
+        SELECT 'A' || a AS area_code, 'porcini' AS species, d::DATE AS date, 10 AS cells,
+               (hash(a, d) % 11)::INTEGER AS good_cells
+        FROM range(200) AS t(a), range(DATE '2016-01-01', DATE '2026-01-01', INTERVAL 1 DAY) AS r(d)
+        """
+    )
+
+    seasons = season_scores(days, baseline_years=list(range(2016, 2026)), con=con)
+
+    assert len(seasons) == 200 * 10
+    assert seasons["complete"].all()
+    assert set(seasons["days"]) == {365, 366}

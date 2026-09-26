@@ -1,88 +1,276 @@
+/* The hub: Italy on a full-bleed map, the region picker floating over it in the same Sheet as a
+   region's page (Sheet.module.css): a card on the left from 900px, a sheet on a phone. */
+
 .hub {
   position: relative;
   height: 100dvh;
-  overflow: auto;
-  background: var(--lichene, #edf0ea);
-  color: var(--humus, #1c211d);
+  overflow: clip;
+  background: var(--basemap-land);
+  color: var(--humus);
 }
 
-.header {
-  padding: calc(var(--safe-top-clear, 0px) + var(--space-5)) var(--space-5) var(--space-4);
-  max-width: 40rem;
+.mapArea {
+  position: absolute;
+  inset: 0;
+}
+
+/* The attribution rides on the sheet, like on a region's map. */
+.mapArea :global(.maplibregl-ctrl-bottom-right) {
+  transform: translateY(calc(-1 * var(--sheet-lift, 0px)));
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
 }
 
 .wordmark {
-  margin: 0 0 var(--space-2);
-  font-family: 'Young Serif', serif;
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-species);
   font-weight: 400;
-  letter-spacing: -0.02em;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.headerButton {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--humus);
+}
+
+.headerButton:hover {
+  background: var(--glass-hover);
+}
+
+.headerButton[aria-haspopup][aria-expanded='true'] {
+  background: var(--humus);
+  color: var(--carta);
 }
 
 .lede {
   margin: 0;
+  color: var(--felce);
   font-size: var(--text-body);
-  line-height: 1.45;
-  color: rgb(28 33 29 / 78%);
+  line-height: 1.4;
 }
 
-.map {
-  width: 100%;
-  height: min(55vh, 28rem);
-  border-block: 1px solid rgb(28 33 29 / 12%);
-}
-
-.list {
-  padding: var(--space-5);
-  max-width: 40rem;
-  margin: 0 auto;
+.listHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-2) 0 var(--space-3);
 }
 
 .listTitle {
-  margin: 0 0 var(--space-4);
-  font-size: 1.125rem;
-  font-weight: 650;
+  margin: 0;
+  font-size: var(--text-title);
+  font-weight: 700;
+}
+
+/* The key to the fill and the chips: a caption and the five score classes. */
+.scaleKey {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.scale {
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: var(--radius-s);
+  box-shadow: inset 0 0 0 1px rgb(28 33 29 / 14%);
+}
+
+.scale > span {
+  width: 0.875rem;
+  height: 0.625rem;
 }
 
 .regionList {
+  display: grid;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* A whole row to tap: the name and today's summary, the mean score, a chevron. It lights up
+   with its region on the map, whichever of the two the pointer is on. */
+.region {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: var(--space-3);
-}
-
-.regionCard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  width: 100%;
-  padding: var(--space-4);
-  border: 1px solid rgb(28 33 29 / 14%);
-  border-radius: var(--radius-m);
-  background: rgb(255 255 255 / 45%);
+  min-height: 3.5rem;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border-radius: var(--radius-l);
+  background: rgb(255 255 255 / 50%);
+  box-shadow: inset 0 0 0 1px var(--rule);
   color: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 120ms var(--ease);
+  text-decoration: none;
+  transition:
+    background-color 120ms var(--ease),
+    box-shadow 120ms var(--ease);
 }
 
-.regionCard:hover {
-  background: rgb(255 255 255 / 72%);
+.region[data-highlighted] {
+  background: rgb(255 255 255 / 85%);
+  box-shadow: inset 0 0 0 2px var(--humus);
+}
+
+.region:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.region > svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--felce);
+}
+
+.regionText {
+  display: grid;
+  flex: 1;
+  gap: 0.125rem;
+  min-width: 0;
 }
 
 .regionName {
-  font-size: 1.0625rem;
+  font-size: var(--text-lead);
   font-weight: 650;
 }
 
-.regionIntro {
-  font-size: 0.875rem;
-  line-height: 1.45;
-  color: rgb(28 33 29 / 72%);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.regionSummary {
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.more {
+  margin: var(--space-3) 0 0;
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+/* A tap on a region the app doesn't serve yet: on the map, clear of the sheet. */
+.status {
+  position: absolute;
+  top: calc(var(--safe-top-clear) + var(--space-3));
+  left: calc(var(--safe-left) + var(--space-3));
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: max-content;
+  max-width: calc(100% - var(--safe-left) - var(--safe-right) - 2 * var(--space-3));
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-l);
+  background: var(--humus);
+  color: var(--carta);
+  font-size: var(--text-caption);
+  box-shadow: var(--shadow-float);
+  opacity: calc(1 - var(--sheet-cover, 0));
+}
+
+.status button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.hub[data-sheet='full'] .status {
+  visibility: hidden;
+}
+
+.footer {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+  color: var(--felce);
+  font-size: var(--text-caption);
+}
+
+.footer p {
+  margin: 0 0 var(--space-2);
+}
+
+/* One row of small links, each a whole tap target tall and never broken across lines. */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-1);
+  margin: 0 calc(-1 * var(--space-1));
+}
+
+.links a,
+.links button {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-1);
+  border: 0;
+  background: none;
+  color: var(--humus);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.links .github {
+  justify-content: center;
+  min-width: var(--tap);
+  margin-left: auto;
+  color: var(--felce);
+}
+
+.links .github svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (hover: hover) {
+  .region:hover {
+    background: rgb(255 255 255 / 85%);
+  }
+}
+
+@media (min-width: 900px) {
+  .hub {
+    --panel-inset: calc(var(--safe-left) + var(--panel-width) + 2 * var(--space-4));
+  }
+
+  .wordmark {
+    font-size: var(--text-wordmark);
+  }
+
+  .status {
+    top: calc(var(--safe-top-clear) + var(--space-4));
+    left: calc(var(--panel-inset) + (100% - var(--panel-inset)) / 2);
+    max-width: calc(100% - var(--panel-inset) - 2 * var(--space-4));
+    transform: translateX(-50%);
+  }
+
+  .mapArea :global(.maplibregl-ctrl-bottom-right) {
+    right: var(--safe-right);
+    bottom: var(--safe-bottom);
+  }
 }

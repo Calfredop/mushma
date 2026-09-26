@@ -145,3 +145,36 @@ def test_emilia_romagna_reads_arpae_gauges_on_0900_days(tmp_path) -> None:
     assert gauge.name == "Bosco"
     assert network.series(gauge).to_dict() == {date(2025, 10, 1): 12.4}
     assert network.day_totals is gauge_day_totals
+
+
+def test_piemonte_reads_the_arpa_network_on_utc_days(tmp_path) -> None:
+    import json
+    from datetime import date
+
+    from api.weather.checks import GAUGE_NETWORKS
+
+    base = "https://utility.arpa.piemonte.it/meteoidro"
+    folder = tmp_path / "arpa_piemonte"
+    folder.mkdir()
+    station = {
+        "sensori_meteo": [{"id_parametro": "PLUV"}],
+        "denominazione": "BOBBIO PELLICE",
+        "latitudine_n_wgs84_d": 44.8,
+        "longitudine_e_wgs84_d": 7.1,
+        "quota_stazione": 783,
+        "data_inizio": "1990-01-01",
+        "data_fine": None,
+        "fk_id_punto_misura_meteo": f"{base}/punti_misura_meteo/PIE-001025-900/?format=json",
+    }
+    (folder / "stations.json").write_text(json.dumps({"results": [station]}))
+    days = [{"data": f"2025-01-{d:02d}", "ptot": d / 10, "pclasse": "MZ"} for d in range(1, 11)]
+    (folder / "PIE-001025-900_20250101_20250110.json").write_text(json.dumps([{"results": days}]))
+
+    network = GAUGE_NETWORKS["piemonte"](tmp_path, date(2025, 1, 1), date(2025, 1, 10))
+
+    assert network.gauges["code"].tolist() == ["PIE-001025-900"]
+    assert network.gauges["elevation_m"].tolist() == [783.0]
+    gauge = next(network.gauges.itertuples())
+    assert network.series(gauge)[date(2025, 1, 3)] == pytest.approx(0.3)
+    calendar = pd.Series([0.0, 24.0], index=[date(2025, 1, 1), date(2025, 1, 2)])
+    assert network.day_totals(calendar).tolist() == pytest.approx(utc_day_totals(calendar).tolist())

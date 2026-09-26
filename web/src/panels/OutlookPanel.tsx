@@ -11,6 +11,7 @@ import {
   temperatureDelta,
 } from '../history/present'
 import { intlLocale, type Language } from '../i18n'
+import type { RegionDefinition } from '../regions'
 import { SPECIES, type Species, type SpeciesOrCombined } from '../state/urlState'
 import { addDays, formatDayMonth, formatMonth } from '../time/days'
 import styles from './OutlookPanel.module.css'
@@ -19,6 +20,8 @@ import { PlausibleSpecies, type PlausibleState } from './PlausibleSpecies'
 
 interface Props {
   species: SpeciesOrCombined
+  /** The region on the map: the whole-region area is called by its name. */
+  region: Pick<RegionDefinition, 'name' | 'whole'>
   onSpecies: (species: Species) => void
   comuni: Comune[] | undefined
   comune: string | null
@@ -45,6 +48,7 @@ function yearsLabel(years: number[]): string {
 export function OutlookPanel({
   species,
   onSpecies,
+  region,
   comuni,
   comune,
   onComune,
@@ -81,7 +85,7 @@ export function OutlookPanel({
               species: t(`species.${species}.name`),
               area:
                 !outlook || outlook.area.kind === 'region'
-                  ? t('app.region')
+                  ? region.name[language]
                   : outlook.area.name,
             })}
           </p>
@@ -106,7 +110,12 @@ export function OutlookPanel({
         </div>
       ) : (
         <>
-          <AreaPicker comuni={comuni} value={comune} onChange={onComune} />
+          <AreaPicker
+            wholeRegion={region.whole[language]}
+            comuni={comuni}
+            value={comune}
+            onChange={onComune}
+          />
           {zone && <PlausibleSpecies plausible={zone} />}
           {isLoading && <p className={panel.status}>{t('outlook.loading')}</p>}
           {isError && (

@@ -8,8 +8,9 @@
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
 with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
-the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Lombardia for Lombardia:
-``GAUGE_NETWORKS``). Results land in ``$DATA_DIR/weather/<region>/checks/``.
+the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Piemonte for Piemonte, ARPA
+Lombardia for Lombardia: ``GAUGE_NETWORKS``). Results land in
+``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
@@ -26,7 +27,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpa_lombardia, arpal, umbria_sir
+from api.weather import arpa_lombardia, arpa_piemonte, arpal, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -291,6 +292,18 @@ def umbria_sir_network(raw: Path, start: date, end: date) -> GaugeNetwork:
     )
 
 
+def arpa_piemonte_network(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """ARPA Piemonte: open REST API, stations with heights, one series per measuring point
+    fetched only for the gauges in woodland cells, UTC days (api.weather.arpa_piemonte)."""
+    folder = raw / "arpa_piemonte"
+    stations = json.loads(fetch(arpa_piemonte.STATIONS_URL, folder / "stations.json").read_text())
+
+    def series(gauge: object) -> pd.Series:
+        return arpa_piemonte.parse_daily(arpa_piemonte.fetch_daily(gauge.code, start, end, folder))
+
+    return GaugeNetwork(arpa_piemonte.parse_stations(stations), series, arpal.utc_day_totals)
+
+
 def arpa_lombardia_network(raw: Path, start: date, end: date) -> GaugeNetwork:
     """ARPA Lombardia: CC0 open data summed into days server side, one CSV per year, CET
     calendar days (api.weather.arpa_lombardia)."""
@@ -314,10 +327,11 @@ def arpa_lombardia_network(raw: Path, start: date, end: date) -> GaugeNetwork:
 
 
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
+    "emilia_romagna": arpae_emilia_romagna,
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
     "umbria": umbria_sir_network,
-    "emilia_romagna": arpae_emilia_romagna,
+    "piemonte": arpa_piemonte_network,
     "lombardia": arpa_lombardia_network,
 }
 

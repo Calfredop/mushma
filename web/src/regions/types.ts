@@ -37,6 +37,11 @@ export interface RegionDefinition {
    * "nelle Marche", "nel Lazio". Omitted, it is `in <name>` (see `regionLocative`).
    */
   locative?: { it: string; en: string }
+  /**
+   * The whole region, as the area picker offers it: "Tutta la Toscana", "Tutto il Piemonte",
+   * "Tutte le Marche", "Tutta l'Umbria". Required: the article and agreement differ by region.
+   */
+  whole: { it: string; en: string }
   bounds: [[number, number], [number, number]]
   maxBounds: LngLatBoundsLike
   minZoom: number

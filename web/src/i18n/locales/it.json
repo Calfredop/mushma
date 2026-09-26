@@ -1,7 +1,6 @@
 {
   "app": {
-    "name": "Mappa Funghi",
-    "region": "Toscana"
+    "name": "Mappa Funghi"
   },
   "language": {
     "label": "Lingua",
@@ -82,7 +81,7 @@
     "next": "Giorni successivi"
   },
   "map": {
-    "label": "Mappa dell'indice delle condizioni in Toscana",
+    "label": "Mappa dell'indice delle condizioni {{where}}",
     "hint": "Tocca un bosco per vedere la previsione del punto",
     "loading": "Carico l'indice delle condizioni…",
     "loadError": "Non riesco a caricare l'indice delle condizioni. Controlla la connessione e riprova.",
@@ -402,7 +401,7 @@
     "sections": {
       "service": {
         "title": "Il servizio",
-        "body": "Mappa Funghi stima, cella per cella, quanto il meteo, il bosco e il terreno favoriscono la crescita di porcini, ovoli e gallinacci in Toscana. Il servizio è offerto gratuitamente, così com'è, e può cambiare o interrompersi in qualsiasi momento senza preavviso."
+        "body": "Mappa Funghi stima, cella per cella, quanto il meteo, il bosco e il terreno favoriscono la crescita di porcini, ovoli e gallinacci nelle regioni italiane coperte. Il servizio è offerto gratuitamente, così com'è, e può cambiare o interrompersi in qualsiasi momento senza preavviso."
       },
       "scoreNature": {
         "title": "L'indice delle condizioni non è una garanzia",
@@ -487,7 +486,7 @@
   "seo": {
     "credits": {
       "title": "Dati e crediti | Mappa Funghi",
-      "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi in Toscana."
+      "description": "Le fonti di dati pubblici e il software open source usati da Mappa Funghi per stimare le condizioni dei funghi nelle regioni italiane coperte."
     },
     "terms": {
       "title": "Termini e condizioni | Mappa Funghi",
@@ -568,7 +567,6 @@
   },
   "area": {
     "label": "Zona",
-    "region": "Tutta la Toscana",
     "comune": "{{name}} ({{province}})"
   },
   "plausible": {
@@ -667,9 +665,39 @@
   },
   "hub": {
     "lede": "Scegli una regione per vedere le condizioni cella per cella.",
-    "regions": "Regioni coperte"
+    "regions": "Regioni coperte",
+    "mapLabel": "Mappa delle regioni",
+    "scaleTitle": "Indice medio di oggi",
+    "goodShare": "{{share}} dei boschi in condizioni favorevoli",
+    "loading": "Carico l'indice di oggi…",
+    "noScore": "Indice di oggi non ancora disponibile",
+    "more": "Le regioni solo bordate sulla mappa non sono ancora coperte.",
+    "notCovered": "{{region}} non è ancora coperta.",
+    "dismiss": "Chiudi"
   },
   "regions": {
     "label": "Regione"
+  },
+  "italyRegions": {
+    "piemonte": "Piemonte",
+    "valle-d-aosta": "Valle d'Aosta",
+    "lombardia": "Lombardia",
+    "trentino-alto-adige": "Trentino-Alto Adige",
+    "veneto": "Veneto",
+    "friuli-venezia-giulia": "Friuli-Venezia Giulia",
+    "liguria": "Liguria",
+    "emilia-romagna": "Emilia-Romagna",
+    "toscana": "Toscana",
+    "umbria": "Umbria",
+    "marche": "Marche",
+    "lazio": "Lazio",
+    "abruzzo": "Abruzzo",
+    "molise": "Molise",
+    "campania": "Campania",
+    "puglia": "Puglia",
+    "basilicata": "Basilicata",
+    "calabria": "Calabria",
+    "sicilia": "Sicilia",
+    "sardegna": "Sardegna"
   }
 }

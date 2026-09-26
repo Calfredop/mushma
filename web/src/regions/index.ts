@@ -7,6 +7,7 @@ import { emiliaRomagna } from './emilia-romagna.js'
 import { liguria } from './liguria.js'
 import { lombardia } from './lombardia.js'
 import { marche } from './marche.js'
+import { piemonte } from './piemonte.js'
 import { toscana } from './toscana.js'
 import type { Bounds, RegionDefinition } from './types.js'
 import { umbria } from './umbria.js'
@@ -16,9 +17,10 @@ export type { Bounds, RegionDefinition, RegionLocaleCopy } from './types.js'
 export const REGIONS: Record<string, RegionDefinition> = {
   [toscana.slug]: toscana,
   [umbria.slug]: umbria,
-  [emiliaRomagna.slug]: emiliaRomagna,
   [liguria.slug]: liguria,
+  [emiliaRomagna.slug]: emiliaRomagna,
   [marche.slug]: marche,
+  [piemonte.slug]: piemonte,
   [lombardia.slug]: lombardia,
 }
 
@@ -35,7 +37,10 @@ export function findRegion(slug: string): RegionDefinition | undefined {
 }
 
 /** "In the region" in `lang`: the region's `locative`, or `in <name>`. */
-export function regionLocative(region: RegionDefinition, lang: 'it' | 'en'): string {
+export function regionLocative(
+  region: Pick<RegionDefinition, 'name' | 'locative'>,
+  lang: 'it' | 'en',
+): string {
   return region.locative?.[lang] ?? `in ${region.name[lang]}`
 }
 

@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import { REGIONS } from '../regions'
 import { OUTLOOK, PLAUSIBLE } from '../test/fixtures'
 import { OutlookPanel } from './OutlookPanel'
 
 const props = {
   species: 'porcini' as const,
   onSpecies: () => {},
+  region: REGIONS.toscana,
   comuni: [],
   comune: '051030',
   onComune: () => {},
@@ -82,11 +84,17 @@ describe('OutlookPanel periods', () => {
     render(
       <OutlookPanel
         {...props}
-        outlook={{ ...OUTLOOK, area: { code: null, name: 'Toscana', kind: 'region' } }}
+        region={REGIONS.piemonte}
+        outlook={{ ...OUTLOOK, area: { code: null, name: 'Piemonte', kind: 'region' } }}
       />,
     )
-    expect(screen.getByText('Porcini · Tuscany')).toBeInTheDocument()
+    expect(screen.getByText('Porcini · Piedmont')).toBeInTheDocument()
     await i18n.changeLanguage('it')
+  })
+
+  it('offers the whole region in its own words', () => {
+    render(<OutlookPanel {...props} region={REGIONS.marche} />)
+    expect(screen.getByRole('option', { name: 'Tutte le Marche' })).toBeInTheDocument()
   })
 
   it("shows which species the chosen zone's woodland suits", () => {

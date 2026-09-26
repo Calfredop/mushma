@@ -10,6 +10,7 @@ export const marche: RegionDefinition = {
   slug: 'marche',
   name: { it: 'Marche', en: 'Marche' },
   locative: { it: 'nelle Marche', en: 'in Marche' },
+  whole: { it: 'Tutte le Marche', en: 'All of Marche' },
   bounds: [
     [12.18, 42.68],
     [13.92, 43.97],

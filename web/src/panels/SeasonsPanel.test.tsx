@@ -1,11 +1,13 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import { REGIONS } from '../regions'
 import { PLAUSIBLE, SEASON_MAP, SEASONS } from '../test/fixtures'
 import { SeasonsPanel } from './SeasonsPanel'
 
 const props = {
   species: 'porcini' as const,
+  region: REGIONS.toscana,
   comuni: [
     {
       code: '046009',
@@ -31,6 +33,12 @@ const props = {
 }
 
 describe('SeasonsPanel', () => {
+  it("calls the whole region by the region's name, and offers it in its own words", () => {
+    render(<SeasonsPanel {...props} region={REGIONS.piemonte} />)
+    expect(screen.getByText('Porcini · Piemonte')).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Tutto il Piemonte' })).toBeInTheDocument()
+  })
+
   it('lists the seasons newest first, the one under way marked "so far"', () => {
     render(<SeasonsPanel {...props} />)
     const rows = screen.getAllByRole('button', { pressed: false })

@@ -280,8 +280,8 @@ skipped when the grid is not built, e.g. in CI. All 15 pass.
    `classes` mapping type codes → habitats. If `classes` is omitted, the shared CLC IV
    defaults are used (`api.grid.forest.CLC_IV_DEFAULT_TYPES`). A regional map can supply the
    types too: set `class_column` (default: the source's `field`, else `clc18`) and optionally
-   `where`. When the types source is also the only, unfiltered group layer (Liguria's and the
-   Marche's maps carry both codes), it is read once.
+   `where`. When a single unfiltered `forest.groups` layer names the same source as
+   `forest.types` (Liguria's forest-type map carries both codes), it is read once.
 4. The build prints the region's forest area against the INFC 2015 "bosco" figure in
    `api/src/api/config/infc2015.yaml` and warns when the difference exceeds ±10 %.
 5. National raw files (ISTAT boundaries and localities, DEM tiles, CLC pages by bbox) are

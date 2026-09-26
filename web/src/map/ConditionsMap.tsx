@@ -1,5 +1,4 @@
 import {
-  addProtocol,
   type ExpressionSpecification,
   type GeoJSONSource,
   Map as MapLibreMap,
@@ -7,9 +6,7 @@ import {
   Marker,
 } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { Protocol } from 'pmtiles'
 import { useEffect, useRef, useState } from 'react'
-import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import type { Hotspot } from '../api/queries'
 import type { components } from '../api/schema'
@@ -21,13 +18,15 @@ import {
   REGIONS,
   TERRAIN_URL,
 } from '../config'
-import type { RegionDefinition } from '../regions'
 import type { Language } from '../i18n'
+import { regionLocative } from '../regions'
 import type { CameraRequest } from '../state/AppState'
 import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
 import styles from './ConditionsMap.module.css'
 import { inView, type MapPadding, mergePadding } from './padding'
+import { type MapRegion, regionPadding, showRegion } from './region'
+import { mapLocale, registerPmtiles } from './setup'
 import {
   type ActiveIndicator,
   ANALYSIS_CELL_LAYERS,
@@ -74,14 +73,6 @@ declare global {
   }
 }
 
-let pmtilesRegistered = false
-function registerPmtiles() {
-  if (pmtilesRegistered) return
-  // No metadata request: the style already names the layers and the attribution.
-  addProtocol('pmtiles', new Protocol({ metadata: false }).tile)
-  pmtilesRegistered = true
-}
-
 const CLICK_TOLERANCE_PX = 10
 
 /** Relief under the score cells. Added after the first paint, so it never delays it. */
@@ -114,14 +105,16 @@ interface MapCallbacks {
   cellLayers: string[]
 }
 
-type MapRegion = Pick<RegionDefinition, 'bounds' | 'maxBounds' | 'minZoom' | 'maxZoom'>
+/** A region as the map sees it: a new key means the map has another region to move to. */
+const regionKey = (region: MapRegion) =>
+  JSON.stringify([region.bounds, region.maxBounds, region.minZoom, region.maxZoom])
 
 function createMap(
   container: HTMLDivElement,
   lang: Language,
   locale: Record<string, string>,
   region: MapRegion,
-  padding: MapPadding | undefined,
+  framePadding: MapPadding | undefined,
   callbacks: { current: MapCallbacks },
 ): MapLibreMap {
   registerPmtiles()
@@ -132,10 +125,7 @@ function createMap(
       region.bounds,
     ),
     bounds: region.bounds,
-    // The region opens in the part of the map nothing covers.
-    fitBoundsOptions: {
-      padding: mergePadding({ top: 24, bottom: 24, left: 24, right: 24 }, padding),
-    },
+    fitBoundsOptions: { padding: regionPadding(framePadding) },
     maxBounds: region.maxBounds,
     minZoom: region.minZoom,
     maxZoom: region.maxZoom,
@@ -213,23 +203,18 @@ interface Props {
   /** The visitor's last GPS fix, or null before one. */
   userPosition: { lat: number; lon: number } | null
   lang: Language
-  /** Defaults to the default region. Read once, at map creation. */
+  /** Defaults to the default region. Another region moves the map there, with its limits. */
   region?: MapRegion
   /** What covers the map's edges (the sheet, the controls): camera moves keep clear of it. */
   padding?: MapPadding
+  /**
+   * What a region is framed clear of, when the map opens on it and when it switches to it alike.
+   * Omitted, the region gets only a margin.
+   */
+  framePadding?: MapPadding
   onCellClick: (cellId: string, lat: number, lon: number) => void
   onPointClick: (lat: number, lon: number) => void
   onHotspotClick: (hotspot: Hotspot) => void
-}
-
-/** MapLibre's own UI strings (canvas label, attribution button), from i18n. */
-function mapLocale(t: TFunction): Record<string, string> {
-  return {
-    'Map.Title': t('map.canvas'),
-    'AttributionControl.ToggleAttribution': t('map.toggleAttribution'),
-    'AttributionControl.MapFeedback': t('map.feedback'),
-    'Marker.Title': t('map.marker'),
-  }
 }
 
 export function ConditionsMap({
@@ -245,6 +230,7 @@ export function ConditionsMap({
   lang,
   region = REGIONS[DEFAULT_REGION_SLUG],
   padding,
+  framePadding,
   onCellClick,
   onPointClick,
   onHotspotClick,
@@ -263,12 +249,23 @@ export function ConditionsMap({
   })
   const initialLang = useRef(lang)
   const initialLocale = useRef(mapLocale(t))
-  const initialRegion = useRef(region)
+  const regionRef = useRef(region)
+  /** The region the live map was last set up for, as its key. */
+  const shownRegion = useRef<string | null>(null)
   const paddingRef = useRef(padding)
+  const framePaddingRef = useRef(framePadding)
 
   useEffect(() => {
     paddingRef.current = padding
   }, [padding])
+
+  useEffect(() => {
+    framePaddingRef.current = framePadding
+  }, [framePadding])
+
+  useEffect(() => {
+    regionRef.current = region
+  }, [region])
 
   useEffect(() => {
     callbacks.current = {
@@ -293,10 +290,11 @@ export function ConditionsMap({
           container,
           initialLang.current,
           initialLocale.current,
-          initialRegion.current,
-          paddingRef.current,
+          regionRef.current,
+          framePaddingRef.current,
           callbacks,
         )
+        shownRegion.current = regionKey(regionRef.current)
         mapRef.current = map
       })
     })
@@ -466,6 +464,17 @@ export function ConditionsMap({
     return () => void marker.remove()
   }, [userPosition, ready, t])
 
+  // Another region (the switcher, or a GPS fix taken up in another region): the map moves there
+  // as if it had opened there. Declared before the camera requests so a spot in the new region
+  // still wins.
+  const wantedRegion = regionKey(region)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready || wantedRegion === shownRegion.current) return
+    shownRegion.current = wantedRegion
+    showRegion(map, regionRef.current, framePaddingRef.current)
+  }, [wantedRegion, ready])
+
   // Camera requests (search, GPS, hot places, a tap). Declared before the spot effect so a
   // framed spot-and-cell view wins over the fly-to. The padding keeps the place clear of what
   // covers the map, such as the phone's sheet.
@@ -567,7 +576,7 @@ export function ConditionsMap({
         ref={containerRef}
         className={styles.map}
         role="region"
-        aria-label={t('map.label')}
+        aria-label={t('map.label', { where: regionLocative(region, lang) })}
       />
       <div className={styles.zoom}>
         <button

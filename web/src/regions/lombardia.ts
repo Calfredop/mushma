@@ -8,6 +8,7 @@ import type { RegionDefinition } from './types.js'
 export const lombardia: RegionDefinition = {
   slug: 'lombardia',
   name: { it: 'Lombardia', en: 'Lombardy' },
+  whole: { it: 'Tutta la Lombardia', en: 'All of Lombardy' },
   bounds: [
     [8.49, 44.67],
     [11.43, 46.64],

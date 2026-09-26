@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
@@ -117,7 +117,8 @@ describe('centre on my position', () => {
   })
 
   it('leaves the map alone for a fix outside the region, and says why', async () => {
-    mockGeolocation(48.14, 11.58) // Munich, outside every Italian region
+    // Munich: outside every Italian region's bbox (Milan now falls inside Piemonte's).
+    mockGeolocation(48.14, 11.58)
     window.history.replaceState(null, '', '/toscana')
     render(<App />)
 
@@ -128,6 +129,22 @@ describe('centre on my position', () => {
     expect(await screen.findByText(/fuori dalle regioni coperte/i)).toBeInTheDocument()
     expect(mapProp('camera')).toBeNull()
     expect(mapProp('user-position')).toBeNull()
+  })
+})
+
+describe('loading', () => {
+  it('marks the map busy, with a spinner, until the scores are in', async () => {
+    // The query cache outlives each test: Liguria, which no other test opens, isn't in it yet.
+    window.history.replaceState(null, '', '/liguria')
+    render(<App />)
+    const map = screen.getByRole('main')
+    expect(map).toHaveAttribute('aria-busy', 'true')
+    expect(within(map).getByRole('status')).toHaveTextContent(
+      "Carico l'indice delle condizioni…",
+    )
+
+    await waitFor(() => expect(map).not.toHaveAttribute('aria-busy'))
+    expect(within(map).queryByRole('status')).not.toBeInTheDocument()
   })
 })
 

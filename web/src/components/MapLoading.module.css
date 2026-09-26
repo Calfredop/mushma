@@ -1,0 +1,62 @@
+/* A glass capsule like the region switcher, centred in the part of the map nothing covers: right
+   of a desktop's panel (--panel-inset), above a phone's sheet (--sheet-lift), fading as the sheet
+   comes up over it (--sheet-cover). The fade is on the capsule itself: an opacity on a wrapper
+   would cut its glass off from the map. */
+.loading {
+  composes: glass from global;
+  position: absolute;
+  top: calc((100% - var(--sheet-lift, 0px)) / 2);
+  left: calc(var(--panel-inset, 0px) + (100% - var(--panel-inset, 0px)) / 2);
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: max-content;
+  max-width: calc(100% - var(--panel-inset, 0px) - 2 * var(--space-4));
+  min-height: var(--tap);
+  margin: 0;
+  padding: 0 var(--space-4) 0 var(--space-3);
+  border-radius: 999px;
+  color: var(--humus);
+  font-size: 0.875rem;
+  font-weight: 560;
+  pointer-events: none;
+  opacity: calc(1 - var(--sheet-cover, 0));
+  /* A quick load is over before it shows: no flash on every day or species switch. */
+  animation: reveal 0s 300ms both;
+}
+
+.spinner {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--glass-rule);
+  border-top-color: var(--humus);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes reveal {
+  from {
+    visibility: hidden;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    border-color: var(--humus);
+    animation: pulse 1s ease-in-out infinite alternate;
+  }
+}

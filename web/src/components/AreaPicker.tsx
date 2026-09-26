@@ -3,6 +3,8 @@ import type { Comune } from '../api/queries'
 import styles from './AreaPicker.module.css'
 
 interface Props {
+  /** The whole region's option, in the region's own words ("Tutto il Piemonte"). */
+  wholeRegion: string
   comuni: Comune[] | undefined
   value: string | null
   onChange: (comune: string | null) => void
@@ -10,8 +12,8 @@ interface Props {
 
 const REGION = ''
 
-/** All of Tuscany, or one comune with woodland. */
-export function AreaPicker({ comuni, value, onChange }: Props) {
+/** The whole region, or one comune with woodland. */
+export function AreaPicker({ wholeRegion, comuni, value, onChange }: Props) {
   const { t } = useTranslation()
   return (
     <label className={styles.picker}>
@@ -22,7 +24,7 @@ export function AreaPicker({ comuni, value, onChange }: Props) {
         disabled={!comuni}
         onChange={(event) => onChange(event.target.value || null)}
       >
-        <option value={REGION}>{t('area.region')}</option>
+        <option value={REGION}>{wholeRegion}</option>
         {value && !comuni?.some((c) => c.code === value) && (
           <option value={value}>{value}</option>
         )}

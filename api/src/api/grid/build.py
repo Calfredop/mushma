@@ -155,16 +155,6 @@ def forest_classes(
     return groups, types
 
 
-@dataclass
-class ForestCover:
-    """Land-cover polygons tagged with a broad ``group`` and forest-type polygons with a
-    ``habitat``, both in the grid's CRS, and the source ids they came from."""
-
-    groups: gpd.GeoDataFrame
-    types: gpd.GeoDataFrame
-    sources: list[str]
-
-
 def _needs_bbox(download: dict) -> bool:
     return "arcgis_layer" in download or "wfs" in download
 
@@ -183,13 +173,17 @@ def read_group_cover(
     *,
     bbox_wgs84: tuple[float, float, float, float] | None = None,
 ) -> gpd.GeoDataFrame:
-    """Every layer's features mapped to their group (``group``, ``geometry``) in ``crs``."""
+    """Every layer's features mapped to their group (``group``, ``geometry``) in ``crs``.
+
+    ``bbox_wgs84`` goes to the layers whose source is queried by bbox (WFS, ArcGIS).
+    """
     frames = []
     for layer in layers:
+        download = sources[layer.source].download or {}
         cover = read_vector(
-            sources[layer.source].download or {},
+            download,
             raw / layer.source,
-            bbox_wgs84=bbox_wgs84,
+            bbox_wgs84=bbox_wgs84 if _needs_bbox(download) else None,
             # OGR skips unread columns in a filter, so read them all when the layer filters.
             columns=None if layer.where else [layer.class_column],
             where=class_filter(layer.class_column, list(layer.classes), layer.where),
@@ -199,9 +193,18 @@ def read_group_cover(
     return gpd.GeoDataFrame(pd.concat(frames, ignore_index=True), crs=crs)
 
 
+@dataclass
+class ForestCover:
+    """Land-cover polygons tagged with a broad ``group`` and forest-type polygons with a
+    ``habitat``, both in the grid's CRS, and the source ids they came from."""
+
+    groups: gpd.GeoDataFrame
+    types: gpd.GeoDataFrame
+    sources: list[str]
+
+
 def read_forest_cover(
-    layers: list[GroupLayer] | None,
-    types_config: dict,
+    forest_config: dict,
     sources: dict[str, Source],
     raw: Path,
     *,
@@ -211,25 +214,26 @@ def read_forest_cover(
     group_classes: dict[str, str],
     type_classes: dict[str, str],
 ) -> ForestCover:
-    """Read the region's forest sources, once each where possible, and tag their polygons.
+    """Read the region's forest sources once each and tag their polygons.
 
-    - Group ``layers`` set: groups from each layer's ``class_column`` (inside its ``where``), types
-      from the ``forest.types`` source's type column. A regional forest-type map that also carries
-      the land-use code (Liguria, Marche) is read once when it is the only group layer, unfiltered,
-      and the types source too.
-    - ``layers`` None (``forest.groups`` omitted): groups and types both from the CLC IV code.
+    - ``forest.groups`` omitted: groups and types both from the CLC IV code.
+    - ``forest.groups`` a single layer on the ``forest.types`` source, with no filters: one
+      regional forest-type map that also carries the land-use code (e.g. Liguria), read once.
+    - otherwise: groups from each ``forest.groups`` layer (``read_group_cover``), types from the
+      ``forest.types`` source's class column, filtered by its ``where`` if set.
     """
+    types_config = forest_config.get("types") or {}
     types_source_id = types_config.get("source", "ispra_clc18_iv")
     types_download = sources[types_source_id].download or {}
     type_field = forest_type_column(types_config, types_download)
-    types_where = types_config.get("where")
     types_cache = source_cache_dir(raw, types_source_id, types_download, region_id)
 
     def tagged(frame: gpd.GeoDataFrame, column: str, name: str, classes: dict) -> gpd.GeoDataFrame:
         frame = frame.assign(**{name: frame[column].astype(str).map(classes)})
         return frame[frame[name].notna()].to_crs(crs)
 
-    if layers is None:
+    groups_config = forest_config.get("groups")
+    if groups_config is None:
         clc = read_vector(types_download, types_cache, bbox_wgs84=bbox_wgs84)
         return ForestCover(
             groups=tagged(clc, type_field, "group", group_classes),
@@ -237,31 +241,44 @@ def read_forest_cover(
             sources=[types_source_id],
         )
 
-    if (
+    layers = groups_config if isinstance(groups_config, list) else [groups_config]
+    one_map = (
         len(layers) == 1
-        and layers[0].source == types_source_id
-        and not layers[0].where
-        and not types_where
-    ):
-        layer = layers[0]
+        and layers[0]["source"] == types_source_id
+        and not layers[0].get("where")
+        and not types_config.get("where")
+    )
+    if one_map:
+        class_col = forest_group_column(layers[0])
         cover = read_vector(
-            sources[layer.source].download or {},
-            raw / layer.source,
+            types_download,
+            raw / types_source_id,
             bbox_wgs84=bbox_wgs84,
-            columns=[layer.class_column, type_field],
-            where=class_filter(layer.class_column, list(layer.classes)),
+            columns=[class_col, type_field],
+            where=class_filter(class_col, list(group_classes)),
         )
         return ForestCover(
-            groups=tagged(cover, layer.class_column, "group", layer.classes),
+            groups=tagged(cover, class_col, "group", group_classes),
             types=tagged(cover, type_field, "habitat", type_classes),
-            sources=[layer.source],
+            sources=[types_source_id],
         )
 
-    type_cover = read_vector(types_download, types_cache, bbox_wgs84=bbox_wgs84, where=types_where)
+    group_layers = [
+        GroupLayer(
+            source=str(layer["source"]),
+            class_column=forest_group_column(layer),
+            classes={str(k): v for k, v in layer["classes"].items()},
+            where=layer.get("where"),
+        )
+        for layer in layers
+    ]
+    types = read_vector(
+        types_download, types_cache, bbox_wgs84=bbox_wgs84, where=types_config.get("where")
+    )
     return ForestCover(
-        groups=read_group_cover(layers, sources, raw, crs, bbox_wgs84=bbox_wgs84),
-        types=tagged(type_cover, type_field, "habitat", type_classes),
-        sources=[*(layer.source for layer in layers), types_source_id],
+        groups=read_group_cover(group_layers, sources, raw, crs, bbox_wgs84=bbox_wgs84),
+        types=tagged(types, type_field, "habitat", type_classes),
+        sources=[*dict.fromkeys(layer.source for layer in group_layers), types_source_id],
     )
 
 
@@ -307,8 +324,7 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
     group_classes, type_classes = forest_classes(region, vocabulary)
     step("forest groups and types")
     cover = read_forest_cover(
-        forest_group_layers(region, vocabulary),
-        forest_config.get("types") or {},
+        forest_config,
         sources,
         raw,
         region_id=region.id,

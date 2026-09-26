@@ -122,18 +122,14 @@ def test_one_regional_map_gives_groups_and_types_from_a_single_read(
         return layer.copy()
 
     monkeypatch.setattr(build, "read_vector", fake_read_vector)
-    layers = [
-        GroupLayer(
-            source="rl_forest",
-            class_column="cod_uso",
-            classes={"3115": "broadleaf", "312": "conifer"},
-        )
-    ]
+    forest_config = {
+        "groups": {"source": "rl_forest", "class_column": "cod_uso", "classes": {}},
+        "types": {"source": "rl_forest"},
+    }
     sources = {"rl_forest": _source("rl_forest", {"wfs": "x", "field": "cod_catfor"})}
 
     cover = build.read_forest_cover(
-        layers,
-        {"source": "rl_forest"},
+        forest_config,
         sources,
         tmp_path,
         region_id="liguria",

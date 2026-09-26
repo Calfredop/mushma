@@ -21,6 +21,7 @@ import {
   factorsQuery,
   type Hotspot,
   isClientError,
+  type RegionOverview,
   useComuni,
   useFactors,
   useForestTypeCells,
@@ -45,6 +46,7 @@ import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
 import { PanelBoundary } from './components/PanelBoundary'
 import { Legend } from './components/Legend'
+import { MapLoading } from './components/MapLoading'
 import { PlaceSearch } from './components/PlaceSearch'
 import { RegionSwitcher } from './components/RegionSwitcher'
 import { Sheet, type SheetLayout } from './components/Sheet'
@@ -503,6 +505,13 @@ function MapScreen() {
         : app.indicators.length === 0
           ? t('analysis.noneOn')
           : undefined
+  // What the map is waiting for: said at its centre, with a spinner, not in the status.
+  const loading =
+    !online || layer.isError || (analysis && !factorDay)
+      ? undefined
+      : layer.isPending || layer.isPlaceholderData
+        ? t(analysis ? 'analysis.loading' : seasonMode ? 'season.loading' : 'map.loading')
+        : undefined
   const status = locating
     ? t('locate.locating')
     : offeredRegion
@@ -510,14 +519,13 @@ function MapScreen() {
       : !online
         ? t('errors.offline')
         : analysis
-          ? (analysisNote ?? (locateError && t(`locate.${locateError}`)))
+          ? ((loading ? undefined : analysisNote) ??
+            (locateError && t(`locate.${locateError}`)))
           : layer.isError
             ? seasonMode
               ? t(scoresUnavailable ? 'season.noData' : 'map.loadError')
               : t(scoresUnavailable ? 'map.noData' : 'map.loadError')
-            : layer.isPending || layer.isPlaceholderData
-              ? t(seasonMode ? 'season.loading' : 'map.loading')
-              : locateError && t(`locate.${locateError}`)
+            : locateError && t(`locate.${locateError}`)
 
   return (
     <LazyMotion features={loadMotionFeatures} strict>
@@ -526,7 +534,11 @@ function MapScreen() {
         data-sheet={desktop ? undefined : snap}
         data-panel={desktop ? (panelCollapsed ? 'collapsed' : 'open') : undefined}
       >
-        <main ref={mapAreaRef} className={styles.mapArea}>
+        <main
+          ref={mapAreaRef}
+          className={styles.mapArea}
+          aria-busy={loading ? true : undefined}
+        >
           <ConditionsMap
             cells={analysis ? undefined : mapCells}
             scale={seasonMode ? 'goodDays' : 'score'}
@@ -551,6 +563,9 @@ function MapScreen() {
             lang={language}
             region={app.region}
             padding={mapPadding}
+            // A region looks the same whether you open its page or switch to it: clear of the
+            // panel and chrome on a desktop, on the whole map on a phone.
+            framePadding={desktop ? mapPadding : undefined}
             // No zoom: the map only moves if the sheet opening over it would hide the tap.
             onCellClick={(cellId, lat, lon) =>
               openSpot({ kind: 'cell', cellId }, 'map', { lat, lon })
@@ -618,6 +633,7 @@ function MapScreen() {
               )}
             </p>
           )}
+          {loading && <MapLoading label={loading} className={styles.loading} />}
           <div className={styles.bottom}>
             <div className={styles.legend}>
               {analysis ? (
@@ -779,6 +795,7 @@ function MapScreen() {
                   {app.view === 'seasons' && (
                     <SeasonsPanel
                       species={app.species}
+                      region={app.region}
                       comuni={comuni.data?.comuni}
                       comune={app.comune}
                       onComune={chooseComune}
@@ -798,6 +815,7 @@ function MapScreen() {
                   {app.view === 'outlook' && (
                     <OutlookPanel
                       species={app.species}
+                      region={app.region}
                       onSpecies={handleSpeciesChange}
                       comuni={comuni.data?.comuni}
                       comune={app.comune}
@@ -932,6 +950,7 @@ function Root() {
     return (
       <HubShell
         overview={overview.data?.regions}
+        overviewPending={overview.isPending}
         onSelectRegion={(slug) => {
           rememberRegion(slug)
           app.navigate(regionPath(slug))
@@ -945,9 +964,11 @@ function Root() {
 /** Hub with the same first-visit disclaimer and cookie banner as the map. */
 function HubShell({
   overview,
+  overviewPending,
   onSelectRegion,
 }: {
-  overview: import('./api/queries').RegionOverview[] | undefined
+  overview: RegionOverview[] | undefined
+  overviewPending: boolean
   onSelectRegion: (slug: string) => void
 }) {
   const { navigate } = useAppState()
@@ -956,7 +977,14 @@ function HubShell({
 
   return (
     <>
-      <HubPage overview={overview} onSelectRegion={onSelectRegion} />
+      <HubPage
+        overview={overview}
+        overviewPending={overviewPending}
+        onSelectRegion={onSelectRegion}
+        onNavigate={navigate}
+        onDisclaimer={() => setDisclaimerOpen(true)}
+        onCookies={() => setCookieBannerOpen(true)}
+      />
       <DisclaimerDialog open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
       <CookieBanner
         open={cookieBannerOpen}

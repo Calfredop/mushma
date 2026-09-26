@@ -167,15 +167,123 @@ test('analysis mode: two factors on the map, played through the days', async ({
   await expect(page.getByRole('button', { name: 'Riproduci i giorni' })).toBeVisible()
 })
 
+test('each hot place pin points at its own place, not stacked under the one before', async ({
+  page,
+}) => {
+  const response = page.waitForResponse((r) => r.url().includes('/hotspots?'))
+  await page.goto('/toscana')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
+  const { hotspots } = (await (await response).json()) as {
+    hotspots: { lat: number; lon: number }[]
+  }
+  expect(hotspots.length).toBeGreaterThan(2)
+  await page.waitForFunction(() => window.__mushmaMap?.loaded())
+
+  const pins = page.locator('.maplibregl-marker[aria-label^="Mostra"]')
+  await expect(pins).toHaveCount(hotspots.length)
+  const offsets = await page.evaluate((places) => {
+    const map = window.__mushmaMap!
+    const markers = [
+      ...document.querySelectorAll('.maplibregl-marker[aria-label^="Mostra"]'),
+    ]
+    return places.map((place, index) => {
+      const spot = map.project([place.lon, place.lat])
+      const canvas = map.getCanvas().getBoundingClientRect()
+      const pin = markers[index].getBoundingClientRect()
+      // Anchored at its bottom: the pin's foot is on the place.
+      return {
+        dx: pin.left + pin.width / 2 - (canvas.left + spot.x),
+        dy: pin.bottom - (canvas.top + spot.y),
+      }
+    })
+  }, hotspots)
+  for (const { dx, dy } of offsets) {
+    expect(Math.abs(dx)).toBeLessThan(2)
+    expect(Math.abs(dy)).toBeLessThan(2)
+  }
+})
+
 test('hub at / lists regions and enters one', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
   await expect(page).toHaveURL(/\/$/)
   await expect(page.getByRole('heading', { name: 'Regioni coperte' })).toBeVisible()
-  await page
-    .getByRole('button', { name: /Toscana/ })
-    .first()
-    .click()
+  // The sheet opens at half; the whole list is a pull (or a tap on the handle) away.
+  await page.getByRole('button', { name: 'Espandi il pannello' }).click()
+  await expect(page.getByRole('complementary')).toHaveAttribute('data-snap', 'full')
+  await page.getByRole('link', { name: /^Toscana/ }).click()
   await expect(page).toHaveURL(/\/toscana$/)
   await expect(page.getByRole('radio', { name: 'Tutte' })).toBeVisible()
+})
+
+test('a region on the hub map is drawn to its border and opens on a tap', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
+  await page.waitForFunction(() => {
+    const map = window.__mushmaMap
+    return !!map?.getLayer('hub-regions-fill') && map.loaded()
+  })
+  // Every Italian region's real boundary is there, not a box: served or not.
+  const regions = await page.evaluate(() => {
+    const features = window.__mushmaMap!.querySourceFeatures('hub-regions')
+    return new Set(features.map((f) => String(f.properties.slug))).size
+  })
+  expect(regions).toBe(20)
+
+  // Tuscany's label point is inside it, above the half-open sheet.
+  const tuscany = await page.evaluate(() => {
+    const map = window.__mushmaMap!
+    const point = map.project([11.25, 43.42])
+    const box = map.getCanvas().getBoundingClientRect()
+    return { x: box.left + point.x, y: box.top + point.y }
+  })
+  await page.mouse.click(tuscany.x, tuscany.y)
+  await expect(page).toHaveURL(/\/toscana$/)
+})
+
+test('switching region frames the new region as opening its page does', async ({
+  page,
+}) => {
+  // Two page loads and a switch.
+  test.slow()
+  const view = () =>
+    page.evaluate(() => {
+      const map = window.__mushmaMap!
+      const { lng, lat } = map.getCenter()
+      return { lng, lat, zoom: map.getZoom(), maxBounds: map.getMaxBounds()?.toArray() }
+    })
+  const settled = () =>
+    page.waitForFunction(() => {
+      const map = window.__mushmaMap
+      return !!map?.loaded() && !map.isMoving()
+    })
+
+  await page.goto('/toscana')
+  await page.getByRole('button', { name: 'Ho capito' }).click()
+  await page.getByRole('button', { name: 'Rifiuta' }).click()
+  await settled()
+  await page.getByRole('button', { name: 'Regione' }).click()
+  await page.getByRole('option', { name: 'Piemonte' }).click()
+  await expect(page).toHaveURL(/\/piemonte$/)
+  await settled()
+  const switched = await view()
+
+  // The same page, opened afresh.
+  await page.reload()
+  await settled()
+  const opened = await view()
+
+  expect(opened.maxBounds).toEqual([
+    [5.3, 43.3],
+    [10.5, 47.2],
+  ])
+  expect(switched.maxBounds).toEqual(opened.maxBounds)
+  expect(switched.lng).toBeCloseTo(opened.lng, 2)
+  expect(switched.lat).toBeCloseTo(opened.lat, 2)
+  expect(switched.zoom).toBeCloseTo(opened.zoom, 2)
 })
