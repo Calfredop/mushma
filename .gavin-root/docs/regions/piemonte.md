@@ -87,6 +87,35 @@ Piemonte rain gauges feed a check only, never the app.
 - **Weather points.** 125 land nodes on the 0.2° lattice (128 candidates), all 9,537 woodland cells
   within reach.
 
+### Lapse rates (`api.weather.checks lattice --region piemonte`)
+
+377 ERA5-Land land nodes at 0.1° (76–2,787 m), three 14-day windows of 2024 (Jan, Jul, Oct), run
+2026-09-26. Cooling per km of height, median of the daily fits:
+
+| variable | Jan | Jul | Oct | all | national config | difference |
+|---|---|---|---|---|---|---|
+| Tmin | 4.63 | 5.56 | 4.91 | **5.24** | 4.2 | **+1.04** |
+| Tmax | 4.69 | 5.24 | 4.25 | **4.86** | 4.5 | +0.36 |
+| Tmean | 4.53 | 5.53 | 4.77 | **5.03** | 4.5 | +0.53 |
+| soil 0–7 cm | 0.38 | 4.82 | 4.09 | **4.09** | 3.7 | +0.39 |
+
+Tmax, Tmean and soil are within 1 °C/km. **Tmin sits just over the line (+1.04)**; the same fit on the
+125 stored 0.2° CDS nodes gives 5.19 (+0.99). January soil barely cools with height (0.38): snow
+cover holds the topsoil near 0 °C in the Alps. **The national rates are kept, Tmin included,**
+because the leave-out test shows no gain from Piemonte's own rate:
+
+| Tmin leave-out RMSE | national 4.2 | 5.2 | fitted (all four) |
+|---|---|---|---|
+| served lattice (0.2°, stride 2) | 0.447 °C | 0.438 °C | 0.439 °C |
+| stride 3 (0.3°) | 0.602 °C | 0.616 °C | 0.619 °C |
+
+A 0.01 °C gain on the served lattice and a loss on the coarser one do not justify a per-region lapse
+rate, which the weather config does not support yet (lapse rates are national, in `weather.yaml`).
+Leave-out at the 0.2° lattice with the national rates: RMSE 0.33 °C (Tmean), 0.45 °C (Tmin), 0.36 °C
+(Tmax), 0.77 °C (soil), against 0.37 / 0.48 / 0.40 / 0.77 °C with 6.5 °C/km and 0.68 / 0.74 / 0.69 /
+0.97 °C with no lapse correction. Errors are about 40 % larger than Umbria's (0.25 °C Tmean): the
+Alpine relief between nodes.
+
 ## Grid
 
 `uv run python -m api.grid.build --region piemonte` (4.3 min, the DEM tiles and SoilGrids fetched
