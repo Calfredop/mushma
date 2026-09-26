@@ -239,7 +239,14 @@ server's daily job fetches them anyway once the region is deployed.
 
 ## Data
 
-(written by `api.regions.onboard`)
+- cells: 14088
+- woodland cells: 7698
+- INFC deviation: -0.1% (grid 712,120 ha vs 712,529 ha) — within ±10 %
+- weather nodes: 81
+- years stored: 2016–2026 (11 years)
+- sightings kept: 255
+- backtest AUC (auc_local, model, all): gallinacci 0.538, ovoli 0.746, porcini 0.602
+- sanity contrasts: 11/16 passed
 
 ## Validation
 
@@ -290,3 +297,80 @@ holds there is not checked.
   totals fit ships, the method every region so far used; porcini's 30-day rain is scored against
   each cell's own normal and is unaffected. Correcting the drizzle itself (a wet-day threshold or
   quantile mapping per region) is the cross-region follow-up Piemonte named.
+
+### Backtest (priors: rules version `2e812362221d`)
+
+Run 2026-09-26 on the stores above: the onboard's hold-out run (`backtest/trentino_alto_adige/onboard/`)
+and the train seasons (`--seasons train --label onboard-train`). Scores cover 7,698 cells × 3,839
+days (2016-03-18 to 2026-09-20), none without weather.
+
+**Usable presences (unique, unobscured group-cell-day sightings on woodland cells) in the train
+seasons 2016–2023: 122** (porcini 69, gallinacci 49, ovoli 4; by year 4, 5, 6, 22, 27, 22, 11, 25),
+over the 50 the card asks before tuning, so the pre-registered tuning ran (Tuning, below). The
+hold-out 2024–2025 holds 65 (porcini 38, gallinacci 26, ovoli 1). The most of any region so far
+(Tuscany 55, Piemonte 53, Emilia-Romagna 13).
+
+| group | split | n | `auc_local` model | habitat | `auc_time_effort` model | calendar | `auc_region` model | habitat |
+|---|---|---|---|---|---|---|---|---|
+| porcini | train | 69 | 0.530 (0.48–0.58) | 0.504 | 0.617 (0.56–0.67) | 0.516 | 0.857 | 0.501 |
+| ovoli | train | 4 | 0.771 (0.67–0.87) | 0.676 | 0.505 (0.30–0.73) | 0.532 | 0.964 | 0.798 |
+| gallinacci | train | 49 | 0.612 (0.57–0.65) | 0.534 | 0.530 (0.47–0.59) | 0.520 | 0.879 | 0.532 |
+| porcini | hold-out | 38 | 0.602 (0.55–0.65) | 0.536 | 0.536 (0.46–0.61) | 0.516 | 0.794 | 0.529 |
+| ovoli | hold-out | 1 | 0.746 | 0.512 | 0.928 | 0.598 | 0.970 | 0.762 |
+| gallinacci | hold-out | 26 | 0.538 (0.48–0.60) | 0.521 | 0.528 (0.43–0.62) | 0.525 | 0.797 | 0.514 |
+
+- **Where, region-wide:** the model ranks the finders' cells well against the whole region
+  (`auc_region` 0.79–0.97), far above habitat alone (0.50–0.80): the altitude bands and the
+  spruce-heavy host lists put the sightings in the right belts.
+- **When:** porcini's timing at the finder's cell beats the calendar on the train seasons
+  (`auc_time_effort` 0.617 against 0.516, interval above 0.5), the first region where it clearly
+  does; on the hold-out it is 0.536, still above the calendar's 0.516 but with an interval that
+  crosses 0.5.
+- **Where, locally:** within 20 km on the day (`auc_local`) the model beats habitat for porcini on
+  the hold-out (0.602 against 0.536) and for gallinacci on the train seasons (0.612 against 0.534),
+  and sits near habitat otherwise, as in Tuscany and Piemonte.
+- Ovoli: 4 train presences and 1 hold-out; no conclusion.
+
+### Press contrasts (`sanity.yaml`, `backtest/trentino_alto_adige/onboard/sanity_porcini.csv`)
+
+**11 of 16 hold.**
+
+| contrast | higher | lower | holds |
+|---|---|---|---|
+| `fiemme_2019_2021` | 0.740 | 0.385 | yes |
+| `alta_valsugana_2020_2021` | 0.701 | 0.340 | yes |
+| `trentino_july_2023_2022` | 0.705 | 0.518 | yes |
+| `vallagarina_low_2024` | 0.702 | 0.708 | no (a tie) |
+| `region_early_august_2025` | 0.752 | 0.574 | yes |
+| `west_vs_dolomites_2023` | 0.518 | 0.424 | yes |
+| `valsugana_vs_southern_trentino_2023` | 0.627 | 0.929 | no |
+| `south_tyrol_september_vs_august_2023` | 0.763 | 0.724 | yes |
+| `isarco_2025_2023` | 0.411 | 0.761 | no |
+| `south_tyrol_2021_poor` | 0.559 | 0.638 | no |
+| `south_tyrol_2019_late` | 0.530 | 0.294 | yes |
+| `trentino_vs_south_tyrol_august_2019` | 0.608 | 0.571 | yes |
+| `trentino_vs_south_tyrol_july_2024` | 0.617 | 0.465 | yes |
+| `south_tyrol_vs_trentino_july_2025` | 0.217 | 0.196 | yes |
+| `gallinacci_pusteria_2023_2022` | 0.813 | 0.384 | yes |
+| `gallinacci_trentino_2024_2025` | 0.640 | 0.691 | no |
+
+- The good and bad years hold, most by wide margins (Fiemme 2019/2021, Alta Valsugana 2020/2021,
+  the late 2019 season in South Tyrol, the Val Pusteria chanterelles of 2023 against 2022), and so
+  do both cross-province contrasts that run in opposite directions (Trentino ahead in July 2024,
+  South Tyrol ahead in July 2025), so no constant bias between the provinces is carrying them.
+- **Four misses are weather the reanalysis does not show** (area means of the history tables' rain
+  and temperature, weighted by woodland cells):
+  - `isarco_2025_2023`: the press calls early August 2025 "molto piovosa" in the Valle Isarco and
+    2023 scarce; the reanalysis has the reverse, 2023 at 127 % of the normal 30-day rain with 66 mm
+    in the window and 1.1 °C cooler than normal, 2025 at 99 % with 32 mm and 1.1 °C warmer.
+  - `valsugana_vs_southern_trentino_2023`: the reanalysis gives southern Trentino (Garda, Vallarsa,
+    Ala) 123 % of its normal 30-day rain against the Valsugana's 93 %, the reverse of the Funghi
+    Magazine report the contrast rests on.
+  - `south_tyrol_2021_poor` ("zu trocken, zu windig, zu heiß"): August to mid-September 2021 comes
+    out at 111 % of the normal rain and 1.0 °C cooler than normal over South Tyrol's woods. The
+    drought, if it was one, is not in the reanalysis for that window; wind is not in the rules.
+  - `gallinacci_trentino_2024_2025`: July 2025 was the wetter and cooler (89 mm and −1.0 °C against
+    54 mm and +1.4 °C in 2024) and the rules favour it; the press found fewer chanterelles.
+- **One is a tie:** `vallagarina_low_2024` (0.702 against 0.708). The low Vallagarina got 117 % of
+  its normal rain and ran 1.7 °C warm in late July 2024; "gran caldo alternato a forti temporali"
+  is there, but the storms outweigh the heat in the score.
