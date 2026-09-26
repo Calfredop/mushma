@@ -359,6 +359,11 @@
     left: calc(var(--safe-left) + var(--space-4));
   }
 
+  /* A folded panel is only its header: the spinner centres on the whole map (MapLoading). */
+  .app[data-panel='collapsed'] .loading {
+    --panel-inset: 0px;
+  }
+
   .mapArea :global(.maplibregl-ctrl-bottom-right) {
     right: var(--safe-right);
     bottom: var(--safe-bottom);

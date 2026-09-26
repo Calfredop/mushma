@@ -72,6 +72,18 @@ describe('HubPage', () => {
     expect(screen.getByTestId('map')).toHaveAttribute('data-highlighted', '')
   })
 
+  it("marks the map busy, with a spinner, while today's overview is on its way", () => {
+    renderHub(true)
+    expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByRole('status')).toHaveTextContent("Carico l'indice di oggi…")
+  })
+
+  it('drops the spinner once the overview is in', () => {
+    renderHub(false)
+    expect(screen.getByRole('main')).not.toHaveAttribute('aria-busy')
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
   it("says a tapped region isn't covered yet, until dismissed", async () => {
     renderHub()
     await userEvent.click(screen.getByRole('button', { name: 'tap Lazio' }))

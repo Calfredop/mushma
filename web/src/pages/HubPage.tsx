@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { RegionOverview } from '../api/queries'
 import { ChevronIcon, GitHubIcon } from '../components/icons'
 import { InfoMenu } from '../components/InfoMenu'
+import { MapLoading } from '../components/MapLoading'
 import { ScoreChip } from '../components/ScoreChip'
 import { Sheet, type SheetLayout } from '../components/Sheet'
 import { REPO_URL } from '../config'
@@ -104,7 +105,11 @@ export function HubPage({
   return (
     <LazyMotion features={loadMotionFeatures} strict>
       <div className={styles.hub} data-sheet={desktop ? undefined : snap}>
-        <main ref={mapAreaRef} className={styles.mapArea}>
+        <main
+          ref={mapAreaRef}
+          className={styles.mapArea}
+          aria-busy={overviewPending || undefined}
+        >
           <HubMap
             regions={regions}
             highlighted={highlighted}
@@ -114,6 +119,7 @@ export function HubPage({
             onSelect={select}
             onUnserved={setUncovered}
           />
+          {overviewPending && <MapLoading label={t('hub.loading')} />}
           {uncovered && (
             <p className={styles.status} role="status">
               {t('hub.notCovered', {

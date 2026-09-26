@@ -46,6 +46,7 @@ import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
 import { PanelBoundary } from './components/PanelBoundary'
 import { Legend } from './components/Legend'
+import { MapLoading } from './components/MapLoading'
 import { PlaceSearch } from './components/PlaceSearch'
 import { RegionSwitcher } from './components/RegionSwitcher'
 import { Sheet, type SheetLayout } from './components/Sheet'
@@ -504,6 +505,13 @@ function MapScreen() {
         : app.indicators.length === 0
           ? t('analysis.noneOn')
           : undefined
+  // What the map is waiting for: said at its centre, with a spinner, not in the status.
+  const loading =
+    !online || layer.isError || (analysis && !factorDay)
+      ? undefined
+      : layer.isPending || layer.isPlaceholderData
+        ? t(analysis ? 'analysis.loading' : seasonMode ? 'season.loading' : 'map.loading')
+        : undefined
   const status = locating
     ? t('locate.locating')
     : offeredRegion
@@ -511,14 +519,13 @@ function MapScreen() {
       : !online
         ? t('errors.offline')
         : analysis
-          ? (analysisNote ?? (locateError && t(`locate.${locateError}`)))
+          ? ((loading ? undefined : analysisNote) ??
+            (locateError && t(`locate.${locateError}`)))
           : layer.isError
             ? seasonMode
               ? t(scoresUnavailable ? 'season.noData' : 'map.loadError')
               : t(scoresUnavailable ? 'map.noData' : 'map.loadError')
-            : layer.isPending || layer.isPlaceholderData
-              ? t(seasonMode ? 'season.loading' : 'map.loading')
-              : locateError && t(`locate.${locateError}`)
+            : locateError && t(`locate.${locateError}`)
 
   return (
     <LazyMotion features={loadMotionFeatures} strict>
@@ -527,7 +534,11 @@ function MapScreen() {
         data-sheet={desktop ? undefined : snap}
         data-panel={desktop ? (panelCollapsed ? 'collapsed' : 'open') : undefined}
       >
-        <main ref={mapAreaRef} className={styles.mapArea}>
+        <main
+          ref={mapAreaRef}
+          className={styles.mapArea}
+          aria-busy={loading ? true : undefined}
+        >
           <ConditionsMap
             cells={analysis ? undefined : mapCells}
             scale={seasonMode ? 'goodDays' : 'score'}
@@ -622,6 +633,7 @@ function MapScreen() {
               )}
             </p>
           )}
+          {loading && <MapLoading label={loading} className={styles.loading} />}
           <div className={styles.bottom}>
             <div className={styles.legend}>
               {analysis ? (
