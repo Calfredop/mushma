@@ -300,6 +300,98 @@ Full evidence: `.gavin-root/docs/species-ecology/lombardia.md`; rules in
   existed: 10 porcini, 2 gallinacci, 2 ovoli, in Valtellina, the Orobie bergamasche, Val Camonica,
   the upper Valle Staffora, the Oltrepò and the alto Varesotto.
 
+## Validation
+
+Scored 2016-03-18 to 2026-10-04 on 2026-09-27 (rules version `c16df2c6c5a1`, Lombardia's lapse
+rates and rain scale, snowfall from the CDS): 6,018 woodland cells × 3,853 days per key, no cell-day
+without weather. `onboard` ran the hold-out backtest; the train-season backtest
+(`--seasons train --label onboard-train`), the tuning search and the three sanity runs (`--group`)
+were run by hand.
+
+### Tuning: done by the protocol, and nothing cleared the margin
+
+Usable presences (unique, unobscured group-cell-days on woodland cells) in the **train seasons
+2016-2023: 65** (porcini 42, gallinacci 20, ovoli 3), over the 50 the parent plan asks for. So
+Lombardia was tuned, the first region after Tuscany, by Model v1's protocol: train seasons only,
+season windows, altitude bands and habitat affinities frozen, `uv run python -m api.model.tuning
+--region lombardia --search rain --label tuned-rain` (the rain-driver search written for card
+`tune-rain-drivers-saturate`: trigger and 30-day ramps ×1.5 and ×2, the 30-day rain relative to
+normal, growth-clock temperatures ±3 °C, gallinacci's shade line), an alternative kept only if it
+raises its group's train objective (mean of pooled `auc_local` and `auc_time_effort`) by 0.02.
+**Ovoli were left out before the run**: three presences cannot tell one ramp from another.
+
+| group | prior objective | best alternative | gain | kept |
+|---|---|---|---|---|
+| porcini (42) | 0.567 | `rain_30d` ×1.5 | +0.004 | no; the trigger ramps lost 0.020 and 0.033, the clock 0.008-0.015 |
+| gallinacci (20) | 0.629 | trigger ×1.5 | +0.005 | no; relative 30-day rain lost 0.058, the shade line off 0.012 |
+| ovoli (3) | 0.774 | clock 3 °C warmer (+0.033), `rain_30d` ×2 (+0.028) | | no: excluded beforehand |
+
+**The researched priors ship unchanged**, so the hold-out was scored once, with them. The start
+objectives were identical on the lost data and the rebuilt data (0.5667, 0.6288, 0.7741).
+
+### Backtest
+
+Pooled AUCs with 90 % bootstrap intervals (`backtest/lombardia/onboard-train`, `…/onboard`):
+
+| group | seasons | n | model `auc_local` | model `auc_time_effort` | model `auc_region` | habitat `auc_local` | calendar `auc_time_effort` |
+|---|---|---|---|---|---|---|---|
+| porcini | train 2016-2023 | 42 | 0.513 (0.46-0.57) | **0.620 (0.55-0.68)** | 0.859 | 0.546 | 0.569 |
+| gallinacci | train | 20 | **0.645 (0.56-0.72)** | **0.612 (0.55-0.67)** | 0.879 | 0.550 | 0.565 |
+| ovoli | train | 3 | 0.929 | 0.619 | 0.931 | 0.785 | 0.624 |
+| porcini | hold-out 2024-2025 | 12 | 0.587 (0.48-0.69) | 0.533 (0.41-0.66) | 0.772 | 0.531 | 0.539 |
+| gallinacci | hold-out | 13 | **0.688 (0.60-0.76)** | 0.531 (0.42-0.63) | 0.861 | 0.570 | 0.532 |
+| ovoli | hold-out | 1 | 0.518 | 0.902 | 0.942 | 0.372 | 0.639 |
+
+- **Timing (train).** Porcini and gallinacci rank the finder's day above the other days of the same
+  cell, effort-weighted, with intervals clear of 0.5 (0.620 and 0.612), and above the calendar
+  baseline (0.569, 0.565). On the hold-out both fall to about 0.53, with intervals across 0.5:
+  12 and 13 presences.
+- **Place (same day, within 20 km).** Gallinacci beat the habitat baseline in both periods (0.645
+  and 0.688 against 0.550 and 0.570). Porcini sit at chance on the train seasons (0.513), below
+  habitat alone (0.546), the same finding Model v1 left open for Tuscany; on the hold-out they are
+  above it (0.587 against 0.531).
+- **Region-wide** AUCs of 0.77-0.94 mostly measure the season and altitude gates, which the species
+  research drew partly from these records; they flatter the model and are not the test.
+- Ovoli: 3 and 1 presences, nothing to read.
+
+### Sanity check
+
+`lombardia/sanity.yaml`, 14 press contrasts written before any Lombard score existed, each read
+against its own group: **12 of 14 hold** (porcini 8/10, gallinacci 2/2, ovoli 2/2). The `Data`
+section's "10/14" is the last run's default, which scores all 14 on the gallinacci group.
+
+| contrast | group | higher | lower | holds |
+|---|---|---|---|---|
+| Val Camonica 2023 and 2025 > 2024, 1-12 Aug | porcini | 0.689 | 0.265 | yes |
+| Val Camonica 2018 > 2017, 1-20 Aug | porcini | 0.619 | 0.617 | yes (by 0.002) |
+| Orobie 2025 > 2022 and 2024, 1-12 Aug | porcini | 0.861 | 0.397 | yes |
+| Orobie 2021: 28 Jul-15 Aug > 1-15 Sep | porcini | 0.945 | 0.206 | yes |
+| Valtellina 2025 > 2022, 5-13 Aug | porcini | 0.558 | 0.337 | yes |
+| Valtellina 2021: 8-19 Aug > 20 Jul-4 Aug | porcini | 0.771 | 0.774 | **no** |
+| Valtellina 2020 > 2021, 1-12 Sep | porcini | 0.634 | 0.214 | yes |
+| upper Valle Staffora 2021 > 2025, 26 Jun-10 Jul | porcini | 0.028 | 0.053 | **no** |
+| upper Valle Staffora > alto Varesotto, 2-9 Sep 2025 | porcini | 0.995 | 0.885 | yes |
+| alto Varesotto 2019 > 2022, 12-25 Aug | porcini | 0.853 | 0.495 | yes |
+| Valtellina 2024 > 2022, 22 Jul-4 Aug | gallinacci | 0.710 | 0.637 | yes |
+| Orobie 2024 > 2022, 8-24 Jul | gallinacci | 0.865 | 0.782 | yes |
+| Oltrepò Apennine 2025 > 2017-2023, 3-17 Sep | ovoli | 0.631 | 0.464 | yes |
+| bassa Valtellina 2025 > 2017-2023 but 2022, 3-17 Sep | ovoli | 0.340 | 0.305 | yes |
+
+The two misses: in Valtellina in 2021 the model scores the rainy late July as highly as the mid-August
+flush the press reported ("A luglio è piovuto tantissimo ... però non c'è stata escursione termica
+fra la notte e il giorno"): the rules have no day-night range factor. In the upper Valle Staffora
+both early-summer windows score near zero, so the model misses the 2021 "boom" at the turn of June
+and July; *B. reticulatus* is in full season from 1 June, so it is the weather lines that hold it,
+not investigated further. The Val Camonica 2018/2017 contrast holds by 0.002, which is a tie.
+
+### The served window
+
+On 27 September 2026 the combined score has a woodland mean of 0.90 and 90 % of cells at 0.6 or
+more, carried by gallinacci (mean 0.88; 0.97 at 800-1,300 m). Porcini mean 0.43: season, habitat,
+altitude and a 40 mm rain 17 days back are all at full credit, but the last 30 days hold a median
+58 % of the cells' normal rain, and porcini's relative 30-day rain line gives that 0.11. Ovoli mean
+0.41, 0.84 below 800 m and 0 above 1,300 m, as their altitude band says.
+
 ## After the deploy: what to verify
 
 The server serves a region only when its YAML is in the deployed code and its stores are on disk.
@@ -355,5 +447,8 @@ with `config/regions/lombardia.yaml` and runs the daily job. Then check:
 - woodland cells: 6018
 - INFC deviation: -4.8% (grid 592,446 ha vs 621,968 ha) — within ±10 %
 - weather nodes: 101
-- years stored: none
-- sightings kept: None
+- years stored: 2016–2026 (11 years)
+- sightings kept: 128
+- backtest AUC (auc_local, model, all): gallinacci 0.688, ovoli 0.518, porcini 0.587
+- sanity contrasts: 10/14 passed
+
