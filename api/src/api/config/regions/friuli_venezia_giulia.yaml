@@ -910,3 +910,28 @@ soil:
 # afterwards.
 sightings:
   inaturalist_place_id: 10869
+
+# Rain scale (merged onto config/model.yaml): off, pending a gauge fit. The national scale, fitted on
+# Tuscan gauges, multiplies era5_seamless only while the rain normals are scaled whatever their
+# source; with this region's history from the CDS it would scale the recent days and the normals and
+# leave the history as it is. No FVG gauge fit exists yet: ARPA FVG's daily rain (the OSMER archive,
+# CC BY-SA 3.0) answered HTTP 400 to every request on 2026-09-27, from its own pages in a browser
+# too, and no neighbouring region has a fit (Veneto is not done; the Alpine fits run from 0.74 in
+# Piemonte and South Tyrol to 0.96 in Lombardy). So every source and the normals stay as the
+# reanalysis gives them. .gavin-root/docs/regions/friuli_venezia_giulia.md, Validation.
+model:
+  precipitation_scale:
+    enabled: false
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 1.0
+    per_km: 0.0
+    confidence: plausible
+    source: [mushma_fvg_rain_unscaled_2026]
+    notes: >-
+      Friuli-Venezia Giulia: no gauge fit, so no scale. ARPA FVG publishes daily rain for about 60
+      priority stations through the OSMER archive (meteo.fvg.it, CC BY-SA 3.0), but on 2026-09-27
+      every request to it answered HTTP 400; GHCN-Daily has only Rivolto and Trieste, neither in
+      woodland. The Alpine fits on the same CDS rain run from x0.74 (Piemonte, 97 gauges) and x0.75
+      (South Tyrol, 17 gauges) to x0.96 (Lombardy, 60 gauges, May-October), and none borders this
+      region, whose Prealps are the wettest in Italy (over 3,300 mm a year at Musi). Unscaled keeps
+      the history, the recent days and the normals consistent until a gauge check can run.
