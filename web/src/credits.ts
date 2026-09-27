@@ -66,6 +66,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Autonoma Friuli Venezia Giulia — Tipologie forestali 2013',
+    url: 'https://geodati.gov.it/resource/id/r_friuve:m2182-cc-i10191',
+    use: 'landcover',
+    license: 'IODL 2.0',
+  },
+  {
     name: 'Regione Liguria — Tipi forestali e uso del suolo 2025',
     url: 'https://geoportal.regione.liguria.it/catalogo/mappe.html?typeEvent=detailFromHome&idmap=2661',
     use: 'landcover',
