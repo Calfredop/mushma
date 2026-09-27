@@ -394,10 +394,12 @@ altitude and a 40 mm rain 17 days back are all at full credit, but the last 30 d
 
 ## After the deploy: what to verify
 
-The server serves a region only when its YAML is in the deployed code and its stores are on disk.
-The stores go to the server with `deploy/rsync-region-data.sh lombardia` (the "Rsync region data"
-tool) before the deploy and stay inert until the rail's "Deploy pulled main" step deploys `main`
-with `config/regions/lombardia.yaml` and runs the daily job. Then check:
+The stores were rsync'd to the server on 2026-09-27 (`deploy/rsync-region-data.sh lombardia`, 224
+files, 487 MB, no redeploy): grid, weather, scores (2016-03-18 to 2026-10-04), sightings,
+climatology, history and outlook. The server serves a region only when its YAML is in the deployed
+code and its stores are on disk, so they stay inert until the rail's "Deploy pulled main" step
+deploys `main` with `config/regions/lombardia.yaml` and runs the daily job, which brings the weather
+and scores up to that day. Then check:
 
 - [ ] `https://mappafunghi.app/lombardia` and `/lombardia/porcini`, `/lombardia/ovoli`,
   `/lombardia/gallinacci` show real scores for today (not fixtures), and a tapped cell's "why this
