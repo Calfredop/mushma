@@ -133,6 +133,29 @@ rp_carta_forestale:
     layer: CF_2025
     field: ca_1
 
+ispra_cnat_campania:
+  name: ISPRA, ARPA Campania — Carta della Natura della Regione Campania, carta degli habitat 1:25.000 (2018)
+  homepage: https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/campania
+  license: CC BY 4.0
+  attribution: "Carta della Natura della Regione Campania © ISPRA, ARPA Campania, CC BY 4.0"
+  notes: >-
+    Bagnaia R., Viglietti S. et al. 2017, Carta della Natura della Regione Campania: Carta degli
+    habitat alla scala 1:25.000 (ISPRA, ARPA Campania; RNDT record ispra_rm:0005CNATHB_DT, published
+    2018-05-28). Photo-interpreted at 1:5,000 and returned at 1:25,000: 42,792 polygons over the
+    whole region, each with its CORINE Biotopes habitat (codice_corine: 41.18 southern beech woods,
+    41.9 chestnut woods, 83.12 chestnut orchards, 41.7511 Turkey-oak woods, 45.31 holm-oak woods,
+    83.31 conifer plantations…), so one layer gives both the broad groups and the forest types.
+    The record declares CC BY 4.0 and also asks that reproduction for research, teaching,
+    dissemination, study and leisure be requested and credited ("previa richiesta"). The
+    Region's own land-use map (CUAS 2009, Carta dell'utilizzazione agricola dei suoli, on the SIT's
+    ArcGIS server) has only broadleaf / conifer / mixed forest classes and states no licence; it
+    serves as the forest-area cross-check in .gavin-root/docs/regions/campania.md.
+  download:
+    url: https://sdi.isprambiente.it/download_ogc/cnat/CNAT_Habitat_Campania.gpkg
+    geopackage: true
+    layer: CNAT_Habitat_Campania
+    field: codice_corine
+
 copernicus_dem_glo30:
   name: Copernicus DEM GLO-30
   homepage: https://registry.opendata.aws/copernicus-dem/

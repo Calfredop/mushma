@@ -1,0 +1,112 @@
+# Campania: region #14 of the full-Italy rollout (.gavin-root/docs/regions/campania.md).
+id: campania
+name: {it: Campania, en: Campania}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°
+# (it holds Ischia, Procida and Capri).
+bbox_wgs84: [13.76, 39.99, 15.81, 41.51]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 15
+
+# Woodland: one regional map gives both layers. ISPRA and ARPA Campania's Carta della Natura habitat
+# map (1:25,000, 2017) gives every polygon its CORINE Biotopes habitat, which says both which broad
+# group it is (how much of each cell is broadleaf or conifer woodland, macchia or scrub) and which
+# kind. There is no mixed class. Chestnut orchards (83.12) count as chestnut woodland, as INFC files
+# them under its chestnut category; hazel orchards, fruit and poplar plantations stay farmland.
+# Garighe and Ampelodesmos steppe, bracken, grassland and rock are left out, as UCS and CLC leave
+# 321/322 out in Tuscany. The Region's CUAS 2009 has no forest types and no stated licence.
+# See .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/campania.md (Sources).
+forest:
+  groups:
+    source: ispra_cnat_campania
+    class_column: codice_corine
+    classes:
+      "41.18": broadleaf     # faggete dell'Italia meridionale
+      "41.4": broadleaf      # boschi misti di forre
+      "41.732": broadleaf    # querceti mediterranei a roverella
+      "41.7511": broadleaf   # querceti mediterranei a cerro
+      "41.7512": broadleaf   # querceti a cerro e farnetto
+      "41.8": broadleaf      # ostrieti, carpineti, frassineti, acereti e boschi misti termofili
+      "41.9": broadleaf      # boschi a Castanea sativa
+      "41.B": broadleaf      # boschi a betulla
+      "41.C1": broadleaf     # boschi a Alnus cordata
+      "41.D": broadleaf      # boschi a Populus tremula
+      "41.Lcn": broadleaf    # latifoglie esotiche o fuori areale (robinia, ailanto)
+      "44.14": broadleaf     # boschi ripariali mediterranei di salici
+      "44.513": broadleaf    # boschi ripariali a Alnus glutinosa
+      "44.61": broadleaf     # boschi ripariali a pioppi
+      "44.71": broadleaf     # boschi ripariali a Platanus orientalis
+      "44.9": broadleaf      # boschi e cespuglieti palustri a ontani e salici
+      "44.D2cn": broadleaf   # boschi ripariali di specie alloctone
+      "45.21": broadleaf     # sugherete
+      "45.31": broadleaf     # leccete termo e mesomediterranee
+      "45.32": broadleaf     # leccete supramediterranee
+      "83.12": broadleaf     # castagneti da frutto
+      "42.15": conifer       # abetine dell'Appennino meridionale
+      "42.83": conifer       # pinete a pino domestico
+      "42.84": conifer       # pinete a pino d'Aleppo
+      "42.A1": conifer       # boschi di cipresso
+      "83.31": conifer       # piantagioni di conifere
+      "16.29": conifer       # dune alberate (coastal stone and maritime pine)
+      "16.27": macchia       # dune stabili a ginepri
+      "16.28": macchia       # dune stabili con macchia a sclerofille
+      "32.13": macchia       # matorral a ginepri
+      "32.214": macchia      # macchia a Pistacia lentiscus
+      "32.215": macchia      # macchia a Cytisus
+      "32.22": macchia       # macchia a Euphorbia dendroides
+      "32.3": macchia        # garighe e macchie mesomediterranee silicicole
+      "32.4": macchia        # garighe e macchie mesomediterranee calcicole
+      "31.81": transitional  # cespuglieti a latifoglie decidue
+      "31.844": transitional # ginestreti collinari e montani
+      "31.845": transitional # ginestreti a Genista aetnensis
+      "31.8A": transitional  # roveti
+      "31.8C": transitional  # cespuglieti e boscaglie a Corylus avellana
+      "32.26": transitional  # ginestreti termomediterranei
+      "32.A": transitional   # ginestreti a Spartium junceum
+      "44.12": transitional  # saliceti arbustivi ripariali
+  types:
+    source: ispra_cnat_campania
+    classes:
+      "41.18": beech
+      "41.732": deciduous_oak
+      "41.7511": deciduous_oak
+      "41.7512": deciduous_oak
+      "41.9": chestnut
+      "83.12": chestnut
+      "41.4": mixed_broadleaf
+      "41.8": mixed_broadleaf       # hop-hornbeam, hornbeam, ash and maple woods
+      "41.B": mixed_broadleaf
+      "41.C1": mixed_broadleaf      # Alnus cordata, the southern Apennine alder
+      "41.D": mixed_broadleaf
+      "45.21": evergreen_oak        # cork oak
+      "45.31": evergreen_oak
+      "45.32": evergreen_oak
+      "44.14": riparian
+      "44.513": riparian
+      "44.61": riparian
+      "44.71": riparian
+      "44.9": riparian
+      "41.Lcn": exotic_broadleaf
+      "44.D2cn": exotic_broadleaf
+      "42.83": mediterranean_pine
+      "42.84": mediterranean_pine
+      "16.29": mediterranean_pine
+      "83.31": mountain_pine        # mostly black-pine reforestation (see the region doc)
+      "42.15": fir_spruce
+      "42.A1": other_conifer
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Campania, IT", admin level
+# 10) on 2026-09-27. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 9703
