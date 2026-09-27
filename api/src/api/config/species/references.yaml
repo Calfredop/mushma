@@ -2021,3 +2021,374 @@ references:
       per km would make it 2.05.'
     cited_as:
     - regions/piemonte.md
+  # ---------------------------------------------------------------------------------------------
+  # Campania (region card, 2026-09-27): sources for species/campania/ and
+  # .gavin-root/docs/species-ecology/campania.md. Appended as one block rather than sorted in.
+  # ---------------------------------------------------------------------------------------------
+  violante2002_campania_checklist:
+    citation: 'Violante U., Roca E., Violante M., Soriente S., Pizzolongo F. (2002). Micoflora della Campania: check-list
+      dei macrofunghi. Informatore Botanico Italiano 34(1): 3-34'
+    url: https://www.societabotanicaitaliana.it/sbi/IBI%2034%20(1)%202002/03-034%20Violante%20et%20al%20-%20Check-list%20dei%20macrofunghi%20in%20Campania.pdf
+    kind: peer_reviewed
+    region: Campania
+    verified: verified
+    supports: 'Fieldwork 1975-1999 in 16 areas of Campania, from the islands and the coast to the Matese, Picentini,
+      Alburni and Cervati. Frequency classes: "leggermente inferiore" to the >90 % class are "Cantharellus cibarius ...
+      Boletus edulis"; "con il range di ritrovamento territoriale del 70-80% seguono ... Boletus aereus". Distribution
+      table (pp. 16-17): A. caesarea in 11 of the 16 areas, B. aereus 13, B. edulis 14, B. reticulatus 9 (Partenio,
+      Roccamonfina, Ischia, Cervati, Cilento, Lattari, Campi Flegrei, Picentini, Vesuvio), B. pinophilus 5 (Matese,
+      Alburni, Cervati, Cilento, Somma-Vesuvio), C. cibarius 14. Only four Cantharellus are listed (aurora, cibarius,
+      friesii, tubaeformis). No hosts, seasons or altitudes.'
+  roca2007_funghi_campania:
+    citation: 'Roca E., Capano L., Marziano F. (2007). I funghi della Campania. Regione Campania (Se.S.I.R.C.A.) and
+      Università degli Studi di Napoli Federico II'
+    url: https://funghietartufi.regione.campania.it/docfunghietartufi/doc/funghi_campania.pdf
+    kind: institutional
+    region: Campania
+    verified: verified
+    supports: 'Per-species habitat notes for Campania. B. aereus "cresce dall''estate all''autunno specialmente nei boschi
+      radi di Quercus spp. e/o Castanea sativa", thermophilous, "diffusa nelle zone mediterranee" (p. 118); B. aestivalis
+      "cresce dalla tarda primavera all''autunno, nei boschi caldi di latifoglie e di conifere", "specie molto frequente"
+      (p. 120); B. edulis "dalla fine dell''estate a quasi tutto l''autunno; predilige climi freschi e luoghi non
+      soleggiati", "il classico porcino autunnale" (p. 122); B. pinophilus "dalla primavera all''autunno e fino
+      all''inizio dell''inverno" (p. 128); A. caesarea "in boschi di latifoglie specie in ambienti caldi e soleggiati"
+      (p. 98); C. cibarius "molto comune e diffuso ovunque, dai boschi collinari di latifoglie a quelli montani di
+      conifere; dalla tarda primavera all''autunno", "abbondante già subito dopo i primi temporali estivi" (p. 132).
+      Chestnut woods of Irpinia (Serino, Monte Terminio), Giffoni and Roccamonfina; an "esplosione" of fungi after
+      "le abbondanti piogge autunnali" (p. 12).'
+  laceno_boletus_aestivalis:
+    citation: 'Rocco A.M. Boletus aestivalis. Laceno.net, guida turistica del Lago Laceno (Bagnoli Irpino)'
+    url: https://www.laceno.net/boletus-aestivalis.html
+    kind: web
+    region: Campania (Picentini)
+    verified: verified
+    supports: 'The summer porcino is "la qualità più diffusa del genere Boletus nel nostro comprensorio"; it "cresce sotto
+      latifoglie (quercia e castagano), ma predilige il bosco di faggio, dove nelle grandi buttate diventa il padrone
+      incontrastato"; "a seguito di forti piogge seguite da periodi lunghi di caldo umido e assenza di vento"; "dalle
+      faggete a 1100 m ai piedi dell''altopiano, fino ai 1600-1700 m delle vette più alte del Raiamgra e del
+      Cervialto".'
+  laceno_boletus_aereus:
+    citation: 'Rocco A.M. Boletus aereus. Laceno.net, guida turistica del Lago Laceno (Bagnoli Irpino)'
+    url: https://www.laceno.net/boletus-aereus.html
+    kind: web
+    region: Campania (Picentini)
+    verified: verified
+    supports: 'The black porcino is "l''essenza fungina principale (per il genere Boletus) dei boschi di quercia e di
+      castagno presenti a quote più basse tra Bagnoli Irpino e le croci di Acerno"; thermophilous, "nei siti soleggiati e
+      più esposti al sud"; "conviene sempre visitare le località colpite dai temporali dopo qualche giorno di temperature
+      afose"; "L''habitat preferito è il bosco di querce (cerro, roverella, leccio), ma non disdegna il castagno e il
+      carpino. Assente sotto faggio."'
+  laceno_boletus_edulis:
+    citation: 'Rocco A.M. Boletus edulis. Laceno.net, guida turistica del Lago Laceno (Bagnoli Irpino)'
+    url: https://www.laceno.net/boletus-edulis.html
+    kind: web
+    region: Campania (Picentini)
+    verified: verified
+    supports: '"Questa qualità non è molto diffusa nella Regione Campania"; it "predilige i boschi di faggio più alti,
+      soprattutto nei periodi finali dell''autunno"; "L''habitat preferito è il bosco di faggio ma è possibile rinvenirlo
+      anche nei castagneti più freddi."'
+  laceno_amanita_caesarea:
+    citation: 'Rocco A.M. Amanita caesarea. Laceno.net, guida turistica del Lago Laceno (Bagnoli Irpino)'
+    url: https://www.laceno.net/amanita-caesarea.html
+    kind: web
+    region: Campania (Picentini)
+    verified: verified
+    supports: '"Cresce dall''estate all''autunno soprattutto nei luoghi esposti a sud e molto caldi"; found "nei numerosi
+      castagneti che contornano Bagnoli Irpino, irriperibile al Lago Laceno per la quota e per le essenze arboree"; "nasce
+      dopo piogge (non abbondanti) in periodi caldissimi e secchi"; "L''habitat ideale sono i boschi di castagno e quelli
+      di quercia."'
+  laceno_cantharellus_cibarius:
+    citation: 'Rocco A.M. Cantharellus cibarius. Laceno.net, guida turistica del Lago Laceno (Bagnoli Irpino)'
+    url: https://www.laceno.net/cantharellus-cibarius.html
+    kind: web
+    region: Campania (Picentini)
+    verified: verified
+    supports: '"Nasce da Maggio a Novembre" and later "se i mesi sono caldi"; "Raggiunge il massimo della produzione da
+      Maggio a Luglio", starting "nei castagneti della valle tra Bagnoli I. e i confini con Montella, fino ai boschi di
+      Faggio tra Valle d''Acera e Piano del Cupone, dove se le piogge sono state abbondanti in Agosto possiamo riempire
+      facilmente il nostro cestino"; "Il suo habitat è il bosco di latifoglie, prediligendo il faggio e la quercia", not
+      disdaining chestnut.'
+  amicomatese_non_solo_porcini2018:
+    citation: 'Del Toro A., Associazione Micologica del Matese (2018-10-20). Non solo porcini. Guida Turistica del Matese
+      (GuideSlow)'
+    url: https://matese.guideslow.it/non-solo-porcini/
+    kind: society
+    region: Campania (Matese)
+    verified: verified
+    supports: 'Matese fungi "dai primi di marzo fino ai primi di dicembre, escludendo quindi solo i più rigidi mesi
+      invernali e gli aridi mesi estivi"; the autumn season "da settembre ad inizio novembre, tempo permettendo"; "con
+      l''avvento dei mesi estivi, giugno e luglio, cominciano a spuntare ... porcini ... e galletti o finferli".'
+  cm_partenio_porcino:
+    citation: 'Comunità Montana Partenio - Vallo di Lauro. Porcino (prodotti tipici)'
+    url: https://www.cmparteniovallodilauro.it/prodotti/porcino/
+    kind: institutional
+    region: Campania (Partenio)
+    verified: verified
+    supports: 'In the Partenio, "i Porcini (sia di Castagno che di Faggio)"; the porcino "presente nei boschi del Partenio
+      in diverse varietà (aereus, aestivalis, ecc.). Cresce nei boschi di querce della pianura, nei castagneti, nelle
+      faggete e nelle abetaie di alta montagna".'
+  campania_pat_porcino_roccamonfina:
+    citation: 'Regione Campania, Assessorato Agricoltura. Fungo Porcino del Vulcano di Roccamonfina (Prodotti
+      Agroalimentari Tradizionali)'
+    url: https://agricoltura.regione.campania.it/tipici/tradizionali/porcino-roccamonfina.html
+    kind: institutional
+    region: Campania (Roccamonfina)
+    verified: verified
+    supports: 'Roccamonfina, especially Monte La Frascara: "rigogliosi boschi di castagno, che offrono, nei mesi primaverili
+      ed autunnali, un habitat molto favorevole"; "Questo fungo matura da fine primavera ad ottobre".'
+  guideslow_porcino_roccamonfina:
+    citation: 'GuideSlow. Il Fungo Porcino del Vulcano Roccamonfina. Guida Turistica di Caserta e provincia'
+    url: https://mediovolturno.guideslow.it/fungo-porcino-del-vulcano-roccamonfina/
+    kind: web
+    region: Campania (Roccamonfina)
+    verified: verified
+    supports: '"tra boschi di querce, carpini e castagni, la natura vulcanica del terreno favorisce la crescita"; "tra fine
+      estate e inizio autunno"; the commonest are B. aereus, B. edulis and B. reticulatus.'
+  oasi_vesuvio_funghi:
+    citation: 'Associazione Oasi Vesuvio. I Funghi'
+    url: https://www.oasivesuvio.it/i-funghi/
+    kind: web
+    region: Campania (Vesuvio)
+    verified: verified
+    supports: 'About 200 fungus species on Vesuvius; "Le specie più note nel nostro territorio sono i funghi Porcini
+      (Boletus aereus e Boletus reticulatus)".'
+  funghimagazine_nascite_2026_07_10:
+    citation: 'Funghi Magazine (2026-07-09). Aggiornamento nascite funghi 10-07-2026'
+    url: https://funghimagazine.it/aggiornamento-nascite-funghi-10-07-2026/
+    kind: web
+    verified: verified
+    supports: 'July 2026, southern Italy: summer porcini "in Campania, soprattutto tra Cilento, Salernitano, Avellinese,
+      Beneventano e Matese", "decisamente più abbondanti nelle faggete e nei castagneti, mentre i querceti delle quote
+      inferiori hanno prodotto quantitativi generalmente più contenuti"; "numerosi Porcini neri (Boletus aereus)" after
+      rain spread from late June to early July; B. aereus "oggi sempre più frequente anche nelle faggete dell''Appennino e
+      della Liguria fino a quote prossime ai 900-1.000 metri".'
+  funghimagazine_calendario_autunno2019:
+    citation: 'Funghi Magazine, Redazione (2019-10-21, updated 2026-02-25). Il calendario dei funghi Porcini
+      autunnali-invernali'
+    url: https://funghimagazine.it/il-calendario-dei-funghi-porcini-autunnali-invernali/
+    kind: web
+    verified: verified
+    supports: 'Centre-South: summer porcini need storms of "30/40 millimetri, meglio se superiori ai 50", over 100 mm for
+      mass flushes; in August "del tutto assenti tra Centro e Sud Italia, salvo a quote elevate dell''Appennino"; "Più rari
+      i Boletus edulis nel resto del Centro-Sud Italia ... a causa di suoli calcari"; in November "a quote entro i 6-700 mt
+      saranno possibili ancora discreti raccolti di Porcini neri tra le Querce ... anche nel misto con il Castagno"; in a
+      mild, wet late autumn porcini "tra macchia e bosco mediterraneo al Centro-Sud Italia, anche durante l''imminente
+      mese di dicembre".'
+  bmeteo_porcini_maggio2026:
+    citation: 'Oppicelli N. (2026-04-30). Funghi porcini a maggio? Passione Funghi, 3BMeteo'
+    url: https://funghi.3bmeteo.com/funghi-porcini-maggio/
+    kind: web
+    verified: verified
+    supports: 'Spring porcini on the Apennines "Tra i 400 e i 1.100 metri ... già nelle prime settimane di maggio"; "Nelle
+      aree collinari interne di Toscana, Lazio, Umbria e Campania ... già dalla metà di maggio", B. aestivalis first: the
+      same timing for Campania as for Tuscany.'
+  infc2015_campania:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1, 1.2, 1.4 and 1.5 (Campania). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Campania
+    verified: verified
+    supports: 'Campania bosco 403,927 ha (relative standard error 2.1 %), other wooded land 87,332 ha; categories: Turkey
+      oak group 74,644 ha, downy and sessile oak 60,934, beech 56,244, chestnut 55,986, hop-hornbeam and hornbeam 53,030,
+      holm oak 37,485, other deciduous 34,386, hygrophilous 11,048, Mediterranean pines 9,146 (ES 24 %), black and
+      laricio pine 5,524 (ES 26 %), other conifers 864, cork oak 368; silver fir, spruce and larch 0; plantations 3,163 ha,
+      none of conifers.'
+  campania_pfg2026:
+    citation: 'Regione Campania, DG Politiche agricole, alimentari e forestali (2026). Piano Forestale Generale della
+      Campania 2026-2035 (approved by DGR n. 349 of 30/06/2026)'
+    url: https://www.agricoltura.regione.campania.it/foreste/PFG/1-PIANO-FORESTALE-GENERALE-2026-2035.pdf
+    kind: institutional
+    region: Campania
+    verified: verified
+    supports: 'Beech on "Matese, Taburno, Monti d''Avella, Lattari, Picentini, Marzano, Alburni, Motola, Cervati,
+      Maddalena, Monte Sacro"; "Faggete depresse ... (meno di 500 m s.l.m.)" at Serino, San Martino Valle Caudina and
+      Roccamonfina; "sul Cervati la faggeta chiusa si spinge fino a circa 1800 m" (p. 30). Chestnut on "suoli alloctoni,
+      fertili e a reazione acida originati dal materiale piroclastico", largest at Montella, Serino, Roccadaspide and
+      Roccamonfina; fruit orchards "circa un quarto della superficie nazionale" (pp. 31-32). Downy oak on the Sannio and
+      upper Irpinia clays and the Cilento flysch; Turkey oak in the Sannio, Irpinia and the Cilento (p. 27). Holm oak
+      mostly in the Cilento, Cuma-Astroni, Massico and the Matese (p. 33). Beech-silver fir on Monte Motola (p. 31); fir
+      planted on the Taburno and at Trevico (p. 38); black pine and Douglas fir planted on the Vallo di Diano limestone,
+      early reforestation at the Laceno and on the Matese; coastal pines of the Domitian coast and Salerno-Capaccio (p.
+      41). "Tartufi e funghi spontanei nei castagneti e nei boschi naturali" (p. 140).'
+  campania_pfg2009:
+    citation: 'Regione Campania (2009). Piano Forestale Generale 2009-2013 (approved by DGR n. 44 of 28/01/2010)'
+    url: https://agricoltura.regione.campania.it/foreste/PAF/PFG_2009_2013.pdf
+    kind: institutional
+    region: Campania
+    verified: verified
+    supports: 'Land systems after di Gennaro 2002 (pp. 14-17): Alta Montagna 900-1900 m with beech; Montagna Calcarea with
+      "suoli con proprietà andiche fortemente espresse su depositi piroclastici ricoprenti il substrato calcareo" under
+      chestnut; volcanic complexes with andic soils under chestnut coppice and orchards. Climate (p. 18): coastal rain "per
+      lo più inferiori a 1.000 mm annui, di cui solo 1/3 in estate", "picchi sino a 2.200 mm annui" on the high reliefs,
+      "massimo autunno-invernale e un minimo estivo". Forest area 31 % at 0-500 m, 38 % at 501-1000 m, 16 % at 1001-1500
+      m (p. 54).'
+  filesi2010_serie_campania:
+    citation: 'Filesi L., Rosati L., Paura B., Cutini M., Strumia S., Blasi C. (2010). Le serie di vegetazione della
+      regione Campania. In: Blasi C. (ed.), La vegetazione d''Italia. Palombi & Partner, Roma'
+    url: https://www.naturacampania.it/public/BlasiCAM4.pdf
+    kind: monograph
+    region: Campania
+    verified: verified
+    supports: 'Thermophilous beech on "tutti i sistemi montuosi della regione da 900 a 1300-1400 metri", with rain over
+      1500 mm, Abies alba on the Alburni, Cervati, Motola and Picentini (p. 5); upper beech above 1400-1500 m, the beech
+      tree line at "1800-1900 metri" (p. 4). Turkey-oak series now largely chestnut coppice and orchards: 800-1100 m on
+      volcanic-ash soils (Picentini), 600-700 to 1000-1100 m, and "tra (250) 400 e 800 metri, sugli affioramenti di
+      substrati silicei" (pp. 5-6). Downy oak 100-400 m on limestone and 100-200 to 400 (500) m on acid pyroclastics and
+      flysch (pp. 8, 10); Pinus pinea and P. pinaster plantations on Vesuvius (p. 8).'
+  campania_foreste_demaniali2007:
+    citation: 'Regione Campania, Università di Napoli Federico II (2007). Le foreste demaniali della Regione Campania'
+    url: https://agricoltura.regione.campania.it/pubblicazioni/pdf/foreste-demaniali.pdf
+    kind: institutional
+    region: Campania
+    verified: verified
+    supports: 'Taburno state forest 614 ha at 375-1394 m, silver fir planted from 1838, 18.64 ha of pure fir and about 4.6
+      ha of black pine; Turkey oak meets beech "a circa 900 m di quota" at Mandria; beech "a partire da circa 1000 m di
+      quota" at Vesolo (Cervati).'
+  campania_sistemi_terre_250k:
+    citation: 'Regione Campania, DG Politiche Agricole (2014). Carta dei Sistemi di Terre e dei Sottosistemi Pedologici
+      della Campania 1:250.000 (shapefile and legend)'
+    url: https://sito.regione.campania.it/agricoltura/pedologia/pdf/250k.zip
+    kind: dataset
+    region: Campania
+    verified: verified
+    supports: 'Soil reaction by land system: Roccamonfina Andosols weakly to strongly acid; Andosols on ash-covered
+      limestone moderately acid to neutral; Somma-Vesuvio and Ischia Andosols weakly to moderately alkaline; Campi Flegrei
+      neutral to weakly alkaline; Matese Rendzic Leptosols weakly alkaline; Cilento Arenic Regosols moderately acid and
+      calcic Cambisols neutral to weakly alkaline (regional classes: moderately acid 5.6-6.0, weakly acid 6.1-6.5, neutral
+      6.6-7.3).'
+  castagna_montella_igp:
+    citation: 'Disciplinare di produzione IGP "Castagna di Montella" (DM 5.12.1987, GU n. 302 of 27.12.1987)'
+    url: https://agricoltura.regione.campania.it/tipici/pdf/disciplinare-castagna-montella.pdf
+    kind: institutional
+    region: Campania (Irpinia)
+    verified: verified
+    supports: '"da considerarsi idonei i castagneti da frutto ubicati dai 500 ai 1.000 metri s.l.m." (art. 4).'
+  marrone_roccadaspide_igp:
+    citation: 'Disciplinare di produzione IGP "Marrone di Roccadaspide" (Reg. CE 284/2008)'
+    url: https://agricoltura.regione.campania.it/tipici/disciplinari/Marrone_di_Roccadaspide_IGP.pdf
+    kind: institutional
+    region: Campania (Cilento)
+    verified: verified
+    supports: 'Production area "al di sopra dell''altitudine di 250 metri s.l.m."; Cilento chestnut soils of "reazione acida
+      o tutt''al piu'' neutra (pH compreso tra 4,5 e 6,5)"; "precipitazioni annue ... superiori a 600-800 mm".'
+  marrone_serino_igp:
+    citation: 'Disciplinare di produzione IGP "Castagna di Serino" / "Marrone di Serino" (text of 14.9.2018)'
+    url: https://agricoltura.regione.campania.it/tipici/disciplinari/disciplinare_Marrone_di_Serino_14.9.2018.pdf
+    kind: institutional
+    region: Campania (Picentini)
+    verified: verified
+    supports: 'Soils from the "ceneri e lapilli delle eruzioni del Vesuvio e dei Campi Flegrei (terreni acidi-sub-acidi,
+      privi di calcare ...)"; rain and snow "superiori ai 1.000 mm" with "estati con periodi anche siccitosi tra giugno ed
+      agosto".'
+  allocca2014_hess:
+    citation: 'Allocca V., Manna F., De Vita P. (2014). Estimating annual groundwater recharge coefficient for karst
+      aquifers of the southern Apennines (Italy). Hydrology and Earth System Sciences 18: 803-817'
+    doi: 10.5194/hess-18-803-2014
+    kind: peer_reviewed
+    region: southern Apennines (Campania)
+    verified: verified
+    supports: 'From 387 gauges (1926-2012): west of the Apennine chain "higher orographic precipitation occurs ... with
+      maximum values up to 1700-2000 mm", down to 700-900 mm to the east because of the rain shadow (p. 806).'
+  arpac_clima_indicatori2023:
+    citation: 'ARPA Campania (2023). Dati clima: ETCCDI indices (ARPAC-CMCC) at five Centro Funzionale stations,
+      2001-2020'
+    url: https://rsa.arpacampania.it/documents/604981/613740/download_dati_Clima_26092023.pdf/e4b02658-ffdf-e7e5-1476-a39eb55dae46?t=1713512680587
+    kind: dataset
+    region: Campania
+    verified: verified
+    supports: 'Monthly rain totals 2001-2020 (pp. 1-3); means computed from them: Avellino 1,195 mm a year (July 37 mm,
+      August 31), Salerno 1,196 (19, 30), Napoli 1,058 (25, 20), Grazzanise 846, Benevento 680; November the wettest month
+      at every station, July and August together 4-8 % of the year, September already 50-110 mm.'
+  lr_campania_8_2007:
+    citation: 'Regione Campania. Legge regionale 24 luglio 2007, n. 8, Disciplina della raccolta e commercializzazione dei
+      funghi freschi e conservati (BURC n. 44 of 6 August 2007; testo vigente, whose only amendment is art. 20 c. 1-bis,
+      added by l.r. 19 gennaio 2009, n. 1, art. 32)'
+    url: https://www.regione.campania.it/normativa/item.php?b79f7d70f28fffc18af20b3afb0a87ac=4ec018fbe856d2afe62fa6c56e3f1a47&pgCode=G19I231R278&id_doc_type=1&id_tema=23&refresh=on
+    kind: institutional
+    region: Campania
+    verified: verified
+    supports: '"chilogrammi tre complessivi per persona, di cui non più di chilogrammi uno delle specie Amanita caesarea
+      (Ovolo buono) e Calocybe gambosa (Prugnolo)" (art. 6.1); "vietata ... Amanita caesarea allo stato di ovolo chiuso"
+      (6.3); caps under 3 cm (2 cm for small species) banned (6.4); picking "tutti i giorni della settimana, da un''ora
+      prima della levata del sole ad un''ora dopo il tramonto" (7.1); banned in integral reserves (7.2) and "nei castagneti
+      da frutto ... nei periodi in cui è in atto la raccolta delle castagne" (7.5); a five-year permit (art. 4); no season
+      and no altitude rule.'
+  campania_dgr179_2008_funghi:
+    citation: 'Regione Campania. DGR n. 179 del 28/01/2008, direttive di attuazione della l.r. 8/2007 (BURC n. 9 of
+      3/3/2008), amended by DGR 472/2008 and DGR 813/2010'
+    url: https://agricoltura.regione.campania.it/tartufo/doc/DGR_179_28-01-08.pdf
+    kind: institutional
+    region: Campania
+    verified: verified
+    supports: 'Allegato D names the regulated porcini: "Boletus edulis (Porcino) e relativo gruppo (Boletus aereus, Boletus
+      reticulatus = Boletus aestivalis, Boletus pinicola)", cap under 3 cm banned, and Cantharellus cibarius (Gallinaccio)
+      under 2 cm (p. 15). Allegato C: quantities may be lowered "in presenza di particolari condizioni climatiche
+      stagionali e di ridotta frequenza della crescita", and temporary area bans set (p. 14).'
+  lr_campania_14_2015:
+    citation: 'Regione Campania. Legge regionale 9 novembre 2015, n. 14, riordino delle funzioni provinciali (testo
+      vigente)'
+    url: https://www.regione.campania.it/normativa/userFile/documents/attachments/1070_14_2015Alla262018.pdf
+    kind: institutional
+    region: Campania
+    verified: verified
+    supports: 'Art. 3.1 a) moves the provinces'' "agricoltura, caccia e pesca" functions, picking permits included, to the
+      Region; it does not amend the text of l.r. 8/2007.'
+  mushma_campania_forest_composition_2026:
+    citation: 'mushma Campania woodland composition: area and elevation of each habitat key in ISPRA and ARPA Campania''s
+      Carta della Natura habitat map (1:25,000, 2017; CORINE Biotopes codes read by the class mapping in
+      config/regions/campania.yaml), sampled on a 100 m lattice in EPSG:3035 with Copernicus DEM GLO-30 elevations,
+      computed 2026-09-27 before the woodland grid was built; then checked on that grid (3,733 woodland cells) the
+      same day'
+    url: https://sdi.isprambiente.it/download_ogc/cnat/CNAT_Habitat_Campania.gpkg
+    kind: analysis
+    region: Campania
+    verified: verified
+    supports: '473,700 ha of mapped woods and scrub, 420,800 ha of them broadleaf or conifer woodland (INFC 2015 bosco
+      403,927 ha). Shares and elevations (median, p10-p90): deciduous_oak 34.3 % (512 m, 202-833; Turkey oak 63 % of it at
+      596 m), chestnut 15.9 % (658 m, 338-947; a third fruit orchards), beech 13.8 % (1,211 m, 965-1,453, max 1,874),
+      mixed_broadleaf 10.7 % (770 m; hop-hornbeam and mixed thermophilous woods 76 %, Alnus cordata 23 % at 934 m),
+      evergreen_oak 7.8 % (371 m), transitional_woodland_shrub 6.3 % (630 m; bramble 32 %, deciduous shrubs 29 %,
+      Spartium 24 %, broom 11 %), macchia 4.9 % (236 m; silicicolous Erica-Arbutus-Cistus macchia 70 %, lentisk 11 %,
+      calcicolous 8 %, Cytisus 8 %), mountain_pine 2.7 % (conifer plantations, 642 m, 213-1,024), riparian 2.4 %,
+      mediterranean_pine 0.7 %, exotic_broadleaf 0.5 %, fir_spruce and other_conifer under 0.1 % each. On the grid:
+      median cell elevation 700 m (p10 311, p90 1,214, max 1,718), slope median 19.9° (slope stopper mean 0.987),
+      SoilGrids topsoil pH median 6.6 (p10 6.2, p90 7.0); with the Campania affinities the habitat gate is full on 68 %
+      of cells for B. edulis (Tuscan affinities 82 %), 77 % for B. pinophilus (82 %), 83 % for B. aereus (79 %), 98 % for
+      B. reticulatus and gallinacci (98 %, 94 %), and the altitude gate on 98 % for B. reticulatus and gallinacci (82 %,
+      77 %). See species-ecology/campania.md.'
+  mushma_occurrence_check_campania_2026:
+    citation: 'mushma Campania occurrence check: GBIF occurrence API (gadmGid ITA.5_1, basis of record human observation,
+      preserved specimen, occurrence, observation, machine observation, living specimen; month, year and dataset
+      facets), iNaturalist API (place 9703, verifiable; month and year histograms; compared with Toscana, place 13073,
+      and a southern mainland pool of places 9703, 8763, 9323, 10871 and 13069; elevations only for open, non-obscured
+      records with positional accuracy of 1 km or better) and the Open-Meteo elevation API, queried 2026-09-27.
+      Aggregates only (counts by month and elevation band, elevation quantiles); no coordinates are stored or published'
+    url: https://api.gbif.org/v1/occurrence/search
+    kind: analysis
+    region: Campania
+    verified: verified
+    supports: 'Campania iNaturalist verifiable records: B. edulis 5, B. reticulatus 10, B. aereus 1, B. pinophilus 0, A.
+      caesarea 5, Cantharellus 21 (C. cibarius 11, C. pallens 5, C. amethysteus 1), against 4,437 fungi; the 23 GBIF
+      records of these taxa are all iNaturalist copies. No record of the six in February-May; Cantharellus 48 % in October
+      and 33 % in November-December; fungi effort later than Tuscany''s (November-December 27 % against 21 %). Located
+      elevations: B. reticulatus median 1,118 m (n=8; southern pool 1,120 m, n=27; Tuscany 649 m, n=19), B. edulis 1,148
+      m (n=3; south 1,202 m, n=16; Tuscany 1,054 m), B. pinophilus south 1,152 m (n=11; Tuscany 692 m), B. aereus south
+      415 m (n=6; Tuscany 352 m, n=42), A. caesarea 148-306 m (n=3; south 328 m, Tuscany 364 m). See
+      species-ecology/campania.md.'
+  mushma_campania_agrometeo_rain_check_2026:
+    citation: 'mushma Campania rain check: downscaled ERA5-Land (CDS) daily precipitation, read bilinearly at each gauge,
+      against the Regione Campania agrometeo network (Assessorato Agricoltura, daily Excel archives), 2019-2025, the 34
+      farm gauges at 11-769 m with 1,000 or more days (calendar days); none lies in a woodland cell, and the Centro
+      Funzionale''s mountain gauges give daily data only after registration. See .gavin-root/docs/regions/campania.md,
+      Weather'
+    url: https://agricoltura.regione.campania.it/meteo/archivio_meteo.html
+    kind: analysis
+    region: Campania
+    verified: verified
+    supports: 'Raw CDS rain holds 1.21 of gauge rain below 200 m (19 gauges), 1.10 at 200-400 m (5) and 0.96 at 400-800 m
+      (9); a gauge-total fit of scale = 0.77 + 0.52 per km of elevation (Capaccio-Gromola, 2,550 mm a year on the Paestum
+      plain, left out as faulty; with it 0.86 + 0.30) brings them to 1.00. Above 800 m the slope is extrapolated, in the
+      shape of the Umbria (0.89 + 0.33) and Emilia-Romagna (0.62 + 0.80) woodland fits on the same CDS rain.'
+    cited_as:
+    - regions/campania.md
