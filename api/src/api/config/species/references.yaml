@@ -2021,3 +2021,377 @@ references:
       per km would make it 2.05.'
     cited_as:
     - regions/piemonte.md
+  # ---------------------------------------------------------------------------------------------
+  # Friuli-Venezia Giulia (region card, 2026-09-27): sources for species/friuli_venezia_giulia/ and
+  # .gavin-root/docs/species-ecology/friuli_venezia_giulia.md. Appended as one block; keys carry an
+  # fvg_ prefix (or a _fvg_ infix for our own analyses) so merges with other region branches do not
+  # collide. The MUSE census pages for B. edulis, B. pinophilus, B. aereus, C. cibarius and
+  # C. alborufescens already exist above (muse_censimento_*); this block adds only the pages they lack
+  # (the Trentino-Alto Adige and Lombardia branches add the same B. aestivalis and A. caesarea pages
+  # under their own keys).
+  # ---------------------------------------------------------------------------------------------
+  fvg_lr25_2017:
+    citation: 'Regione Autonoma Friuli Venezia Giulia. Legge regionale 7 luglio 2017, n. 25, "Norme per la raccolta
+      e la commercializzazione dei funghi epigei spontanei nel territorio regionale", consolidated text in force from
+      8 August 2026 (Lexview)'
+    url: https://lexview-int.regione.fvg.it/FontiNormative/xml/scarico.aspx?ANN=2017&LEX=0025&tip=0&id=&lang=ita
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'the picking law: "La raccolta dei funghi è in ogni caso consentita nel limite di tre chilogrammi al
+      giorno pro capite" (art. 7); banned "Amanita cesarea allo stato di ovolo chiuso" and B. edulis group caps under
+      3 cm (art. 9); picking banned in regional nature reserves and biotopes; permit after an oral exam plus a yearly
+      fee; no season calendar and no odd/even-day rule.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_del_favero2016:
+    citation: 'Del Favero R. (ed.), Dreossi G., Vanone G. (2016, 1st ed. 1998 with Poldini L., Bortoli P.L., Lasen
+      C.) La vegetazione forestale e la selvicoltura nella regione Friuli Venezia Giulia. Regione Autonoma Friuli
+      Venezia Giulia, Direzione centrale risorse agricole, forestali e ittiche, 553 pp.'
+    url: https://www.regione.fvg.it/rafvg/export/sites/default/RAFVG/economia-imprese/agricoltura-foreste/foreste/allegati/Del_Favero_-_La_vegetazione_forestale_e_la_selvicoltura_in_FVG.pdf
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'the regional forest typology behind the forest-type map: forest regions (endalpica, mesalpica,
+      esalpica, avanalpica, planiziale, carsica, costiera) with their rain and temperatures; black pine "naturalmente
+      presente nel nord dell''Italia solo nella parte medio-alta di questa Regione", in the esalpica valleys; the
+      Karst "piantagioni di pino nero"; "I castagneti predominano sui substrati silicatici delle Valli del Natisone e
+      del Torre"; montane-subalpine spruce limit "fra 1300 e 1600-1800 m"; larch woods "a mo'' di cimosa delle
+      peccete" at the tree line.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_infc2015_categorie:
+    citation: 'Regione Autonoma Friuli Venezia Giulia (2026). Foreste, "Dati" and "Categorie forestali INFC 2015"
+      (ripartizione dei boschi alti in categorie forestali, classificazione INFC 2015)'
+    url: https://www.regione.fvg.it/rafvg/export/sites/default/RAFVG/economia-imprese/agricoltura-foreste/foreste/FOGLIA19/allegati/CategorieForestaliINFC2015.pdf
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'INFC 2015: 323,362 ha of boschi alti (41.1 % of the region) plus 41,058 ha of other wooded land;
+      faggete 90,645 ha (28 %), abete rosso 44,597, pino nero 31,554, larice 12,971, pino silvestre e montano 12,228,
+      castagneti 12,264, querceti 8,176, ostrieti-carpineti 46,791.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_arpa_clima2023:
+    citation: 'ARPA FVG - OSMER e GRN (2023) Il clima del Friuli Venezia Giulia (1991-2020 normals), and the ARPA page
+      "Il clima del FVG"'
+    url: https://www.meteo.fvg.it/clima/clima_fvg/02_documenti_descrittivi,_report_e_approfondimenti/01_Il_clima_del_Friuli_Venezia_Giulia/clima_fvg-divulgativo.pdf
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'rain belts: coast 900-1,000 mm, plain and hills 1,100-1,800 mm, Prealps 2,400-3,400 mm "(da primato
+      europeo)", inner Alps 1,400-1,600 mm; February the driest month, a first peak in May, November the wettest (up
+      to 450 mm at Musi); lapse rate "circa 0.7 °C ogni 100 m"; the bora, "secco e freddo", mostly in winter,
+      makes the Karst the region''s driest air.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_arpa_schede_rr2023:
+    citation: 'ARPA FVG - OSMER e GRN (2023) Le precipitazioni in Friuli Venezia Giulia - Schede climatiche
+      (1991-2020)'
+    url: https://www.meteo.fvg.it/clima/clima_fvg/schede/RR/CLIMA-FVG-VIAVAS_SCHEDA_RR.pdf
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'rain zones: the Musi chain (Taipana, Lusevera, Resia) over 3,300 mm a year; Prealpi Carniche
+      2,000-2,400 mm; Carnia 1,500-2,400 mm; Tarvisiano 1,400-2,300 mm; Karst 1,000-1,400 mm with July the driest
+      month (75-80 mm) and September-November the wettest (150-160 mm).'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_arpa_impatti_cc2018:
+    citation: 'ARPA FVG et al. (2018) Studio conoscitivo dei cambiamenti climatici e di alcuni loro impatti in Friuli
+      Venezia Giulia - Primo report, 342 pp.'
+    url: https://www.arpa.fvg.it/documents/2815/impattiCCinFVG_marzo2018.pdf
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'summer 2012 dieback of hop-hornbeam, downy oak, manna ash and field maple on the Trieste Karst, and
+      impacts on Pinus nigra, "specie introdotta nel Carso durante gli estesi interventi di rimboschimento condotti
+      nella seconda metà del 1800"; the 2003 heat and lightning fires.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_arpa_report2022:
+    citation: 'ARPA FVG (2023) Arpa FVG pubblica il report annuale meteo.fvg dedicato al 2022: un anno caldo e molto
+      secco'
+    url: https://arpa.fvg.it/temi/temi/meteo-e-clima/news/arpa-pubblica-il-report-annuale-meteofvg-dedicato-al-2022-un-anno-caldo-e-molto-secco/
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: '2022 the hottest year on record in FVG, rain "quasi ovunque inferiori dal 30 al 50 %" of the 1991-2020
+      normal, a drought all year, milder in the mountains.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_tarvisio_foresta:
+    citation: 'Arma dei Carabinieri, Reparto Biodiversità di Tarvisio: Foresta di Tarvisio (Cucco e Rio Bianco); and
+      Ministero dell''Interno, Fondo Edifici di Culto, La "Millenaria" Foresta di Tarvisio'
+    url: https://www.carabinieri.it/chi-siamo/oggi/organizzazione/tutela-forestale-ambientale-e-agroalimentare/comando-tutela-biodiversita'-e-parchi/utcb-e-le-130-riserve-naturali/utcb-di-tarvisio/foresta-di-tarvisio-(cucco-e-rio-bianco)
+    kind: institutional
+    region: Friuli-Venezia Giulia (Tarvisio)
+    verified: verified
+    supports: 'the state forest of Tarvisio: 23,300 ha at 600-2,500 m, "consorzi misti di abete rosso e faggio, con
+      varianti ad abete bianco", larch, Scots and black pine on poorer ground; "Sopra i 1700 m s.l.m. le formazioni
+      forestali cedono il passo ad arbusteti a pino mugo"; spruce 55 %, beech 30 %, other conifers 15 % (Ministero
+      dell''Interno).'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_si_uredba_gliv2011:
+    citation: 'Vlada Republike Slovenije (2011) Uredba o zavarovanih prosto živečih vrstah gliv, Uradni list RS 58/2011,
+      Priloga 1; with Uredba o varstvu samoniklih gliv, Uradni list RS 57/1998'
+    url: https://www.uradni-list.si/glasilo-uradni-list-rs/vsebina/2011-01-2723/
+    kind: institutional
+    region: Slovenia
+    verified: verified
+    supports: 'Amanita caesarea ("knežja mušnica, karželj") is a protected species in Slovenia (first entry of the
+      annex); none of the four porcini or C. cibarius is protected; picking is limited to 2 kg a person a day (1998
+      decree, art. 5). Protection thins Slovene ovolo records.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_ktn_pilzschutz:
+    citation: 'Österreichische Mykologische Gesellschaft (2021) Pilzschutzbestimmungen in Österreich (Kärnten:
+      Pilzverordnung LGBl. Nr. 35/2014)'
+    url: https://myk.univie.ac.at/pilzschutzbestimmungen-in-oesterreich/
+    kind: society
+    region: Carinthia (Austria)
+    verified: verified
+    supports: 'Carinthia allows picking of "Steinpilze (Boletus edulis, Boletus pinophilus, Boletus aestivalis) und
+      Eierschwammerl (Cantharellus cibarius)" only "in der Zeit vom 15. Juni bis 30. September", 2 kg a person a day,
+      7-18 h. So Carinthian records of these taxa after 30 September are thinned by the law, not only by the season.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_cebulec_pertot1985:
+    citation: 'Cebulec E., Pertot M. (1985 [vol. 1984]) Primo contributo alla conoscenza della flora micologica del
+      Carso triestino. Gortania - Atti del Museo Friulano di Storia Naturale 6: 105-138'
+    url: https://www.museofriulanostorianaturale.it/images/pubblicazioni/gortania-6/Cebulec%20Pertot%201985.%20Primo%20contributo%20alla%20conoscenza%20della%20flora%20micologica%20del%20Carso%20triestino.pdf
+    kind: society
+    region: Friuli-Venezia Giulia (Trieste Karst)
+    verified: verified
+    supports: '360 species on 1,280 ha of the Trieste Karst at 300-476 m (Basovizza-Lipizza), 1980-84, in
+      hop-hornbeam-downy oak, sessile oak, black-pine plantations and doline woods: B. aereus "poco frequente", B.
+      aestivalis "raro", A. caesarea "raro", C. cibarius "raro" and var. pallidus "poco frequente"; no B. edulis; the
+      black pine''s own fungi include Suillus and Cantharellus lutescens but no Boletus; the bora dries the soil.
+      Scanned PDF read as page images by a research agent.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_cebulec_pertot1992:
+    citation: 'Cebulec E., Pertot M. (1992 [vol. 1991]) Secondo contributo alla conoscenza della flora micologica del
+      Carso. Gortania - Atti del Museo Friulano di Storia Naturale 13: 87-102'
+    url: https://www.museofriulanostorianaturale.it/images/pubblicazioni/gortania-13/Cebulec%20Pertot%201992.%20Secondo%20contributo%20alla%20conoscenza%20dela%20flora%20micologica%20del%20Carso.pdf
+    kind: society
+    region: Friuli-Venezia Giulia (Trieste Karst)
+    verified: verified
+    supports: 'the same Karst plot surveyed October 1980-December 1990, with fruiting heaviest "in particolare nei mesi
+      di ottobre e novembre"; 462 species, no B. edulis added; black pine "ha arricchito la flora micologica locale"
+      with pine species, while "vengono a mancare le rispettive specie micorriziche" of the broadleaves in the
+      plantations.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_campo2022_cansiglio:
+    citation: 'Campo E., Bizio E., Borsato V. (2022) Biodiversità micologica nelle faggete della foresta del
+      Cansiglio. Società Veneziana di Scienze Naturali, with Tab. 1 (850 taxa)'
+    url: https://www.svsn.it/biodiversita-micologica-nelle-faggete-della-foresta-del-cansiglio/
+    kind: society
+    region: Cansiglio (Veneto side of the FVG border)
+    verified: verified
+    supports: 'about 30 years of records in the Cansiglio beech woods (1,000-1,400 m, 1,757 mm of rain a year):
+      Boletus edulis at 6 sites July-October (12 records), B. aestivalis July-August (6), Cantharellus cibarius
+      June-September (10); no Amanita caesarea.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_ambf_caesarea:
+    citation: 'Ferisin G. (2026) Amanita caesarea (Scop.) Person. Archivio micologico, Associazione Micologica Bassa
+      Friulana'
+    url: https://www.micologiabf.org/funghi/amanita-caesarea-scop-person/
+    kind: society
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: '"Habitat: simbionte di latifoglia, specie termofila, predilige i boschi di quercia e castagno. Raro ma
+      fedele ai luoghi di crescita"; once abundant, now rare as its habitats disappear.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_muse_censimento_aestivalis:
+    citation: 'Censimento dei macromiceti (Federazioni dei gruppi micologici del Trentino-Alto Adige, Veneto, Friuli
+      Venezia Giulia; hosted by MUSE), species page: Boletus aestivalis'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=172910&ar=tv
+    kind: society
+    region: north-east Italy
+    verified: verified
+    supports: 'about 470 FVG map points (269 on the Trieste Karst); north-east profile May 14, June 142, July 200,
+      August 173, September 94, October 68 (relative); altitude mode 300-600 m, 16 % at 900-1,200 m, 8 % at
+      1,200-1,500 m; lowest record 2 June 2012 at 10 m, Cervignano del Friuli.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_muse_censimento_caesarea:
+    citation: 'Censimento dei macromiceti (Federazioni dei gruppi micologici del Trentino-Alto Adige, Veneto, Friuli
+      Venezia Giulia; hosted by MUSE), species page: Amanita caesarea'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=208468&ar=tv
+    kind: society
+    region: north-east Italy
+    verified: verified
+    supports: '147 FVG map points (127 on the Trieste Karst; the rest at Cividale, Majano, Sagrado and the Pordenone
+      foothills); north-east profile June 6, July 58, August 200, September 179, October 146, November 8 (relative);
+      altitude 50 % below 300 m, 26 % at 300-600 m, 15 % at 600-900 m; latest record 14 November 2004, Trieste, 175 m.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_muse_censimento_ferruginascens:
+    citation: 'Censimento dei macromiceti (hosted by MUSE), species page: Cantharellus ferruginascens'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=327479&ar=tv
+    kind: society
+    region: north-east Italy
+    verified: verified
+    supports: 'a broadleaf chanterelle of the Trieste Karst coast: 26 of 57 north-east records in Trieste province,
+      profile peaking in October, latest 28 December 2012 in a holm-oak wood at Miramare (25 m).'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_sperdin1975_roehrlinge:
+    citation: 'Sperdin F. (1975) Verzeichnis von in Kärnten vorkommenden Röhrlingen. Carinthia II 165/85: 223-233.
+      Naturwissenschaftlicher Verein für Kärnten'
+    url: https://www.zobodat.at/pdf/CAR_165_85_0223-0233.pdf
+    kind: society
+    region: Carinthia (Austria)
+    verified: verified
+    supports: 'B. pinicola (= B. pinophilus) "Überall in Kärnten als Kiefernbegleiter vertreten"; B. edulis the
+      commonest porcino; B. aestivalis numerous in some years around Klagenfurt; B. aereus rare. Read in a browser by
+      a research agent (zobodat blocks scripted downloads).'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_sperdin1983_amanita:
+    citation: 'Sperdin F. (1983) Pilzvorkommen in Kärnten (Scheidlinge, Dachpilze, Scheidenstreiflinge, Wulstlinge,
+      Rötlinge). Carinthia II 173/93: 263-274. Naturwissenschaftlicher Verein für Kärnten'
+    url: https://www.zobodat.at/pdf/CAR_173_93_0263-0274.pdf
+    kind: society
+    region: Carinthia (Austria)
+    verified: verified
+    supports: 'Amanita caesarea "wurde in Kärnten noch nicht aufgefunden"; "Es scheint so, daß die Meereshöhe (in
+      Kärnten über 400 m) eine Rolle spielt"; it occurs "In der Umgebung von Laibach oder Triest". Read in a browser
+      by a research agent.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_friebes2017_ferlach:
+    citation: 'Friebes G. (2017) Mykologische Untersuchungen in Naturwaldresten bei Ferlach (Kärnten, Österreich).
+      Carinthia II 207/127: 449-492'
+    url: https://www.zobodat.at/pdf/CAR_207_127_0449-0492.pdf
+    kind: society
+    region: Carinthia (Karawanken, on the Slovene border)
+    verified: verified
+    supports: 'B. edulis and C. cibarius at about 1,000 m in natural Scots pine-Erica stands and beech-mixed woods of
+      the Karawanken (with spruce, fir, larch), 14 July to 27 September. Read in a browser by a research agent.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_gobe_si:
+    citation: 'Gobarsko društvo "Lisička" Maribor. Species pages (Gobe): Boletus aereus, B. reticulatus, B. edulis,
+      B. pinophilus, Amanita caesarea, Cantharellus cibarius'
+    url: https://www.gobe.si/Gobe/BoletusAereus
+    kind: society
+    region: Slovenia
+    verified: verified
+    supports: 'B. aereus "v listnatem in mešanem gozdu, posamično, največ pod hrasti in kostanji", June-October; B.
+      reticulatus "Vrsta je mikorizna z listavci", May-October; B. pinophilus "raste največ pod bori, tudi pod
+      bukvami", May-November; A. caesarea "na revnih apnenčastih tleh, pod listavci, zlasti pod kostanji in
+      bukvami", July-October; C. cibarius under broadleaves and conifers, June-November.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_bi_maps:
+    citation: 'Ogris N. (ed.) (2026) Karta razširjenosti (distribution maps) for Boletus edulis, B. reticulatus, B.
+      aereus, B. pinophilus, Amanita caesarea and Cantharellus cibarius. Podatkovna zbirka gliv Slovenije Boletus
+      informaticus, Gozdarski inštitut Slovenije; GBIF snapshot of 2008 as "Slovenian Fungal Database - Boletus
+      informaticus"'
+    doi: 10.15468/2inmxv
+    url: https://www.zdravgozd.si/bi_karte_seznam.aspx
+    kind: dataset
+    region: Slovenia
+    verified: verified
+    supports: 'quadrant maps: B. aereus in 105 quadrants, in the west only Goriška, Brda, the lower Vipava valley, the
+      Karst and Istria, absent from the Alpine north; A. caesarea in 142 quadrants of lowland and hills (Tolmin,
+      Nova Gorica, the Karst by the Italian border, Istria); the GBIF copy has year only, no month.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_omg_observations:
+    citation: 'Österreichische Mykologische Gesellschaft. Austrian Mycological Society Observations (GBIF dataset
+      71d34a18-4dad-4d2d-9cb3-c1e91317faad), Carinthian records of the six taxa accessed 2026-09-27'
+    doi: 10.15468/npzg3v
+    kind: dataset
+    region: Carinthia (Austria)
+    verified: verified
+    supports: 'dated Carinthian records with recorder elevations: B. edulis 339, C. cibarius 555, B. pinophilus 101,
+      B. aestivalis 79, B. aereus 11 (all before 1966), A. caesarea none; summarised in
+      mushma_fvg_occurrence_check_2026.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_ilpiccolo_2016_09_11:
+    citation: 'Il Piccolo (2016-09-11) Gialletti da record e zero porcini nell''estate anomala dei funghi'
+    url: https://www.ilpiccolo.it/cronaca/gialletti-da-record-e-zero-porcini-nellestate-anomala-dei-funghi-achmqfo8
+    kind: web
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'Udine mycologists: normally "la prima buttata di fine giugno riguarda le zone basse"; "sono le piogge
+      settembrine che allungano la raccolta fino a metà ottobre"; the porcino nero "Ancora presente, ma raro"; the
+      ovolo "ormai si trova raramente nel Cividalese ed è invece ancora presente in Austria e Slovenia"; 2016 a late
+      summer with record gialletti (C. cibarius).'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_ilpiccolo_2017_10_12:
+    citation: 'Il Piccolo (2017-10-12) Fvg, il meteo perfetto regala a porcini e ovuli un autunno da record'
+    url: https://www.ilpiccolo.it/cronaca/fvg-il-meteo-perfetto-regala-a-porcini-e-ovuli-un-autunno-da-record-p8k6lur7
+    kind: web
+    region: Friuli-Venezia Giulia (Trieste)
+    verified: verified
+    supports: 'AMB Bresadola Trieste: from about 21 September 2017 "fioriture a dir poco eccezionali, un aumento
+      dell''80% rispetto al 2016", "Il caldo e l''acqua hanno creato un mix giusto, con tantissimi porcini e ovuli".'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_messaggeroveneto_2019_11_13:
+    citation: 'Messaggero Veneto (2019-11-13) Raccolto un porcino da oltre due chilogrammi'
+    url: https://www.messaggeroveneto.it/cronaca/raccolto-un-porcino-da-oltre-due-chilogrammi-aadk1uas
+    kind: web
+    region: Friuli-Venezia Giulia (Carnia)
+    verified: verified
+    supports: 'a porcino picked at Zuglio (lower Carnia) on 12 November 2019, "raccolto fuori stagione, segno che,
+      mentre i monti si imbiancano di neve, poco più a valle prosegue la stagione dei funghi porcini".'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  fvg_rafvg_funghi2005:
+    citation: 'Regione Autonoma Friuli Venezia Giulia, Direzione centrale risorse agricole, naturali, forestali e della
+      montagna (2005) Newsletter numero speciale, 20 settembre 2005: La raccolta dei funghi epigei nel territorio
+      della Regione'
+    url: https://www.regione.fvg.it/rafvg/export/sites/default/webletter/agri_for/archivio/newsAgr_n_speciale_funghi.pdf
+    kind: institutional
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'regional common names: "Cantharellus cibarius e relativo gruppo - gialletto o galletto",
+      "Cantharellus lutescens, C. tubaeformis - finferle", "Amanita caesarea - ovolo buono"; so Friulian
+      "finferli" may mean Craterellus, not C. cibarius (used for names only).'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  mushma_fvg_occurrence_check_2026:
+    citation: 'mushma Friuli-Venezia Giulia occurrence check: GBIF occurrence API (gadmGid ITA.7_1; Carinthia AUT.2_1;
+      Slovenia country SI; Belluno ITA.20.1_1), iNaturalist observations and histogram APIs (places 10869 FVG,
+      10464 Kärnten, 8228 Slovenia, 33203 Belluno; verifiable), Copernicus GLO-30 elevations for open records with an
+      accuracy of 1 km or better, and a recount of the MUSE census map points inside the ISTAT 2025 FVG provinces,
+      queried 2026-09-27. Aggregates only (counts by month, elevation band and province); no coordinates are stored
+      or published'
+    url: https://api.gbif.org/v1/occurrence/search
+    kind: analysis
+    region: Friuli-Venezia Giulia and neighbours
+    verified: verified
+    supports: 'FVG iNaturalist records: B. edulis 14, B. reticulatus 2, B. aereus 0, B. pinophilus 2, A. caesarea 1,
+      Cantharellus 5 (3,172 fungi records in all); MUSE census points in FVG: B. edulis 539, B. aestivalis 468, B.
+      aereus 255, B. pinophilus 32, A. caesarea 147, C. cibarius 952; Carinthian Austrian Mycological Society records
+      by elevation band (B. edulis since 1990: October or later 40 % below 600 m, 22 % at 600-1000 m, 5 % at
+      1000-1400 m, 2 % above); Slovene iNaturalist months and elevations. See species-ecology/friuli_venezia_giulia.md.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
+  mushma_fvg_forest_check_2026:
+    citation: 'mushma Friuli-Venezia Giulia forest check: the region''s woodland grid (built 2026-09-27 from the
+      Region''s Tipologie forestali 2013 map, 3,304 woodland cells) and the map itself, joined to the region config''s
+      habitat mapping and to Copernicus GLO-30 elevations; habitat shares, per-habitat elevations, slope and 15
+      October sun-ratio percentiles, and the habitat and altitude gates under the Tuscan and the regional rules'
+    url: https://serviziogc.regione.fvg.it/geoserver/UTIL_TER/wfs?service=WFS&version=2.0.0&request=GetCapabilities
+    kind: analysis
+    region: Friuli-Venezia Giulia
+    verified: verified
+    supports: 'habitat shares of the mapped forest: beech 25.7 %, mountain pine 15.3 % (black pine 35,160 ha, Scots
+      pine 8,300 ha, Karst pine plantations about 2,600 ha), mixed broadleaf 14.0 %, mixed broadleaf-conifer 12.6 %,
+      fir/spruce 12.5 %, deciduous oak 6.8 % (87 % ostrio-querceti), chestnut 5.8 %, other conifer 2.1 % (72 %
+      larch); woodland cells median 874 m, max 1898 m, slope median 27.0°, p90 36.2°, max 48.6°, soil pH median
+      5.56. See species-ecology/friuli_venezia_giulia.md.'
+    cited_as:
+    - species-ecology/friuli_venezia_giulia.md
