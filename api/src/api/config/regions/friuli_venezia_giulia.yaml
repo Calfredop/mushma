@@ -1,0 +1,912 @@
+# Friuli-Venezia Giulia: region #11 of the full-Italy rollout
+# (.gavin-root/docs/regions/friuli_venezia_giulia.md).
+id: friuli_venezia_giulia
+name: {it: Friuli-Venezia Giulia, en: Friuli-Venezia Giulia}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [12.32, 45.58, 13.92, 46.65]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 6
+
+# Woodland: one regional map gives both layers. The Region's Tipologie forestali 2013 maps forest
+# only, every polygon with its type in the regional typology (Del Favero et al. 1998), so the type
+# code (CODICE_TIPO) says both which broad group a polygon is and which habitat. Codes are the
+# category letter, the type and a lower-case variant (GH1a: faggeta montana tipica esalpica with
+# silver fir); a plantation or new woodland is coded by what grows there over the site it sits on
+# (SN/GB0: spruce planted on a beech site; XE/DB0: new woodland heading for hop-hornbeam), and is
+# mapped by what grows there. Mugo-pine krummholz (H), green-alder scrub (PA0) and subalpine
+# Salix waldsteiniana scrub (QA5) are not forest, as INFC counts them, and go to the transitional
+# group. Spruce-beech (L) and fir-spruce-beech (MB, MC, MD) woods are mixed. Every code in the
+# map is listed; a code not listed is dropped with its area. See
+# .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/friuli_venezia_giulia.md (Sources).
+forest:
+  groups:
+    source: fvg_tipologie_forestali
+    class_column: CODICE_TIPO
+    classes:
+      # A formazioni costiere
+      AA0: broadleaf
+      AB0: broadleaf
+      AC0: broadleaf
+      # B querco-carpineti e carpineti
+      BA0: broadleaf
+      BB0: broadleaf
+      BC0: broadleaf
+      BC0c: broadleaf
+      BC0f: broadleaf
+      BC0i: broadleaf
+      BD0: broadleaf
+      BE0: broadleaf
+      BE0o: broadleaf
+      BF0: broadleaf
+      BF0c: broadleaf
+      # C rovereti e castagneti
+      CA1: broadleaf
+      CA2: broadleaf
+      CB0: broadleaf
+      CB0f: broadleaf
+      CB0i: broadleaf
+      CB0t: broadleaf
+      CC0: broadleaf
+      CD0: broadleaf
+      CE0: broadleaf
+      CE0t: broadleaf
+      CF0: broadleaf
+      CF0i: broadleaf
+      # D orno-ostrieti e ostrio-querceti
+      DB0: broadleaf
+      DB0a: broadleaf
+      DB0c: broadleaf
+      DB0f: broadleaf
+      DC1: broadleaf
+      DC1r: broadleaf
+      DC2: broadleaf
+      DC2a: broadleaf
+      DC2c: broadleaf
+      DC2t: broadleaf
+      DD1: broadleaf
+      DD2: broadleaf
+      DD2c: broadleaf
+      DD2l: broadleaf
+      DD3: broadleaf
+      # E aceri-frassineti e aceri tiglieti
+      EA0: broadleaf
+      EB0: broadleaf
+      EC0: broadleaf
+      EC0i: broadleaf
+      EC0t: broadleaf
+      ED0: broadleaf
+      EE0: broadleaf
+      # F betuleti e corileti
+      FA0: broadleaf
+      FB1: broadleaf
+      FB2: broadleaf
+      # G faggete
+      GA0: broadleaf
+      GB0: broadleaf
+      GB0IG2: broadleaf
+      GB0t: broadleaf
+      GC0: broadleaf
+      GC0c: broadleaf
+      GD0: broadleaf
+      GE0: broadleaf
+      GE0a: broadleaf
+      GF0: broadleaf
+      GF0m: broadleaf
+      GG0: broadleaf
+      GH1: broadleaf
+      GH1a: broadleaf
+      GH1r: broadleaf
+      GH2: broadleaf
+      GI0: broadleaf
+      GI0b: broadleaf
+      GL0: broadleaf
+      GM0: broadleaf
+      GM0a: broadleaf
+      GM0l: broadleaf
+      GM0r: broadleaf
+      GN0: broadleaf
+      GO0: broadleaf
+      GO0c: broadleaf
+      GO0f: broadleaf
+      GP1: broadleaf
+      GP2: broadleaf
+      Gl0: broadleaf
+      # H mughete
+      HA0: transitional
+      HB1: transitional
+      HB2: transitional
+      HC1: transitional
+      HC2: transitional
+      Hc1: transitional
+      # I pinete di pino nero e pino silvestre
+      IA1: conifer
+      IA2: conifer
+      IB0: conifer
+      IB0m: conifer
+      IC0: conifer
+      ID0: conifer
+      IE0: conifer
+      IE0l: conifer
+      IF1: conifer
+      IF2: conifer
+      IG1: conifer
+      IG1s: conifer
+      IG2: conifer
+      IH1: conifer
+      IH1g: conifer
+      IH2: conifer
+      XD/CC0: conifer
+      # J formazioni golenali
+      J1: broadleaf
+      J1b: broadleaf
+      J2: broadleaf
+      J4: broadleaf
+      J4a: broadleaf
+      J4b: broadleaf
+      # L piceo-faggeti
+      LA0: mixed
+      LB0: mixed
+      LB0a: mixed
+      LB0g: mixed
+      LB0l: mixed
+      LC1: mixed
+      LC1a: mixed
+      LC1g: mixed
+      LC1l: mixed
+      LC2: mixed
+      LC2a: mixed
+      LC2l: mixed
+      LD0: mixed
+      LD0b: mixed
+      LE1: mixed
+      LE1b: mixed
+      LE1i: mixed
+      LE2: mixed
+      ST/GH2: mixed
+      # M abieteti e piceo-abieteti
+      MA1: conifer
+      MA2: conifer
+      MB1: mixed
+      MB1b: mixed
+      MB2: mixed
+      MC1: mixed
+      MC1b: mixed
+      MC2: mixed
+      MD0: mixed
+      MD0m: mixed
+      ME1: conifer
+      ME1m: conifer
+      ME1x: conifer
+      ME2: conifer
+      MF1: conifer
+      MF2: conifer
+      MF3: conifer
+      MF3i: conifer
+      MF3m: conifer
+      MF4: conifer
+      MF4f: conifer
+      MG1: conifer
+      MG1b: conifer
+      MG2: conifer
+      MH: conifer
+      MI: conifer
+      ML1: conifer
+      ML2: conifer
+      # N peccete
+      NA1: conifer
+      NA1i: conifer
+      NA1l: conifer
+      NA1m: conifer
+      NA1x: conifer
+      NA2: conifer
+      NB1: conifer
+      NB1m: conifer
+      NB2: conifer
+      NC0: conifer
+      NC0c: conifer
+      NC0f: conifer
+      NC0s: conifer
+      ND1: conifer
+      ND2: conifer
+      ND2n: conifer
+      ND3: conifer
+      NE0: conifer
+      NE1: conifer
+      NE2: conifer
+      NF1: conifer
+      NF2: conifer
+      # O lariceti
+      OA0: conifer
+      OB: conifer
+      OB1: conifer
+      OB2: conifer
+      OB2f: conifer
+      OB3: conifer
+      # P alnete
+      PA0: transitional
+      PB0: broadleaf
+      PC0: broadleaf
+      # Q saliceti ed altre formazioni particolari
+      QA1: broadleaf
+      QA2: broadleaf
+      QA5: transitional
+      QD0: broadleaf
+      QZ: broadleaf
+      XD/CE0: transitional
+      # R robinieti
+      RA: broadleaf
+      RA/: broadleaf
+      RA/BA0: broadleaf
+      RA/BB0: broadleaf
+      RA/BC0: broadleaf
+      RA/CA1: broadleaf
+      RA/CA2: broadleaf
+      RA/CB0: broadleaf
+      RA/CB0f: broadleaf
+      RA/CC0: broadleaf
+      RA/CD0: broadleaf
+      RA/CE0: broadleaf
+      RA/CF0: broadleaf
+      RA/DB0: broadleaf
+      RA/DB0c: broadleaf
+      RA/DC1: broadleaf
+      RA/DC1r: broadleaf
+      RA/DC2: broadleaf
+      RA/EA0: broadleaf
+      RA/EC0: broadleaf
+      RA/ED0: broadleaf
+      RA/J1: broadleaf
+      RA/J1b: broadleaf
+      RA/J2: broadleaf
+      RA/PC0: broadleaf
+      RA/T1: broadleaf
+      RA/T2: broadleaf
+      RA/T3: broadleaf
+      RA/T4: broadleaf
+      RA/T8: broadleaf
+      RA/U2: broadleaf
+      RB/: broadleaf
+      # S rimboschimenti
+      S/: conifer
+      SI/: conifer
+      SI/DB0: conifer
+      SI/DB0c: conifer
+      SI/DC1: conifer
+      SI/DC2: conifer
+      SI/EA0: conifer
+      SI/GA0: conifer
+      SI/GB0: conifer
+      SI/GH1: conifer
+      SI/IB0: conifer
+      SI/IC0: conifer
+      SI/XE: conifer
+      SN/: conifer
+      SN/BC0: conifer
+      SN/BC0f: conifer
+      SN/BD0: conifer
+      SN/CB0: conifer
+      SN/CB0i: conifer
+      SN/CD0: conifer
+      SN/DB0: conifer
+      SN/DB0c: conifer
+      SN/DC1: conifer
+      SN/DC1r: conifer
+      SN/EA0: conifer
+      SN/EB0: conifer
+      SN/EC0: conifer
+      SN/EC0i: conifer
+      SN/ED0: conifer
+      SN/FB2: conifer
+      SN/GA0: conifer
+      SN/GB0: conifer
+      SN/GC0: conifer
+      SN/GC0c: conifer
+      SN/GE0: conifer
+      SN/GH1: conifer
+      SN/GH1a: conifer
+      SN/GH2: conifer
+      SN/GI0: conifer
+      SN/GL0: conifer
+      SN/IB0: conifer
+      SN/IC0: conifer
+      SN/IG1: conifer
+      SN/IG1s: conifer
+      SN/IH1: conifer
+      SN/LB0l: conifer
+      SN/LC1: conifer
+      SN/LC1g: conifer
+      SN/LD0: conifer
+      SN/LE1: conifer
+      SN/LE1b: conifer
+      SN/MB1: conifer
+      SN/MC1: conifer
+      SN/MF1: conifer
+      SN/MF3: conifer
+      SN/NC0: conifer
+      SN/ND2: conifer
+      SN/NE1: conifer
+      SN/NE2: conifer
+      SN/XE: conifer
+      SN/XQ: conifer
+      SO/: conifer
+      SO/DB0: conifer
+      SO/EC0: conifer
+      SO/EC0i: conifer
+      SO/FB2: conifer
+      SO/GH1: conifer
+      SO/LC1: conifer
+      SO/LD0: conifer
+      SO/NB1: conifer
+      SO/ND2: conifer
+      SO/NE1: conifer
+      ST/: conifer
+      ST/AB0: conifer
+      ST/BB0: conifer
+      ST/BC0: conifer
+      ST/CA2: conifer
+      ST/CB0: conifer
+      ST/CC0: conifer
+      ST/CD0: conifer
+      ST/CF0: conifer
+      ST/DB0: conifer
+      ST/DC1: conifer
+      ST/DC1r: conifer
+      ST/DC2: conifer
+      ST/EA0: conifer
+      ST/EC0: conifer
+      ST/GA0: conifer
+      ST/GB0: conifer
+      ST/GC0: conifer
+      ST/GE0: conifer
+      ST/GH1: conifer
+      ST/GH1r: conifer
+      ST/LB0g: conifer
+      ST/T4: conifer
+      ST/XD: conifer
+      SU/: broadleaf
+      SU/BA0: broadleaf
+      SU/BB0: broadleaf
+      SU/BD0: broadleaf
+      SU/DB0: broadleaf
+      SU/EA0: broadleaf
+      SU/EC0: broadleaf
+      SU/J2: broadleaf
+      # T formazioni dei terrazzi fluviali
+      T1: broadleaf
+      T2: broadleaf
+      T3: broadleaf
+      T3a: broadleaf
+      T4: broadleaf
+      T4a: broadleaf
+      T4c: broadleaf
+      T5: conifer
+      T5b: conifer
+      T6: conifer
+      T8: broadleaf
+      T8a: broadleaf
+      T8b: broadleaf
+      # U formazioni palustri
+      U1: broadleaf
+      U2: broadleaf
+      U3: broadleaf
+      U4: broadleaf
+      # X neocolonizzazioni
+      X/: mixed
+      X/DC2: broadleaf
+      X/DC2a: broadleaf
+      X/DC2c: broadleaf
+      X/DC2t: broadleaf
+      XB/: broadleaf
+      XB/BA0: broadleaf
+      XB/DB0: broadleaf
+      XC/: broadleaf
+      XC/BB0: broadleaf
+      XC/BC0: broadleaf
+      XC/DB0: broadleaf
+      XC/DC1: broadleaf
+      XC/EC0: broadleaf
+      XD/: broadleaf
+      XD/BB0: broadleaf
+      XD/BC0: broadleaf
+      XD/BD0: broadleaf
+      XD/CD0: broadleaf
+      XD/DB0: broadleaf
+      XD/DB0c: broadleaf
+      XD/DC1: broadleaf
+      XD/EA0: broadleaf
+      XD/EB0: broadleaf
+      XD/EC0: broadleaf
+      XD/GA0: broadleaf
+      XD/GE0: broadleaf
+      XD/IG1s: broadleaf
+      XE/: broadleaf
+      XE/BD0: broadleaf
+      XE/CD0: broadleaf
+      XE/DB0: broadleaf
+      XE/DC1: broadleaf
+      XE/EA0: broadleaf
+      XE/EC0: broadleaf
+      XE/EC0i: broadleaf
+      XE/EE0: broadleaf
+      XE/GA0: broadleaf
+      XE/GB0: broadleaf
+      XE/GE0: broadleaf
+      XE/GG0: broadleaf
+      XE/GH1: broadleaf
+      XE/GL0: broadleaf
+      XE/GM0l: broadleaf
+      XE/ID0: broadleaf
+      XE/IE0: broadleaf
+      XE/IG1: broadleaf
+      XE/IG1s: broadleaf
+      XF/: broadleaf
+      XF/DC1r: broadleaf
+      XF/EC0i: broadleaf
+      XF/GH2: broadleaf
+      XF/GI0: broadleaf
+      XF/IH2: broadleaf
+      XF/LB0: broadleaf
+      XF/LC1: broadleaf
+      XF/LE1b: broadleaf
+      XF/LE2: broadleaf
+      XF/MB1: broadleaf
+      XF/NA1: broadleaf
+      XF/NC0: broadleaf
+      XF/NF1: broadleaf
+      XN/: conifer
+      XO/: conifer
+      XQ/: broadleaf
+  types:
+    source: fvg_tipologie_forestali
+    classes:
+      # A formazioni costiere
+      AA0: evergreen_oak  # Ostrio-lecceta
+      AB0: evergreen_oak  # Lecceta con pino nero
+      AC0: riparian  # Bosco costiero dei suoli idrici
+      # B querco-carpineti e carpineti
+      BA0: deciduous_oak  # Querco-carpineto planiziale
+      BB0: deciduous_oak  # Querco-carpineto collinare
+      BC0: mixed_broadleaf  # Carpineto tipico
+      BC0c: mixed_broadleaf  # Carpineto tipico, var. con castagno
+      BC0f: mixed_broadleaf  # Carpineto tipico, var. con faggio
+      BC0i: mixed_broadleaf  # Carpineto tipico, var. esalpica interna
+      BD0: mixed_broadleaf  # Carpineto con frassino
+      BE0: mixed_broadleaf  # Carpineto con ostria
+      BE0o: mixed_broadleaf  # Carpineto con ostria, var. con olmo
+      BF0: mixed_broadleaf  # Carpineto con cerro
+      BF0c: mixed_broadleaf  # Carpineto con cerro, var. carsica
+      # C rovereti e castagneti
+      CA1: deciduous_oak  # Rovereto tipico carsico
+      CA2: deciduous_oak  # Rovereto tipico collinare
+      CB0: deciduous_oak  # Rovereto dei suoli acidi
+      CB0f: deciduous_oak  # Rovereto dei suoli acidi, var. con faggio
+      CB0i: deciduous_oak  # Rovereto dei suoli acidi, var. esalpica interna
+      CB0t: deciduous_oak  # Rovereto dei suoli acidi, var. con tiglio
+      CC0: chestnut  # Castagneto dei suoli xerici
+      CD0: chestnut  # Castagneto dei suoli mesici
+      CE0: chestnut  # Castagneto con frassino
+      CE0t: chestnut  # Castagneto con frassino, var. con tiglio
+      CF0: chestnut  # Castagneto dei suoli acidi
+      CF0i: chestnut  # Castagneto dei suoli acidi, var. esalpica interna
+      # D orno-ostrieti e ostrio-querceti
+      DB0: mixed_broadleaf  # Orno-ostrieto tipico
+      DB0a: mixed_broadleaf  # Orno-ostrieto tipico, var. con acero riccio
+      DB0c: mixed_broadleaf  # Orno-ostrieto tipico, var. con carpino bianco
+      DB0f: mixed_broadleaf  # Orno-ostrieto tipico, var. con faggio
+      DC1: deciduous_oak  # Ostrio-querceto tipico
+      DC1r: deciduous_oak  # Ostrio-querceto tipico, var. con rovere
+      DC2: deciduous_oak  # Ostrio-querceto a scotano
+      DC2a: deciduous_oak  # Ostrio-querceto a scotano, var. con acero campestre
+      DC2c: deciduous_oak  # Ostrio-querceto a scotano, var. con cerro
+      DC2t: deciduous_oak  # Ostrio-querceto a scotano, var. a terebinto
+      DD1: mixed_broadleaf  # Orno-ostrieto primitivo di forra
+      DD2: mixed_broadleaf  # Orno-ostrieto primitivo di rupe
+      DD2c: mixed_broadleaf  # Orno-ostrieto primitivo di rupe, var. carsica
+      DD2l: mixed_broadleaf  # Orno-ostrieto primitivo di rupe, var. con leccio
+      DD3: mixed_broadleaf  # Orno-ostrieto primitivo di falda detritica
+      # E aceri-frassineti e aceri tiglieti
+      EA0: mixed_broadleaf  # Aceri-tiglieto
+      EB0: mixed_broadleaf  # Aceri-frassineto con ostria
+      EC0: mixed_broadleaf  # Aceri-frassineto tipico
+      EC0i: mixed_broadleaf  # Aceri-frassineto tipico, var. esalpica interna
+      EC0t: mixed_broadleaf  # Aceri-frassineto tipico, var. con tiglio
+      ED0: mixed_broadleaf  # Aceri-frassineto con faggio
+      EE0: mixed_broadleaf  # Aceri-frassineto con ontano nero
+      # F betuleti e corileti
+      FA0: mixed_broadleaf  # Betuleto
+      FB1: mixed_broadleaf  # Corileto macrotermo
+      FB2: mixed_broadleaf  # Corileto mesotermo
+      # G faggete
+      GA0: beech  # Faggeta submontana con ostria
+      GB0: beech  # Faggeta submontana tipica
+      GB0IG2: beech  # Faggeta submontana tipica
+      GB0t: beech  # Faggeta submontana tipica, var. con tasso
+      GC0: beech  # Faggeta submontana dei suoli mesici carbonatici
+      GC0c: beech  # Faggeta submontana dei suoli mesici carbonatici, var. con carpino bianco
+      GD0: beech  # Faggeta submontana dei suoli mesoidrici
+      GE0: beech  # Faggeta submontana dei suoli mesici silicatici
+      GE0a: beech  # Faggeta submontana dei suoli mesici silicatici variante con abete bianco
+      GF0: beech  # Faggeta submontana dei suoli acidi
+      GF0m: beech  # Faggeta submontana dei suoli acidi variante mesalpica
+      GG0: beech  # Faggeta montana dei suoli xerici
+      GH1: beech  # Faggeta montana tipica esalpica
+      GH1a: beech  # Faggeta montana tipica esalpica, var. con abete bianco
+      GH1r: beech  # Faggeta montana tipica esalpica, var. con abete rosso
+      GH2: beech  # Faggeta montana tipica mesalpica
+      GI0: beech  # Faggeta montana dei suoli acidi
+      GI0b: beech  # Faggeta montana dei suoli acidi variante bassomontana
+      GL0: beech  # Faggeta montana dei suoli mesici
+      GM0: beech  # Faggeta altimontana tipica
+      GM0a: beech  # Faggeta altimontana tipica, var. dei suoli acidi carbonatici
+      GM0l: beech  # Faggeta altimontana tipica, var. con larice
+      GM0r: beech  # Faggeta altimontana tipica, var. con abete rosso
+      GN0: beech  # Faggeta subalpina
+      GO0: beech  # Faggeta altimontana dei substrati silicatici
+      GO0c: beech  # Faggeta altimontana dei substrati silicatici variante a calamagrostide
+      GO0f: beech  # Faggeta altimontana dei substrati silicatici, var. a megaforbie
+      GP1: beech  # Faggeta primitiva di rupe
+      GP2: beech  # Faggeta primitiva di falda detritica
+      Gl0: beech  # Faggeta montana dei suoli mesici
+      # H mughete
+      HA0: transitional_woodland_shrub  # Mugheta macroterma
+      HB1: transitional_woodland_shrub  # Mugheta mesoterma esomesalpica
+      HB2: transitional_woodland_shrub  # Mugheta mesoterma mesoendalpica
+      HC1: transitional_woodland_shrub  # Mugheta microterma dei suoli basici
+      HC2: transitional_woodland_shrub  # Mugheta microterma dei suoli acidi carbonatici
+      Hc1: transitional_woodland_shrub  # Mugheta microterma dei suoli basici
+      # I pinete di pino nero e pino silvestre
+      IA1: mountain_pine  # Pineta di pino nero primitiva di rupe
+      IA2: mountain_pine  # Pineta di pino nero primitiva di falda detritica
+      IB0: mountain_pine  # Pineta di pino nero tipica
+      IB0m: mountain_pine  # Pineta di pino nero tipica, var. mesalpica
+      IC0: mountain_pine  # Pineta di pino nero submontana con ostria
+      ID0: mountain_pine  # Pineta di pino nero con faggio
+      IE0: mountain_pine  # Pineta di pino nero montana con pino silvestre
+      IE0l: mountain_pine  # Pineta di pino nero montana con pino silvestre, var. con larice
+      IF1: mountain_pine  # Pineta di pino silvestre primitiva di rupe esalpica
+      IF2: mountain_pine  # Pineta di pino silvestre primitiva di falda detritica
+      IG1: mountain_pine  # Pineta di pino silvestre esalpica tipica
+      IG1s: mountain_pine  # Pineta di pino silvestre esalpica tipica, var. submontana
+      IG2: mountain_pine  # Pineta di pino silvestre esalpica con faggio
+      IH1: mountain_pine  # Pineta di pino silvestre mesalpica tipica/primitiva
+      IH1g: mountain_pine  # Pineta di pino silvestre mesalpica tipica, var. su substrati gessosi
+      IH2: mountain_pine  # Pineta di pino silvestre mesalpica con faggio e abete rosso
+      XD/CC0: mountain_pine  # Pineta di pino silvestre esalpica con faggio
+      # J formazioni golenali
+      J1: riparian  # Saliceto golenale di salice bianco
+      J1b: riparian  # Saliceto golenale di salice bianco, var. con ontano nero
+      J2: riparian  # Pioppeto golenale di pioppo nero
+      J4: riparian  # Saliceto golenale arbustivo
+      J4a: riparian  # Saliceto golenale arbustivo, var. a Salix triandra
+      J4b: riparian  # Saliceto golenale arbustivo, var. a Salix purpurea
+      # L piceo-faggeti
+      LA0: mixed_broadleaf_conifer  # Piceo-faggeto primitivo
+      LB0: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli xerici
+      LB0a: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli xerici, var. con abete bianco
+      LB0g: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli xerici, var. su substrati gessosi
+      LB0l: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli xerici, var. con larice
+      LC1: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici carbonatici montano
+      LC1a: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici carbonatici montano, var. con abete bianco
+      LC1g: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici carbonatici montano, var. su substrati gessosi
+      LC1l: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici carbonatici montano, var. con larice
+      LC2: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici carbonatici altimontano
+      LC2a: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici carbonatici altimontano, var. con abete bianco
+      LC2l: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici carbonatici altimontano, var. con larice
+      LD0: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli acidi
+      LD0b: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli acidi, var. bassomontana
+      LE1: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici montano
+      LE1b: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici montano, var. bassomontana
+      LE1i: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici montano, var. idrica
+      LE2: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici altimontano
+      ST/GH2: mixed_broadleaf_conifer  # Piceo-faggeto dei suoli mesici montano
+      # M abieteti e piceo-abieteti
+      MA1: fir_spruce  # Abieteto esalpico submontano
+      MA2: fir_spruce  # Abieteto esalpico montano
+      MB1: mixed_broadleaf_conifer  # Abieti-piceo-faggeto dei substrati carbonatici montano
+      MB1b: mixed_broadleaf_conifer  # Abieti-piceo-faggeto dei substrati carbonatici montano, var. bassomontana
+      MB2: mixed_broadleaf_conifer  # Abieti-piceo-faggeto dei substrati carbonatici altimontano
+      MC1: mixed_broadleaf_conifer  # Abieti-piceo-faggeto dei suoli mesici montano
+      MC1b: mixed_broadleaf_conifer  # Abieti-piceo-faggeto dei suoli mesici montano, var. bassomontana
+      MC2: mixed_broadleaf_conifer  # Abieti-piceo-faggeto dei suoli mesici altimontano
+      MD0: mixed_broadleaf_conifer  # Abieti-piceo-faggeto altimontano dei suoli acidi
+      MD0m: mixed_broadleaf_conifer  # Abieti-piceo-faggeto altimontano dei suoli acidi, var. montana
+      ME1: fir_spruce  # Piceo-abieteto dei substrati carbonatici dei suoli mesici carbonatici
+      ME1m: fir_spruce  # Piceo-abieteto dei substrati carbonatici dei suoli mesici carbonatici, var. microterma
+      ME1x: fir_spruce  # Piceo-abieteto dei substrati carbonatici dei suoli mesici carbonatici, var. dei suoli xerici
+      ME2: fir_spruce  # Piceo-abieteto dei substrati carbonatici dei substrati gessosi
+      MF1: fir_spruce  # Piceo-abieteto dei suoli mesici submontano
+      MF2: fir_spruce  # Piceo-abieteto dei suoli mesici bassomontano
+      MF3: fir_spruce  # Piceo-abieteto dei suoli mesici montano
+      MF3i: fir_spruce  # Piceo-abieteto dei suoli mesici montano, var. dei suoli mesoidrici
+      MF3m: fir_spruce  # Piceo-abieteto dei suoli mesici montano, var. microterma
+      MF4: fir_spruce  # Piceo-abieteto dei suoli mesici altimontano
+      MF4f: fir_spruce  # Piceo-abieteto dei suoli mesici altimontano, var. a megaforbie
+      MG1: fir_spruce  # Piceo-abieteto dei suoli acidi montano
+      MG1b: fir_spruce  # Piceo-abieteto dei suoli acidi montano, var. bassomontana
+      MG2: fir_spruce  # Piceo-abieteto dei suoli acidi altimontano
+      MH: fir_spruce  # Abieteto dei substrati carbonatici
+      MI: fir_spruce  # Abieteto dei substrati silicatici
+      ML1: fir_spruce  # Abieteto dei suoli mesici tipico
+      ML2: fir_spruce  # Abieteto dei suoli mesici tipico
+      # N peccete
+      NA1: fir_spruce  # Pecceta dei substrati carbonatici altimontana
+      NA1i: fir_spruce  # Pecceta dei substrati carbonatici altimontana variante dei suoli mesoidrici
+      NA1l: fir_spruce  # Pecceta dei substrati carbonatici altimontana, var. con larice
+      NA1m: fir_spruce  # Pecceta dei substrati carbonatici altimontana, var. montana
+      NA1x: fir_spruce  # Pecceta dei substrati carbonatici altimontana, var. dei suoli xerici
+      NA2: fir_spruce  # Pecceta dei substrati carbonatici subalpina
+      NB1: fir_spruce  # Pecceta montana dei suoli acidi tipica
+      NB1m: fir_spruce  # Pecceta montana dei suoli acidi tipica, var. microterma
+      NB2: fir_spruce  # Pecceta montana dei suoli acidi in successione con faggeta
+      NC0: fir_spruce  # Pecceta altimontana e subalpina dei substrati silicatici
+      NC0c: fir_spruce  # Pecceta altimontana e subalpina dei substrati silicatici, var. a calamagrostide
+      NC0f: fir_spruce  # Pecceta altimontana e subalpina dei substrati silicatici, var. a megaforbie
+      NC0s: fir_spruce  # Pecceta altimontana e subalpina dei substrati silicatici, var. a sfagni
+      ND1: fir_spruce  # Pecceta di sostituzione dei substrati gessosi
+      ND2: fir_spruce  # Pecceta di sostituzione dei suoli mesici
+      ND2n: fir_spruce  # Pecceta di sostituzione dei suoli mesici, var. ad evoluzione non prevedibile
+      ND3: fir_spruce  # Pecceta di sostituzione dei suoli acidi
+      NE0: fir_spruce  # Pecceta secondaria submontana
+      NE1: fir_spruce  # Pecceta secondaria montana
+      NE2: fir_spruce  # Pecceta secondaria altimontana
+      NF1: fir_spruce  # Pecceta azonale su alluvioni
+      NF2: fir_spruce  # Pecceta azonale ad asplenio
+      # O lariceti
+      OA0: other_conifer  # Lariceto primitivo
+      OB: other_conifer  # Lariceto tipico
+      OB1: other_conifer  # Lariceto tipico dei substrati carbonatici
+      OB2: other_conifer  # Lariceto tipico dei substrati silicatici
+      OB2f: other_conifer  # Lariceto tipico dei substrati silicatici, var. a megaforbie
+      OB3: other_conifer  # Lariceto in successione con pecceta
+      # P alnete
+      PA0: transitional_woodland_shrub  # Alneta di ontano verde
+      PB0: riparian  # Formazioni extra ripariali di ontano bianco
+      PC0: riparian  # Alneta di ontano nero collinare
+      # Q saliceti ed altre formazioni particolari
+      QA1: mixed_broadleaf  # Saliceto a Salix caprea
+      QA2: riparian  # Saliceto a Salix cinerea
+      QA5: transitional_woodland_shrub  # Saliceto a Salix waldsteiniana
+      QD0: mixed_broadleaf  # Formazioni a pioppo tremulo
+      QZ: riparian  # Formazioni golenali e ripariali
+      XD/CE0: transitional_woodland_shrub  # Saliceto a Salix waldsteiniana
+      # R robinieti
+      RA: exotic_broadleaf  # Robinieto puro su formazioni originarie non individuabili
+      RA/: exotic_broadleaf  # Robinieto misto
+      RA/BA0: exotic_broadleaf  # Robinieto misto su querco-carpineto planiziale
+      RA/BB0: exotic_broadleaf  # Robinieto misto su querco-carpineto collinare
+      RA/BC0: exotic_broadleaf  # Robinieto misto su carpineto tipico
+      RA/CA1: exotic_broadleaf  # Robinieto misto su rovereto tipico carsico
+      RA/CA2: exotic_broadleaf  # Robinieto misto su rovereto tipico collinare
+      RA/CB0: exotic_broadleaf  # Robinieto misto su rovereto dei suoli acidi
+      RA/CB0f: exotic_broadleaf  # Robinieto misto su rovereto dei suoli acidi, var. con faggio
+      RA/CC0: exotic_broadleaf  # Robinieto misto su castagneto dei suoli xerici
+      RA/CD0: exotic_broadleaf  # Robinieto misto su castagneto dei suoli mesici
+      RA/CE0: exotic_broadleaf  # Robinieto misto su castagneto con frassino
+      RA/CF0: exotic_broadleaf  # Robinieto misto su castagneto dei suoli acidi
+      RA/DB0: exotic_broadleaf  # Robinieto misto su orno-ostrieto tipico
+      RA/DB0c: exotic_broadleaf  # Robinieto misto su orno-ostrieto tipico, var. con carpino bianco
+      RA/DC1: exotic_broadleaf  # Robinieto misto su ostrio-querceto tipico
+      RA/DC1r: exotic_broadleaf  # Robinieto misto su ostrio-querceto tipico, var. con rovere
+      RA/DC2: exotic_broadleaf  # Robinieto misto su ostrio-querceto a scotano
+      RA/EA0: exotic_broadleaf  # Robinieto misto su aceri-tiglieto
+      RA/EC0: exotic_broadleaf  # Robinieto misto su aceri-frassineto tipico
+      RA/ED0: exotic_broadleaf  # Robinieto misto su aceri-frassineto con faggio
+      RA/J1: exotic_broadleaf  # Robinieto misto su saliceto golenale di salice bianco
+      RA/J1b: exotic_broadleaf  # Robinieto misto su saliceto golenale di salice bianco, var. con ontano nero
+      RA/J2: exotic_broadleaf  # Robinieto misto su pioppeto golenale di pioppo nero
+      RA/PC0: exotic_broadleaf  # Robinieto misto su formazione planiziale di ontano nero
+      RA/T1: exotic_broadleaf  # Robinieto misto su ulmo-frassineto meridionale dei terrazzi fluviali e delle risorgive
+      RA/T2: exotic_broadleaf  # Robinieto misto su ulmo-frassineto maggiore dei terrazzi fluviali
+      RA/T3: exotic_broadleaf  # Robinieto misto su frassineto dei terrazzi fluviali
+      RA/T4: exotic_broadleaf  # Robinieto misto su carpino-frassineto maggiore dei terrazzi fluviali
+      RA/T8: exotic_broadleaf  # Robinieto misto su ostrieto di scarpata fluviale
+      RA/U2: exotic_broadleaf  # Robinieto misto su alneto palustre di ontano nero
+      RB/: exotic_broadleaf  # Formazioni di platano
+      # S rimboschimenti
+      S/: other_conifer  # Rimboschimento di cipresso
+      SI/: mountain_pine  # Rimboschimento di pino
+      SI/DB0: mountain_pine  # Rimboschimento di pino su orno-ostrieto tipico
+      SI/DB0c: mountain_pine  # Rimboschimento di pino su orno-ostrieto tipico, var. con carpino bianco
+      SI/DC1: mountain_pine  # Rimboschimento di pino su ostrio-querceto tipico
+      SI/DC2: mountain_pine  # Rimboschimento di pino su ostrio-querceto a scotano
+      SI/EA0: mountain_pine  # Rimboschimento di pino su aceri-tiglieto
+      SI/GA0: mountain_pine  # Rimboschimento di pino su faggeta submontana con ostria
+      SI/GB0: mountain_pine  # Rimboschimento di pino su faggeta submontana tipica
+      SI/GH1: mountain_pine  # Rimboschimento di pino silvestre su faggeta montana tipica esalpica
+      SI/IB0: mountain_pine  # Rimboschimento di pino su pineta di pino nero tipica
+      SI/IC0: mountain_pine  # Rimboschimento di pino su pineta di pino nero submontana con ostria
+      SI/XE: mountain_pine  # Rimboschimento di pino silvestre su neocolonizzazione esalpica
+      SN/: fir_spruce  # Rimboschimento di abete rosso
+      SN/BC0: fir_spruce  # Rimboschimento di abete rosso su carpineto tipico
+      SN/BC0f: fir_spruce  # Rimboschimento di abete rosso su carpineto tipico, var. con faggio
+      SN/BD0: fir_spruce  # Rimboschimento di abete rosso su carpineto con frassino
+      SN/CB0: fir_spruce  # Rimboschimento di abete rosso su rovereto dei suoli acidi
+      SN/CB0i: fir_spruce  # Rimboschimento di abete rosso su rovereto dei suoli acidi, var. esalpica interna
+      SN/CD0: fir_spruce  # Rimboschimento di abete rosso su castagneto dei suoli mesici
+      SN/DB0: fir_spruce  # Rimboschimento di abete rosso su orno-ostrieto tipico
+      SN/DB0c: fir_spruce  # Rimboschimento di abete rosso su orno-ostrieto tipico, var. con carpino bianco
+      SN/DC1: fir_spruce  # Rimboschimento di abete rosso su ostrio-querceto tipico
+      SN/DC1r: fir_spruce  # Rimboschimento di abete rosso su ostrio-querceto tipico, var. con rovere
+      SN/EA0: fir_spruce  # Rimboschimento di abete rosso su aceri-tiglieto
+      SN/EB0: fir_spruce  # Rimboschimento di abete rosso su aceri-frassineto con ostria
+      SN/EC0: fir_spruce  # Rimboschimento di abete rosso su aceri-frassineto tipico
+      SN/EC0i: fir_spruce  # Rimboschimento di abete rosso su aceri-frassineto tipico, var. esalpica interna
+      SN/ED0: fir_spruce  # Rimboschimento di abete rosso su aceri-frassineto con faggio
+      SN/FB2: fir_spruce  # Rimboschimento di abete rosso su corileto mesotermo
+      SN/GA0: fir_spruce  # Rimboschimento di abete rosso su faggeta submontana con ostria
+      SN/GB0: fir_spruce  # Rimboschimento di abete rosso su faggeta submontana tipica
+      SN/GC0: fir_spruce  # Rimboschimento di abete rosso su faggeta submontana dei suoli mesici carbonatici
+      SN/GC0c: fir_spruce  # Rimboschimento di abete rosso su faggeta submontana dei suoli mesici carbonatici, var. con carpino bianco
+      SN/GE0: fir_spruce  # Rimboschimento di abete rosso su faggeta submontana dei suoli mesici silicatici
+      SN/GH1: fir_spruce  # Rimboschimento di abete rosso su faggeta montana tipica esalpica
+      SN/GH1a: fir_spruce  # Rimboschimento di abete rosso su faggeta montana tipica esalpica, var. con abete bianco
+      SN/GH2: fir_spruce  # Rimboschimento di abete rosso su faggeta montana tipica mesalpica
+      SN/GI0: fir_spruce  # Rimboschimento di abete rosso su faggeta montana dei suoli acidi
+      SN/GL0: fir_spruce  # Rimboschimento di abete rosso su faggeta dei suoli mesici
+      SN/IB0: fir_spruce  # Rimboschimento di abete rosso su pineta di pino nero tipica
+      SN/IC0: fir_spruce  # Rimboschimento di abete rosso su pineta di pino nero submontana con ostria
+      SN/IG1: fir_spruce  # Rimboschimento di abete rosso su pineta di pino silvestre tipica esalpica
+      SN/IG1s: fir_spruce  # Rimboschimento di abete rosso su pineta di pino silvestre esalpica tipica, var. submontana
+      SN/IH1: fir_spruce  # Rimboschimento di abete rosso su pineta di pino silvestre mesalpica tipica
+      SN/LB0l: fir_spruce  # Rimboschimento di abete rosso su piceo-faggeto dei suoli xerici, var. con larice
+      SN/LC1: fir_spruce  # Rimboschimento di abete rosso su piceo-faggeto dei suoli mesici carbonatici montano
+      SN/LC1g: fir_spruce  # Rimboschimento di abete rosso su piceo-faggeto dei suoli mesici carbonatici montano, var. su substrati ge
+      SN/LD0: fir_spruce  # Rimboschimento di abete rosso su piceo-faggeto dei suoli acidi
+      SN/LE1: fir_spruce  # Rimboschimento di abete rosso su piceo-faggeto dei suoli mesici montano
+      SN/LE1b: fir_spruce  # Rimboschimento di abete rosso su piceo-faggeto dei suoli mesici montano, var. bassomontana
+      SN/MB1: fir_spruce  # Rimboschimento di abete rosso su abieti-piceo-faggeto dei substrati carbonatici montano
+      SN/MC1: fir_spruce  # Rimboschimento di abete rosso su abieti-piceo-faggeto dei suoli mesici montano
+      SN/MF1: fir_spruce  # Rimboschimento di abete rosso su piceo-abieteto dei suoli mesici submontano
+      SN/MF3: fir_spruce  # Rimboschimento di abete rosso su piceo-abieteto dei suoli mesici montano
+      SN/NC0: fir_spruce  # Rimboschimento di abete rosso su pecceta altimontana e subalpina dei substrati silicatici
+      SN/ND2: fir_spruce  # Rimboschimento di abete rosso su pecceta di sostituzione dei suoli mesici
+      SN/NE1: fir_spruce  # Rimboschimento di abete rosso su pecceta secondaria montana
+      SN/NE2: fir_spruce  # Rimboschimento di abete rosso su pecceta secondaria altimontana
+      SN/XE: fir_spruce  # Rimboschimento di abete rosso su neocolonizzazione esalpica
+      SN/XQ: fir_spruce  # Rimboschimento di abete rosso su neocolonizzazione a prevalenza di salici ed altre specie ripariali
+      SO/: other_conifer  # Rimboschimento di larice
+      SO/DB0: other_conifer  # Rimboschimento di larice su orno-ostrieto tipico
+      SO/EC0: other_conifer  # Rimboschimento di larice su aceri-frassineto tipico
+      SO/EC0i: other_conifer  # Rimboschimento di larice su aceri-frassineto tipico, var. esalpica interna
+      SO/FB2: other_conifer  # Rimboschimento di larice su corileto mesotermo
+      SO/GH1: other_conifer  # Rimboschimento di larice su faggeta montana tipica esalpica
+      SO/LC1: other_conifer  # Rimboschimento di larice su piceo-faggeto dei suoli mesici carbonatici montano
+      SO/LD0: other_conifer  # Rimboschimento di larice su piceo-faggeto dei suoli acidi
+      SO/NB1: other_conifer  # Rimboschimento di larice su pecceta montana dei suoli acidi tipica
+      SO/ND2: other_conifer  # Rimboschimento di larice su pecceta di sostituzione dei suoli mesici
+      SO/NE1: other_conifer  # Rimboschimento di larice su pecceta secondaria montana
+      ST/: other_conifer  # Rimboschimento plurispecifico di conifere
+      ST/AB0: other_conifer  # Rimboschimento plurispecifico di conifere su lecceta con pino nero
+      ST/BB0: other_conifer  # Rimboschimento plurispecifico di conifere su querco-carpineto collinare
+      ST/BC0: other_conifer  # Rimboschimento plurispecifico di conifere su carpineto tipico
+      ST/CA2: other_conifer  # Rimboschimento plurispecifico di conifere su rovereto tipico collinare
+      ST/CB0: other_conifer  # Rimboschimento plurispecifico di conifere su rovereto dei suoli acidi
+      ST/CC0: other_conifer  # Rimboschimento plurispecifico di conifere su castagneto dei suoli xerici
+      ST/CD0: other_conifer  # Rimboschimento plurispecifico di conifere su castagneto dei suoli mesici
+      ST/CF0: other_conifer  # Rimboschimento plurispecifico di conifere su castagneto dei suoli acidi
+      ST/DB0: other_conifer  # Rimboschimento plurispecifico di conifere su orno-ostrieto tipico
+      ST/DC1: other_conifer  # Rimboschimento plurispecifico di conifere su ostrio-querceto tipico
+      ST/DC1r: other_conifer  # Rimboschimento plurispecifico di conifere su ostrio-querceto tipico, var. con rovere
+      ST/DC2: other_conifer  # Rimboschimento plurispecifico di conifere su ostrio-querceto a scotano
+      ST/EA0: other_conifer  # Rimboschimento plurispecifico di conifere su aceri-tiglieto
+      ST/EC0: other_conifer  # Rimboschimento plurispecifico di conifere su aceri-frassineto tipico
+      ST/GA0: other_conifer  # Rimboschimento plurispecifico di conifere su faggeta submontana con ostria
+      ST/GB0: other_conifer  # Rimboschimento plurispecifico di conifere su faggeta submontana tipica
+      ST/GC0: other_conifer  # Rimboschimento plurispecifico di conifere su faggeta submontana dei suoli mesici carbonatici
+      ST/GE0: other_conifer  # Rimboschimento plurispecifico di conifere su faggeta submontana dei suoli mesici silicatici
+      ST/GH1: other_conifer  # Rimboschimento plurispecifico di conifere su faggeta montana tipica esalpica
+      ST/GH1r: other_conifer  # Rimboschimento plurispecifico di conifere su faggeta montana tipica esalpica, var. con abete rosso
+      ST/LB0g: other_conifer  # Rimboschimento plurispecifico di conifere su piceo-faggeto dei suoli xerici, var. su substrati gessosi
+      ST/T4: other_conifer  # Rimboschimento plurispecifico di conifere su carpino-frassineto maggiore dei terrazzi fluviali
+      ST/XD: other_conifer  # Rimboschimento plurispecifico di conifere su neocolonizzazione avanalpica
+      SU/: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie
+      SU/BA0: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie su querco-carpineto planiziale
+      SU/BB0: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie su querco-carpineto collinare
+      SU/BD0: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie su carpineto con frassino
+      SU/DB0: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie su orno-ostrieto tipico
+      SU/EA0: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie su aceri-tiglieto
+      SU/EC0: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie su aceri-frassineto tipico
+      SU/J2: mixed_broadleaf  # Rimboschimento plurispecifico di latifoglie su pioppeto golenale di pioppo nero
+      # T formazioni dei terrazzi fluviali
+      T1: riparian  # Ulmo-frassineto meridionale dei terrazzi fluviali e delle risorgive
+      T2: riparian  # Ulmo-frassineto maggiore dei terrazzi fluviali
+      T3: riparian  # Frassineto dei terrazzi fluviali
+      T3a: riparian  # Frassineto dei terrazzi fluviali, var. con tigli
+      T4: riparian  # Carpino-frassineto maggiore dei terrazzi fluviali
+      T4a: riparian  # Carpino-frassineto maggiore dei terrazzi fluviali, var. a nocciolo
+      T4c: riparian  # Carpino-frassineto maggiore dei terrazzi fluviali, var. con ostria
+      T5: mountain_pine  # Pineta di pino silvestre dei terrazzi fluviali
+      T5b: mountain_pine  # Pineta di pino silvestre dei terrazzi fluviali, var. dei suoli meso-xerici
+      T6: mountain_pine  # Pineta di pino nero dei terrazzi fluviali
+      T8: mixed_broadleaf  # Ostrieto di scarpata fluviale
+      T8a: mixed_broadleaf  # Ostrieto di scarpata fluviale, var. a pero corvino
+      T8b: mixed_broadleaf  # Ostrieto di scarpata fluviale, var. con roverella
+      # U formazioni palustri
+      U1: riparian  # Saliceto palustre di salice bianco
+      U2: riparian  # Alneto palustre di ontano nero
+      U3: riparian  # Frassineto palustre di frassino meridionale
+      U4: riparian  # Saliceto palustre a Salix cinerea
+      # X neocolonizzazioni
+      X/: mixed_broadleaf_conifer  # Neocolonizzazione mista latifoglie-conifere
+      X/DC2: mixed_broadleaf  # Neocolonizzazione si ostrio querceto a scotano
+      X/DC2a: mixed_broadleaf  # Neocolonizzazione su ostrio querceto a scotano var. con acero campestre
+      X/DC2c: mixed_broadleaf  # Neocolonizzazione su ostrio querceto a scotano var. con cerro
+      X/DC2t: mixed_broadleaf  # Neocolonizzazione su ostrio-querceto a scotano, var. a terebinto
+      XB/: mixed_broadleaf  # Neocolonizzazione planiziale
+      XB/BA0: mixed_broadleaf  # Neocolonizzazione planiziale tendente al querco-carpineto planiziale
+      XB/DB0: mixed_broadleaf  # Neocolonizzazione planiziale tendente all'orno-ostrieto tipico
+      XC/: mixed_broadleaf  # Neocolonizzazione collinare
+      XC/BB0: mixed_broadleaf  # Neocolonizzazione collinare tendente al querco-carpineto collinare
+      XC/BC0: mixed_broadleaf  # Neocolonizzazione collinare tendente al carpineto tipico
+      XC/DB0: mixed_broadleaf  # Neocolonizzazione collinare tendente all'orno-ostrieto tipico
+      XC/DC1: mixed_broadleaf  # Neocolonizzazione collinare tendente all'ostrio-querceto tipico
+      XC/EC0: mixed_broadleaf  # Neocolonizzazione collinare tendente all'aceri-frassineto tipico
+      XD/: mixed_broadleaf  # Neocolonizzazione avanalpica su formazioni originarie non individuabili
+      XD/BB0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente al querco-carpineto collinare
+      XD/BC0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente al carpineto tipico
+      XD/BD0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente al carpineto con frassino
+      XD/CD0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente al castagneto dei suoli mesici
+      XD/DB0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente all'orno-ostrieto tipico
+      XD/DB0c: mixed_broadleaf  # Neocolonizzazione avanalpica tendente all'orno-ostrieto tipico, var. con carpino bianco
+      XD/DC1: mixed_broadleaf  # Neocolonizzazione avanalpica tendente all'ostrio-querceto tipico
+      XD/EA0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente all'aceri-tiglieto
+      XD/EB0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente all'acero-frassineto con ostria
+      XD/EC0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente all'aceri-frassineto tipico
+      XD/GA0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente alla faggeta submontana con ostria
+      XD/GE0: mixed_broadleaf  # Neocolonizzazione avanalpica tendente alla faggeta submontana dei suoli mesici silicatici
+      XD/IG1s: mixed_broadleaf  # Neocolonizzazione avanalpica tendente alla pineta di pino silvestre esalpica tipica, var. submontana
+      XE/: mixed_broadleaf  # Neocolonizzazione esalpica
+      XE/BD0: mixed_broadleaf  # Neocolonizzazione esalpica tendente al carpineto con frassino
+      XE/CD0: mixed_broadleaf  # Neocolonizzazione esalpica tendente al castagneto dei suoli mesici
+      XE/DB0: mixed_broadleaf  # Neocolonizzazione esalpica tendente all'orno-ostrieto tipico
+      XE/DC1: mixed_broadleaf  # Neocolonizzazione esalpica tendente all'ostrio-querceto tipico
+      XE/EA0: mixed_broadleaf  # Neocolonizzazione esalpica tendente all'aceri-tiglieto
+      XE/EC0: mixed_broadleaf  # Neocolonizzazione esalpica tendente all'aceri-frassineto tipico
+      XE/EC0i: mixed_broadleaf  # Neocolonizzazione esalpica tendente all'aceri-frassineto tipico, var. esalpica interna
+      XE/EE0: mixed_broadleaf  # Neocolonizzazione esalpica tendente all'aceri-frassineto con ontano nero
+      XE/GA0: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla faggeta submontana con ostria
+      XE/GB0: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla faggeta submontana tipica
+      XE/GE0: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla faggeta submontana dei suoli mesici silicatici
+      XE/GG0: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla faggeta montana dei suoli xerici
+      XE/GH1: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla faggeta montana tipica esalpica
+      XE/GL0: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla faggeta montana dei suoli mesici
+      XE/GM0l: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla faggeta altimontana tipica, var. con larice
+      XE/ID0: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla pineta di pino nero con faggio
+      XE/IE0: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla pineta di pino nero montana con pino silvestre
+      XE/IG1: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla pineta di pino silvestre esalpica tipica
+      XE/IG1s: mixed_broadleaf  # Neocolonizzazione esalpica tendente alla pineta di pino silvestre esalpica tipica, var. submontana
+      XF/: mixed_broadleaf  # Neocolonizzazione mesalpica
+      XF/DC1r: mixed_broadleaf  # Neocolonizzazione mesalpica tendente all'ostrio-querceto tipico, var. con rovere
+      XF/EC0i: mixed_broadleaf  # Neocolonizzazione mesalpica tendente all'aceri-frassineto, var. esalpica interna
+      XF/GH2: mixed_broadleaf  # Neocolonizzazione mesalpica tendente alla faggeta montana tipica mesalpica
+      XF/GI0: mixed_broadleaf  # Neocolonizzazione mesalpica tendente alla faggeta montana dei suoli acidi
+      XF/IH2: mixed_broadleaf  # Neocolonizzazione mesalpica tendente alla pineta di pino silvestre mesalpica con faggio e abete rosso
+      XF/LB0: mixed_broadleaf  # Neocolonizzazione mesalpica tendente al piceo-faggeto dei suoli xerici
+      XF/LC1: mixed_broadleaf  # Neocolonizzazione mesalpica tendente al piceo-faggeto dei suoli mesici carbonatici montano
+      XF/LE1b: mixed_broadleaf  # Neocolonizzazione mesalpica tendente al piceo-faggeto dei suoli mesici montano, var. bassomontana
+      XF/LE2: mixed_broadleaf  # Neocolonizzazione mesalpica tendente al piceo-faggeto dei suoli mesici altimontano
+      XF/MB1: mixed_broadleaf  # Neocolonizzazione mesalpica tendente all'abieti-piceo-faggeto dei substrati carbonatici montano
+      XF/NA1: mixed_broadleaf  # Neocolonizzazione mesalpica tendente alla pecceta dei substrati carbonatici altimontana
+      XF/NC0: mixed_broadleaf  # Neocolonizzazione mesalpica tendente alla pecceta altimontana e subalpina dei substrati silicatici
+      XF/NF1: mixed_broadleaf  # Neocolonizzazione mesalpica tendente alla pecceta azonale su alluvioni
+      XN/: fir_spruce  # Neocolonizzazione a prevalenza di abete rosso
+      XO/: other_conifer  # Neocolonizzazione a prevalenza di larice
+      XQ/: riparian  # Neocolonizzazione a prevalenza di salici ed altre specie ripariali
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Friuli-Venezia Giulia,
+# IT", admin level 10) on 2026-09-27. GBIF history is paged over bbox_wgs84 and clipped to the grid
+# afterwards.
+sightings:
+  inaturalist_place_id: 10869
