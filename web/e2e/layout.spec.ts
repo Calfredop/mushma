@@ -173,6 +173,7 @@ for (const [width, height] of [
       await page.getByRole('button', { name: 'Rifiuta' }).click()
 
       const species = page.getByRole('radiogroup', { name: 'Specie' })
+      const region = page.getByRole('button', { name: 'Regione' })
       const strip = page.getByRole('radiogroup', { name: 'Giorno' })
       const legend = page.getByRole('button', { name: 'Legenda' })
       const cluster = [
@@ -183,11 +184,16 @@ for (const [width, height] of [
       await expect(strip).toBeVisible()
 
       const box = async (locator: typeof strip) => (await locator.boundingBox())!
+      const regionBox = await box(region)
       const speciesBox = await box(species)
-      // Every species is whole inside the pill: none scrolled or clipped away.
+      // Region and species share one row: region first, then the species pill.
+      expect(Math.abs(regionBox.y - speciesBox.y)).toBeLessThan(8)
+      expect(speciesBox.x).toBeGreaterThanOrEqual(regionBox.x + regionBox.width - 0.5)
+      // Options may overflow and scroll inside the pill; each one fits once scrolled into view.
       for (const radio of await species.getByRole('radio').all()) {
+        await radio.scrollIntoViewIfNeeded()
         const radioBox = await box(radio)
-        expect(radioBox.x).toBeGreaterThanOrEqual(speciesBox.x)
+        expect(radioBox.x).toBeGreaterThanOrEqual(speciesBox.x - 0.5)
         expect(radioBox.x + radioBox.width).toBeLessThanOrEqual(
           speciesBox.x + speciesBox.width + 0.5,
         )
