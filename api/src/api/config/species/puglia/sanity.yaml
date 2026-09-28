@@ -1,0 +1,424 @@
+# Press-contrast sanity check for Puglia (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names, all in Puglia; note ISTAT's "San Nicandro Garganico") or
+# provinces (ISTAT sigle; '*' is the whole region). Windows and source URLs written down on
+# 2026-09-28, before any Puglia score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Puglia local press does not say how a porcini season went: it reports cardoncelli (Pleurotus
+# eryngii, out of scope), picking courses, lost pickers and giant finds. All thirteen contrasts
+# rest on Funghi Magazine's national bulletins (read through Wayback Machine captures; the live
+# site blocks scripts), whose Puglia lines come from readers' reports and are often one sentence,
+# region-wide or about the "Foggiano"; most contrasts draw on 2-4 bulletins. Cardoncello lines
+# were not used as evidence. No source covers 2016-2017. Quotes, second sources and weaknesses per contrast:
+# .gavin-root/docs/species-ecology/puglia.md (Sanity contrasts).
+areas:
+  puglia:
+    provinces:
+    - '*'
+  gargano:
+    comuni:
+    - Vico del Gargano
+    - Monte Sant'Angelo
+    - Ischitella
+    - Carpino
+    - Cagnano Varano
+    - San Marco in Lamis
+    - San Giovanni Rotondo
+    - Rignano Garganico
+    - San Nicandro Garganico
+    - Vieste
+    - Peschici
+    - Mattinata
+    - Rodi Garganico
+    - Manfredonia
+  monti_dauni:
+    comuni:
+    - Faeto
+    - Biccari
+    - Roseto Valfortore
+    - Alberona
+    - Pietramontecorvino
+    - Celle di San Vito
+    - Bovino
+    - Deliceto
+    - Accadia
+    - Sant'Agata di Puglia
+    - Orsara di Puglia
+    - Monteleone di Puglia
+    - Anzano di Puglia
+    - Castelluccio Valmaggiore
+    - Volturara Appula
+    - Motta Montecorvino
+    - Volturino
+    - Casalnuovo Monterotaro
+    - Celenza Valfortore
+    - Carlantino
+    - San Marco la Catola
+    - Casalvecchio di Puglia
+    - Panni
+    - Castelnuovo della Daunia
+    - Rocchetta Sant'Antonio
+  gargano_dauni:
+    comuni:
+    - Vico del Gargano
+    - Monte Sant'Angelo
+    - Ischitella
+    - Carpino
+    - Cagnano Varano
+    - San Marco in Lamis
+    - San Giovanni Rotondo
+    - Rignano Garganico
+    - San Nicandro Garganico
+    - Vieste
+    - Peschici
+    - Mattinata
+    - Rodi Garganico
+    - Manfredonia
+    - Faeto
+    - Biccari
+    - Roseto Valfortore
+    - Alberona
+    - Pietramontecorvino
+    - Celle di San Vito
+    - Bovino
+    - Deliceto
+    - Accadia
+    - Sant'Agata di Puglia
+    - Orsara di Puglia
+    - Monteleone di Puglia
+    - Anzano di Puglia
+    - Castelluccio Valmaggiore
+    - Volturara Appula
+    - Motta Montecorvino
+    - Volturino
+    - Casalnuovo Monterotaro
+    - Celenza Valfortore
+    - Carlantino
+    - San Marco la Catola
+    - Casalvecchio di Puglia
+    - Panni
+    - Castelnuovo della Daunia
+    - Rocchetta Sant'Antonio
+  arco_ionico:
+    comuni:
+    - Ginosa
+    - Laterza
+    - Castellaneta
+    - Palagianello
+    - Mottola
+    - Massafra
+    - Putignano
+  murge:
+    comuni:
+    - Altamura
+    - Gravina in Puglia
+    - Ruvo di Puglia
+    - Minervino Murge
+    - Spinazzola
+    - Andria
+    - Corato
+    - Cassano delle Murge
+    - Santeramo in Colle
+    - Acquaviva delle Fonti
+    - Toritto
+    - Grumo Appula
+    - Bitonto
+    - Poggiorsini
+    - Gioia del Colle
+    - Noci
+    - Alberobello
+    - Locorotondo
+    - Putignano
+    - Martina Franca
+    - Mottola
+    - Crispiano
+    - Cisternino
+  salento:
+    provinces:
+    - LE
+    - BR
+    excluding:
+    - Fasano
+    - Cisternino
+    - Ceglie Messapica
+    - Ostuni
+    - Villa Castelli
+  murge_taranto_salento:
+    provinces:
+    - TA
+    - LE
+    - BR
+    comuni:
+    - Noci
+    - Alberobello
+    - Locorotondo
+    - Putignano
+    - Gioia del Colle
+    - Monopoli
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: puglia_early_june_2020_vs_2018_2021
+  claim: 'Early June 2020: porcini estatini picked ''in Puglia anche sotto Querce isolate o nelle
+    Pinete litoranee'' (FM 2020-06-11), after ''le prime nascite di funghi Porcini si potrebbero avere
+    a brevissimo nella Foresta Umbra e Sub-Appennino Dauno'' (FM 2020-05-22). June 2018: ''Puglia
+    insolitamente ferma ... mentre la Foresta Umbra sembra poltrire'' (FM 2018-06-16). June 2021:
+    ''l''arrivo dei primi Boleti ha coinciso con la nuova fase climatica secca e ventosa che ha
+    bloccato sul nascere ogni tentativo di avvio di stagione'' (FM 2021-06-24)'
+  source: https://web.archive.org/web/20200929073545/https://funghimagazine.it/aggiornamento-funghi-11-giugno-2020/
+  higher:
+    area: puglia
+    seasons:
+    - 2020
+    start: 06-01
+    end: 06-15
+  lower:
+    area: puglia
+    seasons:
+    - 2018
+    - 2021
+    start: 06-01
+    end: 06-15
+- id: gargano_dauni_early_august_2020_vs_2021_2023_2025
+  claim: 'Early August 2020: ''ottime nascite attese a brevissimo sul Gargano-Bosco di Lucera-Sub
+    Appennino Dauno'' (FM 2020-07-23), ''Ultime nascite per il Gargano, Bosco di Lucerna e
+    Sub-Appennino Dauno'', ''inattese nascite anche in alcune aree della Basilicata e Puglia'' (FM
+    2020-08-14). 2021: ''Alcune docce registrate in Puglia il giorno 11 Agosto non dovrebbero aver
+    innescato alcuna nascita'' (FM 2021-08-19). 2023: ''Stesso discorso per la Puglia con forse
+    qualche cenno di timidissime nascite tra Bari e Monopoli'' (FM 2023-08-17). 2025: ''Le piogge
+    recenti sono state troppo isolate e post-caldo africano'' (FM 2025-08-08)'
+  source: https://web.archive.org/web/20200926054742/https://funghimagazine.it/aggiornamento-meteofunghi-14-08-2020/
+  higher:
+    area: gargano_dauni
+    seasons:
+    - 2020
+    start: 08-01
+    end: 08-18
+  lower:
+    area: gargano_dauni
+    seasons:
+    - 2021
+    - 2023
+    - 2025
+    start: 08-01
+    end: 08-18
+- id: gargano_dauni_late_august_2022_vs_2023
+  claim: 'Late August 2022: porcini ranking of the regions, ''7) EMILIA ROMAGNA, LIGURIA e PUGLIA,
+    limitatamente al Gargano e Daunia'' (FM 2022-08-26); ''alcune discrete nascite interessano
+    anche ... il Gargano in Puglia'' (FM 2022-09-05). Late August 2023: ''Assenza di nascite tra
+    Molise-Puglia e Basilicata non tirrenica'' (FM 2023-08-24)'
+  source: https://web.archive.org/web/20220826073117/https://funghimagazine.it/nuovo-boom-di-porcini/
+  higher:
+    area: gargano_dauni
+    seasons:
+    - 2022
+    start: 08-20
+    end: 09-05
+  lower:
+    area: gargano_dauni
+    seasons:
+    - 2023
+    start: 08-20
+    end: 09-05
+- id: arco_ionico_early_september_2021_vs_2019
+  claim: 'Early September 2021: ''una ottima buttata di Porcini estivi appena iniziata nella bassa
+    Basentana tra Basento-Bradano e confine pugliese fin su parte del Tarantino di
+    Ginosa-Laterza-Massafra fin su Putignano'' (FM 2021-09-04); ''Ancora per qualche giorno
+    dovrebbero esserci le condizioni ideali per nascite al confine tra Bradano – Basilicata e
+    Tarantino, Murge meridionali'' (FM 2021-09-10). 2019: rain returned only ''dopo un lunghissimo
+    periodo siccitoso e ben torrido'' (FM 2019-09-05); ''Campania-Basilicata-Puglia con nascite
+    ancora modeste o del tutto assenti'' (FM 2019-09-20)'
+  source: https://web.archive.org/web/20210922081914/https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2021-porcini-giganti/
+  higher:
+    area: arco_ionico
+    seasons:
+    - 2021
+    start: 08-31
+    end: 09-12
+  lower:
+    area: arco_ionico
+    seasons:
+    - 2019
+    start: 08-31
+    end: 09-12
+- id: gargano_vs_monti_dauni_september_2021
+  claim: 'September 2021: ''E'' andata però meglio sul Gargano, soprattutto quello settentrionale,
+    dov''è piovuto a più riprese'' (FM 2021-09-04); ''La timida buttata del Gargano è pure giunta
+    rapidamente al capolinea mentre nel resto della Puglia non sono segnalati che pochi Galletti e
+    Russule. Molto sporadici i funghi Porcini'' (FM 2021-09-24)'
+  source: https://web.archive.org/web/20211024074056/https://funghimagazine.it/aggiornamento-meteofunghi-24-09-2021-funghi-porcini-situazione-italia/
+  higher:
+    area: gargano
+    seasons:
+    - 2021
+    start: 09-08
+    end: 09-22
+  lower:
+    area: monti_dauni
+    seasons:
+    - 2021
+    start: 09-08
+    end: 09-22
+- id: gargano_vs_monti_dauni_october_2020
+  claim: 'Mid-October 2020, after porcini ''tra le querce'' in the Murge: ''Stesso discorso per il
+    Foggiano, con maggior presenza di funghi autunnali in Gargano, rispetto al Sub-Appennino Dauno''
+    (FM 2020-10-23)'
+  source: https://web.archive.org/web/20201204163307/https://funghimagazine.it/meteofunghi-23-10-2020/
+  higher:
+    area: gargano
+    seasons:
+    - 2020
+    start: 10-10
+    end: 10-23
+  lower:
+    area: monti_dauni
+    seasons:
+    - 2020
+    start: 10-10
+    end: 10-23
+- id: murge_vs_salento_october_2020
+  claim: 'Mid-October 2020: ''a proposito di Murge, qua risultano sempre più ben presenti i funghi
+    Cardoncelli e, tra le querce, anche isolate, là dove si mantiene l''umidità al riparo dal vento,
+    anche funghi Porcini''; ''Salento spesso sferzato dal vento, con nascite ridotte al lumicino''
+    (FM 2020-10-23)'
+  source: https://web.archive.org/web/20201204163307/https://funghimagazine.it/meteofunghi-23-10-2020/
+  higher:
+    area: murge
+    seasons:
+    - 2020
+    start: 10-10
+    end: 10-23
+  lower:
+    area: salento
+    seasons:
+    - 2020
+    start: 10-10
+    end: 10-23
+- id: puglia_autumn_2018_vs_2021_2023
+  claim: 'Autumn 2018: ''Le nascite di Neri e moltissimi altri funghi autunnali non si contano tra
+    Sardegna, Sicilia, Calabria, Basilicata e Puglia''; ''Il Salento è un''esplosione di funghi
+    nelle pinete litoranee'' (FM 2018-10-22); ''nascite a tappeto di funghi tra ... Gargano,
+    Cilento, Irpinia'' (FM 2018-11-10); ''in Puglia ... oltre ai Bronzini aereus abbondano anche i
+    Leccinum lepidum'' (FM 2018-11-16). 2021: ''il vento di Tramontana o Grecale ha dato il colpo di
+    grazia, soprattutto in Murgia e Salento'' (FM 2021-10-24), ''In Puglia i funghi Porcini sono
+    scarsini'' (FM 2021-11-19). 2023: ''Tra Puglia e Basilicata nascite quasi non pervenute'' (FM
+    2023-10-27)'
+  source: https://web.archive.org/web/20190723060659/https://funghimagazine.it/aggiornamento-funghi-22-ottobre-2018/
+  higher:
+    area: puglia
+    seasons:
+    - 2018
+    start: 10-15
+    end: 11-10
+  lower:
+    area: puglia
+    seasons:
+    - 2021
+    - 2023
+    start: 10-15
+    end: 11-10
+- id: murge_taranto_salento_late_october_2022_vs_2021_2023
+  claim: 'Late October 2022: ''La Puglia sta sperimentando un buon periodo di nascite sia di Porcini
+    che di Cardoncelli, soprattutto sui settori Est delle Murge, nel Tarantino e Salento'' (FM
+    2022-11-05), Mediterranean woods ''potranno continuare a dar luogo ad ottime nascite ... anche di
+    Porcini ... di tutto il Salento'' (FM 2022-10-28). 2021: ''colpo di grazia, soprattutto in
+    Murgia e Salento'' (FM 2021-10-24), ''Porcini sono scarsini'' (FM 2021-11-19). 2023: ''nascite
+    quasi non pervenute'' (FM 2023-10-27), ''al momento non ci sono condizioni ideali per nascite
+    imminenti'' (FM 2023-11-09)'
+  source: https://web.archive.org/web/20221129141843/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+  higher:
+    area: murge_taranto_salento
+    seasons:
+    - 2022
+    start: 10-20
+    end: 11-05
+  lower:
+    area: murge_taranto_salento
+    seasons:
+    - 2021
+    - 2023
+    start: 10-20
+    end: 11-05
+- id: puglia_2025_timing_august
+  claim: 'Mid-August 2025: ''Porcini neri e Ovoli reali spuntati in Puglia, Molise e Sicilia
+    interna. Non ci credeva quasi nessuno'' (FM 2025-08-21); ''in Puglia, dove nessuno avrebbe
+    scommesso che 30 millimetri di pioggia, caduti nel cuore di una bolla africana, potessero
+    innescare una buttata mordi-e-fuggi clamorosa. Breve, certo, ma memorabile'' (FM 2025-09-04).
+    Before it: ''Situazione molto difficile: piogge scarsissime o assenti'' (FM 2025-07-17), ''Le
+    piogge recenti sono state troppo isolate e post-caldo africano'' (FM 2025-08-08)'
+  source: https://web.archive.org/web/20250822194753/https://funghimagazine.it/aggiornamento-nascite-funghi-22-08-2025/
+  higher:
+    area: puglia
+    seasons:
+    - 2025
+    start: 08-14
+    end: 08-26
+  lower:
+    area: puglia
+    seasons:
+    - 2025
+    start: 07-10
+    end: 08-08
+- id: ovoli_puglia_2025_timing_august
+  claim: 'Mid-August 2025: ''Porcini neri e Ovoli reali spuntati in Puglia, Molise e Sicilia
+    interna. Non ci credeva quasi nessuno, eppure chi ha provato è stato premiato'' (FM 2025-08-21).
+    Before it: ''Situazione molto difficile: piogge scarsissime o assenti, caldo e vento non danno
+    tregua'' (FM 2025-07-17), ''Le piogge recenti sono state troppo isolate e post-caldo africano''
+    (FM 2025-08-08)'
+  source: https://web.archive.org/web/20250822194753/https://funghimagazine.it/aggiornamento-nascite-funghi-22-08-2025/
+  higher:
+    area: puglia
+    seasons:
+    - 2025
+    start: 08-14
+    end: 08-26
+  lower:
+    area: puglia
+    seasons:
+    - 2025
+    start: 07-10
+    end: 08-08
+- id: gallinacci_puglia_spring_2023_normal
+  claim: 'Late May to mid-June 2023: ''Nel resto del Sud in Puglia spiccano i Finferli/Galletti''
+    (FM 2023-05-25); ''anche in Puglia ... si stanno trovano per lo più Finferli'' (FM 2023-06-01);
+    ''Puglia-Basilicata dove, però di contro abbondano più che mai Finferli/Galletti'' (FM
+    2023-06-15), after ''un insolito periodo fortemente piovoso'' with ''persino ... Galletti/Finferli
+    nella Macchia Mediterranea'' (FM 2023-04-27)'
+  source: https://web.archive.org/web/20230703082634/https://funghimagazine.it/aggiornamento-funghi-16-06-2023/
+  higher:
+    area: puglia
+    seasons:
+    - 2023
+    start: 05-20
+    end: 06-16
+  lower:
+    area: puglia
+    seasons: normal
+    start: 05-20
+    end: 06-16
+- id: gallinacci_puglia_december_2023_normal
+  claim: 'December 2023 (''Un Dicembre strepitoso per i funghi''): ''tra Lazio, Campania e Puglia si
+    stanno trovando ancora i più estivi Cantharellus cibarius e Cantharellus pallens!'', ''ottimi
+    raccolti di questi funghi in ... Puglia tutta'' (FM 2023-12-16); ''tranne la Puglia, che ha
+    avuto un buon incremento di nascite fungine'', ''buona presenza di funghi, soprattutto in basso
+    Salento, nel Tarantino e localmente anche tra Murge e Gargano'' (FM 2023-12-22)'
+  source: https://web.archive.org/web/20231216111000/https://funghimagazine.it/aggiornamento-funghi-16-12-2023/
+  higher:
+    area: puglia
+    seasons:
+    - 2023
+    start: 12-08
+    end: 12-22
+  lower:
+    area: puglia
+    seasons: normal
+    start: 12-08
+    end: 12-22
