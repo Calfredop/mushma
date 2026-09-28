@@ -36,6 +36,7 @@ from typing import Protocol
 
 from api.grid.sources import data_dir
 from api.regions import list_served_region_ids
+from api.response_cache import bump_region
 from api.timeutil import today_rome
 from api.weather.openmeteo import RateBudget
 
@@ -207,6 +208,9 @@ def main(
             rules_version=_rules_version(data_root, region),
             elapsed_s=round(time.monotonic() - region_started, 1),
         )
+        # Drop every cached response for this region (and the national /overview key). Old
+        # entries stay unreachable under the previous generation until Redis LRU evicts them.
+        bump_region(region)
     calls = open_meteo_calls_today(root)
     _log(event="open_meteo_calls", weighted_calls_today=round(calls, 1))
     if failed_regions:

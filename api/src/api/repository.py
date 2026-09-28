@@ -60,6 +60,8 @@ class ScoresUnavailable(Exception):
 
 
 class ScoresRepository(Protocol):
+    region: str
+
     def get_scores(self, species: SpeciesOrCombined, target_date: date) -> ScoresResponse:
         """Raises DateOutOfRange if target_date isn't in the served window."""
 

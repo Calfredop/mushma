@@ -531,7 +531,9 @@ kind of content a crawler indexes anyway.
 `deploy/Caddyfile`), which gets the `api.mappafunghi.app` certificate itself; that DNS record is
 "DNS only" so Let's Encrypt and the rate limiter see the real client. The repo is cloned at
 `/opt/mushma`, the stores live in `/srv/mushma-data`, and `deploy/.env` (from
-`deploy/.env.example`) sets `CORS_ORIGINS` and the monitoring URLs. The data is copied from a
+`deploy/.env.example`) sets `CORS_ORIGINS` and the monitoring URLs. Redis (same compose file,
+64 MB LRU, not published) caches JSON responses until the daily job bumps a per-region
+generation after a successful recalculation. The data is copied from a
 machine that already has it, not rebuilt: the weather backfill alone takes about four days of API
 quota. The raw grid sources are only needed to rebuild the grid, so they stay behind:
 

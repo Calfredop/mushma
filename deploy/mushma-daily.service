@@ -1,5 +1,6 @@
-# The daily pipeline (api/src/api/jobs/daily.py) as a one-off container of the API image, then an
-# API restart so nothing cached in the running process outlives the new stores. Started by
+# The daily pipeline (api/src/api/jobs/daily.py) as a one-off container of the API image. That
+# container bumps the Redis response-cache generation after each successful region; then an API
+# restart clears anything still held in the running process (grid cells, etc.). Started by
 # mushma-daily.timer. Install: README.md -> Deploying.
 [Unit]
 Description=mushma daily pipeline

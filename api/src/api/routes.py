@@ -34,6 +34,7 @@ from api.repository import (
     ScoresUnavailable,
     SeasonNotFound,
 )
+from api.response_cache import NATIONAL_REGION, cached_model
 from api.species import Species, SpeciesOrCombined
 from api.timeutil import today_rome
 
@@ -81,7 +82,7 @@ async def region_not_served_handler(_request: Request, exc: RegionNotServed) -> 
     summary="Served regions (id, names, bbox, history start, species, freshness)",
 )
 def get_regions(response: Response) -> RegionsResponse:
-    result = get_regions_response()
+    result = cached_model(NATIONAL_REGION, "regions", RegionsResponse, get_regions_response)
     response.headers["Cache-Control"] = SHORT_LIVED
     return result
 
@@ -97,10 +98,21 @@ def get_overview(
     date: Annotated[Date | None, Query(description="defaults to today, Europe/Rome")] = None,
 ) -> OverviewResponse:
     target_date = date or today_rome()
-    try:
-        result = get_overview_response(species, target_date)
-    except DateOutOfRange as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    def compute() -> OverviewResponse:
+        try:
+            return get_overview_response(species, target_date)
+        except DateOutOfRange as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    result = cached_model(
+        NATIONAL_REGION,
+        "overview",
+        OverviewResponse,
+        compute,
+        species=species,
+        date=target_date,
+    )
     response.headers["Cache-Control"] = cache_control_for_date(target_date)
     return result
 
@@ -118,10 +130,21 @@ def get_scores(
     date: Annotated[Date | None, Query(description="defaults to today, Europe/Rome")] = None,
 ) -> ScoresResponse:
     target_date = date or today_rome()
-    try:
-        result = repository.get_scores(species, target_date)
-    except DateOutOfRange as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    def compute() -> ScoresResponse:
+        try:
+            return repository.get_scores(species, target_date)
+        except DateOutOfRange as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region,
+        "scores",
+        ScoresResponse,
+        compute,
+        species=species,
+        date=target_date,
+    )
     response.headers["Cache-Control"] = cache_control_for_date(target_date)
     return result
 
@@ -139,10 +162,21 @@ def get_factors(
     date: Annotated[Date | None, Query(description="defaults to today, Europe/Rome")] = None,
 ) -> FactorsResponse:
     target_date = date or today_rome()
-    try:
-        result = repository.get_factors(species, target_date)
-    except DateOutOfRange as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    def compute() -> FactorsResponse:
+        try:
+            return repository.get_factors(species, target_date)
+        except DateOutOfRange as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region,
+        "factors",
+        FactorsResponse,
+        compute,
+        species=species,
+        date=target_date,
+    )
     response.headers["Cache-Control"] = cache_control_for_date(target_date)
     return result
 
@@ -153,7 +187,9 @@ def get_factors(
     summary="Analysis mode's Bosco layer: every woodland cell's dominant forest type",
 )
 def get_forest_types(repository: Repository, response: Response) -> ForestTypesResponse:
-    result = repository.get_forest_types()
+    result = cached_model(
+        repository.region, "forest-types", ForestTypesResponse, repository.get_forest_types
+    )
     response.headers["Cache-Control"] = DAILY
     return result
 
@@ -169,7 +205,14 @@ def get_spot(
     lat: Annotated[float, Query(ge=-90, le=90)],
     lon: Annotated[float, Query(ge=-180, le=180)],
 ) -> CellDetailResponse:
-    result = repository.get_spot(lat, lon)
+    result = cached_model(
+        repository.region,
+        "spot",
+        CellDetailResponse,
+        lambda: repository.get_spot(lat, lon),
+        lat=lat,
+        lon=lon,
+    )
     response.headers["Cache-Control"] = SHORT_LIVED  # always today + forecast, never a past date
     return result
 
@@ -181,10 +224,13 @@ def get_spot(
     responses={404: {"description": "unknown cell id or region"}},
 )
 def get_cell(repository: Repository, response: Response, cell_id: str) -> CellDetailResponse:
-    try:
-        result = repository.get_cell_detail(cell_id)
-    except CellNotFound as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    def compute() -> CellDetailResponse:
+        try:
+            return repository.get_cell_detail(cell_id)
+        except CellNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    result = cached_model(repository.region, "cell", CellDetailResponse, compute, cell_id=cell_id)
     response.headers["Cache-Control"] = SHORT_LIVED  # always today + forecast, never a past date
     return result
 
@@ -203,10 +249,22 @@ def get_hotspots(
     limit: Annotated[int, Query(ge=1, le=50)] = 10,
 ) -> HotspotsResponse:
     target_date = date or today_rome()
-    try:
-        result = repository.get_hotspots(species, target_date, limit)
-    except DateOutOfRange as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    def compute() -> HotspotsResponse:
+        try:
+            return repository.get_hotspots(species, target_date, limit)
+        except DateOutOfRange as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region,
+        "hotspots",
+        HotspotsResponse,
+        compute,
+        species=species,
+        date=target_date,
+        limit=limit,
+    )
     response.headers["Cache-Control"] = cache_control_for_date(target_date)
     return result
 
@@ -226,7 +284,15 @@ def get_sightings(
     ] = None,
 ) -> SightingsResponse:
     since_date = since or (today_rome() - timedelta(days=SIGHTINGS_DEFAULT_LOOKBACK_DAYS))
-    result = repository.get_sightings(species, since_date, until)
+    result = cached_model(
+        repository.region,
+        "sightings",
+        SightingsResponse,
+        lambda: repository.get_sightings(species, since_date, until),
+        species=species,
+        since=since_date,
+        until=until,
+    )
     response.headers["Cache-Control"] = SHORT_LIVED  # counts grow as new sightings are ingested
     return result
 
@@ -241,6 +307,7 @@ def get_sightings(
     },
 )
 def get_status(repository: Repository, response: Response) -> StatusResponse:
+    # Uncached on purpose: this is how the app learns the pipeline has finished.
     try:
         result = repository.get_status()
     except ScoresUnavailable as exc:
@@ -265,10 +332,13 @@ _HISTORY_ERRORS = {503: {"description": "history not built yet"}}
     responses=_HISTORY_ERRORS,
 )
 def get_comuni(repository: Repository, response: Response) -> ComuniResponse:
-    try:
-        result = repository.get_comuni()
-    except HistoryUnavailable as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    def compute() -> ComuniResponse:
+        try:
+            return repository.get_comuni()
+        except HistoryUnavailable as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = cached_model(repository.region, "comuni", ComuniResponse, compute)
     response.headers["Cache-Control"] = DAILY
     return result
 
@@ -286,12 +356,22 @@ def get_seasons(
     comune: Comune = None,
     species: Annotated[SpeciesOrCombined, Query()] = "combined",
 ) -> SeasonsResponse:
-    try:
-        result = repository.get_seasons(species, comune)
-    except AreaNotFound as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except HistoryUnavailable as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    def compute() -> SeasonsResponse:
+        try:
+            return repository.get_seasons(species, comune)
+        except AreaNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except HistoryUnavailable as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region,
+        "seasons",
+        SeasonsResponse,
+        compute,
+        species=species,
+        comune=comune,
+    )
     response.headers["Cache-Control"] = SHORT_LIVED  # this season grows every day
     return result
 
@@ -308,12 +388,22 @@ def get_season_map(
     year: int,
     species: Annotated[SpeciesOrCombined, Query()],
 ) -> SeasonMapResponse:
-    try:
-        result = repository.get_season_map(year, species)
-    except SeasonNotFound as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except HistoryUnavailable as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    def compute() -> SeasonMapResponse:
+        try:
+            return repository.get_season_map(year, species)
+        except SeasonNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except HistoryUnavailable as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region,
+        "season-map",
+        SeasonMapResponse,
+        compute,
+        year=year,
+        species=species,
+    )
     # A past season only changes when history is re-scored, which is rare but real (a finished
     # backfill, new rules): a day, not forever.
     response.headers["Cache-Control"] = DAILY if year < today_rome().year else SHORT_LIVED
@@ -332,12 +422,22 @@ def get_outlook(
     species: Annotated[Species, Query()],
     comune: Comune = None,
 ) -> OutlookResponse:
-    try:
-        result = repository.get_outlook(species, comune)
-    except AreaNotFound as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except HistoryUnavailable as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    def compute() -> OutlookResponse:
+        try:
+            return repository.get_outlook(species, comune)
+        except AreaNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except HistoryUnavailable as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region,
+        "outlook",
+        OutlookResponse,
+        compute,
+        species=species,
+        comune=comune,
+    )
     response.headers["Cache-Control"] = SHORT_LIVED
     return result
 
@@ -352,11 +452,16 @@ def get_outlook(
 def get_species(
     repository: Repository, response: Response, comune: Comune = None
 ) -> PlausibleSpeciesResponse:
-    try:
-        result = repository.get_species(comune)
-    except AreaNotFound as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except HistoryUnavailable as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    def compute() -> PlausibleSpeciesResponse:
+        try:
+            return repository.get_species(comune)
+        except AreaNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except HistoryUnavailable as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region, "species", PlausibleSpeciesResponse, compute, comune=comune
+    )
     response.headers["Cache-Control"] = SHORT_LIVED  # this season grows every day
     return result

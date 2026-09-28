@@ -2,12 +2,16 @@
 # Caddy, which gets and renews the api.mappafunghi.app and m.mappafunghi.app certificates on its
 # own. The repo is cloned at /opt/mushma and the data stores live outside it, in
 # /srv/mushma-data (the API's DATA_DIR); Umami's own Postgres data lives in the umami_db_data
-# volume below (feat-umami-integration.md: disposable, never backed up).
+# volume below (feat-umami-integration.md: disposable, never backed up). Redis holds the API
+# response cache (feat-redis-cache.md); it is not published — only reachable on the compose
+# network — and is capped so a cold start after a rescore cannot eat the CX23's RAM.
 #
 #   cd /opt/mushma/deploy && docker compose up -d --build
 #
 # The daily pipeline is not a service here: mushma-daily.timer runs it once a day as a one-off
-# container of the same image (`docker compose run --rm api python -m api.jobs.daily`).
+# container of the same image (`docker compose run --rm api python -m api.jobs.daily`). That
+# oneshot shares the network with Redis, bumps the cache generation after each successful region,
+# then ExecStartPost restarts the API so in-process caches (grid cells, etc.) also refresh.
 #
 # Umami's tracker script and collect endpoint are renamed (TRACKER_SCRIPT_NAME,
 # COLLECT_API_ENDPOINT below) so generic ad/tracker blocklists, which pattern-match on the
@@ -24,8 +28,37 @@ services:
     env_file: .env
     environment:
       DATA_DIR: /data
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
     volumes:
       - /srv/mushma-data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --maxmemory
+      - 64mb
+      - --maxmemory-policy
+      - allkeys-lru
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    mem_limit: 96m
     logging:
       driver: json-file
       options:

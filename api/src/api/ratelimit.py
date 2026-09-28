@@ -1,7 +1,8 @@
 """Per-IP rate limiting for the public, GET-only, cookie-less API (see the CORS comment in
-main.py): protects the single small server (one uvicorn process, no Redis) from a runaway
-client. In-memory (``limits``' moving-window strategy) is enough at this scale, and simply resets
-on redeploy/restart -- an acceptable tradeoff for a hobby-scale app.
+main.py): protects the single small server (one uvicorn process) from a runaway client.
+In-memory (``limits``' moving-window strategy) is enough at this scale, and simply resets on
+redeploy/restart -- an acceptable tradeoff for a hobby-scale app. Redis is reserved for the
+response cache (``api.response_cache``), not the rate limiter.
 
 A plain ASGI middleware rather than a Starlette ``BaseHTTPMiddleware`` (which the `slowapi`
 package builds on): ``BaseHTTPMiddleware`` reconstructs every response as a stream, which drops

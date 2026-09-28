@@ -183,6 +183,40 @@ def test_no_alert_on_success() -> None:
     assert alerts == []
 
 
+def test_bumps_the_response_cache_after_each_successful_region(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bumped: list[str] = []
+    monkeypatch.setattr(daily, "bump_region", bumped.append)
+    daily.main(
+        today=date(2026, 9, 18),
+        runner=lambda args: FakeResult(),
+        alert=lambda message: None,
+        regions=["tuscany", "umbria"],
+    )
+    assert bumped == ["tuscany", "umbria"]
+
+
+def test_does_not_bump_the_cache_for_a_failed_region(monkeypatch: pytest.MonkeyPatch) -> None:
+    bumped: list[str] = []
+    monkeypatch.setattr(daily, "bump_region", bumped.append)
+
+    def runner(args: list[str]) -> FakeResult:
+        region = args[args.index("--region") + 1] if "--region" in args else ""
+        if region == "tuscany":
+            return FakeResult(returncode=1)
+        return FakeResult()
+
+    with pytest.raises(SystemExit):
+        daily.main(
+            today=date(2026, 9, 18),
+            runner=runner,
+            alert=lambda message: None,
+            regions=["tuscany", "umbria"],
+        )
+    assert bumped == ["umbria"]
+
+
 def test_structured_logs_are_one_json_object_per_line(capsys: pytest.CaptureFixture[str]) -> None:
     daily.main(
         today=date(2026, 9, 18),
