@@ -8,8 +8,8 @@
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
 with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
-the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Piemonte for Piemonte:
-``GAUGE_NETWORKS``). Results land in ``$DATA_DIR/weather/<region>/checks/``.
+the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Piemonte for Piemonte, SIAS
+for Sicily: ``GAUGE_NETWORKS``). Results land in ``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
@@ -26,7 +26,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpa_piemonte, arpal, umbria_sir
+from api.weather import arpa_piemonte, arpal, sias, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -303,12 +303,30 @@ def arpa_piemonte_network(raw: Path, start: date, end: date) -> GaugeNetwork:
     return GaugeNetwork(arpa_piemonte.parse_stations(stations), series, arpal.utc_day_totals)
 
 
+def sias_sicilia(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """SIAS (Sicily): open hourly rain as monthly zips, whole days only, stations with heights,
+    solar-time calendar days (api.weather.sias)."""
+    folder = raw / "sias"
+    daily = pd.concat(
+        [
+            sias.parse_month(fetch(url, folder / f"sias-precipitazioni_csv_{label}.zip"))
+            for label, url in sias.month_urls(start, end)
+        ],
+        ignore_index=True,
+    )
+    stations = sias.parse_stations(
+        fetch(sias.STATIONS_URL, folder / "elenco-sensori-meteo_csv_rsd.zip")
+    )
+    return GaugeNetwork(stations, lambda gauge: sias.series_of(daily, gauge.code), calendar_days)
+
+
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "emilia_romagna": arpae_emilia_romagna,
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
     "umbria": umbria_sir_network,
     "piemonte": arpa_piemonte_network,
+    "sicilia": sias_sicilia,
 }
 
 
