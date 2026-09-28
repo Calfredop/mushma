@@ -3,6 +3,7 @@
  * Adding a region means adding its file and one line here.
  */
 import { inBounds } from '../geo/distance.js'
+import { campania } from './campania.js'
 import { emiliaRomagna } from './emilia-romagna.js'
 import { friuliVeneziaGiulia } from './friuli-venezia-giulia.js'
 import { liguria } from './liguria.js'
@@ -26,6 +27,7 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [trentinoAltoAdige.slug]: trentinoAltoAdige,
   [lombardia.slug]: lombardia,
   [friuliVeneziaGiulia.slug]: friuliVeneziaGiulia,
+  [campania.slug]: campania,
 }
 
 export const DEFAULT_REGION_SLUG = toscana.slug

@@ -1,0 +1,312 @@
+# Press-contrast sanity check for Campania (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names) or provinces; windows and source URLs written down on
+# 2026-09-27, before any Campania score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Campania local press rarely says how a season went; most contrasts rest on Funghi Magazine's
+# national bulletins (read through Wayback Machine captures, the live site is behind a captcha),
+# whose Campania paragraphs are written from readers' reports. Quotes, second sources and
+# weaknesses per contrast: .gavin-root/docs/species-ecology/campania.md (Sanity contrasts).
+areas:
+  campania:
+    provinces:
+    - '*'
+  irpinia:
+    provinces:
+    - AV
+  salerno:
+    provinces:
+    - SA
+  bagnoli_laceno:
+    comuni:
+    - Bagnoli Irpino
+    - Montella
+    - Nusco
+    - Cassano Irpino
+  matese_casertano:
+    comuni:
+    - Letino
+    - Gallo Matese
+    - San Gregorio Matese
+    - Piedimonte Matese
+    - Castello del Matese
+    - San Potito Sannitico
+    - Valle Agricola
+    - Raviscanina
+    - Sant'Angelo d'Alife
+    - Ailano
+    - Prata Sannita
+    - Fontegreca
+    - Gioia Sannitica
+  cilento_interno:
+    comuni:
+    - Piaggine
+    - Sanza
+    - Valle dell'Angelo
+    - Laurino
+    - Stio
+    - Magliano Vetere
+    - Monteforte Cilento
+    - Campora
+    - Gioi
+    - Moio della Civitella
+    - Novi Velia
+    - Cannalonga
+    - Cuccaro Vetere
+    - Futani
+    - Montano Antilia
+    - Rofrano
+    - Alfano
+    - Laurito
+    - Caselle in Pittari
+    - Morigerati
+    - Casaletto Spartano
+    - Tortorella
+    - Torre Orsaia
+    - Roccagloriosa
+    - Celle di Bulgheria
+    - Corleto Monforte
+    - Roscigno
+    - Bellosguardo
+    - Sacco
+    - Felitto
+    - Castel San Lorenzo
+    - Roccadaspide
+    - Monte San Giacomo
+    - Montesano sulla Marcellana
+    - Buonabitacolo
+    - Casalbuono
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: laceno_2016
+  claim: 'Early autumn 2016: ''Grande annata di funghi, a Bagnoli e in tutto il comprensorio, in
+    questo primo scorcio d'' autunno del 2016'', porcini ''in particolar modo nel sottobosco di
+    castagni e querce''; Irpinianews (2016-09-25): ''Questo potrebbe essere un anno prospero per la
+    raccolta di funghi in Irpinia'''
+  source: http://www.palazzotenta39.it/public/archives/75605
+  higher:
+    area: bagnoli_laceno
+    seasons:
+    - 2016
+    start: 09-15
+    end: 10-02
+  lower:
+    area: bagnoli_laceno
+    seasons: normal
+    start: 09-15
+    end: 10-02
+- id: salerno_2018_2017
+  claim: 'Early September 2018 (Coldiretti, provincia di Salerno): ''È boom di porcini e gallinacci
+    in tutte le aree montane, in particolare nell''area dell''entroterra cilentano e suo [sic] Picentini'',
+    after ''un 2017 particolarmente negativo per gli effetti della siccità'''
+  source: https://www.infocilento.it/2018/09/04/coldiretti-si-preannuncia-stagione-da-record-per-i-funghi/
+  higher:
+    area: salerno
+    seasons:
+    - 2018
+    start: 08-20
+    end: 09-04
+  lower:
+    area: salerno
+    seasons:
+    - 2017
+    start: 08-20
+    end: 09-04
+- id: campania_june_2018_2024
+  claim: 'June 2018: ''Campania protagonista'' (2018-06-16), ''Campania con nascite abbondanti nelle
+    zone interne'' (2018-07-01); June 2024: ''boschi che hanno già dato quel poco che potevano''
+    (2024-06-14), ''L''eccesso di calore ha mandato in letargo i miceli fungini di Campania''
+    (2024-06-28)'
+  source: https://funghimagazine.it/aggiornamento-funghi-16-giugno-2018/
+  higher:
+    area: campania
+    seasons:
+    - 2018
+    start: 06-08
+    end: 06-28
+  lower:
+    area: campania
+    seasons:
+    - 2024
+    start: 06-08
+    end: 06-28
+- id: campania_september_2019
+  claim: 'September 2019: ''Campania-Basilicata-Puglia con nascite ancora modeste o del tutto
+    assenti'', only ''nascite del tutto sporadiche o modeste'' (2019-09-20); ''Finalmente è tornato a
+    piovere in buona parte della Campania'' (2019-09-27)'
+  source: https://funghimagazine.it/dove-stanno-nascendo-i-funghi-porcini-le-piogge-cadute-in-italia/
+  higher:
+    area: campania
+    seasons: normal
+    start: 09-01
+    end: 09-25
+  lower:
+    area: campania
+    seasons:
+    - 2019
+    start: 09-01
+    end: 09-25
+- id: campania_2020_timing
+  claim: '2020: ''quasi nulla nell''Avellinese'' (2020-09-04), ''Situazione pessima tra Molise,
+    Campania, Puglia e Basilicata con nascite ridottissime'' (2020-09-21); then in the first ten days of
+    October porcini ''progressivamente sempre più massicce'' in ''parte della Campania'' (2020-10-15),
+    ''periodo florido per la Campania'' (2020-10-23)'
+  source: https://funghimagazine.it/meteofunghi-23-10-2020/
+  higher:
+    area: campania
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-23
+  lower:
+    area: campania
+    seasons:
+    - 2020
+    start: 08-25
+    end: 09-21
+- id: matese_vs_cilento_2020
+  claim: 'Early August 2020: ''Ancora buona nascite nel Molise e nel vicino Matese campano. Nel resto
+    della Campania pochissime nascite con siccità nel Salernitano'''
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-07-08-2020/
+  higher:
+    area: matese_casertano
+    seasons:
+    - 2020
+    start: 07-28
+    end: 08-10
+  lower:
+    area: cilento_interno
+    seasons:
+    - 2020
+    start: 07-28
+    end: 08-10
+- id: irpinia_vs_matese_2021
+  claim: 'September 2021: ''L''Irpinia ha dato ma ora molti dei funghi Porcini presenti sono già
+    adulti [...] Potrebbe migliorare la situazione nel Matese e nel vicino Sannio'' (2021-09-24); on the
+    Matese ''le piogge maggiori si sono verificate più sui versanti molisani che non su quelli campani''
+    (2021-09-04)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-24-09-2021-funghi-porcini-situazione-italia/
+  higher:
+    area: irpinia
+    seasons:
+    - 2021
+    start: 09-08
+    end: 09-22
+  lower:
+    area: matese_casertano
+    seasons:
+    - 2021
+    start: 09-08
+    end: 09-22
+- id: campania_august_2022
+  claim: 'Late August 2022: ''La CAMPANIA sta finalmente vivendo una stagione fungina come non si
+    ricordava da tempo''; Coldiretti: ''dal Matese al Cilento, stagione funghi fantastica con +50% fra
+    porcini e altre varietà''. August 2019: ''Poche nascite in Appennino Meridionale, in zone interne di
+    Campania-Molise-Puglia-Basilicata''; August 2021: ''A Sud dell''Appennino, sporadiche o impossibili nascite di funghi'''
+  source: https://funghimagazine.it/nuovo-boom-di-porcini/
+  higher:
+    area: campania
+    seasons:
+    - 2022
+    start: 08-15
+    end: 08-31
+  lower:
+    area: campania
+    seasons:
+    - 2019
+    - 2021
+    start: 08-15
+    end: 08-31
+- id: cilento_vs_irpinia_2023
+  claim: 'Late August 2023: ''poco o nulla sull''Appennino Campano ma, buone nascite si stanno ancora
+    registrando ed aumenteranno in Cilento'' (2023-08-24), after rains on 4-5 August ''con interessamento
+    dell''intero Cilento'' (2023-08-17)'
+  source: https://funghimagazine.it/aggiornamento-nascite-porcini-24-08-2023/
+  higher:
+    area: cilento_interno
+    seasons:
+    - 2023
+    start: 08-15
+    end: 08-28
+  lower:
+    area: irpinia
+    seasons:
+    - 2023
+    start: 08-15
+    end: 08-28
+- id: irpinia_vs_matese_2023
+  claim: 'Early October 2023: ''Al momento nel Matese campano non stanno nascendo Porcini'';
+    ''Viceversa, si sono raccolti nei giorni scorsi buone quantità di Porcini estivi tra Irpinia,
+    Taburno, Partenio, Picentini e Lattari, oltre che sul Vesuvio'''
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: irpinia
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+  lower:
+    area: matese_casertano
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+- id: cilento_vs_matese_2024
+  claim: 'Mid-August 2024: ''il Matese ha già dato, ora è tutto finito''; ''E'' andata però meglio nel
+    Cilento interno, nell''entroterra del Golfo di Sapri'''
+  source: https://funghimagazine.it/aggiornamento-funghi-16-08-2024/
+  higher:
+    area: cilento_interno
+    seasons:
+    - 2024
+    start: 08-08
+    end: 08-16
+  lower:
+    area: matese_casertano
+    seasons:
+    - 2024
+    start: 08-08
+    end: 08-16
+    end: 11-08
+- id: gallinacci_salerno_2018_2017
+  claim: 'Early September 2018 (Coldiretti, provincia di Salerno): ''È boom di porcini e gallinacci
+    in tutte le aree montane'', after ''un 2017 particolarmente negativo per gli effetti della
+    siccità'''
+  source: https://www.infocilento.it/2018/09/04/coldiretti-si-preannuncia-stagione-da-record-per-i-funghi/
+  higher:
+    area: salerno
+    seasons:
+    - 2018
+    start: 08-20
+    end: 09-04
+  lower:
+    area: salerno
+    seasons:
+    - 2017
+    start: 08-20
+    end: 09-04
+- id: gallinacci_campania_june_2023
+  claim: 'Late May to mid-June 2023: ''i Finferli li stanno trovando, e pure in abbondanza in Campania
+    stessa'' (2023-06-02); no porcini ''ma anche in Campania, Molise, Puglia-Basilicata dove, però di
+    contro abbondano più che mai Finferli/Galletti'' (2023-06-16)'
+  source: https://funghimagazine.it/aggiornamento-funghi-16-06-2023/
+  higher:
+    area: campania
+    seasons:
+    - 2023
+    start: 05-28
+    end: 06-16
+  lower:
+    area: campania
+    seasons: normal
+    start: 05-28
+    end: 06-16

@@ -18,6 +18,7 @@ from api.grid.sources import (
     extract_7z,
     fetch,
     fetch_arcgis_features,
+    fetch_dem_tiles,
     load_sources,
     read_region_boundary,
     soilgrids_url,
@@ -299,3 +300,46 @@ def test_fetch_retries_when_the_server_is_temporarily_unavailable(tmp_path: Path
         server.shutdown()
 
     assert dest.read_bytes() == b"tif"
+
+
+class _LandOnlyServer(BaseHTTPRequestHandler):
+    """Serves the land tile; the open-sea tile does not exist, as on the Copernicus bucket."""
+
+    def do_GET(self) -> None:  # noqa: N802
+        if "LAND" not in self.path:
+            self.send_response(404)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"tif")
+
+    def log_message(self, *args: object) -> None:
+        pass
+
+
+def test_fetch_dem_tiles_skips_open_sea_tiles_the_bucket_does_not_hold(tmp_path: Path) -> None:
+    server = HTTPServer(("127.0.0.1", 0), _LandOnlyServer)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_port}"
+    try:
+        paths = fetch_dem_tiles(
+            [("LAND", f"{base}/LAND.tif"), ("SEA", f"{base}/SEA.tif")], tmp_path
+        )
+    finally:
+        server.shutdown()
+
+    assert paths == [tmp_path / "LAND.tif"]
+    assert (tmp_path / "LAND.tif").read_bytes() == b"tif"
+    assert not (tmp_path / "SEA.tif").exists()
+
+
+def test_fetch_dem_tiles_fails_when_no_tile_exists(tmp_path: Path) -> None:
+    server = HTTPServer(("127.0.0.1", 0), _LandOnlyServer)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_port}"
+    try:
+        with pytest.raises(FileNotFoundError):
+            fetch_dem_tiles([("SEA", f"{base}/SEA.tif")], tmp_path)
+    finally:
+        server.shutdown()

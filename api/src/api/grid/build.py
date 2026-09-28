@@ -30,6 +30,7 @@ from api.grid.sources import (
     copernicus_dem_tiles,
     data_dir,
     fetch,
+    fetch_dem_tiles,
     load_sources,
     read_region_boundary,
     read_vector,
@@ -473,10 +474,7 @@ def build(region_name: str = "tuscany", root: Path | None = None) -> dict[str, P
         step(f"forest area {forest_ha:,.0f} ha (no INFC row for {region.id})")
 
     step("terrain (Copernicus DEM GLO-30)")
-    tiles = [
-        fetch(url, raw / "copernicus_dem" / f"{name}.tif")
-        for name, url in copernicus_dem_tiles(bbox)
-    ]
+    tiles = fetch_dem_tiles(copernicus_dem_tiles(bbox), raw / "copernicus_dem")
     terrain_stats = terrain.terrain_for_cells(tiles, grid, boundary)
 
     step("soil pH (SoilGrids)")

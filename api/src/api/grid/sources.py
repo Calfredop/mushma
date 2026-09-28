@@ -139,6 +139,24 @@ def copernicus_dem_tiles(bbox_wgs84: tuple[float, float, float, float]) -> list[
     return tiles
 
 
+def fetch_dem_tiles(tiles: list[tuple[str, str]], folder: Path) -> list[Path]:
+    """Download the ``(name, url)`` DEM tiles into ``folder``, skipping those the bucket lacks.
+
+    The Copernicus bucket holds no tile over open sea (a bbox reaching past Capri, Sicily or
+    Sardinia's coasts asks for some); a region with no tile at all is an error.
+    """
+    paths = []
+    for name, url in tiles:
+        try:
+            paths.append(fetch(url, folder / f"{name}.tif"))
+        except urllib.error.HTTPError as error:
+            if error.code != 404:
+                raise
+    if not paths:
+        raise FileNotFoundError(f"no DEM tile exists for {[name for name, _ in tiles]}")
+    return paths
+
+
 def soilgrids_url(prop: str, depth: str, bbox_wgs84: tuple[float, float, float, float]) -> str:
     """WCS request for the mean of a SoilGrids property at one depth over a lon/lat bbox."""
     lon_min, lat_min, lon_max, lat_max = bbox_wgs84
