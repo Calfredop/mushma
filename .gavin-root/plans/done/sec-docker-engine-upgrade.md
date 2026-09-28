@@ -1,7 +1,8 @@
 ---
+order: 10240
 kind: task
 title: [sec] upgrade Docker Engine on the prod server
-status: To Do
+status: Done
 priority: medium
 complexity: moderate
 ---
