@@ -102,6 +102,15 @@ def class_filter(class_column: str, codes: list[str], where: str | None = None) 
     return f"({where}) AND {wanted}" if where else wanted
 
 
+def class_codes(classes: dict) -> dict[str, str]:
+    """A YAML class mapping keyed by code strings. PyYAML reads a bare ``ON``, ``NO`` or ``YES``
+    as a boolean, which would silently match nothing, so such a code must be quoted."""
+    for code in classes:
+        if isinstance(code, bool):
+            raise ValueError(f"class code {code!r} was read as a boolean: quote it in the YAML")
+    return {str(k): v for k, v in classes.items()}
+
+
 def forest_group_layers(region: RegionConfig, vocabulary: Vocabulary) -> list[GroupLayer] | None:
     """The region's ``forest.groups`` as layers (one mapping or a list), or None when omitted."""
     config = (region.extra.get("forest") or {}).get("groups")
@@ -109,7 +118,7 @@ def forest_group_layers(region: RegionConfig, vocabulary: Vocabulary) -> list[Gr
         return None
     layers = []
     for layer in config if isinstance(config, list) else [config]:
-        classes = {str(k): v for k, v in layer["classes"].items()}
+        classes = class_codes(layer["classes"])
         for code, group in classes.items():
             if group not in vocabulary.groups:
                 raise ValueError(f"land-cover class {code} maps to unknown group {group!r}")
@@ -124,6 +133,13 @@ def forest_group_layers(region: RegionConfig, vocabulary: Vocabulary) -> list[Gr
     return layers
 
 
+def forest_type_classes(types_config: dict) -> dict[str, str]:
+    """One ``forest.types`` layer's type code -> habitat mapping, CLC IV's defaults if unset."""
+    if "classes" in types_config:
+        return class_codes(types_config["classes"])
+    return dict(forest.CLC_IV_DEFAULT_TYPES)
+
+
 def forest_classes(
     region: RegionConfig, vocabulary: Vocabulary
 ) -> tuple[dict[str, str], dict[str, str]]:
@@ -132,13 +148,21 @@ def forest_classes(
     When ``forest.groups`` is omitted, groups are derived from CLC IV prefixes (311x → broadleaf,
     …) and types default to ``CLC_IV_DEFAULT_TYPES`` unless ``forest.types.classes`` is set. With
     several group layers the group mapping is their union (the build maps each layer on its own).
+    ``forest.types`` may also be a list of layers, one per source (Trentino-Alto Adige's two
+    provincial maps); their mappings must agree wherever they share a code.
     """
     config = region.extra.get("forest") or {}
     types_config = config.get("types") or {}
-    if "classes" in types_config:
-        types = {str(k): v for k, v in types_config["classes"].items()}
+    if isinstance(types_config, list):
+        types: dict[str, str] = {}
+        for layer in types_config:
+            for code, habitat in forest_type_classes(layer).items():
+                if types.setdefault(code, habitat) != habitat:
+                    raise ValueError(
+                        f"forest-type class {code} maps to both {types[code]!r} and {habitat!r}"
+                    )
     else:
-        types = dict(forest.CLC_IV_DEFAULT_TYPES)
+        types = forest_type_classes(types_config)
 
     layers = forest_group_layers(region, vocabulary)
     if layers is not None:
@@ -221,8 +245,13 @@ def read_forest_cover(
       regional forest-type map that also carries the land-use code (e.g. Liguria), read once.
     - otherwise: groups from each ``forest.groups`` layer (``read_group_cover``), types from the
       ``forest.types`` source's class column, filtered by its ``where`` if set.
+    - ``forest.types`` a list: ``read_layered_cover``.
     """
     types_config = forest_config.get("types") or {}
+    if isinstance(types_config, list):
+        return read_layered_cover(
+            forest_config, sources, raw, region_id=region_id, bbox_wgs84=bbox_wgs84, crs=crs
+        )
     types_source_id = types_config.get("source", "ispra_clc18_iv")
     types_download = sources[types_source_id].download or {}
     type_field = forest_type_column(types_config, types_download)
@@ -267,7 +296,7 @@ def read_forest_cover(
         GroupLayer(
             source=str(layer["source"]),
             class_column=forest_group_column(layer),
-            classes={str(k): v for k, v in layer["classes"].items()},
+            classes=class_codes(layer["classes"]),
             where=layer.get("where"),
         )
         for layer in layers
@@ -279,6 +308,93 @@ def read_forest_cover(
         groups=read_group_cover(group_layers, sources, raw, crs, bbox_wgs84=bbox_wgs84),
         types=tagged(types, type_field, "habitat", type_classes),
         sources=[*dict.fromkeys(layer.source for layer in group_layers), types_source_id],
+    )
+
+
+def read_layered_cover(
+    forest_config: dict,
+    sources: dict[str, Source],
+    raw: Path,
+    *,
+    region_id: str,
+    bbox_wgs84: tuple[float, float, float, float],
+    crs: str,
+) -> ForestCover:
+    """Forest cover from several maps, each ``forest.types`` layer with its own source.
+
+    A types layer and an unfiltered group layer on the same source are one map giving both, read
+    once (as Liguria's single map is). Group layers left over are read by ``read_group_cover``.
+    """
+    groups_config = forest_config.get("groups")
+    if groups_config is None:
+        raise ValueError("forest.types as a list of layers needs forest.groups")
+    group_layers = [
+        GroupLayer(
+            source=str(layer["source"]),
+            class_column=forest_group_column(layer),
+            classes=class_codes(layer["classes"]),
+            where=layer.get("where"),
+        )
+        for layer in (groups_config if isinstance(groups_config, list) else [groups_config])
+    ]
+
+    def tagged(frame: gpd.GeoDataFrame, column: str, name: str, classes: dict) -> gpd.GeoDataFrame:
+        frame = frame.assign(**{name: frame[column].astype(str).map(classes)})
+        return frame.loc[frame[name].notna(), [name, "geometry"]].to_crs(crs)
+
+    group_frames, type_frames = [], []
+    paired: set[int] = set()
+    for layer in forest_config["types"]:
+        source_id = str(layer["source"])
+        download = sources[source_id].download or {}
+        type_column = forest_type_column(layer, download)
+        classes = forest_type_classes(layer)
+        partner = next(
+            (
+                i
+                for i, group in enumerate(group_layers)
+                if i not in paired
+                and group.source == source_id
+                and not group.where
+                and not layer.get("where")
+            ),
+            None,
+        )
+        if partner is None:
+            cover = read_vector(
+                download,
+                source_cache_dir(raw, source_id, download, region_id),
+                bbox_wgs84=bbox_wgs84,
+                where=layer.get("where"),
+            )
+            type_frames.append(tagged(cover, type_column, "habitat", classes))
+            continue
+        paired.add(partner)
+        group = group_layers[partner]
+        cover = read_vector(
+            download,
+            raw / source_id,
+            bbox_wgs84=bbox_wgs84,
+            columns=list(dict.fromkeys([group.class_column, type_column])),
+            where=class_filter(group.class_column, list(group.classes)),
+        )
+        group_frames.append(tagged(cover, group.class_column, "group", group.classes))
+        type_frames.append(tagged(cover, type_column, "habitat", classes))
+
+    rest = [group for i, group in enumerate(group_layers) if i not in paired]
+    if rest:
+        group_frames.append(read_group_cover(rest, sources, raw, crs, bbox_wgs84=bbox_wgs84))
+    return ForestCover(
+        groups=gpd.GeoDataFrame(pd.concat(group_frames, ignore_index=True), crs=crs),
+        types=gpd.GeoDataFrame(pd.concat(type_frames, ignore_index=True), crs=crs),
+        sources=[
+            *dict.fromkeys(
+                [
+                    *(group.source for group in group_layers),
+                    *(str(t["source"]) for t in forest_config["types"]),
+                ]
+            )
+        ],
     )
 
 

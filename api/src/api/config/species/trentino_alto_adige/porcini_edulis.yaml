@@ -1,0 +1,447 @@
+# Species rules for one key in TRENTINO-ALTO ADIGE, loaded and validated by api.model.rules (see README.md here).
+# Copied from tuscany/ and retuned from Trentino and South Tyrol sources: .gavin-root/docs/species-ecology/trentino_alto_adige.md.
+# Tuscan evidence and rule ids (POR-*): .gavin-root/docs/species-ecology.md and species-ecology/porcini.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
+schema_version: 1
+key: porcini_edulis
+group: porcini
+taxon: Boletus edulis
+synonyms: [Boletus edulis s.s., Boletus quercicola, Boletus betulicola]
+status: draft
+i18n_key: species.porcini_edulis
+records:
+  gbif_taxon_keys: [5954958]
+  inat_taxon_ids: [48701]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    Trentino-Alto Adige: 455 iNaturalist fruit-body records (2026-09-26; 360 in Trentino, 95 in South
+    Tyrol) and 162 on GBIF, 154 of them iNaturalist copies. 227 have an open, accurate location (187 are
+    obscured by their observers); 381 are from 2020 on (53 from 2026). The best-recorded porcino of any
+    region so far, but presence-only and near trails: validate the porcini group score.
+notes: >-
+  Trentino-Alto Adige. The only porcini taxon with direct weather-fruiting studies (Amiata, Germany,
+  Spain); no study from the region ties its fruiting to the weather in numbers, so the weather
+  rules are Tuscany's unchanged. Changed for the region: one July-October season at every elevation
+  (the Tuscan autumn tail cut), the altitude band moved onto the Alpine belts, larch and stone pine
+  lowered to non-host, and the slope band moved onto the region's steeper woods. The shared rain
+  logic below is borrowed by the other three porcini keys.
+
+# Growth clock (README, "Growth clock"): how fast fruit bodies develop after the rain, day by day.
+# The rain_event lag below is counted in growth days, the sum of these daily paces.
+growth:
+  temperature:
+    variable: soil_temperature_0_to_7cm_mean
+    cardinal_c: [0, 18, 30]
+    reference_c: 15
+  humidity:
+    variable: vapour_pressure_deficit_max
+    trapezoid: [null, null, 1.0, 2.0]
+    floor: 0.5
+  max_lag_days: 40
+  confidence: folklore
+  source: [yan_hunt1999, moore2008_fruit_bodies, kasparavicius2001, blog_prevedere_porcini, funghimagazine_giorni_pioggia, salerni2023_amiata, brejon_hoffman2026_preprint]
+  derived: true
+  notes: >-
+    POR-R3. The pace is 1 at 15 °C of topsoil, the weather the lag window was drawn from. Fruit
+    bodies develop at a lower optimum than mycelium grows in culture (B. edulis 25-28 °C; Moore
+    et al. 2008), hence t_opt 18 °C. A 9 °C stretch runs at about 65 % pace and stretches a
+    12-day lag to about 18 days, in line with the lore (about 0.6 days per °C; the lag grows by
+    about 3 days when the 10 days after the rain average under 10 °C; longer in cool high beech
+    than in chestnut at 600-700 m). Caps stop growing when the day's minimum humidity falls
+    under 40 % and grow well from about 60 % (Kasparavičius 2001, B. edulis): open-air daily
+    maximum VPD of 1.0 kPa keeps full pace and 2.0 kPa halves it; the floor stands for the
+    moister air under the canopy. No peer-reviewed days-per-°C figure exists for these species:
+    every number is a prior.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: summer_early_autumn
+          dates: ["15-06", "15-07", "30-09", "31-10"]
+    confidence: plausible
+    source:
+      [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, salerni2023_amiata, gm_siena_boletus, museo_porcino_borgotaro, mushma_occurrence_check_2026, mushma_occurrence_check_taa_2026, muse_censimento_edulis, taa_altoadige_2023_08_08, taa_orf_tirol_2019_08_09]
+    derived: true
+    data: available
+    notes: >-
+      Trentino-Alto Adige (2026-09-26): one window at every elevation, full from mid-July to 30
+      September and closed by 31 October (Tuscany: full September to mid-November, zero on 20
+      December). The 455 iNaturalist records of the region run June 3, July 101, August 205,
+      September 117, October 26, November 2: against all 30,261 fungi records of the region, July
+      is 1.4x the effort, August 1.9x, September 1.4x, October 0.4x and November 0.1x. The 227
+      located records split by elevation do not move the start or the end: below 1300 m (75
+      records) the first half of July has 4 and the second 13, the first half of October 4 and
+      the second none; at 1600 m and above (65) the same halves hold 2, 7, 6 and 0. What moves is
+      the peak, in September below 1300 m (29 of 55 records at 1000-1300 m) and in August above 1600
+      m (33 of 65): the temperature rules and the growth clock make that shift, so the season gate
+      is not split by elevation as in Piemonte and Lombardia. The north-east Italian census has
+      its latest record on 3 November (MUSE). Local reports agree on July: "In einigen Jahren hat
+      die Pilzsaison schon Mitte Juli begonnen" (ORF Tirol, 2019, on South Tyrol); in
+      2023 "La stagione è iniziata bene già alla fine di luglio" (Alto Adige, Bresadola Bolzano).
+      Frost and snow end the tail at altitude. Tuscany's POR-S3 follows.
+      POR-S3. "Da fine settembre alla prima neve, rare le forme estive" (IGP); Amiata peaks moved from
+      October to August in 2002, so the window is broad and temperature does the fine timing.
+      Central-Italy iNaturalist records are over-represented Aug–Oct (1.8x, 3.1x, 1.7x vs all fungi).
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        beech: 1.0
+        chestnut: 1.0
+        fir_spruce: 1.0
+        mixed_broadleaf_conifer: 0.6
+        mountain_pine: 0.6
+        deciduous_oak: 0.3
+        mixed_broadleaf: 0.3
+        transitional_woodland_shrub: 0.1
+        other_conifer: 0.1
+        evergreen_oak: 0.1
+        mediterranean_pine: 0.1
+        macchia: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
+      default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
+    confidence: plausible
+    source:
+      [borgotaro_igp_rt, borgotaro_igp_2014, salerni2023_amiata, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, beugelsdijk2008, mushma_habitat_share_2026, taa_mandolini2025_larix, taa_mandolini2024_cembra, taa_pat_tipi_forestali_2018, taa_bz_waldtypisierung2010, muse_censimento_edulis, mushma_taa_forest_check_2026, taa_bz_hauptbaumarten]
+    derived: true
+    data: available
+    notes: >-
+      Trentino-Alto Adige (2026-09-26): other conifer moves from marginal to non-host (0.3 -> 0.1);
+      every other tier is Tuscany's. Here the class holds only larch and stone pine (Trentino's
+      forest-type map: lariceti 48,073 ha, larici-cembrete 10,337, cembrete 4,117, 16 % of the woods;
+      South Tyrol: larch 19 % and stone pine 6 % of the growing stock), and Tuscany kept it marginal for
+      Douglas fir, an IGP host absent here. Root tips of larch at 1700-1900 m in the Ahrntal and the
+      Schnalstal held 68 ectomycorrhizal species and no Boletus, although the Prettau stands "were
+      interspersed with Pinus cembra and Picea abies individuals" (Mandolini et al. 2025); stone pine
+      root tips at four South Tyrolean sites held none either (Mandolini et al. 2024). What larch cells
+      do hold is spruce: secondary larch woods stand "su potenziale pecceta", sometimes with "una
+      struttura biplana di larice su peccio o abete" (Tipi forestali del Trentino 2018), and in South
+      Tyrol "tiefsubalpine Lärchen-Fichtenwälder" follow the montane spruce (Waldtypisierung Südtirol).
+      With the gate saturating at a host share of 0.30, a pure larch cell now gets a third of full
+      credit and a larch cell with a quarter of spruce gets full credit. Check on the region grid
+      (mushma_taa_forest_check_2026): the 71 located records in woodland cells at 1500 m or higher sit
+      in cells that are 21 % larch and stone pine and 74 % spruce and fir, against 27 % and 67 % over
+      the 3,236 woodland cells there; at 0.1 the habitat gate averages 0.98 at those records (4 lose
+      some credit) and 0.95 over the woodland (12 % lose some), while at 0.3 both are 1.00 and the gate
+      told records from woodland apart not at all. Trentino's forest-type map within 500 m of its 52
+      records above 1500 m gives the same picture (larch and stone pine 27 % against 33 % of the woods).
+      Beech stays host although the records sit in it less than the woods do (8 % of the 500 m
+      surroundings of the 91 Trentino records at 1000-1500 m against 25 % of the woods on Trentino's
+      map): spruce and fir take the records there (82 %), and beech is a documented host (a north-east
+      census collection in a "Bosco di faggio" at 800 m, MUSE). Mixed broadleaf stays marginal: here it
+      is mostly hop-hornbeam (orno-ostrieti, 6 % of Trentino's woods; the ostrio-querceti go to
+      deciduous oak), and the hop-hornbeam woods hold 4 % of the records' surroundings below 1000 m
+      against 27 % of the woods. Chestnut stays host but is rare (754 ha typed as castagneto in
+      Trentino; South Tyrol's oak-chestnut woods are a narrow colline belt). Transitional woodland/shrub
+      moves from marginal to non-host (0.3 -> 0.1): the transitional class here is subalpine scrub,
+      mountain-pine krummholz (mughete, 13,867 ha in Trentino, median 1779 m) and green alder (8,592 ha,
+      median 1962 m), which the region config keeps out of the woodland mask but in the habitat mix;
+      neither is a porcini host, and they hold 5 % of the surroundings of the records above 1500 m
+      against 14 % of the woods. Tuscany's POR-H1 follows. POR-H1. Four levels (2026-09-24,
+      mushma_habitat_share_2026): beech, chestnut and fir/spruce are the preferred hosts named directly
+      ("chestnut, beech and Norway spruce preferred") -> host. Mixed broadleaf+conifer (mostly a
+      beech-fir mix, both hosts) and mountain pine (IGP-eligible black/Scots pine, "moderate") stay
+      secondary: the mixed class is capped below host for dilution, not for weak evidence. Deciduous
+      oak, mixed broadleaf (hornbeam/hazel eligible) and other conifer (Douglas fir eligible) are
+      marginal: each is a class where only some of the trees are hosts. Transitional woodland/shrub is
+      marginal for the same dilution reason. Evergreen oak, Mediterranean pine, macchia, riparian and
+      exotic broadleaf (robinia) are non-host: none are named for this taxon. Saturated to full credit
+      from a host-weighted share of 0.30 (`_habitat`'s response trapezoid), so a cell that is 30%
+      beech/chestnut/fir is no longer diluted by the rest of the woods.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [200, 500, 1900, 2300]}
+    confidence: plausible
+    source:
+      [salerni2023_amiata, matteucci2008_micoponte, muse_censimento_boletus, rt_tipi_forestali_p4, borgotaro_igp_rt, mushma_occurrence_check_2026, mushma_occurrence_check_taa_2026, muse_censimento_edulis, taa_pat_tipi_forestali_2018, taa_bz_waldtypisierung2010, mushma_taa_forest_check_2026, diez2020_alps]
+    derived: true
+    data: available
+    notes: >-
+      POR-A1 moved onto the Alpine belts of the region (Tuscany: 200 -> 700 ... 1600 -> 1900). The
+      227 located records: min 499 m, p10 1022 m, median 1406 m, p75 1648 m, p90 1810 m, p95 1887 m,
+      max 2170 m; 13 below 900 m, 82 at 1500 m or higher, 26 at 1800 m or higher. The north-east
+      census has B. edulis up to 2175 m in Trentino (MUSE), and Alpine fungi fruit higher than in
+      1960 (Diez et al. 2020). Spruce reaches "intorno ai 2000 m, con punte massime sino a 2200 m"
+      and larch-stone pine woods end at 2100-2300 m (Tipi forestali del Trentino 2018); in South
+      Tyrol the subalpine larch-spruce woods form a belt of about 200-400 m above the montane
+      spruce, which reaches 1600 m on shady and 1800 m on sunny slopes (Waldtypisierung Südtirol).
+      Trentino's mapped woods run p5 524 m to p95 1998 m. So full from 500 m to 1900 m and zero at
+      2300 m. Below, zero at 200 m: the floors of the Adige, Sarca and Valsugana valleys hold
+      orchards, vineyards, riparian woods and robinia, and the lowest hosts are chestnut and
+      Scots pine on the slopes (Trentino's mapped chestnut runs p5 452 m, Scots and black pine 379
+      m). Tuscany's POR-A1 follows.
+      POR-A1. "Dalla media all'alta montagna"; placed on the Tuscan beech and fir belts. Tuscan
+      iNaturalist records: p10 478 m, median 1024 m, p90 1386 m (n=27).
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: strong
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia, bmeteo_pioggia_funghi]
+    derived: true
+    data: available
+    notes: >-
+      POR-R1 + POR-R2. Amiata B. edulis counts correlate with >=20 mm rain days, peaking 12 days
+      later (r about 0.6). Lag shape and the 10->30 mm ramp are derived (30 mm = the PRD hypothesis and
+      the low end of forager lore). Strong for the lag; the amount ramp is plausible.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 30}
+    response: {trapezoid: [50, 125, null, null]}
+    confidence: strong
+    source:
+      [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, salerni2023_amiata, mushma_rain_tuning_2026]
+    derived: true
+    data: derived
+    notes: >-
+      POR-M1. 30-day rain drives fruiting in Tuscan oak woods (community) and a 26-day window at
+      2-4 mm/day fits B. edulis in German beech. The effect is strong; the 20->80 mm ramp is derived.
+      Tuned (2026-09-22): the absolute 20->80 mm ramp was full in an ordinary September, so the 30
+      days are scored as a percentage of the cell's own normal for those days (2016-2025 reanalysis,
+      downscaled and rain-scaled like the rain): 0 at 50 %, full from 125 %. It raised the porcini
+      train objective by 0.03 with or without the rain scale, and the hold-out one by 0.013.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [6, 10, 17, 22]}
+    confidence: plausible
+    source: [brejon_hoffman2026_preprint, salerni2023_amiata]
+    derived: true
+    data: available
+    notes: >-
+      POR-T1. German optimum about 13 °C over 20 days (preprint); the upper shoulder is widened because
+      Amiata fruited in an 18.6 °C summer. Needs lapse-rate-corrected temperature per cell.
+
+  - id: soil_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_temperature
+    input: {variable: soil_temperature_0_to_7cm_mean, aggregate: mean, window_days: 10}
+    response: {trapezoid: [6, 10, 17, 22]}
+    confidence: folklore
+    source: [brejon_hoffman2026_preprint, bmeteo_pioggia_funghi]
+    derived: true
+    data: available
+    enabled: false
+    notes: POR-T5. Alternative to air_temperature, never both. No porcini soil-temperature threshold found in a primary source.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014, martinez_de_aragon2007, agreda2016]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d (P - ET0 instead of P); compare both in the backtest.
+
+  - id: soil_moisture
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.soil_moisture
+    input: {variable: soil_moisture_7_to_28cm_mean, aggregate: percentile_of_normal, window_days: 7}
+    response: {trapezoid: [10, 40, null, null]}
+    confidence: plausible
+    source: [karavani2018, garcia_bustamante2021]
+    derived: true
+    data: derived
+    enabled: false
+    notes: >-
+      POR-M2. Same-month soil moisture limits yield (Mediterranean pine, community). Percentile against
+      the cell's calendar-month climatology, because model soil moisture is not comparable with field
+      thresholds. Needs the backfill climatology.
+
+  - id: early_season_wetness
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.early_season_wetness
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 60}
+    response: {trapezoid: [50, 100, null, null]}
+    floor: 0.6
+    confidence: plausible
+    source: [alday2017, taye2016, parlade2017, garcia_bustamante2021, salerni2002_oak]
+    derived: true
+    data: derived
+    enabled: false
+    notes: >-
+      POR-M4. 60-day rain as % of the cell's climatology: x0.6 at <=50 %, x1 at >=100 %. Autumn only in
+      the source reading; Soria found no effect of previous-summer rain, so it stays a weak multiplier.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.5
+    confidence: plausible
+    source: [salerni2023_amiata, karavani2018, andrew2025]
+    derived: true
+    data: derived
+    notes: >-
+      POR-X1. Tmax spikes about 8 °C above the period mean correlated negatively with fruit bodies for
+      up to about 3 weeks at Amiata. The multiplier is derived.
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.2
+    confidence: folklore
+    source: [borgotaro_igp_rt, brejon_hoffman2026_preprint, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X3. Two or more frosty nights in a week -> x0.2. Thresholds derived.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4. "Alla prima neve" ends the season. >=1 cm of snow in 3 days -> 0.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 4, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: >-
+      POR-X6. Forager lore: drying wind (tramontana, grecale) after rain wastes the trigger. No source
+      gives numbers; ET0 stands in for wind + dry air + sun. Every number is a guess to tune.
+
+  - id: drought_45d
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.drought
+    input: {variable: precipitation_sum, aggregate: sum, window_days: 45}
+    response: {trapezoid: [10, 15, null, null]}
+    confidence: plausible
+    source: [brejon_hoffman2026_preprint, agreda2015, salerni2002_oak]
+    derived: true
+    data: available
+    enabled: false
+    notes: POR-X2. Mostly subsumed by rain_30d (0 at <=20 mm in 30 days); kept for the backtest to compare.
+
+  - id: sun_exposure
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.sun_exposure
+    input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
+    response: {trapezoid: [null, null, 105, 125]}
+    floor: 0.8
+    where: {attribute: elevation_m, trapezoid: [null, null, 900, 1100]}
+    confidence: folklore
+    source: [rt_tipi_forestali_p4, bmeteo_pioggia_funghi, bonet2008, mumcu_kucuker2019]
+    derived: true
+    data: derived
+    notes: >-
+      POR-A5. Below 1000 m, north-facing slopes keep moisture in hot spells and hold the conifer hosts
+      (N x1.0, E/W x0.9, S x0.8), but flat, east- and west-facing ground is normal for Tuscan woodland
+      and scores full credit: only clearly sunny slopes lose it. On 15 Oct the cell's sun ratio (its
+      clear-sky sun as a % of flat ground's) runs p10 89 %, p25 95 %, median 100 %, p75 105 %, p90 111 %
+      (2026-09-24): x1 up to 105 %, about the p90, x0.8 from 125 %, fading out between 900 and 1100 m.
+      North aspect raised production in dry Pyrenean pine (Bonet 2008), while a humid Turkish forest
+      found north slopes worst for B. edulis (Mumcu Küçüker 2019): the preference is kept to low
+      altitude, where water limits fruiting. Read on the day's sun ratio, the cell's sun as a percentage
+      of flat ground's (api.model.terrain), so it bites hardest in autumn, when the sun is low. The
+      terrain microclimate already makes sunny slopes warmer and drier for every rule; this line is the
+      species' own preference on top of that, kept soft. Trentino-Alto Adige: kept from Tuscany. On 15
+      Oct the woodland cells of the region grid below 1000 m run p10 73 %, p25 85 %, median 98 %, p75
+      110 %, p90 121 % (Tuscany 89/95/100/105/110 %): the steep valley sides spread the sun ratio wider,
+      so 105 % sits near the p65 here and the line docks about a third of the low woods, at most by its
+      floor. The band is kept as a statement about sun and drying, not re-anchored to the region's
+      percentiles; the backtest can test it (2026-09-26).
+
+  - id: slope
+    role: stopper
+    kind: static_band
+    i18n_key: factor.slope
+    input: {attribute: slope_deg}
+    response: {trapezoid: [null, null, 35, 45]}
+    floor: 0.8
+    confidence: plausible
+    source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979, mushma_taa_forest_check_2026, taa_bz_wald_flaechen]
+    derived: true
+    data: available
+    notes: >-
+      Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby 1979), but a
+      1 km cell's mean slope is not the slope of the exact spot the mushrooms grow on: normal terrain
+      for Tuscan woodland scores full credit, and only clearly steep cells lose it. Woodland cells on
+      the Tuscan grid run p10 10.2°, p25 12.6°, median 16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up
+      to 25°, about the p90, x0.8 from 40°. Mushroom production fell with slope in Pyrenean Scots pine
+      (Bonet 2008), and B. edulis yield was highest under about 11° on plots in north-east Turkey (Mumcu
+      Küçüker 2019); two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts
+      on the score only, never on the rain, so the same water is not counted twice. Trentino-Alto Adige
+      (2026-09-26): the band moves onto the region's woods by the same rule, normal terrain at full
+      credit. The 7,698 woodland cells of the region grid run p10 17.6°, p25 22.2°, median 26.9°, p75
+      31.0°, p90 34.5°, p99 40.2°, max 44.7° (Trentino and South Tyrol alike: p90 34.8° and 34.1°): 62 %
+      are steeper than 25°, against 13 % in Tuscany. South Tyrol is as steep ("Over two-thirds" of its
+      forest on slopes over 40 %, that is 22°, Forstdienst). x1 up to 35° (about the p90), x0.8 from 45°
+      (about the max, as 40° is on the Tuscan grid).
+
+known_gaps:
+  - id: temperature_drop
+    description: >-
+      POR-T6. A >=3 °C drop in 7-day mean Tmax, 3-15 days before, helps trigger fruiting (x1.1 bonus).
+      Bonuses above 1 and change-over-time inputs are not in schema v1.
+    needs: [a change-detection factor kind]
+    confidence: folklore
+    source: [bmeteo_pioggia_funghi, karavani2018]
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive (IGP rule).
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: stand_and_soil
+    description: >-
+      POR-N1. Stand age (30- vs 60-year fir), basal area, thinning, litter removal and soil texture/pH
+      change B. edulis yield.
+    needs: [stand_age, canopy_cover, litter_depth, soil_texture, soil_ph]
+    confidence: strong
+    source: [salerni_perini2004, salerni2023_amiata, parlade2017, bonet2010, martinez_pena2012, beugelsdijk2008]

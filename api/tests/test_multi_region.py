@@ -120,3 +120,49 @@ class TestFixtureRouting:
         )
         assert {cell.cell_id for cell in tuscany.cells} != {cell.cell_id for cell in umbria.cells}
         assert all(cell.cell_id.startswith("1kmN") for cell in umbria.cells)
+
+
+class TestLiveOverview:
+    def test_a_region_not_scored_through_the_date_is_left_out_not_a_404(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path
+    ) -> None:
+        """A region just rsync'd, whose scores stop days before today until the server's daily job
+        catches it up, must not take the whole hub down with it."""
+        from api import registry
+        from api.repository import DateOutOfRange
+
+        class Repo:
+            def __init__(self, region: str) -> None:
+                self.region = region
+
+            def overview_row(self, species, target_date, good_score):
+                if self.region == "trentino_alto_adige":
+                    raise DateOutOfRange(target_date, date(2016, 3, 18), date(2026, 9, 20))
+                return 0.5, 0.25, "2026-09-26T05:00:00Z"
+
+        monkeypatch.setattr(registry, "_fixtures_mode", lambda: False)
+        monkeypatch.setattr(
+            registry, "list_served_region_ids", lambda root: ["tuscany", "trentino_alto_adige"]
+        )
+        monkeypatch.setattr(registry, "_live_repository", lambda region, root: Repo(region))
+
+        body = registry.get_overview_response("porcini", date(2026, 9, 26), root=tmp_path)
+
+        assert [row.region for row in body.regions] == ["tuscany"]
+
+    def test_no_region_scored_through_the_date_is_still_out_of_range(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path
+    ) -> None:
+        from api import registry
+        from api.repository import DateOutOfRange
+
+        class Repo:
+            def overview_row(self, species, target_date, good_score):
+                raise DateOutOfRange(target_date, date(2016, 3, 18), date(2026, 9, 20))
+
+        monkeypatch.setattr(registry, "_fixtures_mode", lambda: False)
+        monkeypatch.setattr(registry, "list_served_region_ids", lambda root: ["tuscany"])
+        monkeypatch.setattr(registry, "_live_repository", lambda region, root: Repo())
+
+        with pytest.raises(DateOutOfRange):
+            registry.get_overview_response("porcini", date(2026, 9, 26), root=tmp_path)

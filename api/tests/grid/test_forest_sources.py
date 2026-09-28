@@ -256,3 +256,183 @@ def test_read_group_cover_maps_each_layer_and_drops_filtered_features(tmp_path) 
     assert sorted(cover["group"]) == ["broadleaf", "conifer", "transitional"]
     assert list(cover.columns) == ["group", "geometry"]
     assert cover.crs.to_epsg() == 3035
+
+
+def test_forest_classes_take_one_type_layer_per_source() -> None:
+    """Trentino-Alto Adige: each autonomous province maps its own forest types."""
+    region = load_region("tuscany")
+    region.extra["forest"] = {
+        "groups": [
+            {"source": "tn", "class_column": "label", "classes": {"PE": "conifer"}},
+            {"source": "bz", "class_column": "grp", "classes": {"Faggete": "broadleaf"}},
+        ],
+        "types": [
+            {"source": "tn", "class_column": "label", "classes": {"PE": "fir_spruce"}},
+            {"source": "bz", "class_column": "grp", "classes": {"Faggete": "beech"}},
+        ],
+    }
+
+    groups, types = forest_classes(region, load_vocabulary())
+
+    assert groups == {"PE": "conifer", "Faggete": "broadleaf"}
+    assert types == {"PE": "fir_spruce", "Faggete": "beech"}
+
+
+def test_forest_classes_reject_an_unknown_habitat_in_a_type_layer() -> None:
+    region = load_region("tuscany")
+    region.extra["forest"] = {
+        "groups": [{"source": "bz", "class_column": "grp", "classes": {"x": "conifer"}}],
+        "types": [{"source": "bz", "class_column": "grp", "classes": {"x": "spruce"}}],
+    }
+
+    with pytest.raises(ValueError, match="spruce"):
+        forest_classes(region, load_vocabulary())
+
+
+def test_forest_classes_reject_one_code_mapped_to_two_habitats() -> None:
+    region = load_region("tuscany")
+    region.extra["forest"] = {
+        "groups": [{"source": "tn", "class_column": "c", "classes": {"LA": "conifer"}}],
+        "types": [
+            {"source": "tn", "class_column": "c", "classes": {"LA": "other_conifer"}},
+            {"source": "bz", "class_column": "c", "classes": {"LA": "fir_spruce"}},
+        ],
+    }
+
+    with pytest.raises(ValueError, match="LA"):
+        forest_classes(region, load_vocabulary())
+
+
+def test_type_layers_read_each_provincial_map_once_with_its_group_layer(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Two maps, each giving its own groups and types; a third group layer is read on its own."""
+    tn = gpd.GeoDataFrame(
+        {"label": ["PE", "FA", "MU", "XX"]},
+        geometry=[
+            box(650_000 + i * 100, 5_100_000, 650_100 + i * 100, 5_100_100) for i in range(4)
+        ],
+        crs="EPSG:25832",
+    )
+    bz = gpd.GeoDataFrame(
+        {"grp": ["Faggete", "Larici-cembrete"], "code": ["Bu2", "Zi1"]},
+        geometry=[
+            box(680_000 + i * 100, 5_160_000, 680_100 + i * 100, 5_160_100) for i in range(2)
+        ],
+        crs="EPSG:25832",
+    )
+    other = gpd.GeoDataFrame(
+        {"uso": ["324"]},
+        geometry=[box(4_400_000, 2_600_000, 4_400_100, 2_600_100)],
+        crs="EPSG:3035",
+    )
+    frames = {"tn": tn, "bz": bz, "other": other}
+    calls: list[tuple[str, dict]] = []
+
+    def fake_read_vector(download: dict, cache_dir: Path, **kwargs: object) -> gpd.GeoDataFrame:
+        calls.append((download["id"], kwargs))
+        return frames[download["id"]].copy()
+
+    monkeypatch.setattr(build, "read_vector", fake_read_vector)
+    monkeypatch.setattr(build, "read_group_cover", _fake_group_cover(frames))
+    forest_config = {
+        "groups": [
+            {
+                "source": "tn",
+                "class_column": "label",
+                "classes": {"PE": "conifer", "FA": "broadleaf", "MU": "transitional"},
+            },
+            {
+                "source": "bz",
+                "class_column": "grp",
+                "classes": {"Faggete": "broadleaf", "Larici-cembrete": "conifer"},
+            },
+            {"source": "other", "class_column": "uso", "classes": {"324": "transitional"}},
+        ],
+        "types": [
+            {
+                "source": "tn",
+                "class_column": "label",
+                "classes": {
+                    "PE": "fir_spruce",
+                    "FA": "beech",
+                    "MU": "transitional_woodland_shrub",
+                },
+            },
+            {
+                "source": "bz",
+                "class_column": "grp",
+                "classes": {"Faggete": "beech", "Larici-cembrete": "other_conifer"},
+            },
+        ],
+    }
+    sources = {sid: _source(sid, {"id": sid, "wfs": "x"}) for sid in frames}
+
+    cover = build.read_forest_cover(
+        forest_config,
+        sources,
+        tmp_path,
+        region_id="trentino_alto_adige",
+        bbox_wgs84=(10.38, 45.67, 12.48, 47.1),
+        crs="EPSG:3035",
+        group_classes={},
+        type_classes={},
+    )
+
+    assert [source for source, _ in calls] == ["tn", "bz"]
+    assert calls[0][1]["columns"] == ["label"]
+    assert calls[1][1]["bbox_wgs84"] == (10.38, 45.67, 12.48, 47.1)
+    assert sorted(cover.groups["group"]) == [
+        "broadleaf",
+        "broadleaf",
+        "conifer",
+        "conifer",
+        "transitional",
+        "transitional",
+    ]
+    assert sorted(cover.types["habitat"]) == [
+        "beech",
+        "beech",
+        "fir_spruce",
+        "other_conifer",
+        "transitional_woodland_shrub",
+    ]
+    assert list(cover.groups.columns) == ["group", "geometry"]
+    assert list(cover.types.columns) == ["habitat", "geometry"]
+    assert cover.groups.crs == cover.types.crs == "EPSG:3035"
+    assert cover.sources == ["tn", "bz", "other"]
+
+
+def _fake_group_cover(frames: dict[str, gpd.GeoDataFrame]):
+    def fake(layers, sources, raw, crs, *, bbox_wgs84=None) -> gpd.GeoDataFrame:
+        import pandas as pd
+
+        tagged = []
+        for layer in layers:
+            frame = frames[layer.source]
+            frame = frame.assign(group=frame[layer.class_column].map(layer.classes))
+            tagged.append(frame.loc[frame["group"].notna(), ["group", "geometry"]].to_crs(crs))
+        return gpd.GeoDataFrame(pd.concat(tagged, ignore_index=True), crs=crs)
+
+    return fake
+
+
+def test_forest_classes_reject_a_code_yaml_read_as_a_boolean() -> None:
+    """PyYAML reads a bare ON (ontaneta di ontano nero) as True: the code must be quoted."""
+    import yaml
+
+    region = load_region("tuscany")
+    region.extra["forest"] = yaml.safe_load(
+        """
+        groups: [{source: tn, class_column: label, classes: {ON: broadleaf}}]
+        types: [{source: tn, class_column: label, classes: {"ON": riparian}}]
+        """
+    )
+
+    with pytest.raises(ValueError, match="quote"):
+        forest_classes(region, load_vocabulary())
+
+    region.extra["forest"]["groups"][0]["classes"] = {"ON": "broadleaf"}
+    region.extra["forest"]["types"][0]["classes"] = {True: "riparian"}
+    with pytest.raises(ValueError, match="quote"):
+        forest_classes(region, load_vocabulary())

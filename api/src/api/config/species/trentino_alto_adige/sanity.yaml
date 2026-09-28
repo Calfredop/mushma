@@ -1,0 +1,521 @@
+# Press-contrast sanity check for Trentino-Alto Adige (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names exactly as the grid's comune_name carries them: the ISTAT
+# COMUNE field, which for South Tyrol is bilingual, e.g. "Brunico/Bruneck") or by province sigla
+# (TN, BZ; "*" is the whole region). Windows and source URLs written down on 2026-09-26, before
+# any score for the region existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`gallinacci_...`); read those with `--group gallinacci`. No ovoli claim was found.
+# Every main source was opened and its quote checked. Several rest on Funghi Magazine's weekly
+# bulletins, which often reason from rain gauges: those partly test the rain data, not only the
+# fruiting. Quotes, second sources and weaknesses per contrast:
+# .gavin-root/docs/species-ecology/trentino_alto_adige.md (Press contrasts).
+areas:
+  fiemme:
+    comuni:
+    - Capriana
+    - Castello-Molina di Fiemme
+    - Cavalese
+    - Predazzo
+    - Tesero
+    - Valfloriana
+    - Ville di Fiemme
+    - Ziano di Fiemme
+  alta_valsugana:
+    comuni:
+    - Levico Terme
+    - Pergine Valsugana
+    - Caldonazzo
+    - Sant'Orsola Terme
+    - Frassilongo
+    - Fierozzo
+    - Palù del Fersina
+    - Baselga di Pinè
+    - Bedollo
+  valsugana_tesino:
+    comuni:
+    - Levico Terme
+    - Novaledo
+    - Roncegno Terme
+    - Ronchi Valsugana
+    - Borgo Valsugana
+    - Castelnuovo
+    - Telve
+    - Telve di Sopra
+    - Carzano
+    - Torcegno
+    - Scurelle
+    - Samone
+    - Castel Ivano
+    - Pieve Tesino
+    - Castello Tesino
+    - Cinte Tesino
+    - Bieno
+  southern_trentino:
+    comuni:
+    - Storo
+    - Bondone
+    - Ledro
+    - Riva del Garda
+    - Arco
+    - Tenno
+    - Nago-Torbole
+    - Drena
+    - Dro
+    - Rovereto
+    - Vallarsa
+    - Trambileno
+    - Terragnolo
+    - Ala
+    - Avio
+  vallagarina_low:
+    comuni:
+    - Rovereto
+    - Villa Lagarina
+    - Pomarolo
+    - Nomi
+    - Isera
+    - Volano
+    - Calliano
+    - Besenello
+    - Nogaredo
+    - Mori
+  western_valleys:
+    comuni:
+    - Peio
+    - Rabbi
+    - Malé
+    - Croviana
+    - Dimaro Folgarida
+    - Commezzadura
+    - Mezzana
+    - Pellizzano
+    - Ossana
+    - Vermiglio
+    - Caldes
+    - Cavizzana
+    - Terzolas
+    - Cles
+    - Predaia
+    - Ville d'Anaunia
+    - Novella
+    - Borgo d'Anaunia
+    - Livo
+    - Rumo
+    - Bresimo
+    - Cis
+    - Contà
+    - Sanzeno
+    - Romeno
+    - Cavareno
+    - Sarnonico
+    - Ronzone
+    - Ruffrè-Mendola
+    - Amblar-Don
+    - Dambel
+    - Denno
+    - Campodenno
+    - Ton
+    - Sporminore
+    - Curon Venosta/Graun im Vinschgau
+    - Malles Venosta/Mals
+    - Glorenza/Glurns
+    - Sluderno/Schluderns
+    - Tubre/Taufers im Münstertal
+    - Prato allo Stelvio/Prad am Stilfserjoch
+    - Stelvio/Stilfs
+    - Lasa/Laas
+    - Silandro/Schlanders
+    - Laces/Latsch
+    - Martello/Martell
+    - Castelbello-Ciardes/Kastelbell-Tschars
+    - Senales/Schnals
+  dolomites:
+    comuni:
+    - Capriana
+    - Castello-Molina di Fiemme
+    - Cavalese
+    - Predazzo
+    - Tesero
+    - Valfloriana
+    - Ville di Fiemme
+    - Ziano di Fiemme
+    - Moena
+    - Soraga di Fassa
+    - San Giovanni di Fassa-Sèn Jan
+    - Mazzin
+    - Campitello di Fassa
+    - Canazei
+    - Primiero San Martino di Castrozza
+    - Imer
+    - Mezzano
+    - Canal San Bovo
+    - Sagron Mis
+    - Ortisei/St. Ulrich
+    - Santa Cristina Valgardena/St. Christina in Gröden
+    - Selva di Val Gardena/Wolkenstein in Gröden
+    - Badia/Abtei
+    - Corvara in Badia/Corvara
+    - La Valle/Wengen
+    - San Martino in Badia/St. Martin in Thurn
+  pusteria:
+    comuni:
+    - Brunico/Bruneck
+    - Valdaora/Olang
+    - Rasun-Anterselva/Rasen-Antholz
+    - Monguelfo-Tesido/Welsberg-Taisten
+    - Valle di Casies/Gsies
+    - Villabassa/Niederdorf
+    - Braies/Prags
+    - Dobbiaco/Toblach
+    - San Candido/Innichen
+    - Sesto/Sexten
+    - Gais/Gais
+    - Perca/Percha
+    - Campo Tures/Sand in Taufers
+    - Valle Aurina/Ahrntal
+    - Predoi/Prettau
+    - Selva dei Molini/Mühlwald
+    - Falzes/Pfalzen
+    - Chienes/Kiens
+    - San Lorenzo di Sebato/St. Lorenzen
+    - Terento/Terenten
+  isarco_wipptal:
+    comuni:
+    - Bressanone/Brixen
+    - Varna/Vahrn
+    - Naz-Sciaves/Natz-Schabs
+    - Rodengo/Rodeneck
+    - Luson/Lüsen
+    - Velturno/Feldthurns
+    - Chiusa/Klausen
+    - Funes/Villnöß
+    - Villandro/Villanders
+    - Barbiano/Barbian
+    - Laion/Lajen
+    - Vipiteno/Sterzing
+    - Campo di Trens/Freienfeld
+    - Val di Vizze/Pfitsch
+    - Racines/Ratschings
+    - Brennero/Brenner
+    - Fortezza/Franzensfeste
+  trentino:
+    provinces:
+    - TN
+  south_tyrol:
+    provinces:
+    - BZ
+  south_tyrol_without_east:
+    provinces:
+    - BZ
+    excluding:
+    - Badia/Abtei
+    - Corvara in Badia/Corvara
+    - La Valle/Wengen
+    - San Martino in Badia/St. Martin in Thurn
+    - Marebbe/Enneberg
+    - Braies/Prags
+    - Dobbiaco/Toblach
+    - San Candido/Innichen
+    - Sesto/Sexten
+    - Villabassa/Niederdorf
+    - Valle di Casies/Gsies
+  region:
+    provinces:
+    - '*'
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: fiemme_2019_2021
+  claim: 'Val di Fiemme, late August to September: 2019 "è stata caratterizzata da una scarsa crescita
+    nei mesi di giugno-luglio, mentre molto meglio sono andati i mesi di agosto e settembre" (Magnifica
+    Comunità di Fiemme, via Trentino, 2019-11-07); 2021: porcini "ci sono stati, un paio di volte, e poi
+    basta. Diciamo però che finora la stagione è stata misera misera" (Sportello Micologico of Cavalese
+    and Predazzo, via l''Adige, 2021-09-22)'
+  source: https://www.giornaletrentino.it/cronaca/fiemme-e-fassa/nonostante-la-tempesta-vaia-ottima-annata-per-i-fungaioli-1.2175281
+  higher:
+    area: fiemme
+    seasons:
+    - 2019
+    start: 08-20
+    end: 09-20
+  lower:
+    area: fiemme
+    seasons:
+    - 2021
+    start: 08-20
+    end: 09-20
+- id: alta_valsugana_2020_2021
+  claim: 'Alta Valsugana, Piné and the Vezzena, late August to late September: 2020 "Soprattutto ad agosto
+    ... c''è stata una buona raccolta, le condizioni climatiche sono state ideali" (Pergine mycological
+    group, l''Adige, 2020-09-10) and on 26 September at Passo Vezzena "le ultime «brise» di una stagione
+    davvero fortunata" (l''Adige); 2021 "ottima fino alla metà di agosto, poi un ‘rebalton’ meteorologico
+    ha compromesso, particolarmente in quota" (l''Adige, 2021-09-22), with "Segni di cedimento delle nascite
+    appunto in Valsugana, Baselga di Pine''" (Funghi Magazine, 2021-08-15)'
+  source: https://www.ladige.it/territori/pergine/funghi-una-buona-stagione-agosto-doro-e-purtroppo-anche-i-primi-intossicati-jm5241fz
+  higher:
+    area: alta_valsugana
+    seasons:
+    - 2020
+    start: 08-20
+    end: 09-25
+  lower:
+    area: alta_valsugana
+    seasons:
+    - 2021
+    start: 08-20
+    end: 09-25
+- id: trentino_july_2023_2022
+  claim: 'Trentino, July: 2023 "il mese di luglio non c''è lo si aspettava così ricco ... la raccolta
+    estiva di quest''anno è iniziata prima" (Gruppo Micologico Bresadola, il Dolomiti, 2023-08-02); 2022
+    "Il caldo di quest''ultimo periodo ha portato alla quasi completa assenza di funghi non soltanto nei
+    boschi del Trentino ma anche in quelli dell''Alto Adige" (il Dolomiti, 2022-07-20)'
+  source: https://www.ildolomiti.it/societa/2023/raccolta-dei-funghi-per-evitare-di-imbattersi-in-quelli-velenosi-succede-piu-frequentemente-di-quel-che-si-pensi-ce-la-casetta-di-piazza-vittoria
+  higher:
+    area: trentino
+    seasons:
+    - 2023
+    start: 07-10
+    end: 07-31
+  lower:
+    area: trentino
+    seasons:
+    - 2022
+    start: 07-10
+    end: 07-31
+- id: vallagarina_low_2024
+  claim: 'Vallagarina, late July 2024: "Quest''anno, però, butta male ... In questo periodo, di solito,
+    ce ne sono tanti"; "Nascite di porcini assenti nel fondovalle della valle dell''Adige e nelle zone
+    collinari a causa del gran caldo alternato a forti temporali" (Gruppo micologico Barbacovi, Rovereto,
+    l''Adige, 2024-08-02)'
+  source: https://www.ladige.it/montagna/pochi-funghi-e-non-si-capisce-il-perche-i-micologi-aspettano-ancora-la-buttata-giusta-di-agosto-kt7e89th
+  higher:
+    area: vallagarina_low
+    seasons: normal
+    start: 07-20
+    end: 08-02
+  lower:
+    area: vallagarina_low
+    seasons:
+    - 2024
+    start: 07-20
+    end: 08-02
+- id: region_early_august_2025
+  claim: 'Trentino-Alto Adige, late July to early August 2025: "Fino alla settimana scorsa la raccolta
+    è andata bene" ("finora è un''ottima stagione", Gruppo Micologico Bresadola, l''Adige, 2025-08-13);
+    "la grande buttata che ha interessato soprattutto Trentino-Alto Adige, Veneto e Friuli Venezia Giulia",
+    "Chi ha passato le vacanze in Trentino non avrà potuto non notare i Porcini ovunque" (Funghi Magazine,
+    2025-08-21); at Bressanone "i funghi stanno spuntando abbondanti" (Alto Adige, 2025-08-10)'
+  source: https://www.ladige.it/cronaca/il-caldo-fermera-pure-i-funghi-ma-finora-e-unottima-stagione-u1uiizgw
+  higher:
+    area: region
+    seasons:
+    - 2025
+    start: 07-25
+    end: 08-08
+  lower:
+    area: region
+    seasons: normal
+    start: 07-25
+    end: 08-08
+- id: west_vs_dolomites_2023
+  claim: 'Late September to mid-October 2023: "In Trentino Alto Adige funghi Porcini (e molti altri) a
+    volontà, tranne che sulle Dolomiti, dov''è piovuto meno rispetto al resto della regione" (Funghi Magazine,
+    2023-10-04); on 12 October porcini still picked "assai bene sui settori occidentali e settentrionali
+    del Trentino A.A, molto meno sui settori orientali e in generale su tutte le Dolomiti"'
+  source: https://funghimagazine.it/aggiornamento-porcini-04-10-2023/
+  higher:
+    area: western_valleys
+    seasons:
+    - 2023
+    start: 09-25
+    end: 10-12
+  lower:
+    area: dolomites
+    seasons:
+    - 2023
+    start: 09-25
+    end: 10-12
+- id: valsugana_vs_southern_trentino_2023
+  claim: 'Early August 2023: "Una flessione sulle nascite la registriamo sui settori Sud del Trentino,
+    tra Lago d''Idro e Lago di Garda, zona di Rovereto-Pasubio e Lessinia. Meglio dalla Valsugana all''Agordino"
+    (Funghi Magazine, 2023-08-10); on 24 August "nascite in drastica diminuzione o già assenti sui settori
+    Sud della Regione, in linea di massima a Sud di Trento"'
+  source: https://funghimagazine.it/aggiornamento-funghi-10-08-2023/
+  higher:
+    area: valsugana_tesino
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-10
+  lower:
+    area: southern_trentino
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-10
+- id: south_tyrol_september_vs_august_2023
+  claim: 'South Tyrol 2023: in early August "Le nascite di Porcini restano scarse e localmente anche assenti
+    su tutto il Sud Tirolo", nothing "Da Bolzano a Merano e Glorenza fino allo Stelvio", "Scarse anche
+    da Bolzano a Bressanone-Vipiteno e Brennero, passando anche per Brunico" (Funghi Magazine, 2023-08-10);
+    on 20 September Bolzano is among "le province con ottime nascite in corso"'
+  source: https://funghimagazine.it/aggiornamento-porcini-20-09-2023/
+  higher:
+    area: south_tyrol
+    seasons:
+    - 2023
+    start: 09-12
+    end: 09-25
+  lower:
+    area: south_tyrol
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-17
+- id: isarco_2025_2023
+  claim: 'Valle Isarco and Wipptal, the first half of August: 2025 "In un''estate segnata da condizioni
+    climatiche molto piovose come quelle attuali, i funghi stanno spuntando abbondanti" (Bressanone, Alto
+    Adige, 2025-08-10); 2023 porcini "Scarse anche da Bolzano a Bressanone-Vipiteno e Brennero" (Funghi
+    Magazine, 2023-08-10)'
+  source: https://www.altoadige.it/cronaca/bressanone-il-porcino-da-record-da-1-5-chilogrammi-1.4146223
+  higher:
+    area: isarco_wipptal
+    seasons:
+    - 2025
+    start: 08-01
+    end: 08-17
+  lower:
+    area: isarco_wipptal
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-17
+- id: south_tyrol_2021_poor
+  claim: 'South Tyrol 2021: "Zu trocken, zu windig, zu heiß: Heuer war kein gutes Pilzjahr in Südtirol";
+    in August chanterelles only briefly in some valleys, "Steinpilze gab es hingegen extrem wenige oder
+    teilweise sogar keine" (Karl Kob, Associazione Micologica Bresadola, Die Neue Südtiroler Tageszeitung,
+    2021-10-04)'
+  source: https://www.tageszeitung.it/2021/10/04/schlechtes-pilzjahr/
+  higher:
+    area: south_tyrol
+    seasons: normal
+    start: 08-01
+    end: 09-15
+  lower:
+    area: south_tyrol
+    seasons:
+    - 2021
+    start: 08-01
+    end: 09-15
+- id: south_tyrol_2019_late
+  claim: 'South Tyrol 2019: "Späte Pilzsaison in Südtirol"; "In einigen Jahren hat die Pilzsaison schon
+    Mitte Juli begonnen", this year "bisher nur wenige Schwammerln" after "Die lange Trockenheit und der
+    Regen Anfang August" (ORF Tirol, 2019-08-09)'
+  source: https://tirol.orf.at/stories/3007859/
+  higher:
+    area: south_tyrol
+    seasons: normal
+    start: 07-15
+    end: 08-08
+  lower:
+    area: south_tyrol
+    seasons:
+    - 2019
+    start: 07-15
+    end: 08-08
+- id: trentino_vs_south_tyrol_august_2019
+  claim: 'Early to mid-August 2019: "La provincia di Bolzano perciò, tolte alcune aree orientali, risulta
+    di molto più improduttiva rispetto a quella di Trento" (Funghi Magazine, 2019-08-16); in Trentino
+    a period "eccezionalmente buono" in the Giudicarie (l''Adige, 2019-08-17) and "una copiosa produzione
+    di funghi" in the upper Val di Non (l''Adige, 2019-08-23)'
+  source: https://funghimagazine.it/buone-nascite-di-funghi-porcini-vediamo-dove-le-piogge-caduta-in-italia/
+  higher:
+    area: trentino
+    seasons:
+    - 2019
+    start: 08-05
+    end: 08-16
+  lower:
+    area: south_tyrol_without_east
+    seasons:
+    - 2019
+    start: 08-05
+    end: 08-16
+- id: trentino_vs_south_tyrol_july_2024
+  claim: 'Second half of July 2024: "Soprattutto in Trentino ... buone o persino già ottime nascite di
+    Porcini edulis in zona. Più timide le nascite di edulis in Alto Adige" (Funghi Magazine, 2024-07-25)'
+  source: https://funghimagazine.it/aggiornamento-funghi-25-07-2024/
+  higher:
+    area: trentino
+    seasons:
+    - 2024
+    start: 07-15
+    end: 07-25
+  lower:
+    area: south_tyrol
+    seasons:
+    - 2024
+    start: 07-15
+    end: 07-25
+- id: south_tyrol_vs_trentino_july_2025
+  claim: 'Early July 2025: "Sì, è già tempo di Porcini veri, soprattutto in Alto Adige!"; "tutto l''Alto
+    Adige: in piena fase positiva ... i primi edulis!"; "Trentino: ha sofferto di più il gran caldo, specie
+    nei fondovalle dell''Adige" (Funghi Magazine, 2025-07-10)'
+  source: https://funghimagazine.it/aggiornamento-nascite-funghi-11-18-luglio-2025/
+  higher:
+    area: south_tyrol
+    seasons:
+    - 2025
+    start: 07-01
+    end: 07-12
+  lower:
+    area: trentino
+    seasons:
+    - 2025
+    start: 07-01
+    end: 07-12
+- id: gallinacci_pusteria_2023_2022
+  claim: 'Val Pusteria and its side valleys, late July to early August: 2023 "Le ripetute piogge e le
+    temperature gradevoli e non torride come lo scorso anno ci hanno regalato distese di finferli ...
+    Mi riferisco in particolare al nord-est della provincia: val Pusteria e valli limitrofe", the season
+    "iniziata bene già alla fine di luglio" (Associazione Micologica Bresadola, Bolzano, Alto Adige, 2023-08-08);
+    2022 in mid-July "bisher gibt es im Wald wenig zu holen – außer einigen Pfifferlingen. Die Trockenheit,
+    der Wind, die hohen Temperaturen und das fehlende Nass hemmen das Pilzwachstum" (stol.it, 2022-07-15)'
+  source: https://www.altoadige.it/cronaca/bolzano/funghi-stagione-esplosa-ma-attenzione-ai-velenosi-1.3559689
+  higher:
+    area: pusteria
+    seasons:
+    - 2023
+    start: 07-25
+    end: 08-08
+  lower:
+    area: pusteria
+    seasons:
+    - 2022
+    start: 07-25
+    end: 08-08
+- id: gallinacci_trentino_2024_2025
+  claim: 'Trentino, mid to late July: in 2025 "rispetto allo scorso anno sembra diminuita la quantità
+    di finferli" (Gruppo Micologico Bresadola, l''Adige, 2025-07-27); in July 2024 "al Nord abbondano
+    solamente Finferli-Galletti" (Funghi Magazine, 2024-07-25) and finferli "ancora ben presenti dai colli
+    ai monti lagarini" (l''Adige, 2024-08-02)'
+  source: https://www.ladige.it/cronaca/raccolta-funghi-limite-a-tre-chili-lesperto-potrebbe-essere-una-buona-stagione-rgjl6zqp
+  higher:
+    area: trentino
+    seasons:
+    - 2024
+    start: 07-10
+    end: 07-27
+  lower:
+    area: trentino
+    seasons:
+    - 2025
+    start: 07-10
+    end: 07-27

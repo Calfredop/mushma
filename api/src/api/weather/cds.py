@@ -625,6 +625,22 @@ def _on_grid(frame: pd.DataFrame) -> pd.DataFrame:
     return out.assign(time=times)
 
 
+# One ERA5-Land grid step: how far past the shared snowfall file a node may sit and still take the
+# file's edge row. The Italy-wide file stops at 47.1° N; Trentino-Alto Adige's northernmost nodes
+# (47.2° N) serve cells at 46.9-47.09° N, which the edge row is nearer to than the nodes are.
+SNOWFALL_EDGE_STEP_DEG = 0.1
+
+
+def _onto_edge(values, axis):
+    """``values`` moved onto the nearer end of ``axis`` when they lie at most one grid step past
+    it; anything further out is left for the selection's tolerance to reject."""
+    low, high = float(axis.min()), float(axis.max())
+    step = SNOWFALL_EDGE_STEP_DEG + 1e-6
+    below = (values < low) & (values >= low - step)
+    above = (values > high) & (values <= high + step)
+    return values.where(~below, low).where(~above, high)
+
+
 def read_snowfall_zip(path: Path, points: pd.DataFrame) -> pd.DataFrame:
     """Hourly snowfall (``time``, ``lat``, ``lon``, ``sf``) at the land nodes of ``points`` from a
     gridded CDS zip. Nodes are picked in xarray before any frame is built: an Italy-wide half-year
@@ -650,7 +666,10 @@ def read_snowfall_zip(path: Path, points: pd.DataFrame) -> pd.DataFrame:
                     if "sf" not in ds.data_vars:
                         continue
                     picked = ds["sf"].sel(
-                        latitude=lats, longitude=lons, method="nearest", tolerance=0.01
+                        latitude=_onto_edge(lats, ds["latitude"]),
+                        longitude=_onto_edge(lons, ds["longitude"]),
+                        method="nearest",
+                        tolerance=0.01,
                     )
                     frame = picked.to_dataframe().reset_index()
             finally:

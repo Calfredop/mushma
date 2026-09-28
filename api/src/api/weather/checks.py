@@ -26,7 +26,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpa_piemonte, arpal, umbria_sir
+from api.weather import arpa_piemonte, arpal, bolzano_meteo, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -303,12 +303,20 @@ def arpa_piemonte_network(raw: Path, start: date, end: date) -> GaugeNetwork:
     return GaugeNetwork(arpa_piemonte.parse_stations(stations), series, arpal.utc_day_totals)
 
 
+def bolzano_meteo_network(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """Provincia di Bolzano: one open workbook per station (CC0), 09:00-09:00 CET days
+    (api.weather.bolzano_meteo). South Tyrol only: Trento's history has no open download."""
+    gauges, by_code = bolzano_meteo.read_network(raw / "bolzano_meteo", fetch)
+    return GaugeNetwork(gauges, lambda gauge: by_code[gauge.code], gauge_day_totals)
+
+
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "emilia_romagna": arpae_emilia_romagna,
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
     "umbria": umbria_sir_network,
     "piemonte": arpa_piemonte_network,
+    "trentino_alto_adige": bolzano_meteo_network,
 }
 
 
