@@ -17,6 +17,11 @@ function matches(name: string, query: string): boolean {
   return norm(name).includes(norm(query.trim()))
 }
 
+/** Keep focus in the field so a container blur doesn't unmount the menu before click. */
+function keepFocus(event: { preventDefault: () => void }) {
+  event.preventDefault()
+}
+
 export function RegionSwitcher({ value, onChange, onShowAll }: Props) {
   const { t } = useTranslation()
   const language = currentLanguage() as Language
@@ -54,7 +59,6 @@ export function RegionSwitcher({ value, onChange, onShowAll }: Props) {
             return
           }
           setOpen(true)
-          // Focus the search once the menu is in the DOM.
           queueMicrotask(() => searchRef.current?.focus())
         }}
       >
@@ -67,6 +71,7 @@ export function RegionSwitcher({ value, onChange, onShowAll }: Props) {
             <button
               type="button"
               className={styles.showAll}
+              onMouseDown={keepFocus}
               onClick={() => {
                 onShowAll()
                 close()
@@ -104,6 +109,7 @@ export function RegionSwitcher({ value, onChange, onShowAll }: Props) {
                     role="option"
                     aria-selected={region.slug === value.slug}
                     className={styles.option}
+                    onMouseDown={keepFocus}
                     onClick={() => {
                       onChange(region.slug)
                       close()

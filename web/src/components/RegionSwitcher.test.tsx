@@ -16,6 +16,8 @@ describe('RegionSwitcher', () => {
       />,
     )
     await userEvent.click(screen.getByRole('button', { name: 'Regione' }))
+    // Search is focused on open; picking must still work (mousedown keeps focus).
+    expect(screen.getByRole('searchbox', { name: 'Cerca una regione' })).toHaveFocus()
     await userEvent.click(screen.getByRole('option', { name: 'Umbria' }))
     expect(onChange).toHaveBeenCalledWith('umbria')
   })
