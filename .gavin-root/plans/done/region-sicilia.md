@@ -1,7 +1,7 @@
 ---
 order: 14336
 title: [region] Sicilia
-status: In Progress
+status: Done
 complexity: complex
 ---
 Region #18 of `feat-full-italy-coverage.md`; the parent plan holds the decisions.
