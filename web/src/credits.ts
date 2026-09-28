@@ -90,6 +90,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Lazio — Carta forestale su base tipologica',
+    url: 'https://dati.lazio.it/dataset/carta-forestale-su-base-tipologica-della-regione-lazio',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Copernicus DEM GLO-30',
     url: 'https://registry.opendata.aws/copernicus-dem/',
     use: 'elevation',
