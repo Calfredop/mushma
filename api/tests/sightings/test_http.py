@@ -7,6 +7,8 @@ import pytest
 
 from api.sightings.http import JsonClient, fetch_pages
 
+DROP = 0  # a FakeApi status: close the connection without answering
+
 
 class FakeApi(BaseHTTPRequestHandler):
     responses: list[tuple[int, dict]] = []
@@ -16,6 +18,9 @@ class FakeApi(BaseHTTPRequestHandler):
         type(self).hits.append(self.path)
         queue = type(self).responses
         status, body = queue.pop(0) if len(queue) > 1 else queue[0]
+        if status == DROP:
+            self.close_connection = True  # hang up without a response
+            return
         payload = json.dumps(body).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
@@ -59,6 +64,16 @@ def test_client_retries_server_errors_with_backoff(server: str) -> None:
 
 def test_client_retries_429_with_backoff(server: str) -> None:
     FakeApi.responses = [(429, {}), (200, {"ok": True})]
+    clock = FakeClock()
+
+    payload = JsonClient(sleep=clock, backoff_s=1).get(server)
+
+    assert payload == {"ok": True}
+    assert clock.sleeps == [1]
+
+
+def test_client_retries_a_dropped_connection(server: str) -> None:
+    FakeApi.responses = [(DROP, {}), (200, {"ok": True})]
     clock = FakeClock()
 
     payload = JsonClient(sleep=clock, backoff_s=1).get(server)

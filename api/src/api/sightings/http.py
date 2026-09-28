@@ -31,7 +31,9 @@ class JsonClient:
                 retryable = error.code == 429 or error.code >= 500
                 if not retryable or failures >= self.retries:
                     raise ValueError(f"{url} -> {error.code} {error.reason}") from error
-            except (urllib.error.URLError, TimeoutError) as error:
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+                # ConnectionError: a server that hangs up without answering (iNaturalist does,
+                # now and then), which urllib raises as http.client.RemoteDisconnected.
                 if failures >= self.retries:
                     raise ValueError(f"{url} -> {error}") from error
             self.sleep(self.backoff_s * 2**failures)
