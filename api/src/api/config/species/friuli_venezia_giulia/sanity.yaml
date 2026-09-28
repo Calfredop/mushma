@@ -1,0 +1,489 @@
+# Press-contrast sanity check for Friuli-Venezia Giulia (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025, with the bilingual Karst forms) or provinces (sigle); windows
+# and source URLs written down on 2026-09-27, before any Friuli-Venezia Giulia score existed.
+# `seasons: normal` expands to `normal_seasons`. 14 contrasts are porcini (the default `--group
+# porcini`); `gallinacci_...` and `ovoli_...` are read with `--group gallinacci` and `--group ovoli`.
+# Quotes, second sources and caveats per contrast: .gavin-root/docs/species-ecology/
+# friuli_venezia_giulia.md (Press contrasts). Local papers rarely sum up a season: 6 contrasts rest on
+# the Messaggero Veneto, Il Piccolo and Il Friuli quoting the Udine and Trieste mycological groups, the
+# other 10 mainly on Funghi Magazine's weekly bulletins, one editor working from readers' reports and
+# rain gauges. Friulian usage: "gialletti"/"galletti" are C. cibarius, "finferli" may mean Craterellus.
+areas:
+  carnia:
+    comuni:
+    - Amaro
+    - Ampezzo
+    - Arta Terme
+    - Cavazzo Carnico
+    - Cercivento
+    - Comeglians
+    - Enemonzo
+    - Forni Avoltri
+    - Forni di Sopra
+    - Forni di Sotto
+    - Lauco
+    - Ovaro
+    - Paluzza
+    - Paularo
+    - Prato Carnico
+    - Preone
+    - Ravascletto
+    - Raveo
+    - Rigolato
+    - Sappada
+    - Sauris
+    - Socchieve
+    - Sutrio
+    - Tolmezzo
+    - Treppo Ligosullo
+    - Verzegnis
+    - Villa Santina
+    - Zuglio
+  tarvisiano:
+    comuni:
+    - Tarvisio
+    - Malborghetto Valbruna
+    - Pontebba
+  fvg_alps:
+    comuni:
+    - Amaro
+    - Ampezzo
+    - Arta Terme
+    - Cavazzo Carnico
+    - Cercivento
+    - Comeglians
+    - Enemonzo
+    - Forni Avoltri
+    - Forni di Sopra
+    - Forni di Sotto
+    - Lauco
+    - Ovaro
+    - Paluzza
+    - Paularo
+    - Prato Carnico
+    - Preone
+    - Ravascletto
+    - Raveo
+    - Rigolato
+    - Sappada
+    - Sauris
+    - Socchieve
+    - Sutrio
+    - Tolmezzo
+    - Treppo Ligosullo
+    - Verzegnis
+    - Villa Santina
+    - Zuglio
+    - Tarvisio
+    - Malborghetto Valbruna
+    - Pontebba
+    - Chiusaforte
+    - Dogna
+    - Resia
+    - Resiutta
+    - Moggio Udinese
+  giulie:
+    comuni:
+    - Tarvisio
+    - Malborghetto Valbruna
+    - Chiusaforte
+    - Dogna
+    - Resia
+    - Resiutta
+    - Lusevera
+    - Taipana
+    - Pulfero
+    - San Pietro al Natisone
+    - Savogna
+    - Stregna
+    - Grimacco
+    - Drenchia
+    - San Leonardo
+  dolomiti_friulane_pn:
+    comuni:
+    - Andreis
+    - Cimolais
+    - Claut
+    - Erto e Casso
+    - Frisanco
+    - Tramonti di Sopra
+    - Tramonti di Sotto
+    - Barcis
+    - Meduno
+    - Maniago
+    - Montereale Valcellina
+  fvg_hills:
+    comuni:
+    - Cividale del Friuli
+    - Prepotto
+    - Corno di Rosazzo
+    - Premariacco
+    - Manzano
+    - Povoletto
+    - Tarcento
+    - Cormons
+    - Dolegna del Collio
+    - San Floriano del Collio-Števerjan
+    - Gorizia
+    - San Lorenzo Isontino
+    - San Daniele del Friuli
+    - Ragogna
+    - Pinzano al Tagliamento
+    - Sequals
+    - Fanna
+    - Cavasso Nuovo
+    - Castelnovo del Friuli
+  carso:
+    comuni:
+    - Trieste
+    - Muggia
+    - San Dorligo della Valle-Dolina
+    - Sgonico-Zgonik
+    - Monrupino-Repentabor
+    - Duino Aurisina-Devin Nabrežina
+    - Doberdò del Lago-Doberdob
+    - Savogna d'Isonzo-Sovodnje ob Soči
+    - Sagrado
+    - Fogliano Redipuglia
+    - Ronchi dei Legionari
+    - Monfalcone
+  hills_and_carso:
+    comuni:
+    - Cividale del Friuli
+    - Prepotto
+    - Corno di Rosazzo
+    - Premariacco
+    - Manzano
+    - Povoletto
+    - Tarcento
+    - Cormons
+    - Dolegna del Collio
+    - San Floriano del Collio-Števerjan
+    - Gorizia
+    - San Lorenzo Isontino
+    - San Daniele del Friuli
+    - Ragogna
+    - Pinzano al Tagliamento
+    - Sequals
+    - Fanna
+    - Cavasso Nuovo
+    - Castelnovo del Friuli
+    - Trieste
+    - Muggia
+    - San Dorligo della Valle-Dolina
+    - Sgonico-Zgonik
+    - Monrupino-Repentabor
+    - Duino Aurisina-Devin Nabrežina
+    - Doberdò del Lago-Doberdob
+    - Savogna d'Isonzo-Sovodnje ob Soči
+    - Sagrado
+    - Fogliano Redipuglia
+    - Ronchi dei Legionari
+    - Monfalcone
+  pordenone:
+    provinces:
+    - PN
+  trieste:
+    provinces:
+    - TS
+  region:
+    provinces:
+    - '*'
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: carnia_vs_hills_2017
+  claim: 'Late August to September 2017: conditions "negative, e addirittura disastrose nella fascia
+    collinare, per poi migliorare dalla fine di agosto, ma soltanto in Carnia, mentre nelle altre zone le
+    buone buttate sono state brevi e direi episodiche" (Centro micologico friulano, Messaggero Veneto,
+    2017-10-31)'
+  source: https://www.messaggeroveneto.it/cronaca/funghi-annata-negativa-si-salva-solo-lautunno-q5qnwrip
+  higher:
+    area: carnia
+    seasons:
+    - 2017
+    start: 08-25
+    end: 09-30
+  lower:
+    area: fvg_hills
+    seasons:
+    - 2017
+    start: 08-25
+    end: 09-30
+- id: carnia_vs_tarvisiano_2017
+  claim: 'Autumn 2017: "La Carnia meglio del Tarvisiano, in collina poche soddisfazioni" (subtitle);
+    the good flushes from late August came "soltanto in Carnia", elsewhere "brevi e direi episodiche"
+    (Centro micologico friulano, Messaggero Veneto, 2017-10-31)'
+  source: https://www.messaggeroveneto.it/cronaca/funghi-annata-negativa-si-salva-solo-lautunno-q5qnwrip
+  higher:
+    area: carnia
+    seasons:
+    - 2017
+    start: 08-25
+    end: 10-15
+  lower:
+    area: tarvisiano
+    seasons:
+    - 2017
+    start: 08-25
+    end: 10-15
+- id: carso_2017_2016_autumn
+  claim: 'Trieste Karst, late September to mid-October: in 2017 "Da tre settimane il meteo è cambiato,
+    regalando fioriture a dir poco eccezionali, un aumento dell''80% rispetto al 2016", "tantissimi
+    porcini e ovuli" (AMB Bresadola Trieste, Il Piccolo, 2017-10-12); in 2016 the same group was
+    "in ansia causa il perdurare della siccità di inizio mese" and "Appena ora ... iniziano a spuntare i
+    funghi" (Il Piccolo, 2016-10-09)'
+  source: https://www.ilpiccolo.it/cronaca/fvg-il-meteo-perfetto-regala-a-porcini-e-ovuli-un-autunno-da-record-p8k6lur7
+  higher:
+    area: carso
+    seasons:
+    - 2017
+    start: 09-21
+    end: 10-12
+  lower:
+    area: carso
+    seasons:
+    - 2016
+    start: 09-21
+    end: 10-12
+- id: alps_2016_late_summer
+  claim: 'Summer 2016 in the Friulian Alps: "Contrariamente al solito, quando la prima buttata di fine
+    giugno riguarda le zone basse, quest''anno siamo dovuti salire oltre i 1.500 metri per trovare i
+    primi porcini"; the first porcini in the usual places came about 1 September near Paluzza, and "sin
+    qui, il Boletus Edulis è stato il grande assente di questa estate" (Udine mycologists, Il Piccolo,
+    2016-09-11)'
+  source: https://www.ilpiccolo.it/cronaca/gialletti-da-record-e-zero-porcini-nellestate-anomala-dei-funghi-achmqfo8
+  higher:
+    area: fvg_alps
+    seasons: normal
+    start: 06-20
+    end: 08-31
+  lower:
+    area: fvg_alps
+    seasons:
+    - 2016
+    start: 06-20
+    end: 08-31
+- id: alps_2020_2021_september
+  claim: 'Late August to 20 September: in 2020 porcini "nascite in crescendo con apice verso la fine del
+    mese" in the eastern Alps including FVG, then "la buttata-non-stop si è un po'' fermata" (Funghi
+    Magazine, 2020-09-04, 2020-09-21); in 2021 "la stagnazione di piogge fredde ha bloccato ogni possibile
+    nascita" in Carnia and northern Friuli (Funghi Magazine, 2021-09-04), a year of "una certa carenza"
+    of porcini and galletti after a 2020 that "era stato molto buono" (Centro micologico friulano, Il
+    Friuli, 2021-11-14)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2021-porcini-giganti/
+  higher:
+    area: fvg_alps
+    seasons:
+    - 2020
+    start: 08-25
+    end: 09-20
+  lower:
+    area: fvg_alps
+    seasons:
+    - 2021
+    start: 08-25
+    end: 09-20
+- id: alps_2021_august_vs_september
+  claim: 'Carnia and the Julian Alps in 2021: in mid-August "Carnia, Alpi e Prealpi Giulie sono al momento
+    in ottima forma" and "buone nascite di Porcini dai colli pedemontani alle Prealpi ed Alpi" (Funghi
+    Magazine, 2021-08-12 and 2021-08-19); from late August cold rain and wind "ha inibito le nascite così
+    come accaduto nella vicina Carnia e sulle Alpi Giulie" (2021-09-10), and in October "la perdurante
+    assenza di funghi Porcini" in the Triveneto (2021-10-09)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-porcini-20-08-2021/
+  higher:
+    area: fvg_alps
+    seasons:
+    - 2021
+    start: 08-08
+    end: 08-20
+  lower:
+    area: fvg_alps
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-30
+- id: alps_2023_2024_late_july
+  claim: 'Mid to late July: in 2023 "Ottime nascite anche in tutto l''alto Veneto da Agordo-Longarone fino
+    alle Alpi Carniche e più ad Est su tutte le Giulie" (Funghi Magazine, 2023-07-20); in 2024 porcini
+    edulis had come to Trentino and the Veneto mountains, "non in Friuli Venezia Giulia dove sui monti è
+    ancora primavera" (Funghi Magazine, 2024-07-25)'
+  source: https://funghimagazine.it/aggiornamento-funghi-20-07-2023/
+  higher:
+    area: fvg_alps
+    seasons:
+    - 2023
+    start: 07-15
+    end: 07-25
+  lower:
+    area: fvg_alps
+    seasons:
+    - 2024
+    start: 07-15
+    end: 07-25
+- id: alps_vs_hills_carso_october_2023
+  claim: 'Late September to mid-October 2023: "le nascite sono del tutto cessate in collina, proseguono
+    invece in alta quota sulle Alpi Carniche e Giulie, soprattutto sui settori montani più interni ...
+    A secco invece il Carso, arso e riarso dal caldo vento favonico" (Funghi Magazine, 2023-10-12)'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: fvg_alps
+    seasons:
+    - 2023
+    start: 09-28
+    end: 10-12
+  lower:
+    area: hills_and_carso
+    seasons:
+    - 2023
+    start: 09-28
+    end: 10-12
+- id: carso_2023_2024_august
+  claim: 'Karst, first half of August: in 2023 "l''exploit del Carso e dei confini con la Slovenia dove si
+    stanno trovando in contemporanea tutte 4 le specie di Porcini" (Funghi Magazine, 2023-08-17); in 2024
+    "sul Carso non sta nascendo nulla per siccità dovuta alla canicola", with 35 °C at Trieste (Funghi
+    Magazine, 2024-08-16)'
+  source: https://funghimagazine.it/aggiornamento-funghi-17-08-2023/
+  higher:
+    area: carso
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-17
+  lower:
+    area: carso
+    seasons:
+    - 2024
+    start: 08-01
+    end: 08-17
+- id: carso_2023_august_vs_autumn
+  claim: 'Karst 2023: the August flush of all four porcini (Funghi Magazine, 2023-08-17), then by
+    September "le nascite della buttata di Agosto sono già un lontano ricordo" (2023-09-06), Trieste among
+    the provinces "con assenza attuale di nascite" (2023-09-20) and "A secco invece il Carso" (2023-10-12)'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: carso
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-17
+  lower:
+    area: carso
+    seasons:
+    - 2023
+    start: 09-14
+    end: 10-12
+- id: region_2025_2024_early_august
+  claim: 'Late July to early August: in 2025 "Friuli V.G. : è boom totale, dal piano alla montagna" (Funghi
+    Magazine, 2025-08-01), after "buone nascite fungine ovunque, soprattutto di Porcini edulis" in the
+    Triveneto (2025-07-25); in 2024 the FVG mountains were still "primavera" in late July (2024-07-25) and
+    had "timide nascite per eccesso di precipitazioni" in mid-August (2024-08-16)'
+  source: https://funghimagazine.it/aggiornamento-nascite-01-08-agosto-2025/
+  higher:
+    area: region
+    seasons:
+    - 2025
+    start: 07-20
+    end: 08-10
+  lower:
+    area: region
+    seasons:
+    - 2024
+    start: 07-20
+    end: 08-10
+- id: dolomiti_friulane_vs_giulie_july_2024
+  claim: 'Early July 2024: "Alpi e Prealpi Giulie sono state le più bersagliate dai temporali pertanto qua
+    al momento si registrano nascite per lo più di soli Finferli. Porcini estivi e dove possibile anche
+    Rossi e sporadici Edulis si registrano invece nel Parco Naturale delle Dolomiti Friulane e relative
+    pedemontane" (Funghi Magazine, 2024-07-12)'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-07-2024/
+  higher:
+    area: dolomiti_friulane_pn
+    seasons:
+    - 2024
+    start: 07-01
+    end: 07-11
+  lower:
+    area: giulie
+    seasons:
+    - 2024
+    start: 07-01
+    end: 07-11
+- id: pordenone_vs_trieste_september_2023
+  claim: 'Mid-September 2023: Pordenone among "le province con ottime nascite in corso, pur senza
+    delirio", Trieste among "le province con assenza attuale di nascite" (Funghi Magazine, 2023-09-20)'
+  source: https://funghimagazine.it/aggiornamento-porcini-20-09-2023/
+  higher:
+    area: pordenone
+    seasons:
+    - 2023
+    start: 09-13
+    end: 09-20
+  lower:
+    area: trieste
+    seasons:
+    - 2023
+    start: 09-13
+    end: 09-20
+- id: hills_2023_2017_early_august
+  claim: 'Late July to early August: in 2023 flushes "non solo ottime ma persino massicce, incluse le zone
+    pianeggianti e collinari attorno a Pordenone, Udine, Gorizia e, persino attorno a Trieste" (Funghi
+    Magazine, 2023-08-10); in 2017 conditions were "addirittura disastrose nella fascia collinare" until
+    the end of September (Centro micologico friulano, Messaggero Veneto, 2017-10-31)'
+  source: https://funghimagazine.it/aggiornamento-funghi-10-08-2023/
+  higher:
+    area: fvg_hills
+    seasons:
+    - 2023
+    start: 07-25
+    end: 08-10
+  lower:
+    area: fvg_hills
+    seasons:
+    - 2017
+    start: 07-25
+    end: 08-10
+- id: gallinacci_alps_2016_2021
+  claim: 'July-August: in 2016 "I gialletti da record, i porcini si fanno attendere", C. cibarius "Li si è
+    visti un po'' ovunque, a luglio e poi ancora ad agosto" (Udine mycologists, Il Piccolo, 2016-09-11);
+    in 2021 a shortage that touched "la famiglia dei boleti (porcini) e dei cantarelli (galletti)"
+    (Centro micologico friulano, Il Friuli, 2021-11-14)'
+  source: https://www.ilpiccolo.it/cronaca/gialletti-da-record-e-zero-porcini-nellestate-anomala-dei-funghi-achmqfo8
+  higher:
+    area: fvg_alps
+    seasons:
+    - 2016
+    start: 07-01
+    end: 08-31
+  lower:
+    area: fvg_alps
+    seasons:
+    - 2021
+    start: 07-01
+    end: 08-31
+- id: ovoli_carso_2017_2016
+  claim: 'Trieste Karst, late September to mid-October: in 2017 ovoli ("amanita caesarea") up 80 % on
+    2016, "tantissimi porcini e ovuli" (AMB Bresadola Trieste, Il Piccolo, 2017-10-12); in 2016 "Ovuli e
+    mazze di tamburo tra i grandi assenti" (Il Piccolo, 2016-09-11) and a Karst drought into early October
+    (Il Piccolo, 2016-10-09)'
+  source: https://www.ilpiccolo.it/cronaca/fvg-il-meteo-perfetto-regala-a-porcini-e-ovuli-un-autunno-da-record-p8k6lur7
+  higher:
+    area: carso
+    seasons:
+    - 2017
+    start: 09-21
+    end: 10-12
+  lower:
+    area: carso
+    seasons:
+    - 2016
+    start: 09-21
+    end: 10-12

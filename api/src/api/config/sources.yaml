@@ -87,6 +87,29 @@ rl_tipi_forestali:
     sort_by: ogr_fid
     field: cod_catfor
 
+fvg_tipologie_forestali:
+  name: Regione Autonoma Friuli Venezia Giulia — Tipologie forestali 2013
+  homepage: https://geodati.gov.it/resource/id/r_friuve:m2182-cc-i10191
+  license: IODL 2.0
+  attribution: "Tipologie forestali © Regione Autonoma Friuli Venezia Giulia, IODL 2.0"
+  notes: >-
+    The regional forest-type map in the IRDAT catalogue (WFS layer IRDAT:TIPOLOGIE_FORESTALI_2013):
+    the forest area of Friuli Venezia Giulia typed with the regional typology (Del Favero et al.
+    1998: 20 categories, 105 types and subtypes, 70 variants). It joins the 1997-1999 "Tipi
+    forestali" survey, updated in 2010, with the 2011 "Completamento del GIS dei Tipi forestali"
+    (lowland and hill woods, validated 2013) and the Sappada forest plan of 2017. 20,556 polygons,
+    325,467 ha including the mugo-pine and green-alder scrub. Forest only, so one map gives both
+    groups and types, from the type code (CODICE_TIPO; a code like SN/GB0 is a spruce plantation
+    on a beech site, XE/DB0 new woodland heading for hop-hornbeam). The RNDT record (revised
+    2013-11-11) gives IODL 2.0 under DGR 2626/2014 and no limits on public access; the IRDAT
+    Distributore also serves it as a shapefile. The GeoServer answers the whole layer in one
+    GetFeature.
+  download:
+    wfs: https://serviziogc.regione.fvg.it/geoserver/IRDAT/wfs
+    type_name: IRDAT:TIPOLOGIE_FORESTALI_2013
+    srs: EPSG:25833
+    field: CODICE_TIPO
+
 rm_rem_vegetazione:
   name: Regione Marche — Rete Ecologica Marche (REM), Vegetazione naturale 1:50.000
   homepage: https://www.regione.marche.it/Entra-in-Regione/Rete-Ecologica-Marche-REM/Cartografia-shapefile
