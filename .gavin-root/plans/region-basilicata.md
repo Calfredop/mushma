@@ -1,5 +1,5 @@
 ---
-order: 15360
+order: 6144
 title: [region] Basilicata
 status: To Do
 complexity: complex

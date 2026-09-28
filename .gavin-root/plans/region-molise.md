@@ -1,5 +1,5 @@
 ---
-order: 12288
+order: 5120
 title: [region] Molise
 status: To Do
 complexity: complex

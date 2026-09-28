@@ -1,5 +1,5 @@
 ---
-order: 6144
+order: 3072
 title: [region] Valle d'Aosta
 status: To Do
 complexity: complex
