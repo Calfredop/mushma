@@ -1,0 +1,479 @@
+# Press-contrast sanity check for Calabria (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names, all in Calabria; Casali del Manco holds the former Spezzano
+# Piccolo, Pedace, Serra Pedace, Casole Bruzio and Trenta). Windows and source URLs written down on
+# 2026-09-28, before any Calabria score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Calabrian local press rarely says how a season went; most contrasts rest on Funghi Magazine's
+# national bulletins (read through Wayback Machine captures, the live site is behind a captcha),
+# whose Calabria paragraphs are written from readers' reports, each contrast on 2-5 bulletins.
+# Quotes, second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/calabria.md
+# (Sanity contrasts).
+areas:
+  sila:
+    comuni:
+    - Spezzano della Sila
+    - San Giovanni in Fiore
+    - Casali del Manco
+    - Longobucco
+    - Bocchigliero
+    - Acri
+    - Celico
+    - Taverna
+    - Albi
+    - Magisano
+    - Zagarise
+    - Sersale
+    - Cotronei
+    - Savelli
+    - Mesoraca
+    - Petronà
+    - Aprigliano
+    - Parenti
+    - Rogliano
+    - Colosimi
+    - Carlopoli
+  sila_grande:
+    comuni:
+    - Spezzano della Sila
+    - Casali del Manco
+    - San Giovanni in Fiore
+    - Celico
+    - Aprigliano
+    - Parenti
+  sila_piccola_greca:
+    comuni:
+    - Taverna
+    - Albi
+    - Magisano
+    - Zagarise
+    - Sersale
+    - Cotronei
+    - Savelli
+    - Mesoraca
+    - Petronà
+    - Acri
+    - Longobucco
+    - Bocchigliero
+  pollino_interno:
+    comuni:
+    - Castrovillari
+    - Morano Calabro
+    - Frascineto
+    - Civita
+    - San Lorenzo Bellizzi
+    - Cerchiara di Calabria
+    - Alessandria del Carretto
+    - Saracena
+  sila_costiera:
+    comuni:
+    - Spezzano della Sila
+    - San Giovanni in Fiore
+    - Casali del Manco
+    - Longobucco
+    - Bocchigliero
+    - Acri
+    - Celico
+    - Taverna
+    - Albi
+    - Magisano
+    - Zagarise
+    - Sersale
+    - Cotronei
+    - Savelli
+    - Mesoraca
+    - Petronà
+    - Aprigliano
+    - Parenti
+    - Rogliano
+    - Colosimi
+    - Carlopoli
+    - Fuscaldo
+    - Paola
+    - San Fili
+    - Cerisano
+    - Fiumefreddo Bruzio
+    - Lago
+    - Aiello Calabro
+  costiera_orsomarso:
+    comuni:
+    - Fuscaldo
+    - Paola
+    - San Fili
+    - Cerisano
+    - Fiumefreddo Bruzio
+    - Lago
+    - Aiello Calabro
+    - Orsomarso
+    - Verbicaro
+    - Papasidero
+    - Mormanno
+    - Laino Borgo
+    - San Donato di Ninea
+    - Sant'Agata di Esaro
+  pollino_orsomarso_costiera:
+    comuni:
+    - Castrovillari
+    - Morano Calabro
+    - Frascineto
+    - Civita
+    - San Lorenzo Bellizzi
+    - Cerchiara di Calabria
+    - Alessandria del Carretto
+    - Saracena
+    - Orsomarso
+    - Verbicaro
+    - Papasidero
+    - Mormanno
+    - Laino Borgo
+    - San Donato di Ninea
+    - Sant'Agata di Esaro
+    - Fuscaldo
+    - Paola
+    - San Fili
+    - Cerisano
+    - Fiumefreddo Bruzio
+    - Lago
+    - Aiello Calabro
+  serre_aspromonte:
+    comuni:
+    - Serra San Bruno
+    - Mongiana
+    - Fabrizia
+    - Spadola
+    - Brognaturo
+    - Simbario
+    - Nardodipace
+    - Stilo
+    - Bivongi
+    - Pazzano
+    - Cardinale
+    - Chiaravalle Centrale
+    - Torre di Ruggiero
+    - Santo Stefano in Aspromonte
+    - San Luca
+    - Delianuova
+    - Scido
+    - Cosoleto
+    - Sinopoli
+    - Oppido Mamertina
+    - Platì
+    - Cittanova
+    - Molochio
+    - Mammola
+    - Canolo
+    - Gerace
+    - Roccaforte del Greco
+    - Bova
+    - Bagaladi
+    - Cardeto
+    - Africo
+  aspromonte_serre_vibonesi:
+    comuni:
+    - Santo Stefano in Aspromonte
+    - Delianuova
+    - Scido
+    - Cosoleto
+    - Sinopoli
+    - Oppido Mamertina
+    - Cittanova
+    - Molochio
+    - Serra San Bruno
+    - Mongiana
+    - Fabrizia
+    - Spadola
+    - Brognaturo
+    - Simbario
+    - Nardodipace
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: sila_2016_normal
+  claim: 'Mid-September 2016: ''Non si vedeva una stagione di funghi così da diversi anni. Dalla
+    Sila Grande a quella Piccola, passando per le Serre catanzaresi e vibonesi fino alla Sila Greca
+    e al Pollino è un boom di funghi'' (EcodelloJonio, 2016-09-24); ''si registrano raccolte record
+    nei territori delle località silane'' (Parola di Vita, 2016-09-23); ''mai come prima era stato
+    tanto abbondante ... il raccolto dei funghi porcini'' (Cosenza Post, 2016-09-20)'
+  source: https://ecodellojonio.it/articoli/funghi-e-boom-di-raccolta-porcini-in-sila
+  higher:
+    area: sila
+    seasons:
+    - 2016
+    start: 09-06
+    end: 09-24
+  lower:
+    area: sila
+    seasons: normal
+    start: 09-06
+    end: 09-24
+- id: sila_2021_2019_early_september
+  claim: 'Early September 2021: ''Momento felice per la CALABRIA superiore che ha avuto piogge
+    adeguate attorno a Ferragosto e poi una ricca passata temporalesca il 26 Agosto'', ''ottime
+    nascite di Porcini edulis in Sila'' (FM 2021-09-04, 2021-09-10); early September 2019: ''in
+    Calabria, dove la raccolta è iniziata in modo sporadico soltanto sulla Sila'' (Coldiretti via LaC
+    News24, 2019-09-08), ''la Calabria che ha visto finalmente le prime nascite'' (FM 2019-09-20)'
+  source: https://web.archive.org/web/20210922081914/https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2021-porcini-giganti/
+  higher:
+    area: sila
+    seasons:
+    - 2021
+    start: 08-30
+    end: 09-10
+  lower:
+    area: sila
+    seasons:
+    - 2019
+    start: 08-30
+    end: 09-10
+- id: sila_mid_august_2020_2022_vs_2019_2024
+  claim: 'Mid-August 2020: ''le grandi nascite di funghi Porcini in Sila, sull''Aspromonte'' (FM
+    2020-08-14); August 2022: ''ben arroccata al primo posto la CALABRIA ... La Sila sta regalando
+    un''emozione dietro l''altra'' (FM 2022-08-26); August 2019: ''i temporali della Sila bagnano
+    appena le chiome dei boschi'' (FM 2019-08-29); August 2024: ''La Sila ha fin''ora prodotto ben
+    poco'' (FM 2024-08-16)'
+  source: https://web.archive.org/web/20200926054742/https://funghimagazine.it/aggiornamento-meteofunghi-14-08-2020/
+  higher:
+    area: sila
+    seasons:
+    - 2020
+    - 2022
+    start: 08-08
+    end: 08-22
+  lower:
+    area: sila
+    seasons:
+    - 2019
+    - 2024
+    start: 08-08
+    end: 08-22
+- id: sila_grande_2020_2025_late_july
+  claim: 'Late July 2020: ''ancora buone nascite in Sila Grande nei pressi di Camigliatello Silano''
+    (FM 2020-07-30); late July 2025: ''Situazione molto difficile: piogge scarsissime o assenti, caldo
+    e vento non danno tregua'' (FM 2025-07-17), ''Calabria, Sicilia e Sardegna restano ancora fuori
+    dai giochi, salvo micro-zone montane umide'' (FM 2025-08-01)'
+  source: https://web.archive.org/web/20200806093926/https://funghimagazine.it/aggiornamento-meteofunghi-30-07-2020/
+  higher:
+    area: sila_grande
+    seasons:
+    - 2020
+    start: 07-20
+    end: 08-05
+  lower:
+    area: sila_grande
+    seasons:
+    - 2025
+    start: 07-20
+    end: 08-05
+- id: sila_late_june_2018_2020_2021_vs_2024_2025
+  claim: 'Late June 2018: ''Calabria a tutta birra ... alle pinete della Sila'' (FM 2018-07-01); 2020:
+    ''Exploit in Calabria ... ritrovamenti abbondanti di Porcini rossi (Boletus pinophilus) nelle
+    pinete del Pollino, della Sila e dell''Aspromonte'' (FM 2020-06-25); 2021: ''ottime nascite di
+    funghi Porcini Pinicola ... soprattutto in alta Sila'' (FM 2021-06-24); 2024: ''l''avvezione calda
+    ... ha fatto danni davvero notevoli'' (FM 2024-06-28); 2025: ''le nascite fungine ... sono state
+    bloccate dalla vampata africana'' (FM 2025-07-03)'
+  source: https://web.archive.org/web/20190820041455/https://funghimagazine.it/aggiornamento-funghi-01-luglio-2018/
+  higher:
+    area: sila
+    seasons:
+    - 2018
+    - 2020
+    - 2021
+    start: 06-18
+    end: 06-30
+  lower:
+    area: sila
+    seasons:
+    - 2024
+    - 2025
+    start: 06-18
+    end: 06-30
+- id: sila_2023_timing_autumn
+  claim: 'Late September to mid-October 2023: ''nascite "compulsive" massicce, importanti in
+    Calabria'' (FM 2023-09-27), ''sulla Sila proseguono senza sosta le nascite di Porcini, grazie a 3
+    differenti buttate sovrapposte'' (FM 2023-10-12); early September 2023: ''In Sila è piovuto
+    spesso ma poco'', ''nascite sporadiche'' (FM 2023-09-06, 2023-09-13)'
+  source: https://web.archive.org/web/20231012124159/https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: sila
+    seasons:
+    - 2023
+    start: 09-22
+    end: 10-12
+  lower:
+    area: sila
+    seasons:
+    - 2023
+    start: 09-01
+    end: 09-15
+- id: sila_vs_serre_aspromonte_2023_october
+  claim: 'October 2023: ''sulla Sila proseguono senza sosta le nascite di Porcini'', ''Sono del tutto
+    cessate le nascite sul Pollino, Orsomarso e Catena Costiera, così come sulle Serre reggine'',
+    ''Nulla ci risulta esser nato sulla Limina e allo Zomaro'' (FM 2023-10-12); ''buttate senza sosta
+    in Sila ... Serre ed Aspromonte con nascite col contagocce'' (FM 2023-10-27)'
+  source: https://web.archive.org/web/20231012124159/https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: sila
+    seasons:
+    - 2023
+    start: 10-03
+    end: 10-20
+  lower:
+    area: serre_aspromonte
+    seasons:
+    - 2023
+    start: 10-03
+    end: 10-20
+- id: sila_vs_pollino_orsomarso_costiera_2023_october
+  claim: 'October 2023: ''Sono del tutto cessate le nascite sul Pollino, Orsomarso e Catena
+    Costiera'' while ''Porcini estivi si trovano ancora diffusamente in Sila settentrionale, dai
+    boschi di Acri ai più produttivi boschi di Camigliatello'' (FM 2023-10-12)'
+  source: https://web.archive.org/web/20231012124159/https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: sila
+    seasons:
+    - 2023
+    start: 10-03
+    end: 10-20
+  lower:
+    area: pollino_orsomarso_costiera
+    seasons:
+    - 2023
+    start: 10-03
+    end: 10-20
+- id: sila_costiera_vs_pollino_2021_autumn
+  claim: 'Autumn 2021: ''buoni o ottimi frutti ovunque nel resto della Calabria tranne che sul
+    Pollino interno'' (FM 2021-09-24); ''La Calabria sta vivendo un''ottima annata per i Porcini,
+    soprattutto tra Sila e Catena Costiera ... tranne che sul Pollino'' (FM 2021-10-14); ''nascite
+    decisamente inferiori alla Sila e Catena Costiera, sul Pollino'' (FM 2021-11-19)'
+  source: https://web.archive.org/web/20211024080903/https://funghimagazine.it/funghi-porcini-gia-al-capolinea-probabilmente-no/
+  higher:
+    area: sila_costiera
+    seasons:
+    - 2021
+    start: 09-15
+    end: 10-15
+  lower:
+    area: pollino_interno
+    seasons:
+    - 2021
+    start: 09-15
+    end: 10-15
+- id: pollino_costiera_vs_serre_aspromonte_2022_autumn
+  claim: 'Late October 2022: ''Boom di nascite tra Pollino e Catena Costiera come non si registrava
+    da tempo ma, qua siamo a fine corsa ... Tra Serre e Aspromonte nascite sottotono in precedenza e
+    sottotono anche a seguire'' (FM 2022-11-05)'
+  source: https://web.archive.org/web/20221129141843/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+  higher:
+    area: pollino_orsomarso_costiera
+    seasons:
+    - 2022
+    start: 10-20
+    end: 11-05
+  lower:
+    area: serre_aspromonte
+    seasons:
+    - 2022
+    start: 10-20
+    end: 11-05
+- id: costiera_orsomarso_vs_serre_aspromonte_2023_august
+  claim: 'Mid-August 2023: ''In Calabria tornano i funghi Porcini soprattutto tra Fiume
+    Lao-Argentino-Orsomarso e l''intera Catena Costiera'', ''piogge leggere sulle Serre ... Al
+    momento non si registrano nascite degne di nota'' (FM 2023-08-17); ''Situazione nettamente
+    migliore in Calabria tirrenica ... così come sulle Serre ed Aspromonte'' still waiting (FM
+    2023-08-24)'
+  source: https://web.archive.org/web/20230824101516/https://funghimagazine.it/aggiornamento-nascite-porcini-24-08-2023/
+  higher:
+    area: costiera_orsomarso
+    seasons:
+    - 2023
+    start: 08-14
+    end: 08-26
+  lower:
+    area: serre_aspromonte
+    seasons:
+    - 2023
+    start: 08-14
+    end: 08-26
+- id: aspromonte_serre_2020_2024_august
+  claim: 'Mid-August 2020: ''Buone nascite sulle Serre del Vibonese meno verso la Limina, poi ottime
+    in Aspromonte grazie ad intensi e ripetuti temporali'' (FM 2020-08-20); mid-August 2024: ''Serre
+    Vibonesi-Reggine e Aspromonte non hanno prodotto chissà che'' (FM 2024-08-16)'
+  source: https://web.archive.org/web/20200926061118/https://funghimagazine.it/aggiornamento-meteofunghi-20-08-2020/
+  higher:
+    area: aspromonte_serre_vibonesi
+    seasons:
+    - 2020
+    start: 08-08
+    end: 08-20
+  lower:
+    area: aspromonte_serre_vibonesi
+    seasons:
+    - 2024
+    start: 08-08
+    end: 08-20
+- id: sila_2020_timing_autumn
+  claim: 'October 2020: ''Al momento le regioni più favorite e con le nascite migliori sono in
+    assoluto la Toscana e la Calabria'' (FM 2020-10-08), ''Ancora ottimi i ritrovamenti di funghi in
+    Calabria'' (FM 2020-10-23); first half of September 2020: ''Cessano sulla Basilicata ed in
+    Calabria'' (FM 2020-09-04), ''leggermente meglio in Sila ma qua nella prima quindicina di
+    Settembre le piogge sono sempre state limitate a brevi episodi'' (FM 2020-09-21)'
+  source: https://web.archive.org/web/20201028021842/https://funghimagazine.it/aggiornamento-meteofunghi-08-10-2020/
+  higher:
+    area: sila
+    seasons:
+    - 2020
+    start: 09-28
+    end: 10-20
+  lower:
+    area: sila
+    seasons:
+    - 2020
+    start: 09-01
+    end: 09-20
+- id: sila_spring_2023_vs_2020_2022
+  claim: 'May 2023: ''In Calabria ormai le nascite di funghi avvengono praticamente senza
+    interruzioni. Al momento si registrano bei ritrovamenti di Porcini Rossi-Pinicola in Sila e
+    Pollino'' (FM 2023-05-18); May 2020: ''timidissime nascite di Porcini rossi (Boletus pinicola) in
+    Sila ed Aspromonte'' (FM 2020-05-22); May 2022: ''In Calabria ha fatto troppo freddo. In Sila è
+    ancora presente la neve'' (FM 2022-05-12)'
+  source: https://web.archive.org/web/20230518160013/https://funghimagazine.it/aggiornamento-18-05-2023/
+  higher:
+    area: sila
+    seasons:
+    - 2023
+    start: 05-10
+    end: 05-20
+  lower:
+    area: sila
+    seasons:
+    - 2020
+    - 2022
+    start: 05-10
+    end: 05-20
+- id: ovoli_sila_piccola_greca_2019_timing
+  claim: 'September 2019: ''I primi a nascere sono stati gli Aereus della pre-Sila Tra Sila Piccola e
+    Sila Greca poi l''esplosione di nascite di Aereus e pure di Ovoli ma ... avviene tutto
+    rapidamente, tutto insieme e poi nulla più'' (FM 2019-09-20); before it: ''Il Centro-Sud è invece
+    ancora in attesa delle condizioni ideali per la nascita dei funghi'' (Coldiretti via LaC News24,
+    2019-09-08)'
+  source: https://web.archive.org/web/20191016204920/https://funghimagazine.it/dove-stanno-nascendo-i-funghi-porcini-le-piogge-cadute-in-italia/
+  higher:
+    area: sila_piccola_greca
+    seasons:
+    - 2019
+    start: 09-10
+    end: 09-20
+  lower:
+    area: sila_piccola_greca
+    seasons:
+    - 2019
+    start: 08-22
+    end: 09-08

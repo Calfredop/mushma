@@ -1,0 +1,152 @@
+# Calabria: region #17 of the full-Italy rollout (.gavin-root/docs/regions/calabria.md).
+id: calabria
+name: {it: Calabria, en: Calabria}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [15.63, 37.91, 17.21, 40.15]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 18
+
+# Woodland: one regional map gives both layers. ISPRA and Regione Calabria's Carta della Natura
+# habitat map (1:25,000, 2023) gives every polygon its CORINE Biotopes habitat, which says both which
+# broad group it is (how much of each cell is broadleaf or conifer woodland, macchia or scrub) and
+# which kind. There is no mixed class. Conifers planted outside their range (42.G_n) and conifer
+# plantations (83.31) are mostly laricio pine reforestation in the Sila and the Presila, filed with
+# the native laricio as mountain_pine. Chestnut orchards count as chestnut woodland, as INFC files
+# them. Broadleaf plantations (83.325, mostly eucalyptus), poplar and fruit plantations stay
+# farmland; Ampelodesmos steppe, bracken, garighe, grassland and rock are left out, as UCS and CLC
+# leave 321/322 out in Tuscany. The Region's CUT land-use map has no forest types and no stated
+# licence. See .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/calabria.md (Sources).
+forest:
+  groups:
+    source: ispra_cnat_calabria
+    class_column: codice
+    classes:
+      "41.18": broadleaf     # faggete dell'Italia meridionale
+      "41.4": broadleaf      # boschi misti di forre, scarpate e versanti umidi
+      "41.732": broadleaf    # querceti mediterranei a roverella
+      "41.7511": broadleaf   # querceti mediterranei a cerro
+      "41.7512": broadleaf   # querceti a cerro e farnetto
+      "41.7513": broadleaf   # querceti a rovere dell'Italia meridionale
+      "41.81": broadleaf     # boschi di Ostrya carpinifolia
+      "41.9": broadleaf      # boschi a Castanea sativa
+      "41.C1": broadleaf     # boschi a Alnus cordata
+      "41.D": broadleaf      # boschi a Populus tremula
+      "41.L_n": broadleaf    # latifoglie alloctone o fuori areale (robinia, ailanto)
+      "44.14": broadleaf     # boschi ripariali mediterranei di salici
+      "44.4": broadleaf      # querceti a farnia delle piane alluvionali
+      "44.513": broadleaf    # boschi ripariali mediterranei a Alnus glutinosa
+      "44.61": broadleaf     # boschi ripariali a pioppi
+      "44.71": broadleaf     # boschi ripariali a Platanus orientalis
+      "44.D2_n": broadleaf   # boschi ripariali di specie alloctone invasive
+      "45.21": broadleaf     # sugherete
+      "45.31": broadleaf     # leccete termo e mesomediterranee
+      "45.32": broadleaf     # leccete supramediterranee
+      "45.8": broadleaf      # boschi di Ilex aquifolium
+      "83.12": broadleaf     # castagneti da frutto
+      "42.15": conifer       # abetine dell'Appennino meridionale
+      "42.612": conifer      # pinete di pino nero appenninico (Pollino)
+      "42.65": conifer       # pinete di pino laricio
+      "42.711": conifer      # pinete di pino loricato (Pollino)
+      "42.83": conifer       # pinete a pino domestico
+      "42.84": conifer       # pinete a pino d'Aleppo
+      "42.G_n": conifer      # conifere alloctone o fuori areale (laricio reforestation, Douglas fir)
+      "83.31_m": conifer     # piantagioni di conifere
+      "16.29": conifer       # dune alberate (coastal stone and Aleppo pine)
+      "16.27": macchia       # dune stabili a ginepri
+      "16.28": macchia       # dune stabili con macchia a sclerofille
+      "32.11": macchia       # matorral a querce sempreverdi
+      "32.12": macchia       # matorral a olivastro e lentisco
+      "32.13": macchia       # matorral a ginepri
+      "32.212": macchia      # macchia a eriche termomediterranee
+      "32.214_m": macchia    # macchia a Pistacia lentiscus
+      "32.215": macchia      # macchia a Cytisus
+      "32.22": macchia       # macchia a Euphorbia dendroides
+      "32.24": macchia       # macchia con Chamaerops humilis
+      "32.3_m": macchia      # macchia mediterranea
+      "32.4_m": macchia      # garighe termo e mesomediterranee
+      "31.81": transitional  # cespuglieti a latifoglie decidue
+      "31.844": transitional # ginestreti collinari e montani
+      "31.87": transitional  # aree recentemente disboscate da incendi o eventi estremi
+      "31.88_m": transitional # ginepreti collinari e montani
+      "31.8A": transitional  # roveti
+      "31.A_n": transitional # cespuglieti di specie alloctone
+      "32.26": transitional  # ginestreti termomediterranei
+      "32.A": transitional   # ginestreti a Spartium junceum
+      "44.12": transitional  # saliceti arbustivi ripariali
+      "44.81": transitional  # boscaglie ripariali a tamerici, oleandri e agnocasti
+  types:
+    source: ispra_cnat_calabria
+    classes:
+      "41.18": beech
+      "41.732": deciduous_oak
+      "41.7511": deciduous_oak
+      "41.7512": deciduous_oak
+      "41.7513": deciduous_oak
+      "44.4": deciduous_oak
+      "41.9": chestnut
+      "83.12": chestnut
+      "41.4": mixed_broadleaf
+      "41.81": mixed_broadleaf      # hop-hornbeam
+      "41.C1": mixed_broadleaf      # Alnus cordata, the southern Apennine alder
+      "41.D": mixed_broadleaf
+      "45.21": evergreen_oak        # cork oak
+      "45.31": evergreen_oak
+      "45.32": evergreen_oak
+      "45.8": evergreen_oak         # holly
+      "44.14": riparian
+      "44.513": riparian
+      "44.61": riparian
+      "44.71": riparian
+      "41.L_n": exotic_broadleaf
+      "44.D2_n": exotic_broadleaf
+      "42.65": mountain_pine        # laricio pine, as CLC IV 3122 files it
+      "42.612": mountain_pine
+      "42.711": mountain_pine       # pino loricato
+      "42.G_n": mountain_pine       # mostly laricio reforestation (see the region doc)
+      "83.31_m": mountain_pine
+      "42.83": mediterranean_pine
+      "42.84": mediterranean_pine
+      "16.29": mediterranean_pine
+      "42.15": fir_spruce
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Calabria, IT", admin level
+# 10) on 2026-09-28. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 9323
+
+# Rain scale (merged onto config/model.yaml), fitted on long-term station normals, not daily gauges:
+# Calabria's open daily rain needs registration (ARPACAL's Centro Funzionale archive, ARSAC's
+# agrometeo network), so the check reads the raw CDS rain of 2016-2025 at the 15 stations whose
+# mean annual rain and height the regional forest programme quotes. Calabria's history is CDS, so the
+# scale names that source too: the national one scales era5_seamless only, while the rain normals are
+# scaled whatever their source. .gavin-root/docs/regions/calabria.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.85
+    per_km: 0.82
+    max_elevation_m: 1300  # the highest station: no extrapolation above it (factor 1.92)
+    source: [mushma_calabria_rain_normals_check_2026]
+    notes: >-
+      Least squares through the origin of station normals on raw CDS era5_land_cds annual totals
+      (2016-2025, read bilinearly from the land nodes at each station) x (a + b x elevation) over 15
+      stations at 10-1,300 m quoted by the Programma Forestale Regionale 2024 (Serra San Bruno 1,772
+      mm, Mongiana, Fabrizia, Gambarie 1,608, Camigliatello 1,634, Villaggio Mancuso 1,616, San
+      Lorenzo Bellizzi; Arena, Joppolo, Tropea, Briatico, Villa San Giovanni, Reggio Calabria 594,
+      Melito di Porto Salvo, Capo dell'Armi) gave a = 0.848, b = 0.819 per km: raw CDS holds 1.19 of
+      the normals below 200 m and 0.59 at 800 m and above (the Serre 0.47). Leave-one-out slopes run
+      0.77-0.95. The normals are older long-term means (the one dated runs 1939-2001); if 2016-2025
+      was 10 % drier, the fit would be 0.76 + 0.74. It gives 1.01 at 200 m, 1.26 at 500 m, 1.50 at
+      800 m and 1.83 at 1,200 m.
