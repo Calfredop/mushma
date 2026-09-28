@@ -228,6 +228,10 @@ export function cloudRasterDataUrl(raster: CloudRaster): string {
   canvas.width = raster.width
   canvas.height = raster.height
   const ctx = canvas.getContext('2d')!
-  ctx.putImageData(new ImageData(raster.data, raster.width, raster.height), 0, 0)
+  // Copy into a fresh ImageData: TS DOM types reject a Uint8ClampedArray whose
+  // buffer is ArrayBufferLike (SharedArrayBuffer), which Float32→paint paths hit.
+  const image = ctx.createImageData(raster.width, raster.height)
+  image.data.set(raster.data)
+  ctx.putImageData(image, 0, 0)
   return canvas.toDataURL('image/png')
 }
