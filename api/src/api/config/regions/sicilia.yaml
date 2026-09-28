@@ -163,3 +163,23 @@ soil:
 # 10) on 2026-09-28. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
 sightings:
   inaturalist_place_id: 96908
+
+# Rain scale (merged onto config/model.yaml), fitted on the SIAS gauges (Regione Siciliana open
+# data): June 2019 to May 2020, the one whole year the portal publishes. Sicily's history is CDS, so
+# the scale names that source too: the national one scales era5_seamless only, while the rain
+# normals are scaled whatever their source. .gavin-root/docs/regions/sicilia.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.88
+    per_km: 0.10
+    source: [mushma_sicilia_sias_gauge_check_2026]
+    notes: >-
+      Least squares through the origin of gauge totals on raw CDS era5_land_cds totals (read
+      bilinearly from the land nodes at each station) x (a + b x elevation) over the 94 SIAS stations
+      at 10-1,875 m with whole days on 80 % of June 2019 to May 2020 gave a = 0.880, b = 0.101 per km:
+      raw CDS holds 1.10 of the gauge rain below 200 m and 0.99 at 800 m and above. Leave-one-out
+      slopes run 0.08-0.13; the 40 stations at 400 m and above give 0.87 + 0.11. The 7 gauges inside
+      woodland cells (440-1,840 m) hold 0.94 of the rain downscaled and 0.92 scaled, so the woods may
+      be up to 8 % dry. One year only, a wet autumn and a dry winter. It gives 0.90 at 200 m, 0.93 at
+      500 m, 0.96 at 800 m and 1.00 at 1,200 m.
