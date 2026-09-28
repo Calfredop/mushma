@@ -47,10 +47,11 @@
   pointer-events: auto;
 }
 
-/* Region stays its natural width; species takes the rest and scrolls horizontally if needed. */
+/* Region stays its natural width; species keeps its content width but can shrink and
+   scroll when the row is tight (phones). */
 .species > *:last-child {
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
 }
 
 /* ◈ analysis, ◎ locate, ⓘ menu: one glass capsule, a hairline between its buttons. */
