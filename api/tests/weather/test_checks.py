@@ -178,3 +178,32 @@ def test_piemonte_reads_the_arpa_network_on_utc_days(tmp_path) -> None:
     assert network.series(gauge)[date(2025, 1, 3)] == pytest.approx(0.3)
     calendar = pd.Series([0.0, 24.0], index=[date(2025, 1, 1), date(2025, 1, 2)])
     assert network.day_totals(calendar).tolist() == pytest.approx(utc_day_totals(calendar).tolist())
+
+
+def test_lazio_reads_the_siarl_agrometeo_network_on_calendar_days(tmp_path) -> None:
+    from datetime import date
+
+    from api.weather.checks import GAUGE_NETWORKS
+
+    folder = tmp_path / "siarl"
+    folder.mkdir()
+    (folder / "anagraficastazioniagrometeoarsial.csv").write_text(
+        "Cod staz;Regione;Provincia;Nome stazione;Comune;Localita;ALTITUDINE;DATA_INI_OSS;"
+        "DATA_END_OSS;lat;lon;Geojson;the_geom\n"
+        "38;LAZIO;RI;ACCUMOLI;ACCUMOLI;TERRACINO;1176;;;42.68261;13.21003;;\n"
+    )
+    (folder / "opdata20.csv").write_text(
+        "Stazione;Grandezza;Data rilevazione;Valore;Indice di validita\n"
+        + "".join(
+            f"ACCUMOLI;PREC_TOTG;{d:02d}/01/2020 00:00;{d},5;Dato esatto\n" for d in range(1, 11)
+        )
+    )
+
+    network = GAUGE_NETWORKS["lazio"](tmp_path, date(2020, 1, 1), date(2020, 1, 10))
+
+    assert network.gauges["code"].tolist() == ["38"]
+    assert network.gauges["elevation_m"].tolist() == [1176]
+    gauge = next(network.gauges.itertuples())
+    assert network.series(gauge)[date(2020, 1, 3)] == pytest.approx(3.5)
+    calendar = pd.Series([1.0, 2.0], index=[date(2020, 1, 1), date(2020, 1, 2)])
+    assert network.day_totals(calendar).tolist() == pytest.approx([1.0, 2.0])

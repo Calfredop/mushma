@@ -8,8 +8,9 @@
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
 with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
-the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Piemonte for Piemonte:
-``GAUGE_NETWORKS``). Results land in ``$DATA_DIR/weather/<region>/checks/``.
+the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Piemonte for Piemonte, the
+SIARL agrometeo stations for Lazio: ``GAUGE_NETWORKS``). Results land in
+``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
@@ -26,7 +27,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpa_piemonte, arpal, umbria_sir
+from api.weather import arpa_piemonte, arpal, siarl, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -303,12 +304,30 @@ def arpa_piemonte_network(raw: Path, start: date, end: date) -> GaugeNetwork:
     return GaugeNetwork(arpa_piemonte.parse_stations(stations), series, arpal.utc_day_totals)
 
 
+def siarl_lazio(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """SIARL (ARSIAL) agrometeo stations: open yearly CSVs and a station list with heights,
+    calendar days (api.weather.siarl). Some years are not published: run one year at a time."""
+    folder = raw / "siarl"
+    stations = siarl.parse_stations(
+        fetch(siarl.STATIONS_URL, folder / siarl.STATIONS_URL.rsplit("/", 1)[-1])
+    )
+    frames = [
+        siarl.parse_daily_rain(fetch(url, folder / url.rsplit("/", 1)[-1]))
+        for url in siarl.year_urls(start.year, end.year).values()
+    ]
+    daily = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=["name"])
+    by_name = {name: rows.set_index("date")["mm"] for name, rows in daily.groupby("name")}
+    stations = stations[stations["name"].isin(by_name)].reset_index(drop=True)
+    return GaugeNetwork(stations, lambda gauge: by_name[gauge.name], calendar_days)
+
+
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "emilia_romagna": arpae_emilia_romagna,
     "tuscany": sir_toscana,
     "liguria": arpa_liguria,
     "umbria": umbria_sir_network,
     "piemonte": arpa_piemonte_network,
+    "lazio": siarl_lazio,
 }
 
 
