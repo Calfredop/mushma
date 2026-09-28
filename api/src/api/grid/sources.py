@@ -182,9 +182,10 @@ def fetch_arcgis_features(
             page.unlink()
             raise OSError(f"ArcGIS query failed: {data['error']}")
         features = data.get("features", [])
-        if not data.get("exceededTransferLimit", len(features) == page_size):
+        if not features or not data.get("exceededTransferLimit", len(features) == page_size):
             break
-        offset += page_size
+        # A server whose maxRecordCount is below page_size returns fewer: step by what came back.
+        offset += len(features)
     marker.touch()
     return pages
 
