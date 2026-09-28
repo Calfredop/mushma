@@ -148,9 +148,9 @@ test('analysis mode: two factors on the map, played through the days', async ({
   await page.waitForFunction(() => {
     const map = window.__mushmaMap
     return (
-      !!map?.getLayer('indicator-fill-rain_trigger') &&
-      !!map.getLayer('indicator-fill-drying') &&
-      map.getLayoutProperty('cells-dot', 'visibility') === 'none' &&
+      !!map?.getLayer('indicator-cloud-rain_trigger') &&
+      !!map.getLayer('indicator-cloud-drying') &&
+      map.getLayoutProperty('cells-cloud', 'visibility') === 'none' &&
       map.querySourceFeatures('cells-points').some((f) => 'drying' in f.properties)
     )
   })

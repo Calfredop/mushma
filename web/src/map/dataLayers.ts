@@ -1,6 +1,10 @@
 /**
  * mushma's own sources and layers, merged into the basemap style up front so
  * the map's first complete render already includes the score cells.
+ *
+ * Scores (and analysis factors) draw as soft "clouds": blurred overlapping
+ * circles so neighbouring patches blend and woodland edges feather out,
+ * instead of hard dots that morph into 1 km squares.
  */
 import type {
   ExpressionSpecification,
@@ -15,10 +19,12 @@ import { goodDaysStepExpression, scoreStepExpression } from '../score/scale'
 import { DATA_LAYERS_BEFORE, LABEL_FONT } from './basemap'
 
 const LAGO = '#1F56A0'
-const HUMUS = '#1C211D'
 const CARTA = '#F8FAF6'
 const LICHENE = '#EDF0EA'
 const SCORE = scoreStepExpression(['get', 'score']) as ExpressionSpecification
+
+/** How soft the cloud edge is. MapLibre: 1 → only the centre stays full opacity. */
+export const CLOUD_BLUR = 0.85
 
 /** Bosco layer: each habitat's colour, categorical -- a cell's forest type has no
  * favourable/unfavourable direction, so unlike the score or a factor this isn't a value×opacity
@@ -33,26 +39,8 @@ const FOREST_FILL = [
   NEUTRAL_FOREST_COLOR,
 ] as unknown as ExpressionSpecification
 
-/** The Bosco layer's opacity when it's on, fading out with the score/factor layers at the same
- * zoom so the square geometry takes over from the dot the same way. Off is 0, set directly. */
-export const FOREST_DOT_OPACITY: ExpressionSpecification = [
-  'interpolate',
-  ['linear'],
-  ['zoom'],
-  9.5,
-  0.85,
-  10.5,
-  0,
-]
-export const FOREST_FILL_OPACITY: ExpressionSpecification = [
-  'interpolate',
-  ['linear'],
-  ['zoom'],
-  9,
-  0,
-  10.5,
-  0.85,
-]
+/** The Bosco layer's opacity when it's on. Off is 0, set directly. */
+export const FOREST_CLOUD_OPACITY = 0.85
 
 /** What the cells' `score` property holds: a day's conditions score, or a season's good days. */
 export type CellScale = 'score' | 'goodDays'
@@ -65,25 +53,39 @@ export function cellColor(scale: CellScale): ExpressionSpecification {
 
 export const EMPTY_COLLECTION = { type: 'FeatureCollection' as const, features: [] }
 
-/** Layers a tap can land on, the square first. */
-export const CELL_LAYERS = ['cells-fill', 'cells-dot']
+/** Invisible 1 km hit fill a tap can land on (score mode). */
+export const CELL_LAYERS = ['cells-hit']
 
-/** The same in analysis mode, where the score layers are hidden. */
-export const ANALYSIS_CELL_LAYERS = ['factors-base-fill', 'factors-base-dot']
+/** Score-mode layers toggled together: hit target + visible cloud. */
+export const SCORE_LAYERS = ['cells-hit', 'cells-cloud']
 
-/** Indicator layers go in here: over the cells, under their outline and the basemap's roads. */
-export const ANALYSIS_LAYERS_BEFORE = 'cells-outline'
+/** Invisible 1 km hit fill in analysis mode. */
+export const ANALYSIS_CELL_LAYERS = ['factors-base-hit']
 
-const CELL_DOT_RADIUS: ExpressionSpecification = [
+/** Analysis-mode layers toggled together: hit target + Bosco/woodland cloud. */
+export const ANALYSIS_LAYERS = ['factors-base-hit', 'factors-base-cloud']
+
+/** Indicator clouds go in here: over the cells, under the basemap's roads. */
+export const ANALYSIS_LAYERS_BEFORE = DATA_LAYERS_BEFORE
+
+/**
+ * Soft cloud radius in screen pixels. Sized so blobs cover roughly a 1 km cell
+ * from mid-zoom up and still read as patches when the whole region is in view.
+ */
+const CELL_CLOUD_RADIUS: ExpressionSpecification = [
   'interpolate',
   ['linear'],
   ['zoom'],
   6,
-  3.5,
-  8,
-  5,
-  10.5,
   7,
+  8,
+  14,
+  10,
+  24,
+  12,
+  42,
+  14,
+  78,
 ]
 
 type Bounds = [[number, number], [number, number]]
@@ -119,64 +121,45 @@ const empty = (): SourceSpecification => ({ type: 'geojson', data: EMPTY_COLLECT
 
 /** Under the basemap's roads and labels. */
 const CELL_LAYER_SPECS: LayerSpecification[] = [
-  // Region view: a dot per cell, fading out as the true 1 km squares appear.
+  // Invisible 1 km squares: tap targets. The cloud is visual only.
   {
-    id: 'cells-dot',
-    type: 'circle',
-    source: 'cells-points',
-    maxzoom: 11,
-    paint: {
-      'circle-color': SCORE,
-      'circle-radius': CELL_DOT_RADIUS,
-      'circle-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 1, 10.5, 0],
-      'circle-stroke-color': HUMUS,
-      'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.55, 10.5, 0],
-      'circle-stroke-width': 0.8,
-    },
-  },
-  {
-    id: 'cells-fill',
+    id: 'cells-hit',
     type: 'fill',
     source: 'cells-squares',
-    minzoom: 9,
-    paint: {
-      'fill-color': SCORE,
-      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0, 10.5, 0.82],
-    },
+    paint: { 'fill-color': '#000', 'fill-opacity': 0 },
   },
-  // Analysis mode: where the woodland is (a faint ring per cell), what a tap lands on, and --
-  // when the Bosco toggle is on -- the cell's forest type, under the indicator overlays. Hidden
-  // with the scores on. Bosco off is plain 'circle-opacity'/'fill-opacity' 0 (ConditionsMap sets
-  // it), same colour underneath either way so toggling never needs a setData.
   {
-    id: 'factors-base-dot',
+    id: 'cells-cloud',
     type: 'circle',
     source: 'cells-points',
-    maxzoom: 11,
+    paint: {
+      'circle-color': SCORE,
+      'circle-radius': CELL_CLOUD_RADIUS,
+      'circle-blur': CLOUD_BLUR,
+      'circle-opacity': 0.78,
+    },
+  },
+  // Analysis mode: where the woodland is (and -- when Bosco is on -- forest type), what a
+  // tap lands on, under the indicator clouds. Hidden with the scores on. Bosco off is
+  // 'circle-opacity' 0 (ConditionsMap sets it).
+  {
+    id: 'factors-base-hit',
+    type: 'fill',
+    source: 'cells-squares',
+    layout: { visibility: 'none' },
+    paint: { 'fill-color': '#000', 'fill-opacity': 0 },
+  },
+  {
+    id: 'factors-base-cloud',
+    type: 'circle',
+    source: 'cells-points',
     layout: { visibility: 'none' },
     paint: {
       'circle-color': FOREST_FILL,
       'circle-opacity': 0,
-      'circle-radius': CELL_DOT_RADIUS,
-      'circle-stroke-color': HUMUS,
-      'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.3, 10.5, 0],
-      'circle-stroke-width': 0.8,
+      'circle-radius': CELL_CLOUD_RADIUS,
+      'circle-blur': CLOUD_BLUR,
     },
-  },
-  {
-    id: 'factors-base-fill',
-    type: 'fill',
-    source: 'cells-squares',
-    minzoom: 9,
-    layout: { visibility: 'none' },
-    paint: { 'fill-color': FOREST_FILL, 'fill-opacity': 0 },
-  },
-  {
-    id: 'cells-outline',
-    type: 'line',
-    source: 'cells-squares',
-    minzoom: 11,
-    paint: { 'line-color': HUMUS, 'line-opacity': 0.18, 'line-width': 0.6 },
   },
 ]
 
@@ -186,40 +169,27 @@ export interface ActiveIndicator {
 }
 
 /**
- * Analysis mode: a dot layer (below zoom 11) and a square layer (from 9) per indicator, bottom
- * to top, fading into each other like the score's. A cell's opacity is the factor's value times
- * the layer's share of the cap (`layerOpacities`); a cell whose rules lack the factor isn't drawn.
+ * Analysis mode: one soft cloud per indicator, bottom to top. A cell's opacity is the
+ * factor's value times the layer's share of the cap (`layerOpacities`); a cell whose rules
+ * lack the factor isn't drawn.
  */
 export function analysisLayers(active: readonly ActiveIndicator[]): LayerSpecification[] {
   const shares = layerOpacities(active.length)
-  return active.flatMap(({ id, color }, i): LayerSpecification[] => {
+  return active.map(({ id, color }, i): LayerSpecification => {
     const opacity: ExpressionSpecification = ['*', ['get', id], shares[i]]
     const filter: FilterSpecification = ['has', id]
-    return [
-      {
-        id: `indicator-dot-${id}`,
-        type: 'circle',
-        source: 'cells-points',
-        maxzoom: 11,
-        filter,
-        paint: {
-          'circle-color': color,
-          'circle-radius': CELL_DOT_RADIUS,
-          'circle-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, opacity, 10.5, 0],
-        },
+    return {
+      id: `indicator-cloud-${id}`,
+      type: 'circle',
+      source: 'cells-points',
+      filter,
+      paint: {
+        'circle-color': color,
+        'circle-radius': CELL_CLOUD_RADIUS,
+        'circle-blur': CLOUD_BLUR,
+        'circle-opacity': opacity,
       },
-      {
-        id: `indicator-fill-${id}`,
-        type: 'fill',
-        source: 'cells-squares',
-        minzoom: 9,
-        filter,
-        paint: {
-          'fill-color': color,
-          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0, 10.5, opacity],
-        },
-      },
-    ]
+    }
   })
 }
 

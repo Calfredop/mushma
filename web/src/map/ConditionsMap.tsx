@@ -30,14 +30,15 @@ import { mapLocale, registerPmtiles } from './setup'
 import {
   type ActiveIndicator,
   ANALYSIS_CELL_LAYERS,
+  ANALYSIS_LAYERS,
   ANALYSIS_LAYERS_BEFORE,
   analysisLayers,
   CELL_LAYERS,
   type CellScale,
   cellColor,
   EMPTY_COLLECTION as EMPTY,
-  FOREST_DOT_OPACITY,
-  FOREST_FILL_OPACITY,
+  FOREST_CLOUD_OPACITY,
+  SCORE_LAYERS,
   withDataLayers,
 } from './dataLayers'
 import {
@@ -80,7 +81,7 @@ function addRelief(map: MapLibreMap) {
   if (!TERRAIN_URL || map.getSource('terrain')) return
   const relief = hillshade(TERRAIN_URL)
   map.addSource('terrain', relief.source)
-  map.addLayer(relief.layer, map.getLayer('cells-dot') ? 'cells-dot' : DATA_LAYERS_BEFORE)
+  map.addLayer(relief.layer, map.getLayer('cells-cloud') ? 'cells-cloud' : DATA_LAYERS_BEFORE)
 }
 
 /** Keeps fitted features clear of the species bar (top) and legend and dates (bottom). */
@@ -152,27 +153,17 @@ function createMap(
   const pickCell = (event: MapMouseEvent) => {
     const { x, y } = event.point
     const layers = callbacks.current.cellLayers
-    const features = map.queryRenderedFeatures(
+    // Invisible 1 km hit fills: exact point first, then a small tolerance for fat fingers.
+    const atPoint = map.queryRenderedFeatures(event.point, { layers })[0]
+    if (atPoint) return String(atPoint.properties.cell_id)
+    const nearby = map.queryRenderedFeatures(
       [
         [x - CLICK_TOLERANCE_PX, y - CLICK_TOLERANCE_PX],
         [x + CLICK_TOLERANCE_PX, y + CLICK_TOLERANCE_PX],
       ],
       { layers },
-    )
-    // Inside a square wins; otherwise the nearest dot.
-    const inside = map.queryRenderedFeatures(event.point, { layers: [layers[0]] })[0]
-    if (inside) return String(inside.properties.cell_id)
-    let best: { id: string; distance: number } | undefined
-    for (const feature of features) {
-      if (feature.geometry.type !== 'Point') continue
-      const [lon, lat] = feature.geometry.coordinates
-      const p = map.project([lon, lat])
-      const distance = Math.hypot(p.x - x, p.y - y)
-      if (!best || distance < best.distance) {
-        best = { id: String(feature.properties.cell_id), distance }
-      }
-    }
-    return best?.id
+    )[0]
+    return nearby ? String(nearby.properties.cell_id) : undefined
   }
 
   map.on('click', (event) => {
@@ -348,10 +339,10 @@ export function ConditionsMap({
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    for (const id of CELL_LAYERS) {
+    for (const id of SCORE_LAYERS) {
       map.setLayoutProperty(id, 'visibility', inAnalysis ? 'none' : 'visible')
     }
-    for (const id of ANALYSIS_CELL_LAYERS) {
+    for (const id of ANALYSIS_LAYERS) {
       map.setLayoutProperty(id, 'visibility', inAnalysis ? 'visible' : 'none')
     }
   }, [inAnalysis, ready])
@@ -374,21 +365,16 @@ export function ConditionsMap({
     }
   }, [indicatorsKey, inAnalysis, ready])
 
-  // Bosco layer: the base fill/dot's own colour is always the forest-type expression (set once,
-  // in dataLayers.ts); only the opacity toggles, so switching it on never needs a setData.
+  // Bosco layer: the base cloud's colour is always the forest-type expression (set once, in
+  // dataLayers.ts); only the opacity toggles, so switching it on never needs a setData.
   const forestOn = inAnalysis && (analysis?.forestTypes?.on ?? false)
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
     map.setPaintProperty(
-      'factors-base-dot',
+      'factors-base-cloud',
       'circle-opacity',
-      forestOn ? FOREST_DOT_OPACITY : 0,
-    )
-    map.setPaintProperty(
-      'factors-base-fill',
-      'fill-opacity',
-      forestOn ? FOREST_FILL_OPACITY : 0,
+      forestOn ? FOREST_CLOUD_OPACITY : 0,
     )
   }, [forestOn, ready])
 
@@ -396,8 +382,7 @@ export function ConditionsMap({
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    map.setPaintProperty('cells-dot', 'circle-color', cellColor(scale))
-    map.setPaintProperty('cells-fill', 'fill-color', cellColor(scale))
+    map.setPaintProperty('cells-cloud', 'circle-color', cellColor(scale))
   }, [scale, ready])
 
   // Selection.

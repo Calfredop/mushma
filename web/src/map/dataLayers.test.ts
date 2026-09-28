@@ -4,9 +4,11 @@ import { layerOpacities, OPACITY_CAP } from '../score/indicators'
 import { buildMapStyle, DATA_LAYERS_BEFORE } from './basemap'
 import {
   ANALYSIS_CELL_LAYERS,
+  ANALYSIS_LAYERS,
   ANALYSIS_LAYERS_BEFORE,
   analysisLayers,
   CELL_LAYERS,
+  SCORE_LAYERS,
   regionMask,
   withDataLayers,
 } from './dataLayers'
@@ -17,7 +19,7 @@ const region: [[number, number], [number, number]] = [
 ]
 
 describe('withDataLayers', () => {
-  it('puts score cells under the basemap roads and labels, and overlays on top', () => {
+  it('puts soft score clouds under the basemap roads and labels, and overlays on top', () => {
     const base = buildMapStyle({
       basemapUrl: '/b.pmtiles',
       lang: 'it',
@@ -26,44 +28,66 @@ describe('withDataLayers', () => {
     const style = withDataLayers(base, region)
     const ids = style.layers.map((l) => l.id)
     const roads = ids.indexOf(DATA_LAYERS_BEFORE)
-    expect(ids.indexOf('cells-dot')).toBeLessThan(roads)
-    expect(ids.indexOf('cells-fill')).toBeLessThan(roads)
+    expect(ids.indexOf('cells-cloud')).toBeLessThan(roads)
+    expect(ids.indexOf('cells-hit')).toBeLessThan(roads)
     expect(ids.indexOf('region-mask')).toBeGreaterThan(ids.indexOf('places_locality'))
     expect(ids.slice(-3)).toEqual(['spot-point', 'sightings-circle', 'sightings-count'])
     expect(Object.keys(style.sources)).toEqual(
       expect.arrayContaining(['protomaps', 'cells-points', 'cells-squares', 'sightings']),
     )
-    expect(base.layers).toHaveLength(ids.length - 12) // the input style is not mutated
+    expect(base.layers).toHaveLength(ids.length - 11) // the input style is not mutated
+  })
+
+  it('draws scores as a blurred cloud, with an invisible hit fill for taps', () => {
+    const style = withDataLayers(buildMapStyle({ lang: 'it' }), region)
+    const cloud = style.layers.find((l) => l.id === 'cells-cloud')!
+    const hit = style.layers.find((l) => l.id === 'cells-hit')!
+    expect(cloud).toMatchObject({ type: 'circle', source: 'cells-points' })
+    expect(cloud).not.toHaveProperty('maxzoom')
+    expect(cloud).not.toHaveProperty('minzoom')
+    expect(cloud.paint).toMatchObject({
+      'circle-blur': expect.any(Number),
+      'circle-opacity': expect.any(Number),
+    })
+    expect((cloud.paint as { 'circle-blur': number })['circle-blur']).toBeGreaterThan(0.5)
+    expect(hit).toMatchObject({
+      type: 'fill',
+      source: 'cells-squares',
+      paint: { 'fill-opacity': 0 },
+    })
+    expect(style.layers.some((l) => l.id === 'cells-dot')).toBe(false)
+    expect(style.layers.some((l) => l.id === 'cells-fill')).toBe(false)
+    expect(style.layers.some((l) => l.id === 'cells-outline')).toBe(false)
   })
 
   it('has hidden analysis base layers among the cells, where indicators go in', () => {
     const style = withDataLayers(buildMapStyle({ lang: 'it' }), region)
     const ids = style.layers.map((l) => l.id)
-    expect(ids.slice(0, 6)).toEqual([
+    expect(ids.slice(0, 5)).toEqual([
       'background',
-      'cells-dot',
-      'cells-fill',
-      'factors-base-dot',
-      'factors-base-fill',
-      'cells-outline',
+      'cells-hit',
+      'cells-cloud',
+      'factors-base-hit',
+      'factors-base-cloud',
     ])
-    // Indicators go in under the outline, so selection, spot and sightings stay on top.
-    expect(ANALYSIS_LAYERS_BEFORE).toBe('cells-outline')
+    expect(ANALYSIS_LAYERS_BEFORE).toBe(DATA_LAYERS_BEFORE)
     for (const id of ANALYSIS_CELL_LAYERS) {
       const layer = style.layers.find((l) => l.id === id)!
       expect(layer.layout?.visibility).toBe('none')
     }
-    // Taps land on the square first, then the dot, in either mode.
-    expect(CELL_LAYERS[0]).toBe('cells-fill')
-    expect(ANALYSIS_CELL_LAYERS[0]).toBe('factors-base-fill')
+    // Taps land on the invisible hit fill; visibility toggles hit + cloud together.
+    expect(CELL_LAYERS).toEqual(['cells-hit'])
+    expect(ANALYSIS_CELL_LAYERS).toEqual(['factors-base-hit'])
+    expect(SCORE_LAYERS).toEqual(['cells-hit', 'cells-cloud'])
+    expect(ANALYSIS_LAYERS).toEqual(['factors-base-hit', 'factors-base-cloud'])
   })
 
   it('still works over the plain land fill', () => {
     const style = withDataLayers(buildMapStyle({ lang: 'it' }), region)
     expect(style.layers.map((l) => l.id).slice(0, 3)).toEqual([
       'background',
-      'cells-dot',
-      'cells-fill',
+      'cells-hit',
+      'cells-cloud',
     ])
   })
 })
@@ -85,74 +109,45 @@ describe('analysisLayers', () => {
   const byId = (layers: LayerSpecification[], id: string) =>
     layers.find((layer) => layer.id === id)!
 
-  it('draws a dot layer and a square layer per indicator, bottom to top', () => {
+  it('draws one soft cloud layer per indicator, bottom to top', () => {
     expect(analysisLayers(active).map((layer) => layer.id)).toEqual([
-      'indicator-dot-rain_trigger',
-      'indicator-fill-rain_trigger',
-      'indicator-dot-drying',
-      'indicator-fill-drying',
+      'indicator-cloud-rain_trigger',
+      'indicator-cloud-drying',
     ])
     expect(analysisLayers([])).toEqual([])
   })
 
-  it('dots below zoom 11 and squares from 9, like the score, on the shared cell sources', () => {
+  it('uses blurred circles on the shared points source at every zoom', () => {
     const layers = analysisLayers(active)
-    const dot = byId(layers, 'indicator-dot-drying')
-    const fill = byId(layers, 'indicator-fill-drying')
-    expect(dot).toMatchObject({ type: 'circle', source: 'cells-points', maxzoom: 11 })
-    expect(fill).toMatchObject({ type: 'fill', source: 'cells-squares', minzoom: 9 })
-    expect(dot.paint).toMatchObject({ 'circle-color': '#F4D03D' })
-    expect(fill.paint).toMatchObject({ 'fill-color': '#F4D03D' })
+    const cloud = byId(layers, 'indicator-cloud-drying')
+    expect(cloud).toMatchObject({ type: 'circle', source: 'cells-points' })
+    expect(cloud).not.toHaveProperty('maxzoom')
+    expect(cloud).not.toHaveProperty('minzoom')
+    expect(cloud.paint).toMatchObject({
+      'circle-color': '#F4D03D',
+      'circle-blur': expect.any(Number),
+    })
+    expect((cloud.paint as { 'circle-blur': number })['circle-blur']).toBeGreaterThan(0.5)
   })
 
   it('never draws a cell whose winning rules lack the factor', () => {
     const layers = analysisLayers(active)
     const filter: FilterSpecification = ['has', 'rain_trigger']
-    for (const id of ['indicator-dot-rain_trigger', 'indicator-fill-rain_trigger']) {
-      expect(byId(layers, id)).toMatchObject({ filter })
-    }
+    expect(byId(layers, 'indicator-cloud-rain_trigger')).toMatchObject({ filter })
   })
 
   it("sets opacity to the value times each layer's share of the cap", () => {
     const [bottom, top] = layerOpacities(2)
     const layers = analysisLayers(active)
-    const fill = (id: string) => byId(layers, `indicator-fill-${id}`)
-    const dot = (id: string) => byId(layers, `indicator-dot-${id}`)
-    // Squares fade in from zoom 9 to 10.5, dots fade out from 9.5 to 10.5.
-    expect(fill('rain_trigger').paint).toMatchObject({
-      'fill-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        9,
-        0,
-        10.5,
-        ['*', ['get', 'rain_trigger'], bottom],
-      ],
+    const cloud = (id: string) => byId(layers, `indicator-cloud-${id}`)
+    expect(cloud('rain_trigger').paint).toMatchObject({
+      'circle-opacity': ['*', ['get', 'rain_trigger'], bottom],
     })
-    expect(dot('drying').paint).toMatchObject({
-      'circle-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        9.5,
-        ['*', ['get', 'drying'], top],
-        10.5,
-        0,
-      ],
+    expect(cloud('drying').paint).toMatchObject({
+      'circle-opacity': ['*', ['get', 'drying'], top],
     })
-    expect(
-      analysisLayers([active[0]]).find((l) => l.type === 'fill')!.paint,
-    ).toMatchObject({
-      'fill-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        9,
-        0,
-        10.5,
-        ['*', ['get', 'rain_trigger'], OPACITY_CAP],
-      ],
+    expect(analysisLayers([active[0]])[0].paint).toMatchObject({
+      'circle-opacity': ['*', ['get', 'rain_trigger'], OPACITY_CAP],
     })
   })
 })
