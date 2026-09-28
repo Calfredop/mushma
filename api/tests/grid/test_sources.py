@@ -70,6 +70,24 @@ def test_download_context_trusts_the_intermediates_some_servers_leave_out() -> N
     assert context.check_hostname
 
 
+def test_download_context_trusts_the_mozilla_roots_whatever_the_os_bundle(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # www.istat.it chains to HARICA TLS RSA Root CA 2021, which macOS's /etc/ssl/cert.pem (the
+    # bundle uv's Python reads) lacks: the boundaries download failed there on 2026-09-26.
+    empty = tmp_path / "empty.pem"
+    empty.write_text("")
+    monkeypatch.setenv("SSL_CERT_FILE", str(empty))
+    monkeypatch.setenv("SSL_CERT_DIR", str(tmp_path))
+    names = {
+        dict(pair[0] for pair in cert["subject"]).get("commonName")
+        for cert in download_ssl_context().get_ca_certs()
+    }
+
+    assert "HARICA TLS RSA Root CA 2021" in names
+    assert "ISRG Root X1" in names
+
+
 def test_fetch_verifies_https_with_the_download_context(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -199,6 +217,55 @@ def test_fetch_arcgis_features_pages_through_the_layer(tmp_path: Path) -> None:
     ]
     codes = [f["properties"]["clc18"] for p in pages for f in json.loads(p.read_text())["features"]]
     assert codes == ["3111", "3112", "3113", "3114", "3115"]
+
+
+class _CappedArcGIS(_FakeArcGIS):
+    """Returns at most two features a page, whatever resultRecordCount asks (a maxRecordCount)."""
+
+    cap = 2
+    queries: list[dict[str, list[str]]] = []
+
+    def do_GET(self) -> None:  # noqa: N802
+        query = parse_qs(urlparse(self.path).query)
+        type(self).queries.append(query)
+        offset = int(query["resultOffset"][0])
+        page = self.features[offset : offset + self.cap]
+        body = {
+            "type": "FeatureCollection",
+            "features": page,
+            "exceededTransferLimit": offset + len(page) < len(self.features),
+        }
+        payload = json.dumps(body).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(payload)
+
+
+def test_fetch_arcgis_features_follows_a_server_that_caps_pages_below_the_request(
+    tmp_path: Path,
+) -> None:
+    # Regione Lombardia's MapServer answers 1,000 features to a request for 2,000.
+    _CappedArcGIS.queries = []
+    server = HTTPServer(("127.0.0.1", 0), _CappedArcGIS)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        layer = f"http://127.0.0.1:{server.server_port}/MapServer/4"
+        pages = fetch_arcgis_features(
+            layer,
+            (9.6, 42.1, 12.5, 44.6),
+            tmp_path / "clc",
+            out_fields="clc18",
+            page_size=3,
+            geometry_precision=0,
+        )
+    finally:
+        server.shutdown()
+
+    codes = [f["properties"]["clc18"] for p in pages for f in json.loads(p.read_text())["features"]]
+    assert codes == ["3111", "3112", "3113", "3114", "3115"]
+    assert [q["resultOffset"][0] for q in _CappedArcGIS.queries] == ["0", "2", "4"]
+    assert all(q["geometryPrecision"] == ["0"] for q in _CappedArcGIS.queries)
 
 
 class _FlakyServer(BaseHTTPRequestHandler):

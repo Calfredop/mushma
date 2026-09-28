@@ -56,7 +56,7 @@ describe('matchPath', () => {
   })
 
   it('404s an unknown region', () => {
-    expect(matchPath('/lombardia')).toEqual({ kind: 'not-found' })
+    expect(matchPath('/baviera')).toEqual({ kind: 'not-found' })
   })
 
   it('404s an unknown species', () => {
@@ -110,7 +110,7 @@ describe('resolveLocation', () => {
   })
 
   it('carries a not-found match through with no redirect', () => {
-    const resolved = resolveLocation('/lombardia', '')
+    const resolved = resolveLocation('/baviera', '')
     expect(resolved.match).toEqual({ kind: 'not-found' })
     expect(resolved.redirectTo).toBeUndefined()
   })
@@ -139,7 +139,7 @@ describe('siteRouteFor', () => {
     expect(siteRouteFor(matchPath('/toscana'))?.path).toBe('/toscana')
     expect(siteRouteFor(matchPath('/toscana/porcini'))?.path).toBe('/toscana/porcini')
     expect(siteRouteFor(matchPath('/credits'))?.path).toBe('/credits')
-    expect(siteRouteFor(matchPath('/lombardia'))).toBeUndefined()
+    expect(siteRouteFor(matchPath('/baviera'))).toBeUndefined()
   })
 })
 

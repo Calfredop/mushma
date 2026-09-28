@@ -1,6 +1,6 @@
 """Weather config: sources, variables and downscaling rules, from ``config/weather.yaml``."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 
@@ -9,6 +9,7 @@ import yaml
 from api.weather.points import METHODS
 
 WEATHER_FILE = Path(__file__).resolve().parent.parent / "config" / "weather.yaml"
+REGIONS_DIR = Path(__file__).resolve().parent.parent / "config" / "regions"
 
 
 @dataclass(frozen=True)
@@ -129,7 +130,18 @@ class WeatherConfig:
         return [source for source in self.source_order if source != self.forecast.model]
 
 
-def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
+def load_weather_config(
+    path: Path = WEATHER_FILE,
+    *,
+    region: str | None = None,
+    regions_dir: Path = REGIONS_DIR,
+) -> WeatherConfig:
+    """Load the national weather config, with a region's ``weather.lapse_rates`` (°C per km, by
+    variable) in place of the national ones when ``region`` is given.
+
+    A region file without them (or no region file) leaves the national rates. Only variables the
+    national config already corrects for height can take a regional rate.
+    """
     raw = yaml.safe_load(path.read_text())
     points = raw["points"]
     probe = points["land_probe"]
@@ -142,6 +154,13 @@ def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
         )
         for name, spec in raw["variables"].items()
     }
+    for name, rate in _region_lapse_rates(region, regions_dir).items():
+        if name not in variables or variables[name].lapse_rate_c_per_km is None:
+            raise ValueError(
+                f"region {region!r} sets a lapse rate for {name!r}, which the national config "
+                "does not correct for height"
+            )
+        variables[name] = replace(variables[name], lapse_rate_c_per_km=float(rate))
     for variable in variables.values():
         if variable.downscale not in METHODS:
             raise ValueError(
@@ -175,6 +194,16 @@ def load_weather_config(path: Path = WEATHER_FILE) -> WeatherConfig:
         seasonal=_seasonal(raw.get("seasonal"), variables),
         cds=_cds(raw.get("cds")),
     )
+
+
+def _region_lapse_rates(region: str | None, regions_dir: Path) -> dict[str, float]:
+    if region is None:
+        return {}
+    region_path = regions_dir / f"{region}.yaml"
+    if not region_path.is_file():
+        return {}
+    weather = (yaml.safe_load(region_path.read_text()) or {}).get("weather") or {}
+    return dict(weather.get("lapse_rates") or {})
 
 
 def _cds(raw: dict | None) -> CdsSpec | None:

@@ -8,8 +8,9 @@
 ERA5-Land land node, estimates the cooling rate with height across nodes, and predicts the nodes a
 coarser lattice skips from the ones it keeps. ``gauges`` compares downscaled rain in woodland cells
 with the regional network's gauges inside them (SIR Toscana for Tuscany, ARPA Liguria for Liguria,
-the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Piemonte for Piemonte:
-``GAUGE_NETWORKS``). Results land in ``$DATA_DIR/weather/<region>/checks/``.
+the Servizio Idrografico for Umbria, ARPAE for Emilia-Romagna, ARPA Piemonte for Piemonte, ARPA
+Lombardia for Lombardia: ``GAUGE_NETWORKS``). Results land in
+``$DATA_DIR/weather/<region>/checks/``.
 """
 
 import argparse
@@ -26,7 +27,7 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpa_piemonte, arpal, bolzano_meteo, umbria_sir
+from api.weather import arpa_lombardia, arpa_piemonte, arpal, bolzano_meteo, umbria_sir
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -155,7 +156,7 @@ def run_lattice(region_id: str) -> None:
     region = load_region(region_id)
     grid_dir, store, raw = region_paths(region.id)
     out = store.root / "checks"
-    config = load_weather_config()
+    config = load_weather_config(region=region.id)
     native = replace(config, points=replace(config.points, stride=1))
     check_store = WeatherStore(out / "lattice")
     client = _client(raw)
@@ -310,6 +311,28 @@ def bolzano_meteo_network(raw: Path, start: date, end: date) -> GaugeNetwork:
     return GaugeNetwork(gauges, lambda gauge: by_code[gauge.code], gauge_day_totals)
 
 
+def arpa_lombardia_network(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """ARPA Lombardia: CC0 open data summed into days server side, one CSV per year, CET
+    calendar days (api.weather.arpa_lombardia)."""
+    folder = raw / "arpa_lombardia"
+    stations = arpa_lombardia.parse_stations(
+        fetch(arpa_lombardia.STATIONS_URL, folder / "stations.csv").read_text()
+    )
+    daily = pd.concat(
+        [
+            arpa_lombardia.parse_daily(
+                fetch(arpa_lombardia.daily_url(year), folder / f"daily_{year}.csv").read_text()
+            )
+            for year in range(start.year, end.year + 1)
+        ],
+        ignore_index=True,
+    )
+    daily = arpa_lombardia.plausible_days(arpa_lombardia.complete_days(daily))
+    by_code = {code: arpa_lombardia.series_of(daily, code) for code in daily["code"].unique()}
+    gauges = stations[stations["code"].isin(by_code)].reset_index(drop=True)
+    return GaugeNetwork(gauges, lambda gauge: by_code[gauge.code], calendar_days)
+
+
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "emilia_romagna": arpae_emilia_romagna,
     "tuscany": sir_toscana,
@@ -317,6 +340,7 @@ GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "umbria": umbria_sir_network,
     "piemonte": arpa_piemonte_network,
     "trentino_alto_adige": bolzano_meteo_network,
+    "lombardia": arpa_lombardia_network,
 }
 
 
@@ -325,7 +349,7 @@ def run_gauges(region_id: str, start: date, end: date) -> None:
     if region.id not in GAUGE_NETWORKS:
         raise SystemExit(f"no rain gauge network wired for {region.id!r} (GAUGE_NETWORKS)")
     grid_dir, store, raw = region_paths(region.id)
-    config = load_weather_config()
+    config = load_weather_config(region=region.id)
     network = GAUGE_NETWORKS[region.id](raw, start, end)
     gauges = network.gauges.copy()
     to_laea = Transformer.from_crs(4326, region.grid.crs, always_xy=True)

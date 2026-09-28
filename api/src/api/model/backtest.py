@@ -316,7 +316,7 @@ def prepare(
     root = data_root or data_dir()
     grid_dir, weather_store, raw_dir = region_paths(region, root)
     model_config = model_config or load_model_config(region=region)
-    weather_config = load_weather_config()
+    weather_config = load_weather_config(region=region)
     cells = load_cells(grid_dir)
     weights = pd.read_parquet(weather_store.weights_path)
     normals = load_normals(root, region)

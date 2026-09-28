@@ -2260,3 +2260,592 @@ references:
       1.28 + 0.29 per km, which scales era5_seamless only, would leave the CDS history unscaled.'
     cited_as:
     - regions/trentino_alto_adige.md
+  # ---------------------------------------------------------------------------------------------
+  # Lombardia (region card, 2026-09-26): sources for species/lombardia/,
+  # .gavin-root/docs/species-ecology/lombardia.md and regions/lombardia.md. Appended as one block
+  # rather than sorted in.
+  # ---------------------------------------------------------------------------------------------
+  amr_martino_anzi_universoalpino:
+    citation: 'Associazione Micologica Retica "Martino Anzi" (Gruppo micologico alta Valtellina). Universo alpino: species
+      and forest pages (Cantharellus cibarius, Amanita caesarea, Castagno, Abete rosso, Abete bianco, Larice, Faggio)'
+    url: https://universoalpino.com/galletto/
+    kind: society
+    region: Lombardia (Valtellina)
+    verified: verified
+    supports: 'C. cibarius "dal livello del mare fino ai 2000 metri di altezza", "dal mese di maggio fino a novembre",
+      "legato a particolari condizioni di acidità del terreno"; A. caesarea (https://universoalpino.com/i-commestibili/)
+      "cresce solo sotto latifoglie con decisa preferenza per il castagno e, un po'' meno, per le querce; è più facile
+      trovarlo su terreni silicei, ma difficilmente si sviluppa oltre i 700-800 metri di altitudine", "Compare da
+      luglio a fine settembre, raramente in ottobre"; the larch page names only Suillus; the subalpine belt reaches
+      2100-2200 m.'
+    cited_as:
+    - species-ecology/lombardia.md
+  bmeteo_aereus:
+    citation: 'Oppicelli N. (2024-07-15). Il porcino nero o bronzino, Boletus aereus. Passione Funghi, 3BMeteo'
+    url: https://funghi.3bmeteo.com/boletus-aereus/
+    kind: web
+    verified: verified
+    supports: 'B. aereus with oak, chestnut and hop-hornbeam; "Raro, quasi introvabile in faggeta e in boschi puri di
+      conifere ... raramente nei boschi alpini, a eccezione di qualche castagneto o bosco misto di roverella e
+      carpino situati in microclimi particolari"; 15-24 °C, rain of 30-40 mm as the lower limit, lasts to late
+      November while nights stay above 0 °C (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  bmeteo_funghi_agosto2026:
+    citation: 'Oppicelli N. (2026-07-31). Agosto 2026 da funghi? Dal bosco all''ombrellone, come cercarli. Passione
+      Funghi, 3BMeteo'
+    url: https://funghi.3bmeteo.com/funghi-agosto-2026/
+    kind: web
+    verified: verified
+    supports: 'Alps in August: "I boschi di abete rosso, larice e faggio, distribuiti tra i 1.000 e i 2.000 metri di
+      quota, beneficiano in genere delle piogge temporalesche di luglio"; on north-facing slopes such as the alta
+      Valtellina maxima of "20-23 °C in media a 1.500 metri" and minima "sotto i 12 °C" suit porcini (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  buntgen2013_gcb:
+    citation: 'Büntgen U., Peter M., Kauserud H., Egli S. (2013) Unraveling environmental drivers of a recent increase in
+      Swiss fungi fruiting. Global Change Biology 19: 2785-2794'
+    doi: 10.1111/gcb.12263
+    kind: peer_reviewed
+    region: Switzerland
+    verified: verified
+    supports: 'abstract (PubMed 23686649): 115,417 weekly fruit-body counts from Swiss plots, 1975-2006; "Mushroom
+      fruiting exhibited an average autumnal delay of 12 days after 1991"; fruiting under direct climate control. Read
+      against ending an Alpine season window early; no taxon-level numbers.'
+    cited_as:
+    - species-ecology/lombardia.md
+  dogali2022_aestivalis_camonica:
+    citation: 'Dogali D. (Circolo Micologico "G. Carini", Brescia) (2022-06-28). Viaggio in Valle Camonica: l''esperto
+      Dario Dogali presenta quattro funghi. Gazzetta delle Valli'
+    url: https://www.gazzettadellevalli.it/valle-camonica/edolo/viaggio-in-valle-camonica-lesperto-dario-dogali-presenta-quattro-funghi-379200/
+    kind: society
+    region: Lombardia (Valle Camonica)
+    verified: verified
+    supports: 'B. aestivalis "con preferenza nei boschi di latifoglie (castagni, faggi, querce e noccioli), più raro nei
+      boschi di conifere (abeti e pini)", "rinvenibile già da fine maggio e poi fino alla fine di settembre e, a
+      volte, anche in ottobre".'
+    cited_as:
+    - species-ecology/lombardia.md
+  dogali2022_porcini_camonica:
+    citation: 'Dogali D. (Circolo Micologico "G. Carini", Brescia) (2022-07-31). Funghi, Valle Camonica: l''esperto
+      presenta quattro specie di porcini. Gazzetta delle Valli'
+    url: https://www.gazzettadellevalli.it/valle-camonica/funghi-valle-camonica-lesperto-presenta-quattro-specie-di-porcini-383493
+    kind: society
+    region: Lombardia (Valle Camonica)
+    verified: verified
+    supports: 'first porcini "dalla fine di maggio alla metà di giugno", mostly B. aestivalis, then all summer "e non di
+      rado fino al tardo autunno"; B. edulis "specialmente nei boschi di conifere (abeti e pini) ma anche nei boschi
+      di latifoglie con preferenza per faggi, meno frequente presso noccioli e castagni"; B. pinophilus "già dalla
+      primavera e fino al tardo autunno ... associato preferibilmente al Pino silvestre"; B. aereus "prevalentemente
+      nei querceti e nei castagneti ... Non molto comune".'
+    cited_as:
+    - species-ecology/lombardia.md
+  ersaf_specie_forestali2019:
+    citation: 'ERSAF, Vivaio Forestale Regionale (2019). Le specie forestali lombarde. Regione Lombardia'
+    url: https://www.ersaf.lombardia.it/wp-content/uploads/2023/07/LE-SPECIE-FORESTALI-LOMBARDE.pdf
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'Lombard tree belts: castagno "Collina e bassa montagna fino ai 900 m di quota", soil "Acido"; faggio
+      "dai 600 ai 1500 m"; abete rosso "dai 900 fino ai 1800 m"; abete bianco "900-1500 m"; larice "Zone montane tra i
+      1000 e i 2000 m", in "Lariceti, larici-cembreti e foreste di abete rosso"; pino silvestre in the "alta pianura
+      (brughiere)" and the mountains; carpino nero "fino ai 1000 m", "Calcareo superficiale"; robinia "fino ad un
+      massimo di 800 m".'
+    cited_as:
+    - species-ecology/lombardia.md
+  ersaf_stato_foreste2023:
+    citation: 'ERSAF, Regione Lombardia (2024). Rapporto sullo stato delle foreste in Lombardia 2023 (17a edizione), a
+      cura di F. Celona. Milano'
+    url: https://www.ersaf.lombardia.it/wp-content/uploads/2025/12/RAPPORTO_STATO_FORESTE_2023.pdf
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'forest 618,403 ha, 26 % of the region, 81 % in the ISTAT mountain zone; Tab. 2 (p. 69): Castagneti 11.7 %,
+      Orno-ostrieti 11.4 %, Peccete 11.1 %, Faggete 10.8 %, Lariceti, larici-cembreti e cembrete 9.8 %, Formazioni
+      antropogene (robinia, late cherry) 8.1 %, Aceri-frassineti 6.2 %, Querceti 5.1 %, Alneti 3.2 %, Betuleti e
+      corileti 2.3 %, Pinete di pino silvestre 1.7 %, Piceo-faggeti 1.6 %, Abieteti 1.3 %, Mughete 1.2 %,
+      unclassified 13.2 %; larch mostly in the province of Sondrio (38,601 ha).'
+    cited_as:
+    - species-ecology/lombardia.md
+  funghimagazine_aereus:
+    citation: 'Funghi Magazine, Redazione (updated 2026-02-25). Boletus aereus - Porcino Nero o Bronzino'
+    url: https://funghimagazine.it/boletus-aereus-porcino-nero-o-bronzino/
+    kind: web
+    verified: verified
+    supports: 'B. aereus "non oltre i 500 mt al Nord, raramente fino a 600 mt, in zone spiccatamente termofile"; "Gli
+      alberi di Castagno e Faggio del Nord Italia non sono adatti ad ospitare i Porcini Neri. Lo sono alcuni Castagni
+      che formano, piccole colonie con le Querce"; spreading "dal Torinese ai grandi Laghi sulle Pedemontane
+      collinari" and "fin sulle basse Prealpi" (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  funghimagazine_calendario_autunno:
+    citation: 'Funghi Magazine, Redazione (updated 2026-02-25). Il calendario dei funghi Porcini autunnali-invernali'
+    url: https://funghimagazine.it/il-calendario-dei-funghi-porcini-autunnali-invernali/
+    kind: web
+    region: northern Italy
+    verified: verified
+    supports: 'B. edulis in August first "oltre i 1400 mt e fino ed oltre i 2000 mt"; "Cominciano le prime nevicate /
+      gelate a quote di montagna, che segneranno la fine della stagione dei funghi Porcini nelle abetaie esposte a
+      nord sulle Alpi", gone from shaded spruce and pine by early October but "ancora ben presenti nelle faggete e tra
+      i Castagni dai 5-600 mt fin verso i 1200-1300 mt"; in November edulis "fino attorno ai 1000 mt, non oltre i
+      6/700m entro la metà del mese"; B. pinophilus back in October "in Ossola, alta Valsesia, Valtellina e Prealpi
+      Lombarde, anche tra gli Abeti"; B. aereus gone from the North in October (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  funghimagazine_calendario_primavera_estate:
+    citation: 'Funghi Magazine, Redazione (updated 2026-02-25). Il Calendario dei funghi Porcini Primavera-Estate'
+    url: https://funghimagazine.it/fm-calendario-porcini-primavera-estate/
+    kind: web
+    region: northern Italy
+    verified: verified
+    supports: 'northern B. pinophilus from "la seconda metà di Aprile, o al più tardi da metà Maggio" at 500-900 m, to
+      1200-1300 m by late May, pure Scots pine "a quote non inferiori a 1300 mt" in June; estatini under chestnut and
+      oak "generalmente entro i 500~600 mt", to "900~1000 mt" by late May, in beech "fino ai 1500 mt circa al Nord" in
+      July; July porcini "sopra i 1200-1300 mt cercando di rincorrere i locali temporali" (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  funghimagazine_edulis:
+    citation: 'Funghi Magazine (updated 2026-01-15). Boletus edulis - Il Porcino chiaro autunnale'
+    url: https://funghimagazine.it/boletus-edulis-il-porcino-chiaro-autunnale/
+    kind: web
+    verified: verified
+    supports: 'B. edulis hosts include spruce, fir, Scots, black and mountain pine "ed in misura minore anche con Pino
+      Cembro", birch and hornbeam; "Non micorriza il Larice, l''Ontano, l''Olmo e assai sporadicamente l''Acero"
+      (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  funghimagazine_laricino:
+    citation: 'Conti A. (updated 2026-01-15). Suillus grevillei o Laricino. Funghi Magazine'
+    url: https://funghimagazine.it/suillus-grevillei-o-laricino/
+    kind: web
+    verified: verified
+    supports: 'pure larch woods: the habitat "esclude completamente la presenza di funghi Porcini", but porcini edulis
+      are found among larches "a patto che nelle immediate vicinanze ci siano uno o più Abeti rossi o Abeti bianchi (ma
+      anche Faggi) a creare micorriza con i funghi Porcini" (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  funghimagazine_ovoli_2025:
+    citation: 'Funghi Magazine, Redazione (2025-09-17). Funghi arancioni: ovoli reali, le finte uova che stanno facendo
+      impazzire i social'
+    url: https://funghimagazine.it/funghi-arancioni-ovoli-reali-le-finte-uova-che-stanno-facendo-impazzire-i-social/
+    kind: web
+    region: northern Italy
+    verified: verified
+    supports: '"Negli anni passati accadeva spesso di trovarne in quantità nel basso Piemonte tra Monferrato, Langhe e
+      Roero, oltre che nell''Oltrepo'' pavese"; in 2025, after "le grandi piogge del 28/30 agosto", "Stessa cosa in
+      Emilia Romagna e Oltrepo'' pavese, anche qua panieri stracolmi" and "Ovoli reali abbondanti o mai visti prima
+      anche da Colico-Morbegno fino alle porte di Sondrio" (folklore).'
+    cited_as:
+    - species-ecology/lombardia.md
+  gm_alta_valtellina_stelvio:
+    citation: 'Gruppo Micologico Alta Valtellina / Associazione Micologica di Bormio. Funghi del Parco Nazionale dello
+      Stelvio, settore lombardo (web checklist of more than 1,700 species, after Meraldi P. 1999, I funghi del Parco
+      Nazionale dello Stelvio)'
+    url: http://www.funghi-bormio.it/
+    kind: society
+    region: Lombardia (Alta Valtellina)
+    verified: verified
+    supports: 'Alta Valtellina woods: spruce low, then larch with stone pine, Scots pine "molto meno frequente", wide
+      mountain-pine scrub; broadleaf woods limited to alder, poplar, ash and birch; B. edulis and B. pinophilus in
+      "Boschi di aghifoglie e latifoglie", B. reticulatus only in "Boschi di latifoglie" (habitat "Nocciolo"); B.
+      aereus absent from the checklist.'
+    cited_as:
+    - species-ecology/lombardia.md
+  gm_cantu_como_ambienti2021:
+    citation: 'Brenna P. (2021). Ambienti lariani: Pecceta, Lariceto, Faggeta, Castagneto, Betulleto, Brughiera,
+      Querco-Carpineto, Frassineto, Noccioleto. Gruppo Micologico di Cantù e Como'
+    url: https://www.fungart.it/wordpress/?cat=48
+    kind: society
+    region: Lombardia (Lario)
+    verified: verified
+    supports: 'Lake Como habitats and their fungi: pecceta ("dai 1200 m ai 2000 m", "normalmente condivide il territorio
+      con il larice") with B. edulis, B. pinophilus and C. cibarius; lariceto "Il larice è una pianta molto selettiva
+      per la crescita di funghi", Suillus grevillei only; faggeta with B. edulis and B. pinophilus; castagneto
+      ("dalla pianura fino ai 700-1000 m") with B. reticulatus, B. edulis and C. cibarius; betulleto with B. edulis;
+      Scots-pine brughiera with B. edulis and B. pinophilus; querco-carpineto (downy oak and hornbeam, "sul Monte Barro
+      (Lc), sopra Bellagio e nella zona del Lago del Piano e Carlazzo", https://www.fungart.it/wordpress/?p=3929) with
+      B. reticulatus and A. caesarea; frassineto and noccioleto with no porcini.'
+    cited_as:
+    - species-ecology/lombardia.md
+  gm_cantu_como_schede_boletus:
+    citation: 'Gruppo Micologico di Cantù e Como. Schede micologiche: Boletus edulis (Brenna P., 2020), B. pinophilus,
+      B. reticulatus, B. aereus (Ghidelli S., 2024)'
+    url: https://www.fungart.it/wordpress/?p=6108
+    kind: society
+    region: Lombardia (Lario)
+    verified: verified
+    supports: 'B. edulis "dall''estate all''autunno, sotto aghifoglie e latifoglie, dalla pianura alla montagna" (?p=2744);
+      B. pinophilus "Dalla tarda primavera ... fino ad autunno inoltrato", "In montagna nei boschi di aghifoglie e
+      latifoglie, anche in collina all''inizio della stagione"; B. reticulatus "soprattutto sotto latifoglie dalla
+      primavera all''autunno, ma anche sotto conifere"; B. aereus in "boschi di latifoglie di Castagno e Cerro con
+      terreno asciutto e siliceo ... più raro nel Nord Italia" (?p=6146).'
+    cited_as:
+    - species-ecology/lombardia.md
+  gm_milanese_cantharellaceae:
+    citation: 'Galli R. Le Cantharellaceae. Gruppo Micologico Milanese'
+    url: https://www.gruppomicologicomilanese.it/pages/p_articoli_12cantharellaceae.html
+    kind: society
+    region: Lombardia
+    verified: verified
+    supports: 'three chanterelle habitats: Mediterranean (C. alborufescens), "Termofilo-submediterraneo (quercia,
+      carpino, faggio appenninico)" (C. pallens, C. ferruginascens) and "Alpino-subalpino (peccio, abete bianco, pino
+      silvestre, castagno, faggio)" (C. cibarius, C. friesii); C. cibarius "Conifere (pecci, abeti, pini) e
+      latifoglie (faggi e castagni)".'
+    cited_as:
+    - species-ecology/lombardia.md
+  gmb_trento_galleria_pinophilus:
+    citation: 'Floriani M. (text). Boletus pinophilus. Galleria, Gruppo Micologico "G. Bresadola" di Trento, c/o MUSE'
+    url: https://www2.muse.it/bresadola/galleria_sp.asp?sp=309751
+    kind: society
+    region: Trentino
+    verified: verified
+    supports: '"Tra le specie del genere Boletus è quella più precoce e più tardiva, probabilmente in ragione di una sua
+      maggiore adattabilità ai climi freschi ... pur essendo frequentemente legato al pino silvestre, Boletus pinophilus
+      può essere rinvenuto anche in associazione con altre piante, incluse le latifoglie".'
+    cited_as:
+    - species-ecology/lombardia.md
+  gmm_corso2016_habitat_lombardia:
+    citation: 'Gruppo Micologico Milanese (2016). Corso di micologia di base 2: Funghi della Lombardia, Alpi e Prealpi
+      (Calledda F.); Funghi e habitat dell''Appennino Lombardo (Galli R.)'
+    url: https://www.gruppomicologicomilanese.it/pages/p_eventi_21corsomb2.html
+    kind: society
+    region: Lombardia (Oltrepò Pavese)
+    verified: verified
+    supports: 'Oltrepò Apennine: "Boletus aereus sotto cerro (Quercus cerris)" in the "Cerreta termofila appenninica",
+      "Boletus aestivalis sotto castagno (Castanea sativa)"; larch presented only with Boletinus cavipes and Lactarius
+      porninsis.'
+    cited_as:
+    - species-ecology/lombardia.md
+  infc2015_lombardia:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1, 1.4 and 1.8-1.21 (Lombardia). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Lombardia
+    verified: verified
+    supports: 'Lombardia bosco 621,968 ha (ES 1.6 %): spruce 87,863 ha (montane 50,693, subalpine 19,836), chestnut 82,079
+      (wood 65,681, fruit 10,668), hop-hornbeam and hornbeam 81,720, beech 66,650, larch and stone pine 53,420, temperate
+      oaks 41,095 (Q. pubescens 19,936, Q. robur 9,698, Q. petraea 8,375), Scots and mountain pine 19,043, silver fir
+      9,416, robinia and ailanthus 36,323, maple-lime-ash 34,613, birch and pioneers 12,783; Mediterranean pines and
+      holm oak 0.'
+    cited_as:
+    - species-ecology/lombardia.md
+  karasch_rlz_caesarea:
+    citation: 'Karasch P. Der streng geschützte Kaiser unter den Speisepilzen. Rote-Liste-Zentrum, Artenportraits'
+    url: https://www.rote-liste-zentrum.de/themenwelt/artenportraits/der-streng-geschuetzte-kaiser-unter-den-speisepilzen/
+    kind: institutional
+    region: Germany
+    verified: verified
+    supports: 'A. caesarea follows chestnut "bis an deren klimatische Höhengrenzen auf ca. 1.000 m NN", "südlich der Alpen
+      oft auf sauren Böden", "in Süddeutschland zwischen Ende Juli und September"; after July rain summer porcini come
+      in about two weeks and the ovolo "etwa zehn Tage danach"; only in habitats "mit halbwegs natürlichen
+      Nährstoffverhältnissen".'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_andreis_sartori2009:
+    citation: 'Andreis C., Sartori F. (2009). Sintassonomia dei boschi lombardi. Natura Bresciana, Annuario del Museo
+      Civico di Scienze Naturali di Brescia 36: 173-178'
+    url: https://botanica.museoscienzebrescia.it/upload/NATBRES/RIVISTA/2009_36/atti_2009_36/2009_36_173-178_Andreis_et_al.pdf
+    kind: peer_reviewed
+    region: Lombardia
+    verified: verified
+    supports: 'substrate split of Lombard woods: querco-carpineti and castagneti "su substrati silicatici e morenico dei
+      settori esalpico e avanalpico occidentali"; ostrieti, oak woods and Turkey-oak woods of the Erythronio-Carpinion
+      "su suoli carbonatici" in the east; Luzulo niveae-Fagetum for "la quasi totalità delle faggete acidofile";
+      Physospermo-Quercetum petraeae "confinato all''Oltrepo pavese".'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_arpa_clima:
+    citation: 'ARPA Lombardia. Il clima in Lombardia; Rapporto Stato Ambiente, Meteo e clima; indicatore Precipitazione
+      totale mensile 2023 (accessed 2026-09-26)'
+    url: https://www.arpalombardia.it/temi-ambientali/meteo-e-clima/clima/il-clima-in-lombardia/
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'plain mean annual temperature about 14 °C (1991-2020); mean rain on the Lombard basins 1,218 mm (2008-2020);
+      station medians of monthly rain 2002-2022 peak in May (104 mm) and November (114 mm), low in January (35 mm),
+      76-90 mm in the summer months.'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_boschi_lombardia2004:
+    citation: 'Gallinaro N. (ed.) (2004). Boschi di Lombardia. Un patrimonio da vivere. Regione Lombardia, DG
+      Agricoltura, Milano'
+    url: http://web.archive.org/web/20240510014752/https://www.regione.lombardia.it/wps/wcm/connect/89980355-a204-4357-b1b2-880f00118287/AL_20090412_1411_boschi_lombardia_AGR_MS.pdf?MOD=AJPERES&CACHEID=89980355-a204-4357-b1b2-880f00118287
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'Del Favero forest regions: esalpica centro-orientale "tipica dei substrati carbonatici" (downy oak,
+      hop-hornbeam, Scots pine, beech above); esalpica occidentale interna "tipica dei substrati silicatici"
+      (chestnut and oak, beech above); mesalpica (Valtellina, Val Camonica) with conifers, "in particolare i due abeti";
+      endalpica (Bormiese, alta Valmalenco) spruce, "larice e pino cembro nelle fasce altimontana e subalpina";
+      Oltrepò "substrati prevalentemente arenaceo-marnosi", beech at the top; robinia replacing native woods in the
+      moraine hills; spruce and fir in the Prealps planted.'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_ceriani_carelli_precip:
+    citation: 'Ceriani M., Carelli M. Carta delle precipitazioni medie, massime e minime annue del territorio alpino
+      della Regione Lombardia (registrate nel periodo 1891-1990). Regione Lombardia, Servizio Geologico'
+    url: http://web.archive.org/web/20220126141009/https://www.arpalombardia.it/sites/DocumentCenter/Documents/Centro%20Monitoraggio%20Geologico/CERIANI%20Massimo%20et%20al%20-%20Carta%20delle%20precipitazioni%20medie%20massime.pdf
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'mean annual rain 850-950 mm near the Po, about 1,000 mm at Milan and Brescia, 1,400-1,600 mm on the first
+      Prealps, over 2,000 mm on the lake ridges (Vararo 2,326, Magreglio 2,196, Valcanale 2,240); Garda 850-1,200 mm;
+      Val Camonica falling up-valley (Lovere 1,191, Temù 982); "alta Valtellina ed all''area di Livigno" 700-900 mm
+      (Trepalle 646, Bormio 724).'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_habitat_manual2018:
+    citation: 'Fondazione Lombardia per l''Ambiente, Regione Lombardia (2018). Supporto tecnico-scientifico alle attività
+      dell''Osservatorio Regionale per la Biodiversità della Lombardia: manuale habitat (G. Brusa)'
+    url: https://www.biodiversita.lombardia.it/images/HABITAT/pdf/manuale-HABITAT-lombardia.pdf
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'belts "collinare: querceti; montano: faggete; subalpino: peccete e lariceti"; low beech woods with chestnut
+      and sessile oak "in genere sotto i 1300 m", high beech woods with conifers "in genere oltre i 1100 m"; spruce
+      woods only in the Alpine chain, "mancando in tutta la fascia prealpina"; larch and stone pine in the subalpine
+      belt, and "formazioni pioniere di larice, spesso accompagnate dall''abete rosso" on abandoned pastures; chestnut
+      woods coppiced, "selve castanili ... oramai rarissime".'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_lr31_2008_funghi:
+    citation: 'Regione Lombardia. L.R. 5 dicembre 2008, n. 31, Testo unico delle leggi regionali in materia di
+      agricoltura, foreste, pesca e sviluppo rurale, Titolo VIII Capo I, artt. 96-112 (consolidated text)'
+    url: https://normelombardia.consiglio.regione.lombardia.it/normelombardia/Accessibile/main.aspx?view=showdoc&iddoc=lr002008120500031
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'art. 97 "La raccolta dei funghi è gratuita su tutto il territorio regionale", with contributions set by
+      the Comunità montane and parks; art. 98 "dall''alba al tramonto", "il limite massimo di raccolta giornaliera per
+      persona è di tre chilogrammi", "sono vietati ... la raccolta di funghi decomposti e di ovuli chiusi di Amanita
+      cesarea"; no season calendar, no altitude rule; minimum sizes left to Giunta acts (art. 111).'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_manuale_funghi2009:
+    citation: 'Granata A., Maina G. (2009). Manuale del cercatore di funghi. Regione Lombardia, DG Agricoltura e DG
+      Sanità'
+    url: https://www.regione.lombardia.it/content/dam/rl/canali-tematici-servizi/10-agricoltura/18-raccolta-funghi-e-tartufi/red-funghi-regole-agr/allegati/all-Manuale-del-cercatore-di-funghi-agr.pdf
+    kind: institutional
+    region: Lombardia
+    verified: verified
+    supports: 'A. caesarea "è presente nei boschi di latifoglie, in particolare di querce e castagni" (printed p. 17).'
+    cited_as:
+    - species-ecology/lombardia.md
+  lomb_masseroli2016_treeline:
+    citation: 'Masseroli A., Leonelli G., Bollati I., Trombino L., Pelfini M. (2016). The influence of geomorphological
+      processes on the treeline position in Upper Valtellina (Central Italian Alps). Geografia Fisica e Dinamica
+      Quaternaria 39(2): 171-182'
+    doi: 10.4461/GFDQ.2016.39.16
+    url: https://www.gfdq.glaciologia.it/index.php/GFDQ/article/view/115
+    kind: peer_reviewed
+    region: Lombardia
+    verified: verified
+    supports: 'Upper Valtellina treeline mean elevations 2,300-2,438 m by limiting landform, the climatic treeline higher;
+      "Swiss stone pine (Pinus cembra L.) and European larch (Larix decidua Mill.) dominate the Upper Valtellina forests",
+      spruce lower down; valley-bottom rain "between 700 and 900 mm, which mainly falls during the summer".'
+    cited_as:
+    - species-ecology/lombardia.md
+  mandolini2022_cembra:
+    citation: 'Mandolini E., Bacher M., Peintner U. (2022) Ectomycorrhizal fungal communities of Swiss stone pine (Pinus
+      cembra) depend on climate and tree age in natural forests of the Alps. Plant and Soil 502: 167-180'
+    doi: 10.1007/s11104-022-05497-z
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC11420379/
+    kind: peer_reviewed
+    region: Trentino-Alto Adige
+    verified: verified
+    supports: 'four natural stone-pine stands at 2,000-2,100 m in South Tyrol: "a total species diversity of 20 ECM
+      species", Suillus plorans the main partner, no Boletus: stone pine is at most an occasional porcini host.'
+    cited_as:
+    - species-ecology/lombardia.md
+  mandolini2024_larix:
+    citation: 'Mandolini E., Bacher M., Peintner U. (2024) Ectomycorrhizal communities of adult and young European larch
+      are diverse and dynamics at high altitudinal sites. Plant and Soil 506: 691-707'
+    doi: 10.1007/s11104-024-06721-8
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC11839878/
+    kind: peer_reviewed
+    region: Trentino-Alto Adige
+    verified: verified
+    supports: 'larch roots at 1,760-1,910 m (Prettau, Schnals), where the stands were "interspersed with Pinus cembra and
+      Picea abies individuals": 68 ectomycorrhizal taxa dominated by larch specialists (Lactarius porninsis, Suillus
+      cavipes, S. grevillei ...), and no Boletus in the article: larch is not a porcini host.'
+    cited_as:
+    - species-ecology/lombardia.md
+  muse_censimento_caesarea:
+    citation: 'Censimento dei Funghi del Triveneto (Federazioni dei gruppi micologici; hosted by MUSE, Trento), species
+      page with text by M. Floriani: Amanita caesarea'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=208468&ar=tv
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: '268 records: about 50 % at or below 300 m, 26 % at 300-600 m, 15 % at 600-900 m, 8 % at 900-1,200 m, 1 % at
+      1,200-1,500 m, highest 1,300 m (Capriana TN, mixed pine, spruce and larch); months July 10 %, August 33 %,
+      September 30 %, October 24 %, November 1 % (bar heights read off the page).'
+    cited_as:
+    - species-ecology/lombardia.md
+  muse_censimento_cantharellus:
+    citation: 'Censimento dei Funghi del Triveneto (hosted by MUSE, Trento), species pages with texts by M. Floriani:
+      Cantharellus cibarius, C. amethysteus, C. pallens, C. ferruginascens, C. friesii'
+    url: https://www2.muse.it/bresadola/map_det.asp?sp=200345&ar=tv
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: 'C. cibarius (1,923 records): 28 % at 1,200-1,500 m, 20 % at 1,500-1,800 m, 2 % at 1,800-2,100 m, highest
+      2,040 m ("Conifere e microselva alpina"); months June 12 %, July 25 %, August 32 %, September 19 %, October 8 %,
+      November 2 %; C. pallens "con una predilezione per i boschi dominati dalle latifoglie e tendenzialmente
+      termofili", C. cibarius "più frequente in climi freschi e nei boschi di conifere"; C. ferruginascens October 49 %,
+      November 16 %, mostly below 300 m (sp=327488 pallens, 327479 ferruginascens, 204760 friesii, 154816 amethysteus).'
+    cited_as:
+    - species-ecology/lombardia.md
+  mushma_lombardia_gauge_check_2026:
+    citation: 'mushma Lombardia rain check: downscaled ERA5-Land (CDS) daily precipitation against the ARPA Lombardia
+      rain gauges inside woodland cells, 2019-2025 (60 gauges with 80 % of days, 241-2,040 m), CET calendar days;
+      May-October fitted apart from November-April. See regions/lombardia.md'
+    url: https://www.dati.lombardia.it/Ambiente/Precipitazioni-dal-2021/pstb-pga6
+    kind: analysis
+    region: Lombardia
+    verified: verified
+    supports: 'ERA5-Land holds 1.06 of Lombard woodland gauge rain from May to October 2019-2025 (1.03-1.10 in every
+      elevation band) and 1.13 from November to April, when the gauges above 1,200 m catch little of the snow (1.34-1.84).
+      A May-October gauge-total fit of scale = 0.96 - 0.02 per km of elevation brings it to 1.00; the national
+      1.28 + 0.29 per km (Tuscan gauges) would make it 1.5-1.8 between 500 and 1,500 m.'
+    cited_as:
+    - regions/lombardia.md
+  mushma_lombardia_forest_composition_2026:
+    citation: 'mushma Lombardia woodland composition: share of wooded area, dominant cells, elevations and terrain per
+      habitat key on the Lombardia woodland grid (built 2026-09-26 from Regione Lombardia''s Carta forestale, typed
+      by LEGENDA_1), with the area of each Carta forestale class'
+    url: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer
+    kind: analysis
+    region: Lombardia
+    verified: verified
+    supports: '6,018 woodland cells: mixed_broadleaf 24.6 % of the wooded area (orno-ostrieti 58 %, aceri-frassineti
+      30 %, betuleti e corileti 11 % of the class), chestnut 15.7 %, fir_spruce 15.2 % (peccete and abieteti),
+      beech 14.3 %, other_conifer 9.7 % (lariceti 89 %, larici-cembreti 11 %), deciduous_oak 6.4 %,
+      mixed_broadleaf_conifer 5.3 % (piceo-faggeti, DUSAF mixed, recent plantings), exotic_broadleaf 3.5 % (robinia),
+      riparian 2.7 %, mountain_pine 2.1 % (Scots pine only), transitional 0.5 %, evergreen_oak under 0.1 %; by the
+      map''s type names castagneti are 49 % on carbonate and 42 % on silicate rock, faggete 74 % on carbonate; woodland
+      elevation median 921 m (p95 1,781 m, max 2,328 m), slope median 27.5° (p90 35.1°, max 46.4°), topsoil pH median
+      6.0. See species-ecology/lombardia.md.'
+    cited_as:
+    - species-ecology/lombardia.md
+  mushma_lombardia_forest_elevation_2026:
+    citation: 'mushma: area-weighted random points in the Carta forestale polygons (300 per category) with EU-DEM 25 m
+      elevations via OpenTopoData, 2026-09-26'
+    url: https://www.cartografia.servizirl.it/arcgis2/rest/services/agricoltura/carta_forestale/MapServer
+    kind: analysis
+    region: Lombardia
+    verified: verified
+    supports: 'elevation p5 / median / p95 (m): robinieti 88 / 298 / 556; castagneti 303 / 619 / 928; querceti di
+      roverella 211 / 457 / 922; orno-ostrieti 300 / 726 / 1,171; faggete submontane 591 / 920 / 1,266, montane
+      796 / 1,147 / 1,483, altimontane 1,120 / 1,460 / 1,674; pinete di pino silvestre montane 507 / 992 / 1,625,
+      planiziali 285 / 358 / 437; abieteti 884 / 1,273 / 1,570; peccete montane 1,010 / 1,376 / 1,680, altimontane
+      1,208 / 1,623 / 1,964; lariceti 1,029 / 1,670 / 2,050; larici-cembreti 1,718 / 2,032 / 2,230.'
+    cited_as:
+    - species-ecology/lombardia.md
+  mushma_occurrence_check_lombardia_2026:
+    citation: 'mushma Lombardia occurrence cross-check: GBIF occurrence API (gadmGid ITA.10_1), iNaturalist histogram and
+      observations APIs (place 10870, verifiable; elevations only for open records with accuracy of 1 km or better or
+      none stated), the Open-Meteo elevation API and the Lombardia woodland grid, queried 2026-09-26. Aggregates
+      only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations/histogram?interval=month_of_year&verifiable=true&place_id=10870
+    kind: analysis
+    region: Lombardia
+    verified: verified
+    supports: 'iNaturalist records (located): B. edulis 170 (110), B. reticulatus 38 (27), B. aereus 9 (8), B. pinophilus
+      16 (13), A. caesarea 24 (20), Cantharellus 146 (116), against 36,719 fungi records (October 22 %); month
+      enrichment, elevation percentiles and dates by elevation band; habitat of the grid cells holding the located
+      records against all woodland cells. GBIF is 83 % iNaturalist copies. See species-ecology/lombardia.md.'
+    cited_as:
+    - species-ecology/lombardia.md
+  mushma_swissfungi_check_2026:
+    citation: 'mushma: altitude and phenology of the four porcini, Amanita caesarea and Cantharellus in SwissFungi
+      (GBIF download of the Swiss National Fungi Databank and the atlas REST diagrams), 2026-09-26. Aggregates only'
+    url: https://api.gbif.org/v1/occurrence/search?datasetKey=c0633ec5-19cd-4a58-b84c-ca55c2e7ae64
+    kind: analysis
+    region: Switzerland
+    verified: verified
+    supports: 'B. edulis (3,396 records) p95 1,700 m, p99 1,858 m; dates at 1,401-1,800 m p5 25 July, median 27 August,
+      p95 6 October, below 600 m p5 1 July, median 8 September, p95 2 November; B. pinophilus spring records only at or
+      below 1,000 m, above it 22 July to 2 October; B. reticulatus June-July (effort ratio 5.0, 3.7), p95 1,070 m;
+      B. aereus median 476 m, p95 992 m, September peak; A. caesarea August 149, September 170, October 167, November
+      0, 87 % at or below 600 m; C. cibarius 1,601-2,000 m 9.5 %, above 2,000 m 0.1 %. Partner trees: larch 2 % of
+      B. edulis, 5 % of B. pinophilus, 3 % of C. cibarius records naming one; robinia 0 for every taxon.'
+    cited_as:
+    - species-ecology/lombardia.md
+  parco_orobie_valt_conifere:
+    citation: 'Parco delle Orobie Valtellinesi. Ambiente e territorio, Ecosistemi, Boschi di conifere'
+    url: https://old.parcorobievalt.com/ambiente-e-territorio/ecosistemi/boschi-di-conifere
+    kind: institutional
+    region: Lombardia (Orobie valtellinesi)
+    verified: verified
+    supports: 'montane spruce woods up to about 1,550 m and subalpine spruce "dai 1500 metri circa fino al limite
+      superiore del bosco"; "Alle quote più elevate l''abete rosso è accompagnato o sostituito dal larice ... e solo
+      localmente dal pino cembro"; Scots pine on sunny, steep slopes.'
+    cited_as:
+    - species-ecology/lombardia.md
+  senn_irlet2007_rl_ch:
+    citation: 'Senn-Irlet B., Bieri G., Egli S. (2007). Rote Liste der gefährdeten Grosspilze der Schweiz. Umwelt-Vollzug
+      Nr. 0718. BAFU, Bern, und WSL, Birmensdorf'
+    url: https://www.bafu.admin.ch/dam/de/sd-web/2b2YOsb5G7o2/rote_liste_der_gefaehrdetenartenderschweizgrosspilzeausgabe2007.pdf
+    kind: institutional
+    region: Switzerland
+    verified: verified
+    supports: 'A. caesarea VU (p. 27), "einer Art mit einem offensichtlichen Verlust an Standorten in früheren
+      Jahrzehnten" (p. 74); nitrogen deposition "im Mittelland und im südlichen Tessin" threatens mycorrhizal fungi
+      (p. 7, p. 77); C. cibarius least concern.'
+    cited_as:
+    - species-ecology/lombardia.md
+  swissfungi_wsl:
+    citation: 'SwissFungi, National Data and Information Center for the Fungi of Switzerland, WSL Birmensdorf. Swiss
+      National Fungi Databank (GBIF dataset c0633ec5-19cd-4a58-b84c-ca55c2e7ae64) and distribution atlas, accessed
+      2026-09-26'
+    doi: 10.16904/envidat.136
+    url: https://www.wsl.ch/map_fungi/
+    kind: dataset
+    region: Switzerland
+    verified: verified
+    supports: 'dated, altitude-tagged records with the partner tree the recorder named, for B. edulis (altitude 194-2,435
+      m), B. pinophilus (432-2,020 m), B. reticulatus (194-2,343 m), B. aereus (390-1,667 m), A. caesarea (212-1,104 m;
+      13 Ticino grid cells from the Mendrisiotto to Biasca, none in the valleys bordering Valtellina and Valchiavenna)
+      and C. cibarius (highest 2,148 m).'
+    cited_as:
+    - species-ecology/lombardia.md
+  taniguchi2007_robinia:
+    citation: 'Taniguchi T., Kanzaki N., Tamai S., Yamanaka N., Futai K. (2007) Does ectomycorrhizal fungal community
+      structure vary along a Japanese black pine (Pinus thunbergii) to black locust (Robinia pseudoacacia) gradient?
+      New Phytologist 173: 322-334'
+    doi: 10.1111/j.1469-8137.2006.01910.x
+    kind: peer_reviewed
+    region: Japan
+    verified: verified
+    supports: 'abstract: ectomycorrhizal root tips, species number and diversity "decreased in the black
+      locust-dominated area"; eutrophication by the nitrogen-fixing robinia changes ectomycorrhizal formation. Context
+      for exotic_broadleaf as a non-host.'
+    cited_as:
+    - species-ecology/lombardia.md
+  treindl_leuchtmann2019:
+    citation: 'Treindl A.D., Leuchtmann A. (2019) A king amongst dwarfs: Boletus edulis forms ectomycorrhiza with dwarf
+      willow in the Swiss Alps. Alpine Botany 129: 185-189'
+    doi: 10.1007/s00035-019-00218-2
+    url: https://www.research-collection.ethz.ch/server/api/core/bitstreams/f97cd70e-9de6-4801-a97d-745e92aa983b/content
+    kind: peer_reviewed
+    region: Switzerland
+    verified: verified
+    supports: '"Boletus edulis is typically associated with spruce (Picea abies) or pine (Pinus spp.) at the subalpine
+      level and is rarely found above tree line"; SwissFungi has "only four other entries of B. edulis referring to
+      sites above 2000 m (Alt St. Johann 2010 m, Göschenen 2013 m, Castasegna 2140 m, Quinto 2210 m)"; a find at 2,440
+      m with dwarf willow above the tree line.'
+    cited_as:
+    - species-ecology/lombardia.md
+  waldwissen_swissfungi2018:
+    citation: 'Gross A., WSL (2018, updated 2022). SwissFungi: Verbreitungsatlas der Pilze der Schweiz. waldwissen.net'
+    url: https://www.waldwissen.net/de/lebensraum-wald/pilze-und-flechten/verbreitungsatlas-der-pilze-der-schweiz
+    kind: institutional
+    region: Switzerland
+    verified: verified
+    supports: 'SwissFungi records per area are even up to 1,000 m, "mit zunehmender Höhe darüber aber die Anzahl der
+      Fundmeldungen stark abnimmt. Es fehlen somit wichtige Angaben aus der subalpinen und alpinen Stufe": its
+      subalpine shares are lower bounds.'
+    cited_as:
+    - species-ecology/lombardia.md

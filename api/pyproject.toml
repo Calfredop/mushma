@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "certifi>=2026.7.22",
     "duckdb>=1.5.5",
     "fastapi[standard]>=0.141.1",
     "limits>=5.8.0",

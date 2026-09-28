@@ -5,6 +5,7 @@
 import { inBounds } from '../geo/distance.js'
 import { emiliaRomagna } from './emilia-romagna.js'
 import { liguria } from './liguria.js'
+import { lombardia } from './lombardia.js'
 import { marche } from './marche.js'
 import { piemonte } from './piemonte.js'
 import { toscana } from './toscana.js'
@@ -22,6 +23,7 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [marche.slug]: marche,
   [piemonte.slug]: piemonte,
   [trentinoAltoAdige.slug]: trentinoAltoAdige,
+  [lombardia.slug]: lombardia,
 }
 
 export const DEFAULT_REGION_SLUG = toscana.slug

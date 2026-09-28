@@ -210,7 +210,7 @@ def run_scoring(
     grid_dir, weather_store, _ = region_paths(region, root)
     rules = load_rules(region)
     model_config = load_model_config(region=region)
-    weather_config = load_weather_config()
+    weather_config = load_weather_config(region=region)
     version = rules_version(region)
     lookback = max(required_lookback(spec) for spec in rules.species.values())
     con = duckdb.connect()

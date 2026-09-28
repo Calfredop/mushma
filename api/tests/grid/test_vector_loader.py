@@ -121,6 +121,65 @@ def test_read_vector_pages_an_arcgis_rest_layer(tmp_path: Path) -> None:
     assert list(frames["clc18"]) == ["3111"]
 
 
+class _FakeArcGISByLayer(BaseHTTPRequestHandler):
+    """Each MapServer layer holds one feature whose code is the layer id."""
+
+    def do_GET(self) -> None:  # noqa: N802
+        layer = urlparse(self.path).path.split("/")[-2]
+        x0 = 4_400_000 + 1_000 * int(layer)
+        body = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {"legend": f"layer {layer}"},
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [x0, 2_300_000],
+                                [x0 + 100, 2_300_000],
+                                [x0 + 100, 2_300_100],
+                                [x0, 2_300_100],
+                                [x0, 2_300_000],
+                            ]
+                        ],
+                    },
+                }
+            ],
+            "exceededTransferLimit": False,
+        }
+        payload = json.dumps(body).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def log_message(self, *args: object) -> None:
+        pass
+
+
+def test_read_vector_keeps_each_arcgis_part_in_its_own_cache(tmp_path: Path) -> None:
+    # Lombardia's forest map is one MapServer sublayer per forest category.
+    server = HTTPServer(("127.0.0.1", 0), _FakeArcGISByLayer)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_port}/MapServer"
+    download = {
+        "parts": [
+            {"arcgis_layer": f"{base}/1", "field": "legend"},
+            {"arcgis_layer": f"{base}/3", "field": "legend"},
+        ]
+    }
+    try:
+        frames = read_vector(download, tmp_path / "cache", bbox_wgs84=(9.6, 42.1, 12.5, 44.6))
+        again = read_vector(download, tmp_path / "cache", bbox_wgs84=(9.6, 42.1, 12.5, 44.6))
+    finally:
+        server.shutdown()
+
+    assert sorted(frames["legend"]) == ["layer 1", "layer 3"]
+    assert sorted(again["legend"]) == ["layer 1", "layer 3"]
+
+
 class _FakeWFS(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         query = parse_qs(urlparse(self.path).query)

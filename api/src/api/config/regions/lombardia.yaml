@@ -1,0 +1,160 @@
+# Lombardia: region #8 of the full-Italy rollout (.gavin-root/docs/regions/lombardia.md).
+id: lombardia
+name: {it: Lombardia, en: Lombardy}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [8.49, 44.67, 11.43, 46.64]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 3
+
+# Woodland: one regional map gives both layers. Regione Lombardia's Carta forestale (the l.r.
+# 31/2008 forest perimeter with the PIF real forest types, DUSAF where a PIF has none) names every
+# polygon's category or subcategory in LEGENDA_1, which says both how much of each cell is broadleaf,
+# conifer or mixed forest and which kind. Green-alder and mountain-pine scrub and the dwarf-shrub
+# heaths (ginepro nano, rodoro-vaccinieti) are left out, as INFC counts them outside "bosco"
+# (arbusteti subalpini) and CLC 322 is left out elsewhere. "Rimboschimenti recenti" are 69 %
+# conifer and 31 % broadleaf plantings by area, hence mixed. See .gavin-root/docs/woodland-grid.md
+# and .gavin-root/docs/regions/lombardia.md.
+forest:
+  groups:
+    source: lr_carta_forestale
+    class_column: LEGENDA_1
+    classes:
+      "Aceri-frassineti ed Aceri-tiglieti": broadleaf
+      "Alneti di ontano bianco": broadleaf
+      "Alneti di ontano nero": broadleaf
+      "Betuleti e Corileti": broadleaf
+      "Castagneti": broadleaf
+      "Castagneti da frutto DUSAF": broadleaf
+      "Faggete altimontane": broadleaf
+      "Faggete montane": broadleaf
+      "Faggete non classificabili": broadleaf
+      "Faggete primitive": broadleaf
+      "Faggete submontane": broadleaf
+      "Orno-ostrieti": broadleaf
+      "Querceti di cerro": broadleaf
+      "Querceti di farnia": broadleaf
+      "Querceti di leccio": broadleaf
+      "Querceti di rovere": broadleaf
+      "Querceti di roverella": broadleaf
+      "Querceti non classificabili": broadleaf
+      "Querco-carpineti": broadleaf
+      "Carpineti": broadleaf
+      "Robinieti misti": broadleaf
+      "Robinieti puri": broadleaf
+      "Formazioni antropogene non robinieti": broadleaf
+      "Formazioni di ciliegio tardivo": broadleaf
+      "Altre formazioni particolari": broadleaf  # laburnum, white and aspen poplar, rowan
+      "Saliceti": broadleaf
+      "Formazioni ripariali DUSAF": broadleaf
+      "Latifoglie DUSAF": broadleaf
+      # Woods no PIF typed (mostly the plain and the prealps); typed from the neighbouring cells.
+      "Aree boscate non classificate": broadleaf
+      "Abieteti": conifer
+      "Peccete altimontane": conifer
+      "Peccete montane": conifer
+      "Peccete secondarie": conifer
+      "Peccete di sostituzione e azonali": conifer
+      "Peccete non classificabili": conifer
+      "Lariceti": conifer
+      "Larici-cembreti e Cembrete": conifer
+      "Pinete di pino silvestre montane": conifer
+      "Pinete di pino silvestre planiziali": conifer
+      "Conifere DUSAF": conifer
+      "Piceo-faggeti": mixed
+      "Misti DUSAF": mixed
+      "Rimboschimenti recenti": mixed
+      "Rimboschimenti recenti DUSAF": mixed
+      "Cespuglieti con presenza significativa di specie arbustive alte ed arboree DUSAF": transitional
+  types:
+    source: lr_carta_forestale
+    classes:
+      "Faggete altimontane": beech
+      "Faggete montane": beech
+      "Faggete non classificabili": beech
+      "Faggete primitive": beech
+      "Faggete submontane": beech
+      "Castagneti": chestnut
+      "Castagneti da frutto DUSAF": chestnut
+      "Querceti di cerro": deciduous_oak
+      "Querceti di farnia": deciduous_oak
+      "Querceti di rovere": deciduous_oak
+      "Querceti di roverella": deciduous_oak
+      "Querceti non classificabili": deciduous_oak
+      "Querco-carpineti": deciduous_oak  # oak-hornbeam of the plain and the moraines, oak-led
+      "Querceti di leccio": evergreen_oak  # the Garda and Como lake cliffs
+      "Orno-ostrieti": mixed_broadleaf
+      "Carpineti": mixed_broadleaf  # hornbeam with hop-hornbeam
+      "Aceri-frassineti ed Aceri-tiglieti": mixed_broadleaf
+      "Betuleti e Corileti": mixed_broadleaf
+      "Altre formazioni particolari": mixed_broadleaf
+      "Alneti di ontano bianco": riparian
+      "Alneti di ontano nero": riparian
+      "Saliceti": riparian
+      "Formazioni ripariali DUSAF": riparian
+      "Robinieti misti": exotic_broadleaf
+      "Robinieti puri": exotic_broadleaf
+      "Formazioni di ciliegio tardivo": exotic_broadleaf  # Prunus serotina
+      "Formazioni antropogene non robinieti": exotic_broadleaf
+      "Abieteti": fir_spruce
+      "Peccete altimontane": fir_spruce
+      "Peccete montane": fir_spruce
+      "Peccete secondarie": fir_spruce
+      "Peccete di sostituzione e azonali": fir_spruce
+      "Peccete non classificabili": fir_spruce
+      "Pinete di pino silvestre montane": mountain_pine
+      "Pinete di pino silvestre planiziali": mountain_pine
+      "Lariceti": other_conifer  # larch
+      "Larici-cembreti e Cembrete": other_conifer  # larch and stone pine
+
+soil:
+  source: soilgrids
+
+# Lapse rates (°C per km) in place of weather.yaml's national ones for the air temperatures. Across
+# the 260 ERA5-Land land nodes at 0.1° (-7 to 2,611 m; three 14-day windows of 2024, lattice check)
+# air cools faster with height here than the national 4.2-4.5: median daily fits 5.9 (min), 5.7
+# (mean), 5.5 (max), as steep in July and October as in January. The fitted rates cut the leave-out
+# RMSE of the 0.2° lattice from 0.613 to 0.582 °C (min), 0.398 to 0.371 (mean), 0.337 to 0.315
+# (max), and more at 0.3°. Soil temperature keeps the national 3.7: its fitted 4.6 predicts worse.
+# .gavin-root/docs/regions/lombardia.md, Weather.
+weather:
+  lapse_rates:
+    temperature_2m_min: 5.9
+    temperature_2m_mean: 5.7
+    temperature_2m_max: 5.5
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Lombardia, IT", admin
+# level 10) on 2026-09-26. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 10870
+
+# Rain scale fitted to ARPA Lombardia's gauges (the gauge check asked for it:
+# .gavin-root/docs/regions/lombardia.md, Weather). Lombardia's history is ERA5-Land from the CDS,
+# which the national block does not scale, so both reanalysis sources are listed. Fitted on May to
+# October, the months the rules score: in winter the high gauges miss much of the snow.
+model:
+  precipitation_scale:
+    enabled: true
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.96
+    per_km: -0.02
+    max_elevation_m: 2000
+    confidence: plausible
+    source: [mushma_lombardia_gauge_check_2026]
+    notes: >-
+      Least squares through the origin of gauge totals on model totals x (a + b x elevation) over the
+      60 ARPA Lombardia gauges in woodland cells with 2019-2025 data (241-2,040 m), May-October days:
+      a = 0.960, b = -0.017 per km, moving the pooled model/gauge ratio from 1.06 to 1.00. The raw
+      reanalysis is 1.03-1.10 in every elevation band from May to October; the whole year's fit
+      (1.06 - 0.13 per km) would follow the winter snow undercatch of the gauges above 1,200 m
+      (November-April 1.34-1.84). The correction is within the years' spread: 2019-2022 alone fit
+      0.94 - 0.04 per km, 2023-2025 alone 0.97 + 0.02, where raw rain matched the gauges (1.01).
+      The national 1.28 + 0.29 per km would make Lombard rain 50-80 % too wet (500-1,500 m).
