@@ -1,5 +1,5 @@
 ---
-order: 19456
+order: 8192
 title: [model] Rain calibration without steps at region borders
 status: To Do
 priority: medium
@@ -13,4 +13,4 @@ Each region scales the reanalysis rain with its own region-wide gauge fit (`mode
 - [ ] Fit it with the gauge networks in `api.weather.checks` (`GAUGE_NETWORKS`), all gauges rather than woodland-only where a region has few (Umbria has 8 in woodland, 82 overall)
 - [ ] Also: Tuscany's local store holds CDS rows for 2024 that outrank `era5_seamless` and are not in the national `precipitation_scale.sources`, so they go unscaled (check whether the server has them)
 - [ ] Re-score the affected regions; record before/after at the Tuscany–Umbria and Tuscany–Liguria borders
-- [ ] Regions without open daily gauges get their factor from the fit too: Marche (`marche.yaml`) borrows the mean of Umbria's and Emilia-Romagna's CDS fits, 0.76 + 0.57/km, until then (`.gavin-root/docs/regions/marche.md` → Weather)
+- [ ] Regions without open daily gauges get their factor from the fit too: Marche (`marche.yaml`) borrows the mean of Umbria's and Emilia-Romagna's CDS fits, 0.76 + 0.57/km, until then (`.gavin-root/docs/regions/marche.md` → Weather); Campania (`campania.yaml`) fits 0.77 + 0.52/km on its 33 open agrometeo farm gauges (11–769 m, none in woodland), so its mountain factor is extrapolated (`.gavin-root/docs/regions/campania.md` → Weather)
