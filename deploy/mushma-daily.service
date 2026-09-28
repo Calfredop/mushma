@@ -11,6 +11,9 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/mushma/deploy
+# Redis must be up before the oneshot runs: bump_region talks to it, and `compose run` alone does
+# not wait on the long-running redis service's healthcheck.
+ExecStartPre=/usr/bin/docker compose up -d redis
 ExecStart=/usr/bin/docker compose run --rm api python -m api.jobs.daily
 ExecStartPost=/usr/bin/docker compose restart api
 TimeoutStartSec=2h

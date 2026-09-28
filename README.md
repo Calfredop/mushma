@@ -601,7 +601,8 @@ changes, a `main` that isn't pushed). It also installs the daily job's systemd u
 changed, then smoke-tests the live routes. It warns when the served scores predate the deployed
 rules. Only `deploy/.env` stays a manual edit on the server.
 
-`deploy/deploy-api.sh` rebuilds and restarts the `api` service, but Caddy doesn't reload
+`deploy/deploy-api.sh` brings the whole compose stack up (api, redis, caddy, umami), waits until
+the API container can PING Redis, then smoke-tests the live routes. Caddy doesn't reload
 `deploy/Caddyfile` on its own: the `caddy` container's config is bind-mounted, and Docker Compose
 only recreates a service whose own declared config changed, not a file a volume points at. After
 editing `deploy/Caddyfile`, deploy as usual, then reload Caddy on the server:

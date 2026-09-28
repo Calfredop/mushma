@@ -5,9 +5,11 @@
 #
 # The server builds from GitHub, not from this checkout, so only a main that is already pushed can
 # be deployed. Then: API lint and tests here; on the server, pull, install the daily job's systemd
-# units if they changed, rebuild and restart the API behind Caddy, prune old images. It waits for
-# /health, smoke-tests the main routes and prints /status. --run-job also runs the daily pipeline
-# straight away (about two minutes) instead of waiting for 05:00 Europe/Rome.
+# units if they changed, rebuild the compose stack (api + redis + caddy + umami) behind Caddy,
+# prune old images. It waits for Redis to answer PING from the API container, then for /health,
+# smoke-tests the main routes and prints /status. --run-job also runs the daily pipeline
+# straight away (about two minutes) instead of waiting for 05:00 Europe/Rome — that job bumps the
+# Redis response-cache generation after each successful region.
 #
 # DEPLOY_HOST (default root@api.mappafunghi.app) and API_URL (default https://api.mappafunghi.app)
 # point it somewhere else. The gavin tool "Deploy API" runs this script.
@@ -89,6 +91,29 @@ fi
 cd deploy
 docker compose up -d --build --remove-orphans
 docker image prune -f >/dev/null
+
+# Redis is the response cache (feat-redis-cache): compose brings it up with the stack, but
+# `up -d` returns before healthchecks finish. Wait until the API container can PING it — that
+# also catches a missing REDIS_URL or a redis service that never joined the network.
+echo "waiting for redis"
+tries=30
+until docker compose exec -T redis redis-cli ping 2>/dev/null | grep -qx PONG; do
+  tries=$((tries - 1))
+  [ "$tries" -gt 0 ] || { echo "redis did not answer PING" >&2; docker compose ps redis >&2; exit 1; }
+  sleep 1
+done
+docker compose exec -T api python - <<'PY'
+import os
+import sys
+
+import redis
+
+url = os.environ.get("REDIS_URL", "").strip()
+if not url:
+    sys.exit("REDIS_URL is unset on the api container")
+redis.Redis.from_url(url).ping()
+print("redis ok")
+PY
 
 if [ "$run_job" = 1 ]; then
   echo "running the daily job now"
