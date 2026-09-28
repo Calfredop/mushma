@@ -1,5 +1,5 @@
 ---
-order: 12288
+order: 9728
 title: [region] Friuli-Venezia Giulia rain gauge check once ARPA FVG's archive answers
 status: To Do
 priority: low

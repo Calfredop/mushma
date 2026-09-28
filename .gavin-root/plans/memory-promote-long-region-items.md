@@ -1,5 +1,5 @@
 ---
-order: 17408
+order: 16384
 kind: note
 labels: memory
 title: A region card's species item is too long to promote

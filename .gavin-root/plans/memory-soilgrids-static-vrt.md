@@ -1,5 +1,5 @@
 ---
-order: 18432
+order: 17408
 kind: note
 title: SoilGrids' WCS times out on a whole region; its static VRT does not
 status: To Do

@@ -1,5 +1,5 @@
 ---
-order: 14336
+order: 13312
 kind: note
 labels: memory
 title: The shared data root must hold real folders, never links into a worktree

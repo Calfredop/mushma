@@ -1,5 +1,5 @@
 ---
-order: 15360
+order: 14336
 kind: note
 labels: memory
 title: `api.regions.onboard` needs the region's species rules even for its early steps

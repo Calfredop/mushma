@@ -1,5 +1,5 @@
 ---
-order: 11264
+order: 10240
 kind: task
 title: [model] proximity to water bodies
 status: To Do

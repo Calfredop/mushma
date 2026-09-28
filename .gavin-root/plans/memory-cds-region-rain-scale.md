@@ -1,4 +1,5 @@
 ---
+order: 18432
 kind: note
 labels: memory
 title: A CDS region's rain scale must list era5_land_cds
