@@ -151,6 +151,26 @@ soilgrids:
   attribution: "SoilGrids © ISRIC — World Soil Information, CC BY 4.0"
   notes: Modelled at 250 m with wide uncertainty; a hint of soil acidity, not a measurement.
 
+sif_carta_forestale:
+  name: Regione Siciliana — Carta forestale regionale (SIF, 1:10.000, 2012)
+  homepage: https://sif.regione.sicilia.it/ilportale/carte-forestali1
+  license: Open by default (CAD, D.Lgs. 82/2005, art. 52 c. 2); reused as CC BY 4.0
+  attribution: "Carta forestale regionale © Regione Siciliana, Comando del Corpo Forestale (SIF), CC BY 4.0"
+  notes: >-
+    The regional forest map of the Inventario Forestale della Regione Siciliana, drawn on the
+    1:10,000 Carta Tecnica Regionale to the FAO FRA 2000 definitions INFC uses, published with the
+    Piano Forestale Regionale 2009-2013 (metadata of 10 February 2012). Each of its 110,716
+    polygons carries its inventory class (DESCRIPTION: 31a boschi, 31b formazioni forestali rade,
+    31c aree temporaneamente prive di copertura, 21 arboricoltura, 32x arbusteti, 32 praterie) and,
+    on woods and shrubland, its forest type after La Mantia et al. 2000-2001 (CODCAMPO: FA1 faggeta
+    mesofila, QU5 querceto di roverella, SU2 sughereta, RI3 rimboschimento mediterraneo di
+    conifere…), so one layer gives both the broad groups and the forest types. Served by the SIF's
+    ArcGIS REST MapServer (query enabled, 1,000 features a page); the RNDT record names no licence
+    ("nessuna condizione applicabile"), so the data are open by default under CAD art. 52 c. 2.
+  download:
+    # No `field`: the query asks for every field, since the group layers filter on DESCRIPTION.
+    arcgis_layer: http://sifweb.regione.sicilia.it/arcgis/rest/services/SIF_CART_TEMATICA/MapServer/38
+
 istat_localities:
   name: ISTAT — Basi territoriali 2021, località (points)
   homepage: https://www.istat.it/notizia/basi-territoriali-e-variabili-censuarie/
