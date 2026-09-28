@@ -90,6 +90,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Abruzzo — Carta Tipologico-Forestale',
+    url: 'http://opendata.regione.abruzzo.it/content/categorie-e-tipologie-forestali',
+    use: 'landcover',
+    license: 'CC BY-NC 3.0',
+  },
+  {
     name: 'Copernicus DEM GLO-30',
     url: 'https://registry.opendata.aws/copernicus-dem/',
     use: 'elevation',
