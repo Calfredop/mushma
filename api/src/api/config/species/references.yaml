@@ -1852,6 +1852,556 @@ references:
       beech and oak or under fir or pine, "non è comune"; A. caesarea "in boschi di castagno, cerro e roverella, ad
       altitudini inferiori agli 800/900 m"; C. cibarius "da maggio a ottobre", broadleaf woods in central Italy.'
   # ---------------------------------------------------------------------------------------------
+  # Calabria (region card, 2026-09-28): sources for species/calabria/ and
+  # .gavin-root/docs/species-ecology/calabria.md. One block rather than sorted in, placed here and
+  # not at the end of the file so it merges cleanly with the region branches that append there.
+  # ---------------------------------------------------------------------------------------------
+  ispra2018_mlg180_calabria_foreste:
+    citation: 'Siniscalco C., Bianco P.M., Lavorato C., Rotella M., Parrettini G.L., Marra E., Floccia F., Campana L.
+      (eds.) (2018). Abbinamento delle componenti micologiche della Calabria ai sistemi di classificazione degli
+      Habitat EUNIS e Natura 2000. Prima correlazione delle specie fungine delle foreste naturali. ISPRA, Manuali e
+      linee guida 180/2018'
+    url: https://www.isprambiente.gov.it/files2018/pubblicazioni/manuali-linee-guida/MLG_180_18_Abbinamento_Calabria_Foreste.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'The Calabrian mycological groups'' 45,138 records (38,127 from the province of Cosenza, p. 7), each
+      filed under a EUNIS habitat, with every species'' share of the habitat''s records. Laricio pine (Tab. 11, "5464
+      rilevamenti, 933 specie"): B. pinophilus 0.9 %, B. edulis 0.3, C. cibarius 0.3, B. reticulatus (as aestivalis)
+      0.1, no B. aereus or A. caesarea; commonest species Lactarius deliciosus, Suillus, Chroogomphus (p. 192); laricio
+      "Nella Sila ... tra i 900 e i 1400 metri di altitudine e sull''Aspromonte tra 700 e 1600 metri", pinewoods about
+      114,000 ha, half pure "sia di origine naturale che artificiale" (p. 191). Beech (Tab. 3, Pollino / Sila /
+      Aspromonte): B. edulis 1.4 / 2.7 / 0.8, B. reticulatus 0.8 / 1.4 / 0.8, B. pinophilus 0.6 / 0.6 / 0.4 (var.
+      fuscoruber Sila 0.3), B. aereus - / 0.1 / 0.8, Cantharellus (entered as C. alborufescens, filed under C.
+      cibarius) 1.4 / 2.4 / 1.2; "In Calabria, a quote superiori ai 1000 metri, Fagus sylvatica è l''essenza arborea
+      dominante" (p. 68). Silver fir (Tab. 1, 329 records): B. edulis 3.3 %, the top species, "gli abeti bianchi hanno
+      un alto valore economico per l''alta presenza di Boletus edulis" (p. 14); fir at 820-1,400 m in the Serre,
+      1,100-1,800 m in the Aspromonte (p. 14). Chestnut (Tab. 2, 3,192 records): C. cibarius 2.7 (top species), A.
+      caesarea 1.8, B. reticulatus 1.8, B. aereus 0.8, B. edulis 0.7, B. pinophilus 0.1. Cork oak (Tab. 4, 352): C.
+      cibarius 7.0, B. aereus 5.4, A. caesarea 4.8, B. reticulatus 1.1. Holm oak (Tab. 5, 390): B. aereus 1.1, A.
+      caesarea 0.9, C. cibarius 0.6 (+0.3 C. ferruginascens), B. reticulatus 0.3. Downy oak (Tab. 6, 368): B. aereus
+      2.4, C. cibarius 2.4, A. caesarea 1.6, B. reticulatus 1.1, B. edulis 0.3. Turkey oak (Tab. 7, 801): B. aereus
+      3.1 ("la specie micologica più frequente", p. 144), C. cibarius 2.6, B. reticulatus 1.7, A. caesarea 0.4, B.
+      edulis 0.2, B. pinophilus 0.1. Hungarian oak (Tab. 8, 792): B. aereus 2.6, A. caesarea 1.1, B. reticulatus 0.4,
+      C. cibarius 0.4. Aleppo pine (Tab. 10, 20 records): none of the six. Pino loricato: "solo due rilevamenti"
+      (p. 188). Poplar galleries (Tab. 13, 116): "C. alborufescens" 3.4.'
+  ispra2018_mlg179_calabria_rimboschimenti:
+    citation: 'Siniscalco C., Bianco P.M., Lavorato C., Rotella M., Parrettini G.L., Marra E., Floccia F., Campana L.
+      (eds.) (2018). Abbinamento delle componenti micologiche della Calabria ai sistemi di classificazione degli
+      Habitat EUNIS e Natura 2000. Prima correlazione delle specie fungine dei rimboschimenti. ISPRA, Manuali e linee
+      guida 179/2018'
+    url: https://www.isprambiente.gov.it/files2018/pubblicazioni/manuali-linee-guida/MLG_179_18_Abbinamento_Calabria_Rimboschimenti.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'The same record base for plantations. "il pino nero laricio è stato largamente impiegato nella fascia
+      pedemontana e montana della regione" (p. 10), "Il pino calabro è la specie maggiormente impiegata nei
+      rimboschimenti in tutti i rilevi calabresi" (p. 114); Pinus nigra plantations (Tab. 13, "40 rilevamenti, 15
+      specie") hold no porcini, only ubiquitous species (pp. 114, 117). Silver fir, spruce and larch plantations
+      (Tab. 3, 806 records): B. edulis 4.6 % (top species), B. pinophilus 0.6, C. cibarius 0.6, B. reticulatus 0.4;
+      spruce B. edulis 4.4; cedar (2,082) B. edulis 0.5; stone pine (271) B. pinophilus 0.8, B. edulis 0.7; Aleppo pine
+      (802), Douglas fir (623) and radiata pine (373) plantations none of the six.'
+  ispra2018_mlg184_acri_vol1:
+    citation: 'Siniscalco C., Lavorato C., Rotella M., Luperi C., Floccia F., Campana L., Bianco P.M. (eds.) (2018).
+      Contributo alla conoscenza della diversità micologica storica in Italia. Raccolta delle schede descrittive delle
+      componenti micologiche liofilizzate del museo di Acri. Volume 1. ISPRA, Manuali e linee guida 184/2018'
+    url: https://www.isprambiente.gov.it/files2018/pubblicazioni/manuali-linee-guida/MLG_184_18_Funghi_Acri_Vol_1.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'Species cards of the Acri (Sila Greca) museum, habitat and season in Calabria. B. aereus: "da maggio a
+      dicembre, diffuso in maggioranza sotto quercia, specialmente nelle zone submontane della Presila, ma anche sotto
+      castagno, leccio e altre latifoglie di tutta la Calabria" (p. 22). B. edulis: "È molto diffuso prima nei
+      castagneti poi sotto altre latifoglie e abeti da maggio a dicembre. In Calabria si comporta come una specie
+      precoce a seconda delle condizioni ambientali e lo si può trovare già in primavera come prima fioritura" (p. 24).
+      A. caesarea: "in Calabria da maggio a novembre sotto latifoglie, specialmente sotto castagno. Particolarmente
+      abbondante nelle stagioni estive piovose" (p. 113).'
+  ispra2018_mlg185_acri_vol2:
+    citation: 'Siniscalco C., Lavorato C., Rotella M., Luperi C., Floccia F., Campana L., Bianco P.M. (eds.) (2018).
+      Contributo alla conoscenza della diversità micologica storica in Italia. Raccolta delle schede descrittive delle
+      componenti micologiche liofilizzate del museo di Acri. Volume 2. ISPRA, Manuali e linee guida 185/2018'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Raccolte-componenti-micologiche-liofilizzate-museo-di-Acri-Vol.2.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'C. cibarius: "in Calabria fa le sue prime comparse primaverili a maggio, poi da agosto a gennaio è
+      abbondante sotto castagno, querce, faggio, ma anche sotto altre latifoglie e conifere" (p. 39).'
+  lavorato1996_boletaceae_calabria:
+    citation: 'Lavorato C. (1996). Chiave per la determinazione delle Boletaceae delle foreste della Calabria. Pagine di
+      Micologia 5: 2-27. AMB Centro Studi Micologici, Vicenza'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Chiave-per-la-determinazione-delle-Boletaceae-di-C.Lavorato.pdf
+    kind: society
+    region: Calabria
+    verified: verified
+    supports: 'Habitat notes (PDF pp. 12-13). B. pinophilus: "In Calabria (noto con il nome cozza e pinu) è molto
+      diffuso sotto i pini silani secolari (Pinus nigra var. calabrica) e meno diffuso sotto faggio (Fagus)". B.
+      edulis: "In Calabria (noto con il nome sillu e fagu) è molto diffuso sotto faggio (Fagus), meno diffuso sotto
+      altre latifoglia e aghifoglia". B. aestivalis: "Sotto latifoglia in genere, in Calabria (noto con il nome sillu
+      prumentiju) è precoce già in giugno è molto diffuso, più raro in autunno". B. aereus: "In Calabria (noto con il
+      nome sillu e cerza) è diffuso sotto castagne (Castanea) e quercia (Quercus)".'
+  lavorato_rotella2004_pini_sila_greca:
+    citation: 'Lavorato C., Rotella M. (2004). Ricerca micocenologica sui pini della Sila Greca. Pagine di Micologia
+      22: 69-80'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Ricerca-micocenologica-sui-pini-della-Sila-Greca-di-C.Lavorato-e-M.Rotella.pdf
+    kind: society
+    region: Calabria (Sila Greca)
+    verified: verified
+    supports: 'Observations 1992-2003 under the Sila pine. Belts: "la fascia del castagno e delle querce tra i 600 ed i
+      1100 metri; 3) la fascia del pino silano, piuttosto monotona, da 1000 a 1300 metri; 4) a partire dai 1300 metri
+      la fascia del faggio". Under the pine: "Boletus pinophilus Pilát & Dermek, localmente comune sotto pino silano";
+      var. fuscoruber "raro o localmente diffuso"; "Cantharellus cibarius ... poco comune sotto pino silano". No B.
+      edulis, B. aereus, B. reticulatus or A. caesarea listed under the pines.'
+  lavorato_rotella1995_mappatura_cosenza:
+    citation: 'Lavorato C., Rotella M. (1995-1996). Per la mappatura nazionale dei funghi: osservazioni e ritrovamenti
+      fatti nel 1994 in provincia di Cosenza. Vivere Meglio (Gruppo Micologico Calabro "N. Capitò", Roccella Jonica)
+      IV(2-3), V(1)'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Mappatura-Provincia-di-Cosenza-aprile-1995.pdf
+    kind: society
+    region: Calabria (Sila, Acri)
+    verified: verified
+    supports: 'Dated 1994 records with habitat and height: B. pinophilus 18/11/1994, Croce di Magara (Sila Grande),
+      "bosco di pino", 1,300 m; B. edulis var. albus same day and place, "bosco di pino e faggio"; B. edulis 10/9/1994,
+      Piana del Barone (Acri), "bosco di castagno", 1,100 m; B. aereus 30/7/1994, Cozzo S. Angelo (Acri), "bosco misto
+      di pino e castagno", 850 m; B. aestivalis 15/10/1994, same place, chestnut, 850 m.'
+  lavorato2013_calabrone_caesarea:
+    citation: 'Lavorato C. (2013). Funghi a confronto: Amanita caesarea e Amanita phalloides. Il Calabrone 16,
+      December 2013'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Funghi-a-confronto-Amanita-caesarea-e-Amanita-phalloides.pdf
+    kind: society
+    region: Calabria
+    verified: verified
+    supports: 'A. caesarea "in Calabria è piuttosto precoce, solitamente si sviluppa nel periodo estivo, eccezionalmente
+      anche a fine primavera, raramente in autunno, cresce fino a circa 1200 m di quota"; "cresce sotto latifoglie,
+      specialmente in luoghi soleggiati con la presenza di castagno"; conifer reports "ne siamo dubbiosi"; "sempre meno
+      frequente"; dialect names "voita", "vrìgliuocciudu" (Sila Greca), "guvitu" (lower Tyrrhenian Cosentino), "russa
+      d''ovi" (Aspromonte).'
+  lavorato2018_calabrone_consigli:
+    citation: 'Lavorato C. (2018). Funghi: consigli utili. Il Calabrone 25, June 2018'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Funghi-Consigli-utili.pdf
+    kind: society
+    region: Calabria
+    verified: verified
+    supports: '"La massima crescita si ha da fine estate al tardo autunno ... Le specie pregiate e commerciabili, in
+      annate umide, anticipano il loro sviluppo già nel mese di maggio, come per esempio il gallinaccio ed alcuni
+      porcini."'
+  caroti2015_cantharellaceae_calabria:
+    citation: 'Caroti V., Lavorato C., Rotella M. (2015). Cantharellaceae Schroeter della Calabria (Italia). Rivista
+      Micologica Romana, Bollettino AMER 94 (1): 12-28'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Cantharellaceae-in-Calabria-AMER.pdf
+    kind: society
+    region: Calabria
+    verified: verified
+    supports: '12 species and 1 variety from the province of Cosenza; "gallinelle" locally (p. 12). C. cibarius "nel
+      mese di maggio e da agosto a gennaio, diffuso sotto castagno e querce, ma anche sotto altre latifoglie e
+      conifere" (p. 14). C. pallens "comune dopo le prime piogge in primavera e poi secondo le condizioni ambientali da
+      agosto a dicembre, a quote basse anche a gennaio; diffuso sotto castagno, querce, leccio", "Nell''area
+      mediterranea riteniamo che sia questo il Cantharellus più diffuso" (pp. 14-15). C. ferruginascens "comune da
+      luglio a novembre, sotto castagno, faggio e leccio", all from the acid Sila soils (pH 5-5.5) (p. 19). C. ilicis
+      and C. alborufescens appear only as look-alikes (p. 18).'
+  bosco_grande2004_caesarea_cocuzzo:
+    citation: 'Bosco A., Grande C. (2004). Osservazioni di Amanita caesarea su terreno prevalentemente calcareo in
+      direzione di Monte Cocuzzo. Gruppo Micologico "Sila Greca" AMB, Acri'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Osservazione-di-Amanita-caesarea-di-A.-Bosco-e-C.Grande-2004.pdf
+    kind: society
+    region: Calabria (Catena Costiera)
+    verified: verified
+    supports: 'Monte Cocuzzo field notes. "Dopo 10-12 giorni dall''ultima pioggia utile, i primi carpofori di Amanita
+      caesarea sono ben visibili nel terreno, altrettando accade al quindicesimo giorno per Boletus edulis ed aereus";
+      found "sotto castagno, querceti, faggio, sotto carpino nero, cerro"; "nasce dai 300-400 m. e sino alla soglia
+      della vetta di Monte Cocuzzo 1500 m. circa, tuttavia l''altitudine ideale alla sua fruttificazione è tra i 600 e
+      900 metri"; "reperita da agosto ad ottobre con sporadiche presenze sino alla prima decade di novembre (2003)";
+      2004 finds 30 September-15 October at 800-1,200 m, one "in bosco di faggio puro" at 1,200 m; big ovolo years after
+      hot summers ("torrida estate del 2003"); "la fruttificazione di Boletus aestivalis non è rara anche in periodo
+      quasi natalizio".'
+  grande_funghi_silagreca:
+    citation: 'Grande C. (n.d.). I Funghi. Gruppo Micologico "Sila Greca" AMB, Acri'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/I-Funghi-di-Claudio-Grande.pdf
+    kind: society
+    region: Calabria
+    verified: verified
+    supports: '"Il Boletus aereus ... non può vegetare né con i pini né con i larici ma solo sotto latifoglie (querce e
+      castagno)" (p. 2); fruiting "coincidono con la fine dell''estate e l''inizio della stagione autunnale. Tuttavia non
+      mancano le eccezioni dove per esempio in piena atmosfera natalizia capita di imbattersi in un bel porcino" (p. 3).'
+  iacoi2003_macchia_rossano:
+    citation: 'Iacoi C. (2003). Osservazioni fatte nella macchia mediterranea, Sila Greca, nel comune di Rossano
+      Calabro. AMB Gruppo Sila Greca'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Osservazioni-nella-macchia-mediterranea-di-C.Iacoi-2003.pdf
+    kind: society
+    region: Calabria (Sila Greca)
+    verified: verified
+    supports: 'Macchia belt "dal limite della pianura fino ai 700/800 metri"; porcini (Boletus) and ovoli "sotto
+      castagno, quercia, lecci"; "Sotto ilatro comune, corbezzoli si notano: Clitocybe geotropa, Cantharellus
+      cibarius".'
+  lavorato1991_micoflora_cisto:
+    citation: 'Lavorato C. (1991). Chiave analitica e note bibliografiche della micoflora del cisto. Bollettino AMER
+      24: 16-45'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Chiave-analitica-della-micoflora-del-cisto-di-C.Lavorato.pdf
+    kind: society
+    region: Calabria
+    verified: verified
+    supports: 'B. aereus appears in the Cistus key only with source code "OPC", observed by G. Pacioni in the Circeo
+      (Lazio) Cistus scrub, not in the Cosenza scrub ("OLC"): no Calabrian Cistus record.'
+  ambsg_manuale_corso_micologia:
+    citation: 'AMB Gruppo Micologico Naturalistico Sila Greca (n.d., after 2009). Corso di micologia ai sensi della L.R.
+      26/11/2001 n. 30, materiale didattico. Acri'
+    url: https://www.ambsilagreca.it/wp-content/uploads/2025/05/Manuale-per-corso-di-micologia-raccolta-e-commercializzazione-funghi.pdf
+    kind: society
+    region: Calabria (Sila Greca)
+    verified: verified
+    supports: 'Acri dialect names (p. 50): "Boletus aereus Porcino nero Cuozzu nivuru"; "Boletus aestivalis Porcino
+      estivo Sillu prumentiju"; "Boletus edulis Porcino comune Sillu ''e fagu"; "Boletus pinophilus Porcino del pino
+      Sillu ''e pinu".'
+  miceli2019_sua_maesta_porcino:
+    citation: 'Miceli A. (2019-02-03). Sua Maestà il Porcino. Adset (dialect names after Bonazzi U. 2003, Dizionario dei
+      nomi volgari e dialettali dei funghi in Italia, AMB)'
+    url: https://www.adset.it/580-sua-maesta-il-porcino/
+    kind: web
+    region: Calabria
+    verified: verified
+    supports: 'B. pinophilus "Cozza ''e pinu (nome dialettale cosentino); Zappinaro (Nome dialettale reggino con
+      riferimento alla sua tendenza ad associarsi ai grandi Pini dell''Aspromonte che localmente vengono chiamati
+      Zappini)", "molto comune, apprezzato e ricercato in Calabria nei boschi dell''Aspromonte e della Sila".'
+  parcosila_funghi:
+    citation: 'Ente Parco Nazionale della Sila (n.d.). Funghi. parcosila.it, Il Parco, La flora'
+    url: https://parcosila.it/il-parco/la-flora/funghi/
+    kind: institutional
+    region: Calabria (Sila)
+    verified: verified
+    supports: 'The porcino "cresce in simbiosi sia con alberi di latifoglie che di aghifoglie"; Lactarius deliciosus "molto
+      diffuso nelle giovani pinete di laricio ma anche nelle abetine"; "galletti (Cantharellus cibarius)"; the ovolo
+      "Molto ricercato ma non molto diffuso"; picking only with the permit of L.R. 30/2001.'
+  parcosila_vegetazione:
+    citation: 'Ente Parco Nazionale della Sila (n.d.). Distribuzione della vegetazione. parcosila.it, Il Parco, La
+      flora'
+    url: https://parcosila.it/il-parco/la-flora/distribuzione-della-vegetazione/
+    kind: institutional
+    region: Calabria (Sila)
+    verified: verified
+    supports: '"le pendici esposte a Sud risultano occupate dal pino mentre in quelle esposte a Nord vegeta il faggio";
+      beech above the laricio belt, with silver fir at Gariglione, Macchia dell''Orso and Vallone Cecita.'
+  pn_sila_geografia_web:
+    citation: 'Ente Parco Nazionale della Sila (n.d.). Geografia. archivio.parcosila.it'
+    url: https://archivio.parcosila.it/it/la-natura/geografia.html
+    kind: institutional
+    region: Calabria (Sila)
+    verified: verified
+    supports: '"La piovosità media annua varia tra 1.000-1.100 mm e 1.400-1.700 mm. Il 60-70% delle precipitazioni è
+      concentrato nel periodo autunnale e invernale, da ottobre a marzo ... solo il 7-10% delle precipitazioni si
+      verificano nel periodo estivo. Il periodo di aridità estivo è molto contenuto e varia tra poco più di 2 mesi a
+      meno di un mese"; mean annual temperature 12-7 °C; granite weathered to "sabbioni".'
+  vivigreen_pat_porcini_silani:
+    citation: 'ViVi GREEN (2026). Funghi porcini Silani PAT Calabria (reproduces the Regione Calabria PAT sheet "Funghi
+      porcini silani sillo"; the Region''s PDF is truncated on its server)'
+    url: https://www.vivigreen.eu/blog/funghi-porcini-silani-pat-calabria/
+    kind: web
+    region: Calabria (Sila)
+    verified: verified
+    supports: '"Da settembre fino a novembre e, più limitatamente, in agosto, si ha in Sila la maggiore produzione di
+      funghi."'
+  masaf2023_pat_calabria:
+    citation: 'MASAF (2023). Elenco nazionale dei prodotti agroalimentari tradizionali, Allegato I, Regione Calabria'
+    url: https://www.arsacweb.it/wp-content/uploads/2023/09/MASAF_2023_0263996_Allegato_MASAF_2023_0222691_Allegato_-Calabria.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'Traditional products include "98 Funghi porcini silani "sillo"", "96 Funghi "rosito"", "74 Castagne di
+      Calabria"; names only.'
+  lupo_talmamax_re_porcino_sila:
+    citation: 'Lupo T. (2003-2015). Re Porcino della Sila. I Funghi & le Orchidee della Calabria (talmamax.it)'
+    url: https://www.talmamax.it/porcino_dell'anno.htm
+    kind: web
+    region: Calabria (Sila)
+    verified: verified
+    supports: 'Forager lore: B. aereus "il primo a fruttificare fin già dalla fine di aprile"; B. pinophilus in May
+      "Nelle pinete sabbiose"; B. reticulatus "da fine maggio-giugno e fruttifica più volte ... fino al mese di
+      ottobre"; B. edulis "l''ultimo a comparire, proprio dopo le piogge pre-autunnali", best on "le vette della Sila
+      Grande" (Monte Scuro, Monte Nero), "prati sommitali ... boschetti di faggio, siano essi puri o misti all''altra
+      essenza primaria della Sila: il pino laricio".'
+  amer2024_weekend_sila:
+    citation: 'AMER, Associazione Micologica Ecologica Romana (2024-11-05). Report weekend micologico Sila 24-27/10/2024'
+    url: https://www.ameronlus.it/blog/2024/11/05/report-weekend-micologico-sila-24-27-10-2024/
+    kind: society
+    region: Calabria (Sila)
+    verified: verified
+    supports: 'Late October 2024 in "un bosco misto a predominanza di faggio e pino laricio": "Nonostante la produzione
+      fungina fosse ormai in calo ... anche qualche Boletus pinophilus e B. edulis"; pure beech more productive.'
+  funghimagazine_porcini_maggio2022:
+    citation: 'Funghi Magazine (2022-05-28). Boom di Funghi Porcini Estatini e Rossi. Ecco dove'
+    url: https://funghimagazine.it/boom-di-funghi-porcini-estatini-e-rossi-ecco-dove/
+    kind: web
+    region: Calabria
+    verified: verified
+    supports: '"Al momento si registrano ottime nascite di Porcini rossi-Pinicola in Sila, Pollino e localmente anche
+      tra Serre-Aspromonte. Discrete nascite di Porcini Estatini tra Campania-Basilicata-Calabria".'
+  bmeteo_pinophilus_oppicelli2024:
+    citation: 'Oppicelli N. (2024-11-14). Il porcino moro o rosso, Boletus pinophilus. Passione Funghi, 3BMeteo'
+    url: https://funghi.3bmeteo.com/boletus-pinophilus/
+    kind: web
+    verified: verified
+    supports: '"I primi Boletus pinophilus della stagione pertanto spuntano in maggio-giugno, occasionalmente anche alla
+      fine del mese di aprile, soprattutto al limite dei boschi di faggio e castagno, o negli areali submontani con
+      presenza di pino silvestre, pino nero o pino laricio, in particolare sulle montagne della Calabria"; autumn "da
+      settembre fino alle prime nevicate".'
+  bmeteo_boletus_aereus:
+    citation: 'Oppicelli N. (2024-07-15). Il porcino nero o bronzino, Boletus aereus. Passione Funghi, 3BMeteo'
+    url: https://funghi.3bmeteo.com/boletus-aereus/
+    kind: web
+    verified: verified
+    supports: '"15 e 24 gradi ... accumuli, sia intorno ai 30-40 mm complessivi (limite minore)"; above "29-30 gradi, la
+      sua crescita diventa difficile"; in the South with macchia the flushes "proseguono fino a novembre inoltrato ...
+      magari in boschi di leccio e sughera, addirittura in pieno periodo natalizio".'
+  funghimagazine_calendario_primavera2019:
+    citation: 'Spagnoli R., Giovinazzo A. (2019-03-07, rev. 2024). Il Calendario dei funghi Porcini Primavera-Estate.
+      Funghi Magazine'
+    url: https://web.archive.org/web/20240417083959/https://funghimagazine.it/fm-calendario-porcini-primavera-estate/
+    kind: web
+    verified: verified
+    supports: 'Centre-South: "Entro fine Maggio gli estatini arrivano anche nei boschi di Castagno e poi in quelli di
+      Faggio"; in June the summer porcini "si concentrano soprattutto nei boschi di Faggio di medio-alta montagna"; B.
+      aereus "dapprima al piano, poi anche in collina ed infine in piena estate anche in montagna ... Solo ad estate
+      inoltrata ... Faggio, quasi esclusivamente al Sud"; July flushes "dalla Toscana alla Sicilia, sono legate e
+      direttamente proporzionali alla meteorologia".'
+  funghimagazine_giugno2019:
+    citation: 'Funghi Magazine, Redazione (2019-06-14). Giugno il mese dei Porcini e funghi estivi'
+    url: https://web.archive.org/web/20240724145708/https://funghimagazine.it/giugno-mese-di-porcini-e-funghi-estivi/
+    kind: web
+    verified: verified
+    supports: 'Early June 2019: galletti "nei soli boschi termofili, essenzialmente a base di Quercia. I primi buoni
+      raccolti tra Calabria, Basilicata, Campania poi anche tra Lazio, Umbria e Toscana"; "Tra Puglia, Basilicata,
+      Calabria e Sicilia le prime nascite di Porcini aereus".'
+  funghimagazine_nascite_2025_08_01:
+    citation: 'Giovinazzo A. (2025-08-01). Funghi Porcini: Inizio Agosto col Botto? Aggiornamento nascite 01-08 Agosto
+      2025. Funghi Magazine'
+    url: https://web.archive.org/web/20250801114245/https://funghimagazine.it/aggiornamento-nascite-01-08-agosto-2025/
+    kind: web
+    verified: verified
+    supports: '"Sud e Isole: Calabria, Sicilia e Sardegna restano ancora fuori dai giochi, salvo micro-zone montane
+      umide"; July flushes need "frequenti temporali con pochi picchi di temperature oltre i 32°C".'
+  funghimagazine_nascite_2025_11_08:
+    citation: 'Giovinazzo A. (2025-11-08). Porcini al capolinea al Nord, ma al Sud si raccoglie ancora bene.
+      Aggiornamento nascite 08-11-2025. Funghi Magazine'
+    url: https://web.archive.org/web/20251220120016/https://funghimagazine.it/aggiornamento-nascite-08-11-2025/
+    kind: web
+    verified: verified
+    supports: '"Al Sud, invece, la stagione prosegue. Continuano le nascite di Porcini, soprattutto Boletus aereus, ma
+      anche, sui monti della Calabria e tra Etna e Nebrodi, i meno comuni edulis e pinicola."'
+  funghimagazine_2023_dodici_mesi:
+    citation: 'Giovinazzo A. (2024-01-02). 12 mesi di funghi Porcini e non solo, Funghi 2023. Funghi Magazine'
+    url: https://web.archive.org/web/20240614055903/https://funghimagazine.it/funghi-2023-12-mesi-di-funghi-porcini-e-non-solo/
+    kind: web
+    verified: verified
+    supports: 'October 2023 "nascite senza sosta in Calabria superiore"; December 2023 "Porcini tardivi ... sulla solita
+      Sila che quest''anno ha sfornato funghi Porcini senza sosta dal mese di Maggio a fine anno".'
+  informacalabria_porcini2025:
+    citation: 'Fiorillo I. (2025-07-05). Trovati porcini giganti, un''estate anomala in Calabria: ma non è la prima
+      volta. InformaCalabria'
+    url: https://www.informacalabria.it/porcini-giganti-unestate-anomala-in-calabria-ma-non-e-la-prima-volta/
+    kind: web
+    region: Calabria (Sila Piccola)
+    verified: verified
+    supports: 'In the Sila Piccola "già da almeno due settimane si trovano porcini", unusual "a causa delle temperature
+      elevate e della siccità" and made possible "dalle piogge frequenti registrate nei mesi di aprile e maggio"; "i
+      porcini estivi e neri ... possono fruttificare anche a partire da maggio in zone particolarmente esposte".'
+  noidicalabria_serra_porcini2026:
+    citation: 'NoiDiCalabria (2026-07-10). Serra San Bruno sorprende la Calabria: a luglio esplode una nascita
+      straordinaria di porcini'
+    url: https://noidicalabria.it/serra-san-bruno-sorprende-la-calabria-a-luglio-esplode-una-nascita-straordinaria-di-porcini/
+    kind: web
+    region: Calabria (Serre)
+    verified: verified
+    supports: '"Nei boschi del comprensorio di Serra San Bruno si sta registrando una nascita abbondante e diffusa di
+      funghi porcini", in "foreste secolari di faggio, abete e castagno".'
+  lr_calabria_30_2001:
+    citation: 'Regione Calabria. Legge regionale 26 novembre 2001, n. 30, Normativa per la regolamentazione della
+      raccolta e commercializzazione dei funghi epigei ed ipogei freschi e conservati (BURC n. 104 of 1 December 2001,
+      suppl. straord. 1); testo coordinato with L.R. 9/2009, 47/2011, 69/2012, 53/2017 and 19/2026'
+    url: https://www.consiglioregionale.calabria.it/bdf/api/BDF?numero=30&anno=2001
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: '"vietata la raccolta dell''Amanita Caesarea allo stato di Ovolo chiuso" (art. 2 c. 1 e); minimum caps
+      "Amanita caesarea (Ovolo buono), cm 5", "Boletus edulis e relativo gruppo (Porcini), cm 4", 3 cm for the rest
+      (art. 3 c. 1); picking "nei boschi e nei terreni non coltivati, esenti da divieti e solo nelle ore diurne" (3.3);
+      "limite massimo giornaliero di 3 (tre) Kg", up to 5 kg for residents of mountain comuni (art. 5), no separate
+      ovolo limit, no weekday rule, season or altitude rule; the Giunta "può stabilire limiti quantitativi o divieti
+      alla raccolta, anche differenziati per specie e per periodi temporali" (5.7); banned in integral reserves and
+      areas the Giunta names (5-bis); permits (5-ter); Annex D protects "Amanita caesarea forma alba" and "Boletus
+      edulis var. citrinus".'
+  lr_calabria_19_2026:
+    citation: 'Regione Calabria. Legge regionale 12 giugno 2026, n. 19, Modifiche e integrazioni della legge regionale
+      26 novembre 2001, n. 30 (BURC n. 121 of 12 June 2026)'
+    url: https://www.consiglioregionale.calabria.it/bdf/api/BDF?numero=19&anno=2026
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'The latest amendment: permits issued "anche per il tramite dei Comuni e dell''Azienda Calabria Verde",
+      valid ten years; truffle calendar and limits; no change to the mushroom sizes, quantities, hours or bans. (L.R.
+      13 agosto 2026, n. 26, with the same text, had its promulgation revoked on 17 August 2026.)'
+  pn_aspromonte_regolamento2016:
+    citation: 'Ministero dell''Ambiente (2016). Decreto 7 dicembre 2016, approvazione del regolamento del Parco
+      nazionale dell''Aspromonte. Gazzetta Ufficiale, Serie Generale n. 24 of 30 January 2017, art. 20'
+    url: https://www.gazzettaufficiale.it/eli/gu/2017/01/30/24/sg/pdf
+    kind: institutional
+    region: Calabria (Aspromonte)
+    verified: verified
+    supports: 'No picking in zone A; in zones B-D "solo nelle ore diurne", 3 kg (amateur) and 10 kg (professional); "La
+      raccolta dei funghi è vietata nelle aree di nuovo rimboschimento e nelle aree percorse da incendi prima che siano
+      trascorsi dieci anni dall''avvenuto incendio" (art. 20 c. 4).'
+  infc2015_calabria:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1-1.5 (Calabria). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Calabria
+    verified: verified
+    supports: 'Calabria bosco 495,177 ha (relative standard error 2.0 %), other wooded land 155,443 ha; categories: beech
+      79,413 ha, black, laricio and loricato pine 73,443, chestnut 68,966, sessile, downy and pedunculate oak 53,790,
+      holm oak 48,692, other deciduous 45,153, Turkey oak and Hungarian oak 43,593, other evergreen broadleaves 21,143,
+      Mediterranean pines 17,474, hygrophilous 12,872, other conifers 12,561, cork oak 5,224, hop-hornbeam and hornbeam
+      4,477, silver fir 3,731; plantations 2,406 ha.'
+  calabria_pfr2024:
+    citation: 'Regione Calabria, UOA Politiche della montagna, Foreste, forestazione e difesa del suolo (2024). Programma
+      Forestale Regionale 2024-2044'
+    url: https://www.regione.calabria.it/website/portalmedia/decreti/2024-03/1709723226408_programmaforestaleregionaleCalabria.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'Rain "per circa il 40% in inverno, il 30% in autunno, dal 21 al 26% in primavera e dal 4 al 9% in
+      estate", 3 % on parts of the Ionian coast; Camigliatello 1,634 mm, Serra San Bruno 1,772, Gambarie 1,608,
+      Laghitello (Catena Costiera) 1,928, Reggio 594 (pp. 11-12). Beech the forest limit, lower limit "da 1.400 a
+      1.000 m" east and west, down to 600/700 m in humid spots, pure beech "fino a 1.700/1.800 metri" (p. 45); loricato
+      1,800-2,000 m (p. 46); 84 % of the INFC black-pine category is laricio, 94 % of it on the Sila plateau, about
+      4,000 ha in the Aspromonte (pp. 46-47); about 110,000 ha reforested 1955-1967, laricio "nel Castanetum freddo e
+      Fagetum caldo" (pp. 48-49); chestnut 500-1,000 m on the Catena Costiera, 600/700-1,000/1,100 m in the Sila, 300-
+      1,200 m in the western Aspromonte (pp. 43-44); holm oak 450/500-1,100/1,200 m, cork oak 50/100-600/650 m, Turkey
+      oak to about 1,200 m (pp. 37-42); Aspromonte beech "da 900-1.000 a 1.900 m ... possono scendere a 600-700 m";
+      Sila NP laricio plantations at 900-1,200/1,300 m, 1950-70 (pp. 105-109). Sila, Serre and Aspromonte soils acid
+      Dystrudepts, Pollino neutral Hapludolls (pp. 22-25).'
+  nicolaci2014_laricio_sila:
+    citation: 'Nicolaci A., Travaglini D., Menguzzato G., Nocentini S., Veltri A., Iovino F. (2014). Ecological and
+      anthropogenic drivers of Calabrian pine (Pinus nigra J.F. Arn. ssp. laricio (Poiret) Maire) distribution in the
+      Sila mountain range. iForest 8: 497-508'
+    doi: 10.3832/ifor1041-007
+    kind: peer_reviewed
+    region: Calabria (Sila)
+    verified: verified
+    supports: 'Laricio covers about 114,000 ha in Calabria, "more than 50% are pure stands of both natural and
+      artificial origin", plantations from 1950-1970; "natural pine forests grow between 800-1000 m a.s.l., and
+      1500-1600 m a.s.l., while plantations were located between 900 and 1200-1300 m"; pine area +38 % 1935-2006; pure
+      beech from 1,400-1,500 m; Sila rain over 1,000 mm, Camigliatello 1,631 mm; soils on granite acidic Dystrudepts;
+      "Snow stayed on the ground for 6 months at elevations > 1400 to 1600 m".'
+  bissanti1973_neve_sila:
+    citation: 'Bissanti A.A. (1973). Sulle precipitazioni nevose e sul manto nevoso in Sila. Bollettino della Società
+      Geografica Italiana: 233-248'
+    doi: 10.36253/bsgi-6156
+    kind: peer_reviewed
+    region: Calabria (Sila)
+    verified: verified
+    supports: 'Seven Sila stations at 1,005-1,358 m, 1951-1967: annual rain 1,196-1,806 mm, July and August together
+      3.0-3.8 % of it (Camigliatello 1,714 mm, July 30.4, August 27.9, November 242.5 mm; Tab. 2, p. 237); snow "può
+      iniziare a cadere in novembre per finire in maggio", 20-25 snow days a year, snow on the ground 60-80 days
+      (Camigliatello 85; November 2.1 days, December 10.6) (pp. 242, 245-246).'
+  terranova2011_rain_events:
+    citation: 'Terranova O.G., Iaquinta P. (2011). Temporal properties of rainfall events in Calabria (southern Italy).
+      Natural Hazards and Earth System Sciences 11: 751-757'
+    doi: 10.5194/nhess-11-751-2011
+    kind: peer_reviewed
+    region: Calabria
+    verified: verified
+    supports: '"average yearly rainfalls vary between 1000 and 2000 mm y−1 in mountainous and internal areas, and between
+      600 and 900 mm y−1 in coastal areas, with a mean regional value of about 1150 mm y−1 ... Over 70% of the yearly
+      precipitation occurs from October to March, with negligible monthly values from June to September" (p. 752).'
+  muscolo2021_laricio_soil:
+    citation: 'Muscolo A., Settineri G., Romeo F., Mallamaci C. (2021). Soil biodiversity as affected by different
+      thinning intensities in a Pinus laricio stand of Calabrian Apennine, south Italy. Forests 12: 108'
+    doi: 10.3390/f12010108
+    kind: peer_reviewed
+    region: Calabria (Aspromonte)
+    verified: verified
+    supports: 'A 60-year laricio stand at 1,100 m in the Aspromonte on schist and gneiss, sandy loam: soil pH 4.96-5.39 in
+      summer and 5.37-5.64 in winter, "moderately acidic" (Table 2, p. 6).'
+  ispra_cdn_calabria_legenda2024:
+    citation: 'ISPRA, Capogrossi R. (2024). Tabella di conversione della Legenda regionale della Regione Calabria nella
+      Legenda nazionale per la cartografia degli habitat di Carta della Natura'
+    url: http://cartanatura.isprambiente.it/CdN/SchedeInformative/Calabria_SpecificheTecniche.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'Regional "42.67 - Rimboschimenti di Pinus nigra" becomes national "42.G_n - Boschi di conifere alloctone o
+      fuori dal loro areale"; regional "42.1B1 - Rimboschimenti di Abies alba" becomes "83.31_m - Piantagioni di
+      conifere"; 42.65 laricio pine, 41.18 beech and 42.15 silver fir keep their codes (pp. 2-3).'
+  arpacal_cfm_dati_storici:
+    citation: 'ARPACAL, Centro Funzionale Multirischi (2026). Consultazione banca dati storici (login page and terms)'
+    url: https://www.cfd.calabria.it/Login/login.php
+    kind: web
+    region: Calabria
+    verified: verified
+    supports: 'Historical station data are free ("fornito a titolo gratuito a chiunque ne faccia richiesta") but need an
+      account requested by e-mail with a copy of an identity card, and "I dati non sono cedibili a terzi a nessun
+      titolo"; scanned yearbooks (Annali idrologici) 1916-2000 are downloadable without registration.'
+  mushma_calabria_forest_composition_2026:
+    citation: 'mushma Calabria woodland composition: area and elevation of each habitat key on ISPRA and Regione
+      Calabria''s Carta della Natura habitat map (1:25,000, 2023; CORINE Biotopes codes read through the class mapping
+      of config/regions/calabria.yaml), rasterised on a 100 m lattice in EPSG:3035 with Copernicus DEM GLO-30 heights,
+      per ISTAT 2025 comune and province; approximate 1 km woodland cells (broadleaf and conifer over half the cell)
+      built from the same lattice; computed 2026-09-28 before the woodland grid was built'
+    url: https://sdi.isprambiente.it/download_ogc/cnat/CNAT_Habitat_Calabria.gpkg
+    kind: analysis
+    region: Calabria
+    verified: verified
+    supports: '714,790 ha of mapped woods, macchia and scrub, 586,704 ha of them broadleaf or conifer woodland (INFC 2015
+      bosco 495,177 ha). Shares and elevations (median, p10-p90): deciduous_oak 20.6 % (586 m, 230-983; downy oak 404
+      m, Hungarian oak 724, Turkey oak 834), evergreen_oak 14.9 % (554 m; holm oak 90 %, cork oak 10 % at 297 m), beech
+      14.0 % (1,270 m, 883-1,640, max 2,045), mountain_pine 13.8 % (1,201 m, 754-1,459; conifers planted outside their
+      range, i.e. Pinus nigra reforestation, 71 % at 1,223 m, conifer plantations 20 % at 844 m, natural laricio 8.5 %
+      at 1,390 m, Apennine black pine and pino loricato under 1 %), chestnut 12.0 % (816 m, 521-1,087), macchia 9.8 %
+      (315 m; lentisk 35 %, Cytisus 28 %, evergreen-oak matorral 24 %, Mediterranean macchia 9 %),
+      transitional_woodland_shrub 8.1 % (717 m; Spartium 52 %, broom 26 %), mixed_broadleaf 2.3 % (767 m; Alnus
+      cordata 86 %), mediterranean_pine 2.0 % (367 m; Aleppo pine 82 %), riparian 1.5 %, exotic_broadleaf 0.6 %,
+      fir_spruce 0.5 % (1,076 m; 1,514 ha in Serra San Bruno). Mountain pine lies mostly in the Sila comuni (San
+      Giovanni in Fiore 14,974 ha, Longobucco 10,652, Casali del Manco 4,994, Taverna 4,896). Approximate woodland
+      cells: 5,718, elevation median 852 m (p10 417, p90 1,403); mean habitat share deciduous oak 21.0 %, beech 18.4,
+      mountain pine 16.9, evergreen oak 16.8, chestnut 15.6. See species-ecology/calabria.md.'
+  mushma_occurrence_check_calabria_2026:
+    citation: 'mushma Calabria occurrence check: iNaturalist API (place 9323, verifiable; month and year histograms;
+      elevations from the Open-Meteo elevation API for open, non-obscured records with positional accuracy of 1 km or
+      better; the Carta della Natura habitat at and within 500 m of each, deduplicated by observer, day and site;
+      compared with Toscana, place 13073) and GBIF occurrence API (gadmGid ITA.4_1), queried 2026-09-28. Aggregates
+      only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations
+    kind: analysis
+    region: Calabria
+    verified: verified
+    supports: 'iNaturalist verifiable records: B. edulis 30 (August 1, September 12, October 10, November 5, December 2),
+      B. reticulatus 36 (June 5, July 9, August 2, September 19, October 1), B. aereus 7 (August-November), B.
+      pinophilus 19 (June 5, September 3, October 5, November 5), A. caesarea 15 (October 7), Cantharellus 11 (C.
+      cibarius 3, C. pallens 3, C. amethysteus 1), against 3,053 fungi (September 12 %, October 24 %, November 14 %,
+      December 9 %); the 27 GBIF records of these taxa are all iNaturalist copies. Elevations of all located records:
+      B. edulis median 1,247 m (534-1,462, n=11; Tuscany 1,054 m, n=22), B. reticulatus 1,105 m (797-1,485, n=18; July
+      records 1,329-1,485 m; Tuscany 649 m, n=19), B. pinophilus 1,152 m (797-1,638, n=11; Tuscany 692 m, n=6), B.
+      aereus 253-828 m (n=3; Tuscany 352 m, n=42), A. caesarea 328-932 m (n=4; Tuscany 364 m, n=32), Cantharellus
+      482-1,585 m (n=5; Tuscany 283 m, n=93). Deduplicated by observer, day and site (11 B. edulis, 12 B.
+      reticulatus, 10 B. pinophilus), mountain pine dominates the 500 m around 5, 5 and 4 of them; at the point itself
+      2, 1 and 0 fall in pine polygons. See species-ecology/calabria.md.'
+  mushma_calabria_rain_normals_check_2026:
+    citation: 'mushma Calabria rain check: raw ERA5-Land (CDS) annual precipitation 2016-2025, read bilinearly from the
+      land nodes of the 0.2° lattice at 15 stations, against the long-term station normals the Programma Forestale
+      Regionale 2024 quotes (section 1.2.1, pp. 10-11); Calabria''s open daily rain needs registration (ARPACAL
+      Centro Funzionale, ARSAC agrometeo). See .gavin-root/docs/regions/calabria.md, Weather'
+    url: https://www.regione.calabria.it/website/portalmedia/decreti/2024-03/1709723226408_programmaforestaleregionaleCalabria.pdf
+    kind: analysis
+    region: Calabria
+    verified: verified
+    supports: 'Raw CDS holds 1.19 of the station normals below 200 m (7 stations, 10-103 m: Tropea, Briatico, Joppolo,
+      Villa San Giovanni, Reggio Calabria, Melito di Porto Salvo, Capo dell''Armi), 0.59 at 200-800 m (Arena, 450 m)
+      and 0.59 at 800 m and above (7 stations, 790-1,300 m: Serra San Bruno 0.47, Mongiana, Fabrizia, San Lorenzo
+      Bellizzi, Villaggio Mancuso, Camigliatello 0.65, Gambarie 0.55); a fit of normals on model totals x (a + b x
+      elevation) gives 0.85 + 0.82 per km (leave-one-out slopes 0.77-0.95; 0.76 + 0.74 if 2016-2025 was 10 % drier
+      than the normals'' older periods), clamped at 1,300 m. The Apennine prior 0.76 + 0.55 would leave the mountain
+      stations at 0.79 of their normals.'
+    cited_as:
+    - regions/calabria.md
+  # ---------------------------------------------------------------------------------------------
   # Piemonte (region card, 2026-09-25): sources for species/piemonte/ and
   # .gavin-root/docs/species-ecology/piemonte.md. Appended as one block rather than sorted in.
   # ---------------------------------------------------------------------------------------------

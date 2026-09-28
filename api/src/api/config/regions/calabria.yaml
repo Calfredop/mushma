@@ -126,3 +126,26 @@ soil:
 sightings:
   inaturalist_place_id: 9323
 
+# Rain scale (merged onto config/model.yaml), fitted on long-term station normals, not daily gauges:
+# Calabria's open daily rain needs registration (ARPACAL's Centro Funzionale archive, ARSAC's
+# agrometeo network), so the check reads the raw CDS rain of 2016-2025 at the 15 stations whose
+# mean annual rain and height the regional forest programme quotes. Calabria's history is CDS, so the
+# scale names that source too: the national one scales era5_seamless only, while the rain normals are
+# scaled whatever their source. .gavin-root/docs/regions/calabria.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.85
+    per_km: 0.82
+    max_elevation_m: 1300  # the highest station: no extrapolation above it (factor 1.92)
+    source: [mushma_calabria_rain_normals_check_2026]
+    notes: >-
+      Least squares through the origin of station normals on raw CDS era5_land_cds annual totals
+      (2016-2025, read bilinearly from the land nodes at each station) x (a + b x elevation) over 15
+      stations at 10-1,300 m quoted by the Programma Forestale Regionale 2024 (Serra San Bruno 1,772
+      mm, Mongiana, Fabrizia, Gambarie 1,608, Camigliatello 1,634, Villaggio Mancuso 1,616, San
+      Lorenzo Bellizzi; Arena, Joppolo, Tropea, Briatico, Villa San Giovanni, Reggio Calabria 594,
+      Melito di Porto Salvo, Capo dell'Armi) gave a = 0.848, b = 0.819 per km: raw CDS holds 1.19 of
+      the normals below 200 m and 0.59 at 800 m and above (the Serre 0.47). Leave-one-out slopes run
+      0.77-0.95. The normals are older (to 2001); if 2016-2025 was 10 % drier, the fit would be 0.76 +
+      0.74. It gives 1.01 at 200 m, 1.26 at 500 m, 1.50 at 800 m and 1.83 at 1,200 m.
