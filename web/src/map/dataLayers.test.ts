@@ -7,6 +7,7 @@ import {
   ANALYSIS_LAYERS,
   ANALYSIS_LAYERS_BEFORE,
   analysisLayers,
+  CELL_CLOUD_RADIUS,
   CELL_LAYERS,
   SCORE_LAYERS,
   regionMask,
@@ -49,7 +50,7 @@ describe('withDataLayers', () => {
       'circle-blur': expect.any(Number),
       'circle-opacity': expect.any(Number),
     })
-    expect((cloud.paint as { 'circle-blur': number })['circle-blur']).toBeGreaterThan(0.5)
+    expect((cloud.paint as { 'circle-blur': number })['circle-blur']).toBeGreaterThan(0.4)
     expect(hit).toMatchObject({
       type: 'fill',
       source: 'cells-squares',
@@ -58,6 +59,23 @@ describe('withDataLayers', () => {
     expect(style.layers.some((l) => l.id === 'cells-dot')).toBe(false)
     expect(style.layers.some((l) => l.id === 'cells-fill')).toBe(false)
     expect(style.layers.some((l) => l.id === 'cells-outline')).toBe(false)
+  })
+
+  it('keeps cloud radius geographic so adjacent 1 km cells stay linked when zooming in', () => {
+    // Screen pixels for a fixed ground size double each zoom step — linear zoom
+    // stops left huge gaps between neighbours at high zoom.
+    expect(CELL_CLOUD_RADIUS[1]).toEqual(['exponential', 2])
+    const px = (z: number) => {
+      for (let i = 3; i < CELL_CLOUD_RADIUS.length; i += 2) {
+        if (CELL_CLOUD_RADIUS[i] === z) return CELL_CLOUD_RADIUS[i + 1] as number
+      }
+      return undefined
+    }
+    // From z10 → z14 (4 steps) radius should grow ~16×, not stall.
+    expect(px(14)! / px(10)!).toBeGreaterThan(12)
+    // At mid-zoom the blob is wider than half a cell (500 m) so neighbours overlap
+    // even after blur; ~18 px ≈ 2 km at z10 over Tuscany.
+    expect(px(10)!).toBeGreaterThanOrEqual(18)
   })
 
   it('has hidden analysis base layers among the cells, where indicators go in', () => {

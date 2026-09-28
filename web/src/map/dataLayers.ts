@@ -24,7 +24,7 @@ const LICHENE = '#EDF0EA'
 const SCORE = scoreStepExpression(['get', 'score']) as ExpressionSpecification
 
 /** How soft the cloud edge is. MapLibre: 1 → only the centre stays full opacity. */
-export const CLOUD_BLUR = 0.85
+export const CLOUD_BLUR = 0.65
 
 /** Bosco layer: each habitat's colour, categorical -- a cell's forest type has no
  * favourable/unfavourable direction, so unlike the score or a factor this isn't a value×opacity
@@ -69,23 +69,27 @@ export const ANALYSIS_LAYERS = ['factors-base-hit', 'factors-base-cloud']
 export const ANALYSIS_LAYERS_BEFORE = DATA_LAYERS_BEFORE
 
 /**
- * Soft cloud radius in screen pixels. Sized so blobs cover roughly a 1 km cell
- * from mid-zoom up and still read as patches when the whole region is in view.
+ * Soft cloud radius in screen pixels. Exponential in zoom so the ground size stays
+ * ~2 km across Tuscany: neighbouring 1 km cells keep overlapping (and stay
+ * graphically linked) instead of pulling into isolated blobs when you zoom in.
+ * Low zooms floor the radius so a region overview still reads as soft patches.
  */
-const CELL_CLOUD_RADIUS: ExpressionSpecification = [
+export const CELL_CLOUD_RADIUS: ExpressionSpecification = [
   'interpolate',
-  ['linear'],
+  ['exponential', 2],
   ['zoom'],
   6,
-  7,
   8,
-  14,
-  10,
-  24,
+  8,
   12,
-  42,
+  10,
+  20,
+  12,
+  80,
   14,
-  78,
+  320,
+  16,
+  1280,
 ]
 
 type Bounds = [[number, number], [number, number]]
