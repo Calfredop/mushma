@@ -2021,3 +2021,159 @@ references:
       per km would make it 2.05.'
     cited_as:
     - regions/piemonte.md
+  # ---------------------------------------------------------------------------------------------
+  # Abruzzo (region card, 2026-09-26): sources for species/abruzzo/ and
+  # .gavin-root/docs/species-ecology/abruzzo.md. Appended as one block rather than sorted in.
+  # ---------------------------------------------------------------------------------------------
+  lr_abruzzo_34_2006:
+    citation: 'Regione Abruzzo. L.R. 8 novembre 2006, n. 34, Disciplina della raccolta e della commercializzazione
+      dei funghi epigei spontanei in Abruzzo (BURA 22 November 2006, n. 66), consolidated text with the amendments of
+      L.R. 33/2007, 39/2007, 9/2010, 1/2011, 32/2015 and 14/2020. Consiglio regionale dell''Abruzzo'
+    url: http://www2.consiglio.regione.abruzzo.it/leggi_tv/abruzzo_lr/2006/lr06034.htm
+    kind: institutional
+    region: Abruzzo
+    verified: verified
+    supports: 'the regional picking law in force: 3 kg per person per day (art. 2.1), minimum cap of 4 cm for "Amanita
+      caesarea (ovolo buono)" and "Boletus edulis e relativo gruppo (porcino)" (art. 2.2), "vietata la raccolta
+      dell''Amanita caesarea allo stato di ovolo chiuso" (art. 2.3), no picking at night (art. 10.1), parks and
+      reserves keep their own rules (art. 11), temporary closures by the Giunta (art. 12); no fixed closed days,
+      season dates or altitude limits. Confirms the ovolo and the porcini as regional species.'
+    cited_as:
+    - species-ecology/abruzzo.md
+  regione_abruzzo_ctf2009:
+    citation: 'Regione Abruzzo (2009). La carta tipologico-forestale della Regione Abruzzo: Schede tipologiche e
+      diffusione dei Tipi (pp. 77-140), in Le foreste della Regione Abruzzo: caratteristiche e variazione di
+      superficie nel tempo. Regione Abruzzo, Servizio Foreste; Geoportale regionale'
+    url: http://geoportale.regione.abruzzo.it/Cartanet/pages4home/area-download-1/la-carta-tipologico-forestale-della-regione-abruzzo-schede-tipologiche/at_download/file
+    kind: institutional
+    region: Abruzzo
+    verified: verified
+    supports: 'the Abruzzo forest types and their belts, substrates and trees: Faggeta montana "localizzati sopra i
+      1000 metri", "dai 1000 metri fino al limite superiore della vegetazione", on calcareous and arenaceous soils,
+      with Abies alba and Taxus; Faggeta altomontana rupestre "dai 1100 metri fino al limite superiore del bosco" on
+      shallow, dry calcareous soil; Cerreta mesoxerofila 700-1400 m, Cerreta mesofila 900-1400 m on sandstone;
+      downy-oak woods from the sea to 1300-1400 m; Castagneto da frutto "dai 500 agli 800 metri", acidophilous, on
+      sandstone free of active lime; chestnut coppice on the Laga and Monte Verrico, in western L''Aquila province,
+      almost absent from Chieti and Pescara; conifer reforestation mostly black pine, above 900 m with Abies alba and
+      cephalonica, Picea, Larix and Pseudotsuga "nell''ambito della vegetazione delle faggete", on eroded limestone;
+      juniper scrub at "dai 1000 fino ai 2200 metri"; Mugheta appenninica above the beech; Lecceta costiera
+      termofila at Torino di Sangro (about 100 ha).'
+    cited_as:
+    - species-ecology/abruzzo.md
+  amep_funghi_abruzzo_tieri:
+    citation: 'Associazione Micologica Pescara (AMEP). Funghi in Abruzzo: species cards "tratta dal volume FUNGHI
+      D''ABRUZZO a cura di M. Rosaria Tieri e Nino Tieri" (Boletus edulis, Boletus aereus, Boletus aestivalis,
+      Amanita caesarea, Cantharellus cibarius pages)'
+    url: https://www.amep.it/funghi%20in%20abruzzo/Boletus%20edulis.html
+    kind: society
+    region: Abruzzo
+    verified: verified
+    supports: 'per-taxon hosts and months from the Abruzzo mycologists'' book: B. edulis "nei boschi di latifoglie,
+      principalmente in quelle di querce, castagni, faggi e nelle abetaie. Dall''estate al primo autunno" (photo on
+      the Cortino hills, TE); B. aereus "in simbiosi con quercia e faggio, difficilmente nei boschi di conifere. Dalla
+      fine dell''estate a novembre" (chestnut wood at Valle Castellana; the Monti della Laga as the porcini "habitat
+      d''elezione"); B. aestivalis "querce, castagni e faggi. Da Maggio al primo autunno" (chestnut at Carsoli, AQ); A.
+      caesarea "di preferenza quelle di quercia, con esposizione sufficientemente assolata. Dall''estate
+      all''autunno" (Goriano Sicoli, AQ); C. cibarius in broadleaf and conifer woods, "Dall''estate all''autunno",
+      "si trova in tutti i boschi della Regione" (chestnut at Carsoli). Other pages: Boletus%20aereus.html,
+      Boletus%20aestivalis.html, Amanita%20caesarea.html, Cantharellus%20cibarius.html in the same folder.'
+    cited_as:
+    - species-ecology/abruzzo.md
+  funghiteramani_blog:
+    citation: 'de Ruvo B. Funghi Teramani (blog, 2014-2026; continued as A spasso tra le nuvole): dated season
+      updates from the Teramo side of the Monti della Laga (the Ceppo, Rocca Santa Maria, Valle Castellana), read
+      through its Blogger feed on 2026-09-26'
+    url: https://funghiteramani.blogspot.com/
+    kind: web
+    region: Abruzzo
+    verified: verified
+    supports: 'forager season sequence on the Laga (folklore): gallucci from early May under Turkey oak and chestnut
+      at about 800 m, June peak, into the beech in July-August; B. reticulatus from mid-May, June-July under Turkey
+      oak and chestnut, then in the beech; B. pinophilus in the beech in late May-June and again at the end of the
+      season; B. edulis in the beech from August, best late September to the first week of October; B. aereus and
+      the ovolo with the summer heat, July-September, in Turkey oak and chestnut "nei boschi di circa 700-900 m";
+      "sotto misto conifera" Tricholoma, Russula, Lactarius, Hygrophorus rather than porcini. Posts cited by date in
+      species-ecology/abruzzo.md.'
+    cited_as:
+    - species-ecology/abruzzo.md
+  bonanomi2020_treeline:
+    citation: 'Bonanomi G., Zotti M., Mogavero V., Cesarano G., Saulino L., Rita A., Tesei G., Allegrezza M., Saracino
+      A., Allevato E. (2020). Climatic and anthropogenic factors explain the variability of Fagus sylvatica treeline
+      elevation in fifteen mountain groups across the Apennines. Forest Ecosystems 7'
+    doi: 10.1186/s40663-020-0217-8
+    kind: peer_reviewed
+    verified: verified
+    supports: 'abstract read: beech forms the Apennine treeline "with an average elevation of 1589 m a.s.l.", above
+      2000 m on 13 peaks of central and southern Italy, lower on south-facing slopes (Gran Sasso, Velino-Sirente),
+      depressed by past human use; very high and very depressed treelines side by side on the Majella and the Monti
+      Marsicani. Used for the top of the beech-host altitude bands.'
+    cited_as:
+    - species-ecology/abruzzo.md
+  nordal_porcini_italia2024:
+    citation: 'Nordal (2024-11-21). "Andar per funghi": dove raccogliere i porcini in Italia (company blog)'
+    url: https://www.nordal.it/dove-raccogliere-porcini-italia/
+    kind: web
+    region: Abruzzo
+    verified: verified
+    supports: 'folklore: in Abruzzo porcini grow "soprattutto nel massiccio montuoso della Majella e nel Parco
+      Nazionale d''Abruzzo, dove si alternano boschi di conifere e faggete", best "nelle zone tra i 1.200 e i 1.800
+      metri sul livello del mare". The only page found that gives an altitude range for Abruzzo porcini.'
+    cited_as:
+    - species-ecology/abruzzo.md
+  mushma_occurrence_check_abruzzo_2026:
+    citation: 'mushma Abruzzo occurrence check: iNaturalist observations and histogram APIs (place 10867, verifiable;
+      locations used only for open records accurate to 1 km), GBIF occurrence API (gadmGid ITA.1_1; human
+      observation, preserved specimen, occurrence, observation), elevations from the Copernicus GLO-30 DEM and the
+      comune and dominant habitat of the record''s grid cell, queried 2026-09-26. Aggregates only; no coordinates
+      are stored or published'
+    url: https://api.inaturalist.org/v1/docs/
+    kind: analysis
+    region: Abruzzo
+    verified: verified
+    supports: 'Abruzzo record counts (iNaturalist / GBIF outside iNaturalist): B. edulis 3 / 0 (May, Sep 1,576 m, Oct
+      1,536 m, beech), B. reticulatus 3 / 0 (Jun 860 m, Jul 1,525 m Laga beech, Sep 1,046 m), B. aereus 4 / 0 (Oct-Nov,
+      51-88 m, Torino di Sangro), B. pinophilus 1 / 0 (Jul 1,525 m), A. caesarea 1 / 0 (Sep 2018, 927 m, Carsoli),
+      Cantharellus 19 / 2 (14 of 17 located records Oct-Dec at 11-96 m at Torino di Sangro: C. alborufescens, C.
+      cibarius, C. pallens; others May 658 m, Jul 1,298 m, Oct 973 m); all 2,792 Abruzzo iNaturalist fungi records
+      for the month enrichment. See species-ecology/abruzzo.md.'
+    cited_as:
+    - species-ecology/abruzzo.md
+  mushma_abruzzo_forest_composition_2026:
+    citation: 'mushma Abruzzo woodland composition: areas and elevations per forest type of the Regione Abruzzo Carta
+      Tipologico-Forestale (70,095 polygons, 454,254 ha, downloaded 2026-09-26 from the regional ArcGIS service;
+      elevations from the Copernicus GLO-30 DEM at each polygon''s representative point, area-weighted), mapped to the
+      habitat keys as config/regions/abruzzo.yaml does; and habitat shares, elevations, slope and SoilGrids pH on the
+      Abruzzo woodland grid built 2026-09-28 from that map'
+    url: http://catasto.regione.abruzzo.it:6080/arcgis/rest/services/Agricoltura_Uso_Suolo/Categorie_e_Tipologie_Forestali/MapServer/1
+    kind: analysis
+    region: Abruzzo
+    verified: verified
+    supports: 'forest map, of the 432,041 ha the grid keeps: beech 135,346 ha (31.3 %; p10 1,162 m, median 1,385 m,
+      p90 1,682 m, p99 1,824 m; 1.3 % above 1,800 m), deciduous oak 123,407 ha (28.6 %; median 775 m), mixed
+      broadleaf 71,431 ha (16.5 %: hop-hornbeam 41,500, invasive broadleaf 29,200, aspen 700), conifer reforestation
+      and natural black pine 29,078 ha (6.7 %; median 1,020 m), riparian 27,985 ha, transitional scrub 20,078 ha,
+      macchia 8,734 ha (2.0 %; Juniperus oxycedrus scrub, p10-p90 606-1,084 m), chestnut 6,019 ha (1.4 %; median
+      894 m, p90 1,073 m), holm oak 5,307 ha, robinia 2,761 ha, Aleppo pine 1,847 ha, silver-fir variant 50 ha;
+      left out of the woods: montane juniper scrub 20,795 ha (median 1,643 m) and mugo-pine krummholz 1,418 ha
+      (median 2,010 m). Grid: 3,782 woodland cells, 402,905 ha of forest, cell elevation median 1,061 m (5th-95th
+      percentile 449-1,661 m, 8.6 % above 1,600 m, max 1,940 m), beech median 1,420 m, slope median 19.9° (p90
+      28.2°), topsoil pH median 6.65 (p5 6.16, p95 7.33). See species-ecology/abruzzo.md.'
+    cited_as:
+    - species-ecology/abruzzo.md
+  mushma_abruzzo_rain_prior_2026:
+    citation: 'mushma rain scale for Abruzzo, borrowed: Abruzzo has no open daily rain gauges a script can read (the
+      regional Idrografico''s POLARIS WEB portal needs SPID or CIE login; the Annali Idrologici are PDF tables), so its
+      scale is the mean of the two nearest least-squares fits of gauge totals on CDS era5_land_cds totals x (a +
+      b x elevation), 2019-2025: Umbria (8 Servizio Idrografico woodland gauges) and Campania (33 agrometeo gauges,
+      that region''s lane). See .gavin-root/docs/regions/abruzzo.md, Weather'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/regions/abruzzo.md
+    kind: analysis
+    region: Abruzzo
+    verified: verified
+    supports: 'Umbria 0.89 + 0.33 per km and Campania 0.77 + 0.52 per km (raw CDS 1.21 of gauge rain below 200 m,
+      0.96 at 400-800 m) find the CDS reanalysis about right at mid elevation and dry in the mountains, as
+      Emilia-Romagna''s 0.62 + 0.80 does; their mean, 0.83 + 0.43 per km, is 0.92 at 200 m, 1.05 at 500 m, 1.17 at
+      800 m, 1.35 at 1,200 m and 1.52 at 1,600 m, close to Marche''s borrowed 0.76 + 0.57. A prior, not an Abruzzo
+      fit; above about 1,000 m every fit is extrapolated.'
+    cited_as:
+    - regions/abruzzo.md

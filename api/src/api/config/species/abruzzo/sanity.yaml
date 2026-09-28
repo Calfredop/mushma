@@ -1,0 +1,438 @@
+# Press-contrast sanity check for Abruzzo (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025) or provinces; windows and source URLs written down on
+# 2026-09-26, before any Abruzzo score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Evidence, second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/abruzzo.md.
+# Abruzzo local press rarely says how a mushroom season went. The best-dated source is Bruno de
+# Ruvo's forager blog (Funghi Teramani, then A spasso tra le nuvole) on the Teramo side of the Monti
+# della Laga: the Ceppo (comune of Rocca Santa Maria, where it meets Valle Castellana, Cortino and
+# Torricella Sicura), the Valle Castellana chestnut and oak woods, the Vomano side and Campotosto.
+# Eleven of the sixteen contrasts rest on it. The others use Funghi Magazine's national bulletins,
+# Coldiretti Abruzzo (2019) and Rete8 (2018) for the Marsica, the Chieti hills, the Gran Sasso and
+# Majella beech woods, the south-west (Marsica, Valle Roveto, Carseolano, PNALM) and the region.
+areas:
+  laga_teramana:
+    comuni:
+    - Valle Castellana
+    - Rocca Santa Maria
+    - Cortino
+    - Crognaleto
+    - Torricella Sicura
+  ceppo:
+    comuni:
+    - Rocca Santa Maria
+  valle_castellana:
+    comuni:
+    - Valle Castellana
+  marsica:
+    comuni:
+    - Carsoli
+    - Pereto
+    - Rocca di Botte
+    - Oricola
+    - Sante Marie
+    - Tagliacozzo
+    - Cappadocia
+    - Castellafiume
+    - Scurcola Marsicana
+    - Magliano de' Marsi
+    - Massa d'Albe
+    - Avezzano
+    - Capistrello
+    - Canistro
+    - Civitella Roveto
+    - Civita d'Antino
+    - Morino
+    - San Vincenzo Valle Roveto
+    - Balsorano
+    - Luco dei Marsi
+    - Trasacco
+    - Collelongo
+    - Villavallelonga
+    - Lecce nei Marsi
+    - Gioia dei Marsi
+    - Bisegna
+    - Ortona dei Marsi
+    - Pescina
+    - Cerchio
+    - Collarmele
+    - Aielli
+    - Celano
+    - Ovindoli
+    - San Benedetto dei Marsi
+    - Ortucchio
+  abruzzo_southwest:
+    comuni:
+    - Carsoli
+    - Pereto
+    - Rocca di Botte
+    - Oricola
+    - Sante Marie
+    - Tagliacozzo
+    - Cappadocia
+    - Castellafiume
+    - Capistrello
+    - Canistro
+    - Civitella Roveto
+    - Civita d'Antino
+    - Morino
+    - San Vincenzo Valle Roveto
+    - Balsorano
+    - Collelongo
+    - Villavallelonga
+    - Lecce nei Marsi
+    - Gioia dei Marsi
+    - Bisegna
+    - Pescasseroli
+    - Opi
+    - Villetta Barrea
+    - Civitella Alfedena
+    - Barrea
+    - Alfedena
+    - Scanno
+    - Scontrone
+    - Castel di Sangro
+  chieti_hills:
+    provinces:
+    - CH
+    excluding:
+    - Civitella Messer Raimondo
+    - Fara Filiorum Petri
+    - Fara San Martino
+    - Gamberale
+    - Guardiagrele
+    - Lama dei Peligni
+    - Lettopalena
+    - Montenerodomo
+    - Palena
+    - Palombaro
+    - Pennapiedimonte
+    - Pizzoferrato
+    - Pretoro
+    - Rapino
+    - Roccamontepiano
+    - Taranta Peligna
+    - Torricella Peligna
+  gran_sasso_majella:
+    comuni:
+    - Pietracamela
+    - Fano Adriano
+    - Isola del Gran Sasso d'Italia
+    - Castelli
+    - Farindola
+    - Caramanico Terme
+    - Sant'Eufemia a Maiella
+    - Roccamorice
+    - Salle
+    - Serramonacesca
+    - Pacentro
+    - Campo di Giove
+    - Cansano
+    - Palena
+    - Pennapiedimonte
+    - Fara San Martino
+    - Pretoro
+    - Pizzoferrato
+  abruzzo:
+    provinces:
+    - '*'
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: laga_july_2024_2018
+  claim: 'July, Laga (Teramo side): in 2024 "C''è stata una "sfungata" eccezionale di Boletus
+    aestivalis, in certi boschi sembrava inesauribile" until the woods dried in late July (A spasso
+    tra le nuvole, 2024-07-23); in 2018 "di porcini ce ne sono veramente pochi" (2018-07-11) and "i
+    funghi non ci sono, quelli presenti sono anche brutti e verminati" (Funghi Teramani, 2018-07-21)'
+  source: https://www.aspassotralenuvole.it/post/un-po-di-analisi-porcinara
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2024
+    start: 07-03
+    end: 07-18
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2018
+    start: 07-03
+    end: 07-18
+- id: laga_august_2018_2017
+  claim: 'Second half of August, Laga (Teramo side): in 2018 "Si segnalano delle buone nascite di
+    boleti sulle nostre Montagne", "molto probabile, effettuare dei buoni raccolti ovunque si andrà"
+    (2018-08-21), and at the Cavata (Rocca Santa Maria) "E'' un momento buono per i funghi"
+    (2018-08-24); in 2017, at the Ceppo, "tutto il resto è tremendamente secco" (2017-08-09) and "i
+    boschi sono ridotti malissimo" (2017-08-29) (Funghi Teramani)'
+  source: https://funghiteramani.blogspot.com/2018/08/quarto-aggiornamento-di-agostoporcini.html
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2018
+    start: 08-18
+    end: 08-31
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2017
+    start: 08-18
+    end: 08-31
+- id: marsica_2018_early_september
+  claim: 'Turn of August and September 2018: "Il clima di questi giorni ha favorito nella Marsica una
+    proliferazione straordinaria di porcini, galletti e altri tipi di funghi", so many foragers that
+    Carsoli issued a temporary picking permit (Rete8, 2018-09-03)'
+  source: https://www.rete8.it/cronaca/123marsica-boom-funghi-permesso-straordinario-carsoli/
+  higher:
+    area: marsica
+    seasons:
+    - 2018
+    start: 08-27
+    end: 09-03
+  lower:
+    area: marsica
+    seasons: normal
+    start: 08-27
+    end: 09-03
+- id: abruzzo_summer_2019
+  claim: 'July and August 2019: "nei mesi di luglio e di agosto, a causa della grande siccità, si era
+    registrato un calo del 50-60% di funghi di bosco (principalmente Russole e Porcini)" in Abruzzo
+    (Coldiretti Abruzzo, AbruzzoWeb 2019-09-12); on the Laga "la stagione fino ad oggi è stata
+    pessima" (Funghi Teramani, 2019-09-02)'
+  source: https://abruzzoweb.it/coldiretti-in-abruzzo-e-boom-funghi-con-le-prime-piogge-russole-e-porcini/
+  higher:
+    area: abruzzo
+    seasons: normal
+    start: 07-01
+    end: 08-25
+  lower:
+    area: abruzzo
+    seasons:
+    - 2019
+    start: 07-01
+    end: 08-25
+- id: laga_2019_2016_early_september
+  claim: 'Early September, Laga (Teramo side): in 2019 "una notevolissima sfungata tra cerro e
+    castagno a quote relativamente basse" (2019-09-05), "la sfungata che definirei storica in ambito
+    di boschi termofili" (2019-09-13); in 2016 "I funghi sono al collasso, il secco ha completato
+    l''opera di scomparsa di nuove fruttificazioni" (Funghi Teramani, 2016-09-05)'
+  source: https://funghiteramani.blogspot.com/2019/09/oramai-lo-sanno-anche-le.html
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2019
+    start: 09-03
+    end: 09-12
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2016
+    start: 09-03
+    end: 09-12
+- id: valle_castellana_vs_ceppo_2020
+  claim: 'Early September 2020, after the rain of Sunday 6 September: "quello più produttivo è il
+    bacino di Valle Castellana e zone vicine, il Ceppo invece stenta con pochissimi ritrovamenti"
+    (Funghi Teramani, 2020-09-11)'
+  source: https://funghiteramani.blogspot.com/2020/09/pare-che-ci-siamo.html
+  higher:
+    area: valle_castellana
+    seasons:
+    - 2020
+    start: 09-07
+    end: 09-14
+  lower:
+    area: ceppo
+    seasons:
+    - 2020
+    start: 09-07
+    end: 09-14
+- id: chieti_vs_gran_sasso_majella_2021
+  claim: 'Turn of August and September 2021, after the late-August storms: oak and chestnut woods gave
+    "una breve ma intensa buttata di funghi Porcini" across the Abruzzo border "tra le province di
+    l''Aquila, alto Teramano e soprattutto Chieti", "mentre i Faggi appenninici risultano anche in
+    Abruzzo ancora pigri e poco produttivi, in particolar modo tra Gran Sasso e Maiella" (Funghi
+    Magazine, 2021-09-04)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2021-porcini-giganti/
+  higher:
+    area: chieti_hills
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-06
+  lower:
+    area: gran_sasso_majella
+    seasons:
+    - 2021
+    start: 08-28
+    end: 09-06
+- id: abruzzo_october_2022
+  claim: 'October 2022: "le grandi nascite in atto al momento in Toscana, Umbria, Marche, Abruzzo,
+    Molise ..." (mostly black porcini, Funghi Magazine, 2022-10-13); on the Laga the season "è finita
+    col botto, porcini di oltre i 2 kg e diversi oltre il kg hanno coronato una stagione che, per
+    molti, è da incorniciare" (A spasso tra le nuvole, 2022-10-24)'
+  source: https://funghimagazine.it/meteo-funghi-13-10-2022/
+  higher:
+    area: abruzzo
+    seasons:
+    - 2022
+    start: 10-03
+    end: 10-18
+  lower:
+    area: abruzzo
+    seasons: normal
+    start: 10-03
+    end: 10-18
+- id: laga_vs_southwest_2023_october
+  claim: 'October 2023: "in Abruzzo, ancora buone le nascite di Porcini sul Gran Sasso e Monti della
+    Laga ... Nel resto della regione i venti di Tramontana hanno di fatto inficiato ogni nascita"
+    (Funghi Magazine, 2023-10-12); "questa parte della Laga sia stata così premiata da fruttificazioni
+    di Boleti" (A spasso tra le nuvole, 2023-10-20)'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2023
+    start: 10-05
+    end: 10-18
+  lower:
+    area: abruzzo_southwest
+    seasons:
+    - 2023
+    start: 10-05
+    end: 10-18
+- id: laga_2024_2020_late_august
+  claim: 'Late August to early September, Laga (Teramo side): in 2024 "I boschi sono letteralmente
+    tappezzati di funghi porcini", "oggi riportare 3 kg di porcini vuol dire che ti è andata proprio
+    male" (A spasso tra le nuvole, 2024-09-02); in 2020 the woods "in uno stato di secco mai visto,
+    dei funghi nemmeno l''ombra" until the rain of 24 August (2020-08-24) and "Ad oggi non ho notizie
+    confortanti" on 5 September (Funghi Teramani)'
+  source: https://www.aspassotralenuvole.it/post/cosa-succede-nei-nostri-boschi
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2024
+    start: 08-26
+    end: 09-05
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2020
+    start: 08-26
+    end: 09-05
+- id: laga_2016_2017_turn_of_october
+  claim: 'Turn of September and October, Laga (Teramo side): in 2016 "è arrivato il momento migliore"
+    for B. edulis in the last week of September and the first of October (2016-10-03), "ricorderemo il
+    2016 com un''annata molto soddisfacente" (2016-10-10); in 2017 foragers "hanno trovato pochissimo e
+    spesso niente", "un bosco che in molti hanno definito "morto"" (Funghi Teramani, 2017-10-02)'
+  source: https://funghiteramani.blogspot.com/2016/10/aggiornamento-del-0210il-clou-dei.html
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2016
+    start: 09-25
+    end: 10-10
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2017
+    start: 09-25
+    end: 10-10
+- id: laga_2025_timing
+  claim: '2025, Laga (Teramo side): a flush "localizzata prevalentemente sui Monti della Laga ed in
+    particolare al Ceppo" under beech in mid-September (A spasso tra le nuvole, 2025-09-14); by 11
+    October "il bosco è totalmente privo di funghi, parliamo del faggio, anche di quello più
+    generoso", below 1000 m "il secco è imperante", after "il freddo molto intenso per una settimana
+    buona"'
+  source: https://www.aspassotralenuvole.it/post/game-over
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2025
+    start: 09-08
+    end: 09-20
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2025
+    start: 10-01
+    end: 10-12
+- id: ovoli_laga_2024
+  claim: 'Ovoli, late August to early September 2024, Laga (Teramo side): "nascono così tanti porcini
+    e anche ovoli"; "la Amanita caesarea, in pochi la cercavano, era difficile incontrarla, alcuni anni
+    non si vedeva proprio. Oggi è invadente" (A spasso tra le nuvole, 2024-09-02)'
+  source: https://www.aspassotralenuvole.it/post/cosa-succede-nei-nostri-boschi
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2024
+    start: 08-25
+    end: 09-06
+  lower:
+    area: laga_teramana
+    seasons: normal
+    start: 08-25
+    end: 09-06
+- id: ovoli_valle_castellana_2020_timing
+  claim: 'Ovoli, 2020, Valle Castellana: in mid-August "i funghi pare che non ci siano" (2020-08-12),
+    the woods "in uno stato di secco mai visto, dei funghi nemmeno l''ombra" (2020-08-24); after the
+    rain of 6 September "Nei boschi caldi hanno fatto la comparsa le Amanita caesarea insieme ai
+    Boletus aereus e Boletus aestivalis", "il bacino di Valle Castellana" the most productive (Funghi
+    Teramani, 2020-09-11)'
+  source: https://funghiteramani.blogspot.com/2020/09/pare-che-ci-siamo.html
+  higher:
+    area: valle_castellana
+    seasons:
+    - 2020
+    start: 09-07
+    end: 09-15
+  lower:
+    area: valle_castellana
+    seasons:
+    - 2020
+    start: 08-10
+    end: 08-24
+- id: gallinacci_laga_june_2016_2025
+  claim: 'Gallinacci, mid-June, Laga (Teramo side): in 2016 "stanno nascendo con buona presenza ed
+    esemplari molto belli i cosiddetti gallucci (Cantharellus cibarius)" (2016-06-10) and "molti i
+    Cantharellus cibarius" (Funghi Teramani, 2016-06-13); in 2025 the gallucci "cominciavano ad essere
+    presenti con buone quantità e qualità...ma poi il buio", "a metà Giugno, non vedere un fungo
+    presente ... zero assoluto" (A spasso tra le nuvole, 2025-06-16)'
+  source: https://funghiteramani.blogspot.com/2016/06/aggiornamento-del-12-giugnoancora-acqua.html
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2016
+    start: 06-08
+    end: 06-18
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2025
+    start: 06-08
+    end: 06-18
+- id: gallinacci_laga_july_2024_2025
+  claim: 'Gallinacci, July, Laga (Teramo side): in 2024, with the B. aestivalis flush, "così pure di
+    Russula e Cantharellus", "eccezionale è stata la crescita abbondante e di qualità" of Russula
+    virescens "e dei Cantharellus pallens" (A spasso tra le nuvole, 2024-07-23); 2025 had "un giugno
+    ed un luglio poverissimi d''acqua", with "una scomparsa progressiva di varietà Micologica" (A
+    spasso tra le nuvole, 2025-08-01)'
+  source: https://www.aspassotralenuvole.it/post/un-po-di-analisi-porcinara
+  higher:
+    area: laga_teramana
+    seasons:
+    - 2024
+    start: 07-03
+    end: 07-18
+  lower:
+    area: laga_teramana
+    seasons:
+    - 2025
+    start: 07-03
+    end: 07-18
