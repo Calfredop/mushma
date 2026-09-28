@@ -1,7 +1,7 @@
 ---
-order: 4096
+order: 0
 title: [fix] Season gate halves at the altitude where two windows hand over
-status: In Progress
+status: Done
 priority: high
 complexity: simple
 ---
