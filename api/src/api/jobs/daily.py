@@ -39,6 +39,19 @@ from api.regions import list_served_region_ids
 from api.timeutil import today_rome
 from api.weather.openmeteo import RateBudget
 
+
+def _rules_version(root: Path, region: str) -> str | None:
+    """The hash the scoring step stamped into ``scores/<region>/meta.json``, if present."""
+    meta = root / "scores" / region / "meta.json"
+    if not meta.is_file():
+        return None
+    try:
+        value = json.loads(meta.read_text()).get("rules_version")
+    except (OSError, json.JSONDecodeError):
+        return None
+    return value if isinstance(value, str) and value else None
+
+
 WINDOW_BACK_DAYS = 6
 WINDOW_FORWARD_DAYS = 7
 ALERT_WEBHOOK_ENV = "ALERT_WEBHOOK_URL"
@@ -161,6 +174,7 @@ def main(
     root: Path | None = None,
 ) -> None:
     today = today or today_rome()
+    data_root = root or data_dir()
     served = regions if regions is not None else list_served_region_ids(root)
     if not served:
         served = ["tuscany"]
@@ -190,6 +204,7 @@ def main(
         _log(
             event="region_done",
             region=region,
+            rules_version=_rules_version(data_root, region),
             elapsed_s=round(time.monotonic() - region_started, 1),
         )
     calls = open_meteo_calls_today(root)

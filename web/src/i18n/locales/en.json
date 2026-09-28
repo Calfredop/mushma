@@ -35,8 +35,11 @@
   "freshness": {
     "updated": "Updated {{date}}",
     "stale": "The last update was {{date}} — today's numbers may not be in yet.",
-    "offline": "Offline"
+    "offline": "Offline",
+    "version": "rules",
+    "versionHint": "Rules version stamped by the last scoring pipeline run"
   },
+
   "species": {
     "label": "Species",
     "porcini": {

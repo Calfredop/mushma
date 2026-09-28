@@ -200,6 +200,31 @@ def test_structured_logs_are_one_json_object_per_line(capsys: pytest.CaptureFixt
     assert events.count("step_done") == 6
 
 
+def test_region_done_logs_the_rules_version_the_pipeline_stamped(
+    capsys: pytest.CaptureFixture[str], tmp_path
+) -> None:
+    meta = tmp_path / "scores" / "tuscany" / "meta.json"
+    meta.parent.mkdir(parents=True)
+    meta.write_text(
+        json.dumps({"rules_version": "a3f2c1b9d4e5", "written_at": "2026-09-18T05:00:00+00:00"})
+    )
+
+    daily.main(
+        today=date(2026, 9, 18),
+        runner=lambda args: FakeResult(),
+        alert=lambda message: None,
+        regions=["tuscany"],
+        root=tmp_path,
+    )
+    done = next(
+        json.loads(line)
+        for line in capsys.readouterr().out.splitlines()
+        if line and json.loads(line)["event"] == "region_done"
+    )
+    assert done["region"] == "tuscany"
+    assert done["rules_version"] == "a3f2c1b9d4e5"
+
+
 def test_logs_weighted_open_meteo_calls_from_the_ledger(
     capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:

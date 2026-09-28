@@ -239,7 +239,7 @@ The routes read the data pipeline's stores under `DATA_DIR` (below): `/scores`, 
 `/history/seasons`, `/history/season/{year}`, `/outlook` and `/species` (503 until
 `api.history.build` has run).
 `/status` reports data freshness — the latest scored day, when it was generated and the rules
-version — and backs the app's "Updated …" line. Set
+version the scoring pipeline stamped — and backs the app's "Updated … · regole …" line. Set
 `MUSHMA_FIXTURES=1` (see `api/.env.example`) to serve every route from a hand-shaped fixture
 dataset instead, with no data at all.
 

@@ -14,11 +14,14 @@ interface Props {
   /** `/status`'s `updated_at`; undefined while loading, before the first pipeline run, or on
    * a load error -- any of which just leaves this silent rather than guessing. */
   updatedAt: string | undefined
+  /** `/status`'s `rules_version`: the hash the scoring pipeline stamped on the last run. */
+  rulesVersion?: string | null
 }
 
-/** "Last updated" + a stale-data warning when the pipeline hasn't run (M7); a persistent offline
- * indicator takes over instead when there's no connection at all to ask `/status`. */
-export function DataStatus({ online, updatedAt }: Props) {
+/** "Last updated" + the rules version the pipeline stamped, with a stale-data warning when the
+ * pipeline hasn't run (M7). A persistent offline indicator takes over instead when there's no
+ * connection at all to ask `/status`. */
+export function DataStatus({ online, updatedAt, rulesVersion }: Props) {
   const { t } = useTranslation()
 
   if (!online) {
@@ -32,6 +35,7 @@ export function DataStatus({ online, updatedAt }: Props) {
 
   if (!updatedAt) return null
   const date = formatUpdatedAt(updatedAt, intlLocale())
+  const version = rulesVersion?.trim() || undefined
 
   return (
     <p
@@ -39,7 +43,20 @@ export function DataStatus({ online, updatedAt }: Props) {
       data-stale={isStale(updatedAt) || undefined}
       role="status"
     >
-      {t(isStale(updatedAt) ? 'freshness.stale' : 'freshness.updated', { date })}
+      <span>
+        {t(isStale(updatedAt) ? 'freshness.stale' : 'freshness.updated', { date })}
+      </span>
+      {version && (
+        <>
+          <span className={styles.sep} aria-hidden="true">
+            ·
+          </span>
+          <span className={styles.version} title={t('freshness.versionHint')}>
+            <span className={styles.versionLabel}>{t('freshness.version')}</span>
+            <span className={styles.versionHash}>{version}</span>
+          </span>
+        </>
+      )}
     </p>
   )
 }

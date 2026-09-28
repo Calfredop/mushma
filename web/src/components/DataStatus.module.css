@@ -1,7 +1,9 @@
 .status {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-2);
+  row-gap: 0.125rem;
   margin: 0 0 var(--space-2);
   color: var(--felce);
 }
@@ -10,9 +12,44 @@
   flex: none;
   width: 15px;
   height: 15px;
+  align-self: center;
 }
 
 .status[data-stale] {
   color: var(--humus);
   font-weight: 650;
+}
+
+.sep {
+  color: rgb(91 103 94 / 55%);
+  font-weight: 400;
+}
+
+.version {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  min-width: 0;
+  color: rgb(91 103 94 / 78%);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.status[data-stale] .version {
+  color: rgb(28 33 29 / 72%);
+  font-weight: 550;
+}
+
+.versionLabel {
+  flex: none;
+}
+
+.versionHash {
+  overflow: hidden;
+  font-family: var(--font-data);
+  font-size: 0.92em;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

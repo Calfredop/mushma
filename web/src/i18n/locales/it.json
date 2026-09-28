@@ -35,8 +35,11 @@
   "freshness": {
     "updated": "Aggiornato {{date}}",
     "stale": "L'ultimo aggiornamento è di {{date}}: i dati di oggi potrebbero non essere ancora arrivati.",
-    "offline": "Offline"
+    "offline": "Offline",
+    "version": "regole",
+    "versionHint": "Versione delle regole stampata dall'ultimo calcolo della pipeline"
   },
+
   "species": {
     "label": "Specie",
     "porcini": {

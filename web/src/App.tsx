@@ -836,6 +836,7 @@ function MapScreen() {
             <DataStatus
               online={online}
               updatedAt={dataStatus.data?.updated_at ?? undefined}
+              rulesVersion={dataStatus.data?.rules_version}
             />
             <p>{t('disclaimer.short')}</p>
             <nav className={styles.links} aria-label={t('footer.links')}>
