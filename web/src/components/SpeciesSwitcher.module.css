@@ -4,9 +4,15 @@
   padding: 3px;
   composes: glass from global;
   border-radius: 999px;
+  min-width: 0;
   max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
+}
+
+.switcher::-webkit-scrollbar {
+  display: none;
 }
 
 .option {
