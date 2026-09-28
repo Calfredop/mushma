@@ -2,9 +2,10 @@
  * mushma's own sources and layers, merged into the basemap style up front so
  * the map's first complete render already includes the score cells.
  *
- * Scores (and analysis factors) draw as soft "clouds": blurred overlapping
- * circles so neighbouring patches blend and woodland edges feather out,
- * instead of hard dots that morph into 1 km squares.
+ * Two score styles share the same sources:
+ * - cloud: a heatmap so neighbouring cells merge into one soft field (no
+ *   donut lattice from stacked circle-blur)
+ * - squircle: dots that morph into 1 km squares (the discrete cell view)
  */
 import type {
   ExpressionSpecification,
@@ -15,16 +16,26 @@ import type {
 } from 'maplibre-gl'
 import { FOREST_COLOR_BY_HABITAT, NEUTRAL_FOREST_COLOR } from '../score/forestColors'
 import { layerOpacities } from '../score/indicators'
-import { goodDaysStepExpression, scoreStepExpression } from '../score/scale'
+import {
+  GOOD_DAYS_CLASSES,
+  SCORE_CLASSES,
+  goodDaysStepExpression,
+  scoreStepExpression,
+} from '../score/scale'
 import { DATA_LAYERS_BEFORE, LABEL_FONT } from './basemap'
 
 const LAGO = '#1F56A0'
+const HUMUS = '#1C211D'
 const CARTA = '#F8FAF6'
 const LICHENE = '#EDF0EA'
 const SCORE = scoreStepExpression(['get', 'score']) as ExpressionSpecification
 
-/** How soft the cloud edge is. MapLibre: 1 → only the centre stays full opacity. */
-export const CLOUD_BLUR = 0.65
+export const CELL_STYLES = ['cloud', 'squircle'] as const
+export type CellStyle = (typeof CELL_STYLES)[number]
+
+export function isCellStyle(value: string | null | undefined): value is CellStyle {
+  return CELL_STYLES.includes(value as CellStyle)
+}
 
 /** Bosco layer: each habitat's colour, categorical -- a cell's forest type has no
  * favourable/unfavourable direction, so unlike the score or a factor this isn't a value×opacity
@@ -39,8 +50,25 @@ const FOREST_FILL = [
   NEUTRAL_FOREST_COLOR,
 ] as unknown as ExpressionSpecification
 
-/** The Bosco layer's opacity when it's on. Off is 0, set directly. */
-export const FOREST_CLOUD_OPACITY = 0.85
+/** The Bosco layer's opacity when it's on, fading with the squircle morph. Off is 0. */
+export const FOREST_DOT_OPACITY: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  9.5,
+  0.85,
+  10.5,
+  0,
+]
+export const FOREST_FILL_OPACITY: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  9,
+  0,
+  10.5,
+  0.85,
+]
 
 /** What the cells' `score` property holds: a day's conditions score, or a season's good days. */
 export type CellScale = 'score' | 'goodDays'
@@ -51,45 +79,100 @@ export function cellColor(scale: CellScale): ExpressionSpecification {
     : (goodDaysStepExpression(['get', 'score']) as ExpressionSpecification)
 }
 
+/** Heatmap weight so a lone cell's score (or good-days count) maps onto the density ramp. */
+export function cloudWeight(scale: CellScale): ExpressionSpecification {
+  return scale === 'score'
+    ? (['interpolate', ['linear'], ['get', 'score'], 0, 0.15, 1, 1] as ExpressionSpecification)
+    : ([
+        'interpolate',
+        ['linear'],
+        ['get', 'score'],
+        0,
+        0.15,
+        GOOD_DAYS_CLASSES[GOOD_DAYS_CLASSES.length - 1].min,
+        1,
+      ] as ExpressionSpecification)
+}
+
+/** Soft field colour from heatmap density, using the same five Porcino stops. */
+export const CLOUD_HEATMAP_COLOR: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['heatmap-density'],
+  0,
+  'rgba(247,240,198,0)',
+  0.12,
+  SCORE_CLASSES[0].color,
+  0.32,
+  SCORE_CLASSES[1].color,
+  0.52,
+  SCORE_CLASSES[2].color,
+  0.72,
+  SCORE_CLASSES[3].color,
+  1,
+  SCORE_CLASSES[4].color,
+]
+
 export const EMPTY_COLLECTION = { type: 'FeatureCollection' as const, features: [] }
 
-/** Invisible 1 km hit fill a tap can land on (score mode). */
+/** Invisible 1 km hit fill a tap can land on (either score style). */
 export const CELL_LAYERS = ['cells-hit']
 
-/** Score-mode layers toggled together: hit target + visible cloud. */
-export const SCORE_LAYERS = ['cells-hit', 'cells-cloud']
+/** Score layers for the soft continuous field. */
+export const SCORE_CLOUD_LAYERS = ['cells-hit', 'cells-cloud'] as const
 
-/** Invisible 1 km hit fill in analysis mode. */
-export const ANALYSIS_CELL_LAYERS = ['factors-base-hit']
+/** Score layers for the discrete dot→square view. */
+export const SCORE_SQUIRCLE_LAYERS = [
+  'cells-hit',
+  'cells-dot',
+  'cells-fill',
+  'cells-outline',
+] as const
 
-/** Analysis-mode layers toggled together: hit target + Bosco/woodland cloud. */
-export const ANALYSIS_LAYERS = ['factors-base-hit', 'factors-base-cloud']
+/** Every score-mode layer id (for hide-all when entering analysis). */
+export const SCORE_LAYERS = [
+  ...new Set([...SCORE_CLOUD_LAYERS, ...SCORE_SQUIRCLE_LAYERS]),
+]
 
-/** Indicator clouds go in here: over the cells, under the basemap's roads. */
-export const ANALYSIS_LAYERS_BEFORE = DATA_LAYERS_BEFORE
+/** Layers a tap can land on in analysis mode. */
+export const ANALYSIS_CELL_LAYERS = ['factors-base-fill', 'factors-base-dot']
+
+/** Analysis-mode layers toggled together. */
+export const ANALYSIS_LAYERS = ['factors-base-fill', 'factors-base-dot']
+
+/** Indicator layers go in here: over the cells, under their outline and the basemap's roads. */
+export const ANALYSIS_LAYERS_BEFORE = 'cells-outline'
+
+const CELL_DOT_RADIUS: ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  6,
+  3.5,
+  8,
+  5,
+  10.5,
+  7,
+]
 
 /**
- * Soft cloud radius in screen pixels. Exponential in zoom so the ground size stays
- * ~2 km across Tuscany: neighbouring 1 km cells keep overlapping (and stay
- * graphically linked) instead of pulling into isolated blobs when you zoom in.
- * Low zooms floor the radius so a region overview still reads as soft patches.
+ * Heatmap kernel in screen pixels, exponential in zoom so ~1 km neighbours merge at
+ * every scale instead of pulling into isolated blobs.
  */
 export const CELL_CLOUD_RADIUS: ExpressionSpecification = [
   'interpolate',
   ['exponential', 2],
   ['zoom'],
   6,
+  6,
   8,
-  8,
-  12,
   10,
-  20,
-  12,
-  80,
-  14,
-  320,
+  10,
   16,
-  1280,
+  12,
+  64,
+  14,
+  256,
 ]
 
 type Bounds = [[number, number], [number, number]]
@@ -125,45 +208,93 @@ const empty = (): SourceSpecification => ({ type: 'geojson', data: EMPTY_COLLECT
 
 /** Under the basemap's roads and labels. */
 const CELL_LAYER_SPECS: LayerSpecification[] = [
-  // Invisible 1 km squares: tap targets. The cloud is visual only.
+  // Invisible 1 km squares: tap targets for both styles.
   {
     id: 'cells-hit',
     type: 'fill',
     source: 'cells-squares',
     paint: { 'fill-color': '#000', 'fill-opacity': 0 },
   },
+  // Cloud: one soft field. Heatmap accumulates in a kernel, so there is no donut
+  // lattice from stacked circle-blur alphas.
   {
     id: 'cells-cloud',
-    type: 'circle',
+    type: 'heatmap',
     source: 'cells-points',
     paint: {
-      'circle-color': SCORE,
-      'circle-radius': CELL_CLOUD_RADIUS,
-      'circle-blur': CLOUD_BLUR,
-      'circle-opacity': 0.78,
+      'heatmap-weight': cloudWeight('score'),
+      'heatmap-intensity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        6,
+        0.7,
+        12,
+        1.15,
+      ],
+      'heatmap-radius': CELL_CLOUD_RADIUS,
+      'heatmap-color': CLOUD_HEATMAP_COLOR,
+      'heatmap-opacity': 0.88,
     },
   },
-  // Analysis mode: where the woodland is (and -- when Bosco is on -- forest type), what a
-  // tap lands on, under the indicator clouds. Hidden with the scores on. Bosco off is
-  // 'circle-opacity' 0 (ConditionsMap sets it).
+  // Squircle: a dot per cell, fading into the true 1 km squares.
   {
-    id: 'factors-base-hit',
-    type: 'fill',
-    source: 'cells-squares',
-    layout: { visibility: 'none' },
-    paint: { 'fill-color': '#000', 'fill-opacity': 0 },
-  },
-  {
-    id: 'factors-base-cloud',
+    id: 'cells-dot',
     type: 'circle',
     source: 'cells-points',
+    maxzoom: 11,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-color': SCORE,
+      'circle-radius': CELL_DOT_RADIUS,
+      'circle-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 1, 10.5, 0],
+      'circle-stroke-color': HUMUS,
+      'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.55, 10.5, 0],
+      'circle-stroke-width': 0.8,
+    },
+  },
+  {
+    id: 'cells-fill',
+    type: 'fill',
+    source: 'cells-squares',
+    minzoom: 9,
+    layout: { visibility: 'none' },
+    paint: {
+      'fill-color': SCORE,
+      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0, 10.5, 0.82],
+    },
+  },
+  {
+    id: 'cells-outline',
+    type: 'line',
+    source: 'cells-squares',
+    minzoom: 11,
+    layout: { visibility: 'none' },
+    paint: { 'line-color': HUMUS, 'line-opacity': 0.18, 'line-width': 0.6 },
+  },
+  // Analysis mode: woodland rings / Bosco under the indicator overlays. Hidden with the scores.
+  {
+    id: 'factors-base-dot',
+    type: 'circle',
+    source: 'cells-points',
+    maxzoom: 11,
     layout: { visibility: 'none' },
     paint: {
       'circle-color': FOREST_FILL,
       'circle-opacity': 0,
-      'circle-radius': CELL_CLOUD_RADIUS,
-      'circle-blur': CLOUD_BLUR,
+      'circle-radius': CELL_DOT_RADIUS,
+      'circle-stroke-color': HUMUS,
+      'circle-stroke-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, 0.3, 10.5, 0],
+      'circle-stroke-width': 0.8,
     },
+  },
+  {
+    id: 'factors-base-fill',
+    type: 'fill',
+    source: 'cells-squares',
+    minzoom: 9,
+    layout: { visibility: 'none' },
+    paint: { 'fill-color': FOREST_FILL, 'fill-opacity': 0 },
   },
 ]
 
@@ -173,33 +304,45 @@ export interface ActiveIndicator {
 }
 
 /**
- * Analysis mode: one soft cloud per indicator, bottom to top. A cell's opacity is the
- * factor's value times the layer's share of the cap (`layerOpacities`); a cell whose rules
- * lack the factor isn't drawn.
+ * Analysis mode: a dot layer (below zoom 11) and a square layer (from 9) per indicator,
+ * bottom to top. A cell's opacity is the factor's value times the layer's share of the
+ * cap (`layerOpacities`); a cell whose rules lack the factor isn't drawn.
  */
 export function analysisLayers(active: readonly ActiveIndicator[]): LayerSpecification[] {
   const shares = layerOpacities(active.length)
-  return active.map(({ id, color }, i): LayerSpecification => {
+  return active.flatMap(({ id, color }, i): LayerSpecification[] => {
     const opacity: ExpressionSpecification = ['*', ['get', id], shares[i]]
     const filter: FilterSpecification = ['has', id]
-    return {
-      id: `indicator-cloud-${id}`,
-      type: 'circle',
-      source: 'cells-points',
-      filter,
-      paint: {
-        'circle-color': color,
-        'circle-radius': CELL_CLOUD_RADIUS,
-        'circle-blur': CLOUD_BLUR,
-        'circle-opacity': opacity,
+    return [
+      {
+        id: `indicator-dot-${id}`,
+        type: 'circle',
+        source: 'cells-points',
+        maxzoom: 11,
+        filter,
+        paint: {
+          'circle-color': color,
+          'circle-radius': CELL_DOT_RADIUS,
+          'circle-opacity': ['interpolate', ['linear'], ['zoom'], 9.5, opacity, 10.5, 0],
+        },
       },
-    }
+      {
+        id: `indicator-fill-${id}`,
+        type: 'fill',
+        source: 'cells-squares',
+        minzoom: 9,
+        filter,
+        paint: {
+          'fill-color': color,
+          'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0, 10.5, opacity],
+        },
+      },
+    ]
   })
 }
 
 /** Above everything in the basemap, labels included. */
 const TOP_LAYER_SPECS: LayerSpecification[] = [
-  // Everything outside the region is veiled; the region is a hole in it.
   {
     id: 'region-mask',
     type: 'fill',
@@ -227,7 +370,6 @@ const TOP_LAYER_SPECS: LayerSpecification[] = [
     filter: ['==', ['get', 'cell_id'], ''],
     paint: { 'line-color': LAGO, 'line-width': 3 },
   },
-  // A searched, tapped or GPS point, tied to the woodland cell that answers for it.
   {
     id: 'spot-link',
     type: 'line',
@@ -247,7 +389,6 @@ const TOP_LAYER_SPECS: LayerSpecification[] = [
       'circle-stroke-width': 3,
     },
   },
-  // Sightings ring the cell, so its score colour stays visible; the count sits beside it.
   {
     id: 'sightings-circle',
     type: 'circle',

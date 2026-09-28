@@ -96,7 +96,9 @@
     "toggleAttribution": "Mostra o nascondi i crediti della mappa",
     "feedback": "Segnala un errore nella mappa",
     "marker": "Segnaposto",
-    "userPosition": "La tua posizione"
+    "userPosition": "La tua posizione",
+    "styleCloud": "Vista a nuvole",
+    "styleSquircle": "Vista a celle"
   },
   "search": {
     "label": "Cerca un luogo",

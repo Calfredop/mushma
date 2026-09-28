@@ -40,7 +40,7 @@ import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import { ChevronIcon, GitHubIcon, LayersIcon, LocateIcon } from './components/icons'
+import { ChevronIcon, CloudIcon, GitHubIcon, LayersIcon, LocateIcon, SquircleIcon } from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
 import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
@@ -68,6 +68,7 @@ import {
 import { getConsent } from './consent'
 import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
+import { useCellStyle } from './hooks/useCellStyle'
 import { type LocateError, useLocate } from './hooks/useLocate'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { usePersistentFlag } from './hooks/usePersistentFlag'
@@ -185,6 +186,7 @@ function MapScreen() {
   const inStrip = daysBetween(app.today, app.date) >= -DATE_WINDOW.pastDays
   // Analysis mode: the factors behind a species' score. They are only kept for the strip's days.
   const analysis = app.mode === 'analysis'
+  const [cellStyle, , toggleCellStyle] = useCellStyle()
   const factorDay = !seasonMode && inStrip
   const factorSpecies = app.species === 'combined' ? 'porcini' : app.species
   const scores = useScores(
@@ -543,6 +545,7 @@ function MapScreen() {
             cells={analysis ? undefined : mapCells}
             scale={seasonMode ? 'goodDays' : 'score'}
             analysis={analysisView}
+            cellStyle={cellStyle}
             selectedCellId={selectedCellId}
             sightings={app.sightingsVisible ? sightings.totals : undefined}
             hotspots={
@@ -599,6 +602,20 @@ function MapScreen() {
               onClick={() => app.setMode(analysis ? 'map' : 'analysis')}
             >
               <LayersIcon />
+            </button>
+            <button
+              type="button"
+              className={styles.fab}
+              aria-label={
+                cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')
+              }
+              title={
+                cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')
+              }
+              aria-pressed={cellStyle === 'cloud'}
+              onClick={toggleCellStyle}
+            >
+              {cellStyle === 'cloud' ? <CloudIcon /> : <SquircleIcon />}
             </button>
             <button
               type="button"

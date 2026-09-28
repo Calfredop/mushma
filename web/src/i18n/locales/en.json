@@ -96,7 +96,9 @@
     "toggleAttribution": "Show or hide map credits",
     "feedback": "Report a map error",
     "marker": "Map marker",
-    "userPosition": "Your position"
+    "userPosition": "Your position",
+    "styleCloud": "Cloud view",
+    "styleSquircle": "Cell view"
   },
   "search": {
     "label": "Search a place",

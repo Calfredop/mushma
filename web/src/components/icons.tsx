@@ -121,6 +121,23 @@ export const LayersIcon = () => (
   </Icon>
 )
 
+/** Soft overlapping patches: the cloud score style. */
+export const CloudIcon = () => (
+  <Icon>
+    <path d="M7.5 17.5h10a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.3-1.6A3.8 3.8 0 0 0 7.5 17.5z" />
+  </Icon>
+)
+
+/** Discrete rounded cells: the squircle score style. */
+export const SquircleIcon = () => (
+  <Icon>
+    <rect x="4.5" y="4.5" width="6.5" height="6.5" rx="2" />
+    <rect x="13" y="4.5" width="6.5" height="6.5" rx="2" />
+    <rect x="4.5" y="13" width="6.5" height="6.5" rx="2" />
+    <rect x="13" y="13" width="6.5" height="6.5" rx="2" />
+  </Icon>
+)
+
 /** The GitHub mark (Octicons `mark-github`), for the link to the source. */
 export const GitHubIcon = () => (
   <Icon stroke="none" fill="currentColor">

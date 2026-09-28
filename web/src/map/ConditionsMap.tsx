@@ -35,9 +35,12 @@ import {
   analysisLayers,
   CELL_LAYERS,
   type CellScale,
+  type CellStyle,
   cellColor,
+  cloudWeight,
   EMPTY_COLLECTION as EMPTY,
-  FOREST_CLOUD_OPACITY,
+  FOREST_DOT_OPACITY,
+  FOREST_FILL_OPACITY,
   SCORE_LAYERS,
   withDataLayers,
 } from './dataLayers'
@@ -184,6 +187,8 @@ interface Props {
   scale?: CellScale
   /** Analysis mode, drawn instead of `cells`; null or omitted for the scores. */
   analysis?: AnalysisView | null
+  /** Soft continuous field, or discrete dots that morph into squares. */
+  cellStyle?: CellStyle
   selectedCellId: string | null
   /** Sighting totals per cell, or undefined to hide the overlay. */
   sightings: Map<string, number> | undefined
@@ -212,6 +217,7 @@ export function ConditionsMap({
   cells,
   scale = 'score',
   analysis = null,
+  cellStyle = 'cloud',
   selectedCellId,
   sightings,
   hotspots,
@@ -335,17 +341,22 @@ export function ConditionsMap({
   }, [cells, inAnalysis, factorCells, factorIds, forestByCellId, drawn, ready])
 
   // Analysis mode hides the score colours; its base layers show where the woodland is and take
-  // the taps.
+  // the taps. Score style picks cloud (heatmap) or squircle (dot→square).
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
+    const scoreVisible = !inAnalysis
     for (const id of SCORE_LAYERS) {
-      map.setLayoutProperty(id, 'visibility', inAnalysis ? 'none' : 'visible')
+      const on = scoreVisible
+        ? id === 'cells-hit' ||
+          (id === 'cells-cloud' ? cellStyle === 'cloud' : cellStyle === 'squircle')
+        : false
+      map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none')
     }
     for (const id of ANALYSIS_LAYERS) {
       map.setLayoutProperty(id, 'visibility', inAnalysis ? 'visible' : 'none')
     }
-  }, [inAnalysis, ready])
+  }, [inAnalysis, cellStyle, ready])
 
   // The indicators that are on, one dot and one square layer each, rebuilt when the set changes.
   const indicatorsKey = JSON.stringify(analysis?.active ?? [])
@@ -365,16 +376,21 @@ export function ConditionsMap({
     }
   }, [indicatorsKey, inAnalysis, ready])
 
-  // Bosco layer: the base cloud's colour is always the forest-type expression (set once, in
-  // dataLayers.ts); only the opacity toggles, so switching it on never needs a setData.
+  // Bosco layer: the base fill/dot's own colour is always the forest-type expression (set once,
+  // in dataLayers.ts); only the opacity toggles, so switching it on never needs a setData.
   const forestOn = inAnalysis && (analysis?.forestTypes?.on ?? false)
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
     map.setPaintProperty(
-      'factors-base-cloud',
+      'factors-base-dot',
       'circle-opacity',
-      forestOn ? FOREST_CLOUD_OPACITY : 0,
+      forestOn ? FOREST_DOT_OPACITY : 0,
+    )
+    map.setPaintProperty(
+      'factors-base-fill',
+      'fill-opacity',
+      forestOn ? FOREST_FILL_OPACITY : 0,
     )
   }, [forestOn, ready])
 
@@ -382,7 +398,9 @@ export function ConditionsMap({
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    map.setPaintProperty('cells-cloud', 'circle-color', cellColor(scale))
+    map.setPaintProperty('cells-cloud', 'heatmap-weight', cloudWeight(scale))
+    map.setPaintProperty('cells-dot', 'circle-color', cellColor(scale))
+    map.setPaintProperty('cells-fill', 'fill-color', cellColor(scale))
   }, [scale, ready])
 
   // Selection.
