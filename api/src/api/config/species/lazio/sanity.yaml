@@ -1,0 +1,379 @@
+# Press-contrast sanity check for Lazio (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025, all inside Lazio) or provinces (ISTAT sigle, as the grid's
+# `province` column holds them); windows and source URLs written down on 2026-09-28, before any Lazio
+# score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Evidence, second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/lazio.md.
+# Most contrasts rest on Funghi Magazine's national bulletins, whose Lazio paragraph is written from
+# readers' reports; local press (Tusciaweb, Viterbonews24, RietiLife, Castelli Notizie, Terzo Binario)
+# and the outing reports of the Associazione Micologica Ecologica Romana (A.M.E.R.) add the rest.
+areas:
+  rieti_frosinone:
+    provinces:
+    - RI
+    - FR
+  viterbo_roma_latina:
+    provinces:
+    - VT
+    - RM
+    - LT
+  roma_latina_frosinone:
+    provinces:
+    - RM
+    - LT
+    - FR
+  viterbo:
+    provinces:
+    - VT
+  viterbo_frosinone_latina:
+    provinces:
+    - VT
+    - FR
+    - LT
+  frosinone_latina:
+    provinces:
+    - FR
+    - LT
+  simbruini_ernici:
+    comuni:
+    - Filettino
+    - Vallepietra
+    - Jenne
+    - Subiaco
+    - Camerata Nuova
+    - Cervara di Roma
+    - Trevi nel Lazio
+    - Guarcino
+    - Collepardo
+    - Vico nel Lazio
+  cimini_sabatini_tolfa:
+    comuni:
+    - Viterbo
+    - Soriano nel Cimino
+    - Canepina
+    - Caprarola
+    - Ronciglione
+    - Vetralla
+    - Oriolo Romano
+    - Manziana
+    - Bracciano
+    - Tolfa
+    - Allumiere
+  sabatini_tolfa:
+    comuni:
+    - Manziana
+    - Oriolo Romano
+    - Bracciano
+    - Tolfa
+    - Allumiere
+  cimini:
+    comuni:
+    - Viterbo
+    - Soriano nel Cimino
+    - Canepina
+    - Vallerano
+    - Vetralla
+    - Caprarola
+    - Vitorchiano
+  terminillo_reatini:
+    comuni:
+    - Rieti
+    - Cantalice
+    - Leonessa
+    - Micigliano
+    - Poggio Bustone
+    - Rivodutri
+  reatino_velino:
+    comuni:
+    - Rieti
+    - Cantalice
+    - Micigliano
+    - Poggio Bustone
+    - Rivodutri
+    - Posta
+    - Borbona
+    - Cittareale
+  castelli_romani:
+    comuni:
+    - Lariano
+    - Monte Compatri
+    - Velletri
+    - Rocca Priora
+    - Ariccia
+    - Nemi
+    - Rocca di Papa
+    - Marino
+  alta_sabina:
+    comuni:
+    - Collalto Sabino
+    - Nespolo
+    - Collegiove
+  lazio:
+    provinces:
+    - '*'
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: rieti_frosinone_vs_viterbo_roma_latina_2023
+  claim: 'Mid-September 2023: Rieti and Frosinone among the provinces "con ottime nascite in corso, pur
+    senza delirio", Viterbo, Roma and Latina among those "con nascite di Porcini scarse ma presenti"'
+  source: https://funghimagazine.it/aggiornamento-porcini-20-09-2023/
+  higher:
+    area: rieti_frosinone
+    seasons:
+    - 2023
+    start: 09-10
+    end: 09-24
+  lower:
+    area: viterbo_roma_latina
+    seasons:
+    - 2023
+    start: 09-10
+    end: 09-24
+- id: simbruini_ernici_vs_tuscia_2023
+  claim: 'Early October 2023: "Qualche Porcino si raccoglie ancora sui soliti Monti Simbruini", "Molto
+    meglio il solito Frusinate montano" (4 Oct); in the Viterbese "erano più i cercatori che non i
+    Porcini nati", "Le zone attorno ad Oriolo Romano-Tolfetano ormai sono terra bruciata"'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: simbruini_ernici
+    seasons:
+    - 2023
+    start: 09-30
+    end: 10-14
+  lower:
+    area: cimini_sabatini_tolfa
+    seasons:
+    - 2023
+    start: 09-30
+    end: 10-14
+- id: sabatini_tolfa_2023_timing
+  claim: 'Sabatini and Tolfa 2023: "terra bruciata" around Oriolo Romano and the Tolfetano in early
+    October; from late October "le nascite di Porcini si registrano in quasi tutto il Lazio, ad
+    eccezione delle zone montane superiori" (9 Nov), B. aereus at Oriolo Romano on 19 November (A.M.E.R.)'
+  source: https://funghimagazine.it/aggiornamento-porcini-09-11-2023/
+  higher:
+    area: sabatini_tolfa
+    seasons:
+    - 2023
+    start: 10-30
+    end: 11-15
+  lower:
+    area: sabatini_tolfa
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-20
+- id: roma_latina_frosinone_vs_viterbo_2020
+  claim: 'Late September to early October 2020: "Il Viterbese per esempio è rimasto a secco non in
+    termini di pioggia, quanto di nascite"; "Molto meglio le province di Roma, Latina e Frosinone con
+    nascite che ... continuano ormai da settimane"'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-08-10-2020/
+  higher:
+    area: roma_latina_frosinone
+    seasons:
+    - 2020
+    start: 09-20
+    end: 10-10
+  lower:
+    area: viterbo
+    seasons:
+    - 2020
+    start: 09-20
+    end: 10-10
+- id: reatino_2020_timing
+  claim: 'Reatino 2020: "ottime nascite fin quasi a fine Settembre per poi vedere un lunghissimo riposo
+    vegetativo, tutt''ora in corso" (8 Oct)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-08-10-2020/
+  higher:
+    area: terminillo_reatini
+    seasons:
+    - 2020
+    start: 09-08
+    end: 09-27
+  lower:
+    area: terminillo_reatini
+    seasons:
+    - 2020
+    start: 09-30
+    end: 10-10
+- id: viterbo_frosinone_latina_september_2019
+  claim: 'September 2019: "Lazio decisamente sfortunato quest''anno"; "Il Viterbese soffre in
+    silenzio, ancora in attesa di nascite degne di nota così come anche il Frosinate o l''Agro
+    Pontino" (20 Sep), before the rains of 22 September'
+  source: https://funghimagazine.it/dove-stanno-nascendo-i-funghi-porcini-le-piogge-cadute-in-italia/
+  higher:
+    area: viterbo_frosinone_latina
+    seasons: normal
+    start: 09-01
+    end: 09-20
+  lower:
+    area: viterbo_frosinone_latina
+    seasons:
+    - 2019
+    start: 09-01
+    end: 09-20
+- id: basso_lazio_2021_timing
+  claim: 'Summer porcini 2021: "ottime nascite di funghi Porcini estivi del LAZIO", "di breve durata",
+    "nel Basso Lazio c''è stato chi si è divertito" (4 Sep); by 10 Sep "ormai le buttate sono quasi del
+    tutto terminate", "Bollino rosso per ... quasi tutto il Lazio"'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2021-porcini-giganti/
+  higher:
+    area: frosinone_latina
+    seasons:
+    - 2021
+    start: 08-20
+    end: 09-04
+  lower:
+    area: frosinone_latina
+    seasons:
+    - 2021
+    start: 09-10
+    end: 09-30
+- id: castelli_romani_2022_timing
+  claim: 'Castelli Romani 2022: the rains of mid-August "hanno interrotto la lunga estate di prolungata
+    siccità" and opened "la prima finestra per i fungaioli"; from Lariano to Monte Compatri and
+    Marino "In molti sono ritornati a casa coi canestri pieni" (23 Aug)'
+  source: https://www.castellinotizie.it/2022/08/23/raccolta-funghi-in-tanti-nei-boschi-dei-castelli-romani-a-caccia-di-porcini-e-ovuli/
+  higher:
+    area: castelli_romani
+    seasons:
+    - 2022
+    start: 08-18
+    end: 09-05
+  lower:
+    area: castelli_romani
+    seasons:
+    - 2022
+    start: 07-01
+    end: 08-12
+- id: reatino_velino_2022_2021
+  claim: 'Mid-September: 2022 "giorni fortunati per la raccolta porcini nel Reatino", at Poggio Bustone
+    and in the alta Valle del Velino (RietiLife, 20 Sep 2022); 2021 Lazio flush "quasi del tutto
+    terminate" by 10 Sep and "calma piatta" in the Sabina woods on 24 Sep (Funghi Magazine)'
+  source: https://www.rietilife.com/2022/09/20/giorni-fortunati-per-la-raccolta-porcini-nel-reatino-eccone-un-altro-da-quasi-2-kg/
+  higher:
+    area: reatino_velino
+    seasons:
+    - 2022
+    start: 09-10
+    end: 09-25
+  lower:
+    area: reatino_velino
+    seasons:
+    - 2021
+    start: 09-10
+    end: 09-25
+- id: cimini_2022_2024
+  claim: 'Monti Cimini, September: in 2024 "i cercatori locali ancora non vedono i risultati sperati" in
+    the woods of San Martino al Cimino, Canepina and Vetralla (29 Sep); in 2022 a porcino of over 2 kg
+    at San Martino (11 Sep) and 2 kg of porcini "dalle parti di Canepina" on 3 Oct (Tusciaweb readers)'
+  source: https://www.viterbonews24.it/news/funghi-nella-tuscia,-una-stagione-che-si-fa-attendere_142571.htm
+  higher:
+    area: cimini
+    seasons:
+    - 2022
+    start: 09-05
+    end: 09-29
+  lower:
+    area: cimini
+    seasons:
+    - 2024
+    start: 09-05
+    end: 09-29
+- id: reatino_vs_cimini_2024
+  claim: 'Late September 2024: "Nelle zone vicine, come quelle di Rieti, Terni ... la stagione è già
+    iniziata alla grande, con raccolte abbondanti. Qui, invece, si aspetta ancora con pazienza"
+    (Tuscia, 29 Sep)'
+  source: https://www.viterbonews24.it/news/funghi-nella-tuscia,-una-stagione-che-si-fa-attendere_142571.htm
+  higher:
+    area: terminillo_reatini
+    seasons:
+    - 2024
+    start: 09-12
+    end: 09-29
+  lower:
+    area: cimini
+    seasons:
+    - 2024
+    start: 09-12
+    end: 09-29
+- id: lazio_early_september_2025
+  claim: 'Early September 2025, "Buttata record": "Lazio e Toscana superstar. Nel Lazio non serve
+    affannarsi: funghi ce ne sono per tutti, anche se non proprio ovunque"; "castagni, cerri, querce e
+    carpini sono in piena buttata" after the rain of 21 August'
+  source: https://funghimagazine.it/buttata-record-2025-annata-eccezionale-per-i-porcini/
+  higher:
+    area: lazio
+    seasons:
+    - 2025
+    start: 08-30
+    end: 09-20
+  lower:
+    area: lazio
+    seasons: normal
+    start: 08-30
+    end: 09-20
+- id: viterbo_october_2016_2020
+  claim: 'Early October: 2016 "si sta rivelando un''ottima stagione per la raccolta di funghi ed in
+    particolare porcini" (Bracciano-Martignano park, Terzo Binario 17 Oct), 2 kg porcini at Soriano,
+    Barbarano, Capranica and Canino (Tusciaweb); 2020 "Il Viterbese ... è rimasto a secco ... di
+    nascite" (Funghi Magazine 8 Oct)'
+  source: https://www.terzobinario.it/raccolta-funghi-nel-parco-bracciano-martignano-partono-le-multe/
+  higher:
+    area: viterbo
+    seasons:
+    - 2016
+    start: 10-01
+    end: 10-13
+  lower:
+    area: viterbo
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-13
+- id: ovoli_sabatini_tolfa_october_2016_2024_2023
+  claim: 'Ovoli, early October: 2016 an "ottima stagione" for porcini "e ovoli (Amanita cesarea)" in the
+    Bracciano-Martignano park; 2024 A. caesarea in a Manziana wood "estremamente umido" (A.M.E.R., 5
+    Oct); 2023 "non si trova praticamente più nulla, neppure gli Ovoli", "Oriolo Romano-Tolfetano
+    ormai sono terra bruciata" (Funghi Magazine, 12 Oct)'
+  source: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: sabatini_tolfa
+    seasons:
+    - 2016
+    - 2024
+    start: 10-01
+    end: 10-12
+  lower:
+    area: sabatini_tolfa
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-12
+- id: gallinacci_alta_sabina_june_2023_2018
+  claim: 'Collalto Sabino, June outings of the A.M.E.R.: 2018 "scarsa produzione fungina dovuta alla
+    secchezza causata dai forti venti", "Cantharellus ferruginascens (purtroppo pochi)"; 2023 ground
+    soaked by "le intense piogge di questo mese", "veramente tante specie", C. pallens in the list'
+  source: https://www.ameronlus.it/blog/2023/06/30/report-uscita-collalto-sabino-18-giugno-2023/
+  higher:
+    area: alta_sabina
+    seasons:
+    - 2023
+    start: 06-12
+    end: 06-30
+  lower:
+    area: alta_sabina
+    seasons:
+    - 2018
+    start: 06-12
+    end: 06-30
