@@ -68,17 +68,6 @@ export function RegionSwitcher({ value, onChange, onShowAll }: Props) {
       {open && (
         <div className={styles.menu}>
           <div className={styles.header}>
-            <button
-              type="button"
-              className={styles.showAll}
-              onMouseDown={keepFocus}
-              onClick={() => {
-                onShowAll()
-                close()
-              }}
-            >
-              {t('regions.showAll')}
-            </button>
             <input
               ref={searchRef}
               type="search"
@@ -97,6 +86,20 @@ export function RegionSwitcher({ value, onChange, onShowAll }: Props) {
             aria-label={t('regions.label')}
             className={styles.list}
           >
+            <li role="presentation">
+              <button
+                type="button"
+                className={styles.option}
+                onMouseDown={keepFocus}
+                onClick={() => {
+                  onShowAll()
+                  close()
+                }}
+              >
+                {t('regions.showAll')}
+              </button>
+            </li>
+            <li className={styles.separator} role="separator" />
             {filtered.length === 0 ? (
               <li className={styles.empty} role="presentation">
                 {t('regions.noResults')}
