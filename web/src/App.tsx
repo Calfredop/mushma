@@ -126,7 +126,7 @@ const COMUNE_ZOOM = 10.5
 const loadMotionFeatures = () =>
   import('./motionFeatures').then((module) => module.default)
 
-// What covers a phone's map besides the sheet: the species pill and cluster on top (under the
+// What covers a phone's map besides the sheet: the region/species row and cluster on top (under the
 // clear top: the safe-area inset and any system blur), the cluster down the right, the time
 // bar riding on the sheet.
 const PHONE_CHROME = { top: 72, right: 68, left: 16, bottom: 96 }
@@ -577,7 +577,11 @@ function MapScreen() {
             onHotspotClick={onHotspot}
           />
           <div className={styles.species}>
-            <RegionSwitcher value={app.region} onChange={setRegion} />
+            <RegionSwitcher
+              value={app.region}
+              onChange={setRegion}
+              onShowAll={() => navigate('/')}
+            />
             <SpeciesSwitcher
               value={app.species}
               onChange={handleSpeciesChange}

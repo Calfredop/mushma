@@ -679,7 +679,11 @@
     "dismiss": "Close"
   },
   "regions": {
-    "label": "Region"
+    "label": "Region",
+    "showAll": "Show all",
+    "search": "Search regions",
+    "searchPlaceholder": "Search…",
+    "noResults": "No regions found"
   },
   "italyRegions": {
     "piemonte": "Piedmont",
