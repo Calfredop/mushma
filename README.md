@@ -621,8 +621,13 @@ cd /opt/mushma/deploy && docker compose exec caddy caddy reload --config /etc/ca
   (the deploy scripts connect as root), with no X11 or agent forwarding. fail2ban reads sshd's
   journal and bans an address for an hour after 5 failures in 10 minutes, longer each time it
   comes back, up to a week. unattended-upgrades installs security updates daily and, when one
-  needs it, reboots at 02:00 UTC, ahead of the 05:00 Europe/Rome job. Docker's apt packages are
-  pinned by the Hetzner image and never upgrade on their own.
+  needs it, reboots at 02:00 UTC, ahead of the 05:00 Europe/Rome job. Docker CE is upgraded by
+  hand only: `download.docker.com` stays out of unattended-upgrades' allowed origins, because a
+  Docker upgrade restarts every container. As of 2026-09-28 the server runs Docker CE **29.8.1**
+  (containerd.io **2.3.6**, compose plugin **5.5.1**, buildx **0.37.1**). `/etc/apt/preferences.d/docker-ce.pref`
+  pins the whole Docker origin at priority 500 so `docker-ce`, `containerd.io`, compose and
+  buildx stay installable together — the Hetzner "Docker CE" image used to pin everything but
+  `docker-ce` at priority 1, which left `docker-ce` kept back once it needed containerd 2.x.
 
 The server also has Hetzner's delete/rebuild protection on. `authorized_keys` holds only the
 `mappafunghi` deploy key (`~/.ssh/mappafunghi`, wired by a `Host api.mappafunghi.app` block in
