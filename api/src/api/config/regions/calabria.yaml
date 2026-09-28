@@ -147,5 +147,6 @@ model:
       Lorenzo Bellizzi; Arena, Joppolo, Tropea, Briatico, Villa San Giovanni, Reggio Calabria 594,
       Melito di Porto Salvo, Capo dell'Armi) gave a = 0.848, b = 0.819 per km: raw CDS holds 1.19 of
       the normals below 200 m and 0.59 at 800 m and above (the Serre 0.47). Leave-one-out slopes run
-      0.77-0.95. The normals are older (to 2001); if 2016-2025 was 10 % drier, the fit would be 0.76 +
-      0.74. It gives 1.01 at 200 m, 1.26 at 500 m, 1.50 at 800 m and 1.83 at 1,200 m.
+      0.77-0.95. The normals are older long-term means (the one dated runs 1939-2001); if 2016-2025
+      was 10 % drier, the fit would be 0.76 + 0.74. It gives 1.01 at 200 m, 1.26 at 500 m, 1.50 at
+      800 m and 1.83 at 1,200 m.
