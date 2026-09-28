@@ -3,11 +3,26 @@ import {
   CLOUD_OPACITY,
   cloudImageCoordinates,
   cloudRasterSize,
+  mercatorY,
   paintCloudRaster,
   paddedCloudBounds,
   rampColor,
 } from './cloudRaster'
 import { SCORE_CLASSES } from '../score/scale'
+
+/** Latitude at a pixel row as MapLibre maps an image between north and south (Mercator-linear). */
+function latAtPixelRow(
+  y: number,
+  height: number,
+  north: number,
+  south: number,
+): number {
+  const myNorth = mercatorY(north)
+  const mySouth = mercatorY(south)
+  const my = myNorth + ((y + 0.5) / height) * (mySouth - myNorth)
+  const n = Math.exp((0.5 - my) * 4 * Math.PI)
+  return (Math.asin((n - 1) / (n + 1)) * 180) / Math.PI
+}
 
 describe('rampColor', () => {
   it('returns class colours at the breaks and blends between them', () => {
@@ -64,6 +79,39 @@ describe('paintCloudRaster', () => {
     expect(soft).toBeGreaterThan(0)
     expect(width).toBeGreaterThan(32)
     expect(height).toBeGreaterThan(32)
+  })
+
+  it('places a cell where MapLibre will show it (Mercator Y, not equirectangular)', () => {
+    // Region-sized bounds: equirectangular paint drifts ~1 km north mid-Tuscany.
+    const region: [[number, number], [number, number]] = [
+      [9.68, 42.23],
+      [12.38, 44.48],
+    ]
+    const cell = { lon: 11.0, lat: 43.4, score: 0.9 }
+    const { data, width, height, bounds: painted } = paintCloudRaster(
+      [cell],
+      region,
+      'score',
+      1,
+      768,
+    )
+    const [[, south], [, north]] = painted
+
+    let sumA = 0
+    let sumY = 0
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const a = data[(y * width + x) * 4 + 3]
+        if (a <= 0) continue
+        sumA += a
+        sumY += y * a
+      }
+    }
+    expect(sumA).toBeGreaterThan(0)
+    const shownLat = latAtPixelRow(sumY / sumA, height, north, south)
+    const deltaKm = (shownLat - cell.lat) * 111.32
+    // Squircle GeoJSON is the truth; cloud must land within a few hundred metres.
+    expect(Math.abs(deltaKm)).toBeLessThan(0.25)
   })
 
   it('blends neighbouring cells so the midpoint is between their colours', () => {

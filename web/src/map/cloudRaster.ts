@@ -1,7 +1,9 @@
 /**
  * Soft score "clouds": one raster over the region. Cell scores are stamped as
- * contiguous 1 km squares, blurred once, then colourised — so neighbours blend
- * without the lattice/donut artefacts of heatmaps or stacked circle-blur.
+ * contiguous 1 km squares in Web Mercator (matching how MapLibre stretches an
+ * image source), blurred once, then colourised — so neighbours blend without
+ * the lattice/donut artefacts of heatmaps or stacked circle-blur, and land on
+ * the same centres as the squircle GeoJSON cells.
  */
 import {
   GOOD_DAYS_CLASSES,
@@ -23,6 +25,16 @@ export const CLOUD_OPACITY = 0.78
 
 /** Blur radius as a fraction of one cell's pixel size. */
 export const CLOUD_BLUR_CELLS = 0.55
+
+/**
+ * Web Mercator Y in 0…1 (MapLibre / EPSG:3857). Image sources stretch rows
+ * linearly in this space between the north and south corners — not in latitude —
+ * so the cloud must stamp cells here or they drift ~1 km north mid-Tuscany.
+ */
+export function mercatorY(lat: number): number {
+  const sin = Math.sin((lat * Math.PI) / 180)
+  return 0.5 - (Math.log((1 + sin) / (1 - sin)) * 0.25) / Math.PI
+}
 
 function hexRgb(hex: string): [number, number, number] {
   const n = Number.parseInt(hex.slice(1), 16)
@@ -163,23 +175,28 @@ export function paintCloudRaster(
   const [[west, south], [east, north]] = padded
   const { width, height } = cloudRasterSize(padded, maxEdge)
   const spanLon = east - west
-  const spanLat = north - south
+  const myNorth = mercatorY(north)
+  const mySouth = mercatorY(south)
+  const spanMy = mySouth - myNorth
   const scores = new Float32Array(width * height)
   const mask = new Float32Array(width * height)
   scores.fill(NaN)
 
   const classes = scale === 'score' ? SCORE_CLASSES : GOOD_DAYS_CLASSES
-  const midLat = (south + north) / 2
   const halfLat = sizeKm / 2 / KM_PER_DEGREE_LAT
-  const halfLon = sizeKm / 2 / (KM_PER_DEGREE_LAT * Math.cos((midLat * Math.PI) / 180))
-  const cellH = (sizeKm / KM_PER_DEGREE_LAT / spanLat) * height
+  const midLat = (south + north) / 2
+  const cellH =
+    (Math.abs(mercatorY(midLat + halfLat) - mercatorY(midLat - halfLat)) / spanMy) * height
   const blurPx = Math.max(1, cellH * CLOUD_BLUR_CELLS)
 
   for (const cell of cells) {
+    // Per-cell lon half-width matches geojson.cellSquare (squircle / hit targets).
+    const halfLon =
+      sizeKm / 2 / (KM_PER_DEGREE_LAT * Math.cos((cell.lat * Math.PI) / 180))
     const x0 = Math.floor(((cell.lon - halfLon - west) / spanLon) * width)
     const x1 = Math.ceil(((cell.lon + halfLon - west) / spanLon) * width)
-    const y0 = Math.floor(((north - (cell.lat + halfLat)) / spanLat) * height)
-    const y1 = Math.ceil(((north - (cell.lat - halfLat)) / spanLat) * height)
+    const y0 = Math.floor(((mercatorY(cell.lat + halfLat) - myNorth) / spanMy) * height)
+    const y1 = Math.ceil(((mercatorY(cell.lat - halfLat) - myNorth) / spanMy) * height)
     for (let y = Math.max(0, y0); y < Math.min(height, y1); y++) {
       for (let x = Math.max(0, x0); x < Math.min(width, x1); x++) {
         const i = y * width + x
