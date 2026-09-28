@@ -1,0 +1,118 @@
+# Abruzzo: region #12 of the full-Italy rollout (.gavin-root/docs/regions/abruzzo.md).
+id: abruzzo
+name: {it: Abruzzo, en: Abruzzo}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [13.01, 41.68, 14.79, 42.9]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 13
+
+# Woodland: one regional map gives both layers. The Carta Tipologico-Forestale (Regione Abruzzo,
+# 2009, 0.5 ha minimum unit) gives every polygon one of 33 forest and shrub types (DES_TCF): the
+# type says both the broad group and the habitat. CLC IV alone finds only 308,633 ha of forest
+# here (-25 % against INFC 2015). The map is CC BY-NC 3.0, accepted by the human on 2026-09-28:
+# the app is non-commercial. Montane juniper scrub (Juniperus communis and nana, 20,785 ha) and the
+# mugo-pine krummholz of the Majella (1,417 ha) are left out, as Marche leaves its montane heath
+# out and INFC files both as other wooded land. See .gavin-root/docs/regions/abruzzo.md.
+forest:
+  groups:
+    source: ra_carta_tipologico_forestale
+    class_column: DES_TCF
+    classes:
+      "Lecceta rupicola": broadleaf
+      "Lecceta costiera termofila": broadleaf
+      "Lecceta mesoxerofila": broadleaf
+      "Querceto a roverella pioniero": broadleaf
+      "Querceto a roverella tipico": broadleaf
+      "Querceto di roverella mesoxerofilo": broadleaf
+      "Cerreta mesoxerofila": broadleaf
+      "Cerreta mesofila": broadleaf
+      "Orno-ostrieto pioniero": broadleaf
+      "Ostrieto mesoxerofilo": broadleaf
+      "Ostrieto mesofilo": broadleaf
+      "Castagneto da frutto": broadleaf
+      "Castagneto (neutrofilo-acidofilo)": broadleaf
+      "Faggeta altomontana rupestre": broadleaf
+      "Faggeta termofila e basso montana": broadleaf
+      "Faggeta montana (eutrofica-mesoneutrofila-acidofila)": broadleaf
+      "Pioppo-saliceto ripariale": broadleaf
+      "Robinieto-ailanteto": broadleaf
+      "Latifoglie di invasione miste e varie": broadleaf  # maples, ash, cherry on old fields
+      "Boschi di forra": broadleaf
+      "Pioppeto di pioppo tremulo": broadleaf
+      "Variante abete bianco": mixed  # beech with silver fir
+      "Rimboschimento di conifere mediterranee": conifer  # Aleppo pine
+      # The label is cut at 60 characters in the source ("...e submontana"); mostly black pine.
+      "Rimboschimento di conifere nella fascia altocollinare e subm": conifer
+      "Rimboschimento di conifere nella fascia montana": conifer  # black pine, firs, larch, Douglas fir
+      "Pineta naturale di Pino nero di Villetta Barrea": conifer
+      "Arbusteto a prevalenza di ginepri mesoxerofili": macchia  # Juniperus oxycedrus, as Marche
+      "Arbusteto a prevalenza di specie della macchia macchia": macchia
+      "Boscaglia pioniera calanchiva": transitional  # elm and field-maple scrub on the badlands
+      "Arbusteto a prevalenza di rose, rovi e prugnolo": transitional
+      "Arbusteto a prevalenza di ginestre": transitional
+  types:
+    source: ra_carta_tipologico_forestale
+    classes:
+      "Lecceta rupicola": evergreen_oak
+      "Lecceta costiera termofila": evergreen_oak
+      "Lecceta mesoxerofila": evergreen_oak
+      "Querceto a roverella pioniero": deciduous_oak
+      "Querceto a roverella tipico": deciduous_oak
+      "Querceto di roverella mesoxerofilo": deciduous_oak
+      "Cerreta mesoxerofila": deciduous_oak
+      "Cerreta mesofila": deciduous_oak
+      "Orno-ostrieto pioniero": mixed_broadleaf
+      "Ostrieto mesoxerofilo": mixed_broadleaf
+      "Ostrieto mesofilo": mixed_broadleaf
+      "Castagneto da frutto": chestnut
+      "Castagneto (neutrofilo-acidofilo)": chestnut
+      "Faggeta altomontana rupestre": beech
+      "Faggeta termofila e basso montana": beech
+      "Faggeta montana (eutrofica-mesoneutrofila-acidofila)": beech
+      "Pioppo-saliceto ripariale": riparian
+      "Robinieto-ailanteto": exotic_broadleaf
+      "Latifoglie di invasione miste e varie": mixed_broadleaf
+      "Boschi di forra": mixed_broadleaf
+      "Pioppeto di pioppo tremulo": mixed_broadleaf
+      "Rimboschimento di conifere mediterranee": mediterranean_pine
+      # Black pine goes to mountain_pine, as CLC IV files it (3122) in Tuscany and Marche does.
+      "Rimboschimento di conifere nella fascia altocollinare e subm": mountain_pine
+      "Rimboschimento di conifere nella fascia montana": mountain_pine
+      "Pineta naturale di Pino nero di Villetta Barrea": mountain_pine
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Abruzzo, IT", admin level
+# 10) on 2026-09-26. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 10867
+
+# Rain scale (merged onto config/model.yaml), borrowed: Abruzzo publishes no open daily rain that a
+# script can read (the Idrografico's POLARIS WEB portal needs SPID or CIE login; the Annali are
+# PDF tables), so there is no Abruzzo gauge check. Abruzzo's history is CDS, which the national
+# scale does not name, so both reanalysis sources are listed. The two nearest woodland-gauge fits on
+# the same CDS rain find it about right at mid elevation and dry in the mountains; this is their
+# mean. .gavin-root/docs/regions/abruzzo.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.83
+    per_km: 0.43
+    source: [mushma_abruzzo_rain_prior_2026]
+    notes: >-
+      Abruzzo: no gauge fit. Mean of the two nearest least-squares fits of gauge totals on CDS
+      era5_land_cds totals x (a + b x elevation), 2019-2025: Umbria 0.89 + 0.33 per km (8 Servizio
+      Idrografico woodland gauges, 402-1,053 m) and Campania 0.77 + 0.52 per km (33 agrometeo gauges,
+      11-769 m). It gives 0.92 at 200 m, 1.05 at 500 m, 1.17 at 800 m, 1.35 at 1,200 m and 1.52 at
+      1,600 m; Marche's borrowed 0.76 + 0.57 per km is within 0.15 of it up to 1,600 m. Abruzzo's
+      woodland reaches 1,900 m, so its upper half is extrapolated.

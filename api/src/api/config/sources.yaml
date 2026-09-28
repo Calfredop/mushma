@@ -107,6 +107,24 @@ rm_rem_vegetazione:
     shapefile: REM_Vegetazione_naturale_50k.shp
     field: SpeciePrev
 
+ra_carta_tipologico_forestale:
+  name: Regione Abruzzo — Carta Tipologico-Forestale, Tipologie forestali (1:25.000)
+  homepage: http://opendata.regione.abruzzo.it/content/categorie-e-tipologie-forestali
+  license: CC BY-NC 3.0
+  attribution: "Carta Tipologico-Forestale © Regione Abruzzo, CC BY-NC 3.0"
+  notes: >-
+    The regional forest-type map (Regione Abruzzo, Servizio Foreste, published 2009, IGM 1:25,000
+    base, 0.5 ha minimum unit, 10 % cover): 70,095 polygons of 33 forest and shrub types
+    (DES_TCF, e.g. "Faggeta montana", "Querceto di roverella mesoxerofilo", "Rimboschimento di
+    conifere nella fascia montana"), so one layer gives both the broad groups and the forest
+    types. Served by the Region's ArcGIS server (layer 1, maxRecordCount 1,000); the open-data
+    portal also offers it as one RAR per IGM sheet, under the same CC BY-NC 3.0 licence. Not an
+    open licence: used because the app is non-commercial (accepted 2026-09-28,
+    .gavin-root/docs/regions/abruzzo.md → Sources); a commercial use would need CLC IV instead.
+  download:
+    arcgis_layer: http://catasto.regione.abruzzo.it:6080/arcgis/rest/services/Agricoltura_Uso_Suolo/Categorie_e_Tipologie_Forestali/MapServer/1
+    field: DES_TCF
+
 ispra_clc18_iv:
   name: ISPRA — Corine Land Cover 2018, IV livello (1:100.000)
   homepage: https://groupware.sinanet.isprambiente.it/uso-copertura-e-consumo-di-suolo/library/copertura-del-suolo/corine-land-cover/corine-land-cover-2018-iv-livello
