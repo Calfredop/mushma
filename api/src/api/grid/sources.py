@@ -254,7 +254,11 @@ def read_vector(
             cache_dir,
             out_fields=download.get("field", "*"),
         )
-        frame = pd.concat([gpd.read_file(p) for p in pages], ignore_index=True)
+        # The pages hold every field; the reader's filter and columns apply to each page.
+        frame = pd.concat(
+            [pyogrio.read_dataframe(p, columns=columns, where=where) for p in pages],
+            ignore_index=True,
+        )
         if len(pages):
             # Pages are written in the requested outSR (EPSG:3035 by default).
             frame = frame.set_crs(3035, allow_override=True)

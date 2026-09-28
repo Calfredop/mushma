@@ -287,3 +287,41 @@ def test_read_vector_concatenates_parts_saved_under_their_own_names(tmp_path: Pa
 def test_read_vector_rejects_an_unknown_download_shape(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="download"):
         read_vector({"url": "https://example.com/x.bin"}, tmp_path / "cache")
+
+
+def _cached_arcgis_pages(cache: Path, *features: dict) -> None:
+    """Write ``features`` as an already-complete ArcGIS page cache, as the pager leaves it."""
+    cache.mkdir(parents=True)
+    page = {"type": "FeatureCollection", "features": list(features)}
+    (cache / "page_0000.geojson").write_text(json.dumps(page))
+    (cache / ".complete").touch()
+
+
+def _square(x: float, **properties: str) -> dict:
+    ring = [[x, Y0], [x + 100, Y0], [x + 100, Y0 + 100], [x, Y0 + 100], [x, Y0]]
+    return {
+        "type": "Feature",
+        "properties": properties,
+        "geometry": {"type": "Polygon", "coordinates": [ring]},
+    }
+
+
+def test_read_vector_filters_an_arcgis_layer_by_where(tmp_path: Path) -> None:
+    """Sicily's forest map carries the land class and the forest type on every polygon; a group
+    layer keeps one class with an OGR SQL ``where``, which an ArcGIS source must honour too."""
+    cache = tmp_path / "cache"
+    _cached_arcgis_pages(
+        cache,
+        _square(X0, DESCRIPTION="31a - boschi", CODCAMPO="CA1"),
+        _square(X0 + 200, DESCRIPTION="32x - arbusteti", CODCAMPO="MM2"),
+    )
+
+    frame = read_vector(
+        {"arcgis_layer": "http://127.0.0.1:9/MapServer/38"},
+        cache,
+        bbox_wgs84=(11.9, 35.4, 15.7, 38.9),
+        where="DESCRIPTION = '31a - boschi' AND CODCAMPO IN ('CA1')",
+    )
+
+    assert list(frame["CODCAMPO"]) == ["CA1"]
+    assert frame.crs.to_epsg() == 3035
