@@ -107,3 +107,24 @@ soil:
 # 10) on 2026-09-28. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
 sightings:
   inaturalist_place_id: 8670
+
+# Rain scale (merged onto config/model.yaml), fitted on the Region's open SIARL agrometeo gauges
+# (the gauge check asked for it: raw CDS rain is 15 % wet at the gauges, most of them farm stations
+# in the lowlands). Lazio's history is CDS, which the national block does not scale while the rain
+# normals are scaled whatever their source, so both reanalysis sources are listed.
+# .gavin-root/docs/regions/lazio.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.82
+    per_km: 0.23
+    source: [mushma_lazio_siarl_rain_check_2026]
+    notes: >-
+      Least squares through the origin of gauge totals on model totals x (a + b x elevation) over the
+      92 ARSIAL SIARL agrometeo gauges with 1,000 or more days in the published years (2016, 2018,
+      2020, 2021 to July, 2023 to June; 1-1,176 m, calendar days, the CDS rain read bilinearly at each
+      gauge) gave a = 0.819, b = 0.229 per km: raw pooled ratio 1.19 below 200 m, 1.17 at 200-400 m
+      and 1.01 at 400-800 m. It gives 0.86 at 200 m, 0.93 at 500 m, 1.00 at 800 m and 1.09 at 1,200 m,
+      0.99 on average over the woodland cells. Above 800 m it rests on one gauge (Accumoli, 1,176 m,
+      raw 1.12) and is an extrapolation. The five gauges inside woodland cells (165-1,176 m) read
+      0.98 raw and 0.94 scaled.

@@ -2419,3 +2419,16 @@ references:
       saranno possibili ancora discreti raccolti di Porcini neri tra le Querce ... anche nel misto con il Castagno"; in a
       mild, wet late autumn porcini "tra macchia e bosco mediterraneo al Centro-Sud Italia, anche durante l''imminente
       mese di dicembre".'
+  mushma_lazio_siarl_rain_check_2026:
+    citation: 'mushma Lazio rain check: downscaled ERA5-Land (CDS) daily precipitation, read bilinearly at each gauge,
+      against the Regione Lazio ARSIAL SIARL agrometeo network (open station list and yearly daily CSVs, CC BY 4.0), the
+      published years 2016, 2018, 2020, 2021 to July and 2023 to June, the 92 gauges at 1-1,176 m with 1,000 or more days
+      (calendar days); five of them lie in woodland cells. See .gavin-root/docs/regions/lazio.md, Weather'
+    url: https://dati.lazio.it/dataset/serie-storica-agrometeo
+    kind: analysis
+    region: Lazio
+    verified: verified
+    supports: 'Raw CDS rain holds 1.19 of gauge rain below 200 m (40 gauges), 1.17 at 200-400 m (37) and 1.01 at 400-800 m
+      (14); a gauge-total fit of scale = 0.82 + 0.23 per km of elevation brings them to 1.00, 1.03 and 0.94, and averages
+      0.99 over the woodland cells. The five woodland-cell gauges (165-1,176 m) read 0.98 raw. Above 800 m the slope rests
+      on one gauge (Accumoli) and is extrapolated.'
