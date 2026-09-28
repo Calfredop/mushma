@@ -1,0 +1,340 @@
+# Species rules for one key in PUGLIA, loaded and validated by api.model.rules (see README.md here).
+# Copied from tuscany/ and retuned from Puglia sources: .gavin-root/docs/species-ecology/puglia.md.
+# Tuscan evidence and rule ids (POR-*): .gavin-root/docs/species-ecology.md and species-ecology/porcini.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
+schema_version: 1
+key: porcini_aereus
+group: porcini
+taxon: Boletus aereus
+synonyms: []
+status: draft
+i18n_key: species.porcini_aereus
+records:
+  gbif_taxon_keys: [8733688]
+  inat_taxon_ids: [333772]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    Often confused with B. reticulatus in the field. Puglia: the only porcino on iNaturalist, 1
+    record (September 2016, 435 m, typical downy oak in the Murge; GBIF has no porcino), against
+    2,961 Apulian fungi records (2026-09-28). The sightings backtest will have almost no Puglia
+    presences: validate the porcini group score.
+notes: >-
+  The most xerothermophilous porcino, and the Puglia porcino of the oak belt. Puglia's woods are
+  half deciduous oak (Turkey oak on the Gargano and the Monti Dauni, Macedonian oak and downy oak on
+  the Murge) and an eighth holm oak, and nationally B. aereus is, with the chanterelle, the
+  commonest ectomycorrhizal species of the downy-oak records (1.81 %, ISPRA MLG 187/2019). The first
+  black porcini of late May 2019 came "Dal Salento, Basilicata, Calabria e Sicilia ... in boschi di
+  Leccio-Sughera-Quercia, per lo più con esposizione ben soleggiata" (Funghi Magazine, folklore).
+  Changed for Puglia: the lowland window opens in mid-May and runs to January, the handover moves to
+  600-800 m as in Campania and Calabria, and three classes that hold no host here (olive and
+  lentisk macchia, Aleppo pine, thorn and broom scrub) move down. No quantitative weather study exists
+  for this taxon: the rain logic is borrowed from B. edulis, and temperature and frost rules are
+  shifted using qualitative sources.
+
+# Growth clock (README, "Growth clock"): how fast fruit bodies develop after the rain, day by day.
+# The rain_event lag below is counted in growth days, the sum of these daily paces.
+growth:
+  temperature:
+    variable: soil_temperature_0_to_7cm_mean
+    cardinal_c: [2, 21, 32]
+    reference_c: 17
+  humidity:
+    variable: vapour_pressure_deficit_max
+    trapezoid: [null, null, 1.5, 3.0]
+    floor: 0.5
+  max_lag_days: 40
+  confidence: folklore
+  source: [yan_hunt1999, moore2008_fruit_bodies, kasparavicius2001, bmeteo_funghi_luglio, funghimagazine_giorni_pioggia]
+  derived: true
+  notes: >-
+    POR-R3 for the thermophilic porcino. The pace is 1 at 17 °C of topsoil, the weather the lag
+    window was drawn from. Fruit bodies develop at a lower optimum than mycelium grows in
+    culture (B. edulis 25-28 °C; Moore et al. 2008), hence t_opt 21 °C. Thermophilic porcini
+    appear 8-11 days after warm summer storms (lore); a 12 °C stretch runs at about 65 % pace.
+    Caps stop growing when the day's minimum humidity falls under 40 % and grow well from about
+    60 % (Kasparavičius 2001, B. edulis): open-air daily maximum VPD of 1.5 kPa keeps full pace
+    and 3.0 kPa halves it; the floor stands for the moister air under the canopy. No peer-
+    reviewed days-per-°C figure exists for these species: every number is a prior. The humidity
+    ramp is set higher than for the autumn porcini because it fruits from summer, when open-air
+    VPD is 2 kPa on a median July day.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: upland_summer
+          dates: ["15-06", "01-08", "30-09", "31-10"]
+          elevation_weight: [600, 800, null, null]
+        - label: lowland_long
+          dates: ["15-05", "15-06", "30-11", "10-01"]
+          elevation_weight: [null, null, 600, 800]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, gm_siena_boletus, museo_porcino_borgotaro, mushma_occurrence_check_2026, funghimagazine_boletus_gallery2019, funghimagazine_aggiornamento_2023_06_02, funghimagazine_nascite_2026_05_08, funghimagazine_nascite_2025_08_22, funghimagazine_aggiornamento_2018_10_22, asl_bari_ispettorato_micologico, myboletus_puglia, pcpuglia_annali_pioggia_mensile, mushma_puglia_forest_composition_2026, mushma_occurrence_check_puglia_2026]
+    derived: true
+    data: available
+    notes: >-
+      Puglia: the lowland window opens on 15 May, is full from 15 June to 30 November and ends on 10
+      January (Tuscany 1 July, 1 September, 15 November, 15 December), and the handover moves up to
+      600-800 m; the upland window keeps Tuscany's dates. These are the Calabria windows for the lowland
+      and Campania's for the upland, on thin Puglia evidence (folklore, the national forager magazine
+      Funghi Magazine unless named): the first black porcini of 2019 were found by late May "Dal Salento,
+      Basilicata, Calabria e Sicilia ... in boschi di Leccio-Sughera-Quercia" (31 May 2019); "Porcini Neri
+      si iniziano invece a trovare in Salento e nelle Murge" (2 June 2023); the first were expected "in
+      Salento-Gargano" in early May 2026; "Porcini neri e Ovoli reali spuntati in Puglia" in late August
+      2025; "Le nascite di Neri ... non si contano tra Sardegna, Sicilia, Calabria, Basilicata e Puglia"
+      (22 October 2018); a regional forager page puts the Puglia peak "tipicamente a novembre, a volte
+      fino a dicembre" (MyBoletus); the ASL Bari mycological control service runs "dal 1° settembre al 31
+      gennaio di ogni anno", a season that also covers the cardoncello (October-April on the records). The
+      one Puglia record is from September. Rain is autumn-winter: November (December on the Gargano) is
+      the wettest month and July-August bring 6-11 % of the year (Protezione Civile Puglia stations,
+      1991-2020). The 600-800 m handover sits between the Macedonian and downy oak of the Murge (median
+      393 and 442 m, all fragno below 520 m), which get the long lowland window, and the Turkey oak of the
+      Gargano plateau and the Monti Dauni (median 657 m, p90 852 m), which gets both. Frost, snow and the
+      temperature rules end the season where winter comes early. Otherwise Tuscany's POR-S2, split by
+      elevation to resolve a disagreement. The IGP (Apennine uplands) says July–September; Lucca and Siena
+      sources and the records put the lowland peak in autumn. Central-Italy iNaturalist records: 0-300 m
+      peak Sep–Nov, 300-600 m peak October, 600-900 m peak September; no July records at all (n=77, about
+      3 expected from observer effort), so the upland window reaches full only on 1 August instead of the
+      IGP's July.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        deciduous_oak: 1.0
+        chestnut: 1.0
+        evergreen_oak: 1.0
+        macchia: 0.3
+        transitional_woodland_shrub: 0.3
+        mixed_broadleaf: 0.3
+        mixed_broadleaf_conifer: 0.3
+        mediterranean_pine: 0.1
+        beech: 0.1
+        other_conifer: 0.0
+        mountain_pine: 0.0
+        fir_spruce: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
+      default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, sardegna_foreste_aereus, beugelsdijk2008, oria_de_rueda2008, mushma_habitat_share_2026, ispra2019_mlg187_flora_micologica, ispra2018_mlg179_pino_aleppo, ispra2018_mlg180_pino_aleppo, daskalopoulos2024_trojana_tuber, puglia_manuale_tipi_forestali2025, funghimagazine_boletus_gallery2019, mushma_puglia_forest_composition_2026, mushma_occurrence_check_puglia_2026]
+    derived: true
+    data: available
+    notes: >-
+      Puglia (2026-09-28, Regione Puglia's Carta dei Tipi Forestali). `deciduous_oak` (36 % of the mapped
+      woods and scrub, half the woodland) holds the Turkey oak of the Gargano and the Monti Dauni, the
+      downy oak of the Murge and the Gargano's lower slopes and the Macedonian oak (fragno, Quercus
+      trojana, 21,800 ha, 82 % of it in the Murgia dei Trulli): all full hosts. No Puglia source names
+      the fragno for any porcino, but it is an oak that forms ectomycorrhizae (with Tuber aestivum,
+      Daskalopoulos et al. 2024), its woods are "mesoxerofili neutro-subacidofili" with Cistus and
+      Quercetea ilicis shrubs (the regional forest-type manual), and B. aereus is 1.81 % of the national
+      downy-oak records, second only to Armillaria tabescens (ISPRA MLG 187/2019); the one Puglia record
+      is in Murge downy oak. `evergreen_oak` (holm oak, and 78 ha of cork oak at Brindisi) stays a host:
+      the first 2019 black porcini came from "boschi di Leccio-Sughera-Quercia" in the Salento
+      (folklore). Three classes hold no host here and move down. `macchia` (17.6 %; 79 % of it wild olive
+      and lentisk, MM1, plus olive woods, coastal macchia and garigue, not Tuscany's Cistus-Arbutus-Erica
+      scrub) goes from host 1.0 to marginal 0.3, as in Calabria. `transitional_woodland_shrub` (10.7 %:
+      blackthorn 47 %, Paliurus pseudo-macchia 21 %, wooded pastures 17 %, broom 14 %) goes from 0.6 to
+      0.3, as in Campania, Calabria and Abruzzo; the wooded pastures with scattered oaks keep it above
+      non-host. `mediterranean_pine` (15.6 %: Aleppo pine, half of it 20th-century reforestation) goes
+      from 0.6 to non-host 0.1: in Calabria none of 802 records from Aleppo-pine plantations and none of
+      20 from natural Aleppo pine is a porcino (ISPRA MLG 179/180, Suillus dominate), and no porcino is
+      among the frequent species of the national dune-pine records (MLG 187). A pure Aleppo-pine cell
+      keeps a third of full credit; one mixed with oak or holm-oak polygons keeps full credit through
+      them. Otherwise Tuscany's POR-H4 (2026-09-24, mushma_habitat_share_2026): oak, chestnut and holm oak
+      are named hosts. Mixed broadleaf (in Puglia hop-hornbeam and Carpinus orientalis woods, and elm,
+      ash and maple invading old fields) and mixed broadleaf+conifer (absent from the Puglia map) are
+      marginal: hornbeam, ash and conifer components are not this taxon's hosts. Beech, other conifer,
+      mountain pine, fir/spruce, riparian and exotic broadleaf are non-host: cool or wet ground this warm,
+      dry taxon avoids. Saturated to full credit from a host-weighted share of 0.30.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [null, null, 800, 1250]}
+    confidence: plausible
+    source: [matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, arrigoni_viciani_castagneti, mushma_occurrence_check_2026, mushma_puglia_forest_composition_2026, mushma_occurrence_check_puglia_2026]
+    derived: true
+    data: available
+    notes: >-
+      Puglia: kept. The band is full over 91 % of the approximate woodland cells (median 492 m, p90 789 m)
+      and over nearly all the fragno, downy oak and holm oak (p90 466, 733 and 661 m); only the top of the
+      Gargano plateau and of the Monti Dauni, where Turkey oak reaches 1,132 m, lose part of it. The one
+      Puglia record is at 435 m. Otherwise Tuscany's POR-A4. Coast to mid-hill; sunny mid-mountain
+      chestnut is the upper limit. Tuscan iNaturalist records: median 352 m, p90 629 m, max 789 m (n=50).
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: plausible
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia, funghimagazine_buttata_record_2025, funghimagazine_nascite_2025_08_22]
+    derived: true
+    data: available
+    notes: >-
+      POR-R1 + POR-R2, transferred from B. edulis. Puglia: kept. The one Puglia amount in the lore fits
+      the top of the ramp: "30 millimetri di pioggia, caduti nel cuore di una bolla africana" set off "una
+      buttata mordi-e-fuggi clamorosa" in late August 2025, when "Porcini neri e Ovoli reali" came up in
+      Puglia (Funghi Magazine, folklore).
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 30}
+    response: {trapezoid: [50, 125, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, mushma_rain_tuning_2026]
+    derived: true
+    data: derived
+    notes: >-
+      POR-M1, transferred from B. edulis and community studies.
+      Tuned (2026-09-22): the absolute 20->80 mm ramp was full in an ordinary September, so the 30
+      days are scored as a percentage of the cell's own normal for those days (2016-2025 reanalysis,
+      downscaled and rain-scaled like the rain): 0 at 50 %, full from 125 %. It raised the porcini
+      train objective by 0.03 with or without the rain scale, and the hold-out one by 0.013.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [10, 14, 22, 26]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, beugelsdijk2008, matteucci2008_micoponte, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: >-
+      POR-T4. The warmest band: "la specie più xerotermofila". Low confidence within plausible.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d; compare in the backtest.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.75
+    confidence: plausible
+    source: [salerni2023_amiata, andrew2025]
+    derived: true
+    data: derived
+    notes: POR-X1. Milder than for B. edulis (x0.75).
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.4
+    confidence: folklore
+    source: [funghimagazine_fino_quando, muse_censimento_boletus]
+    derived: true
+    data: available
+    notes: POR-X3. Hardier in mild winters without constant frost (x0.4). NE Italy records run to early December.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [borgotaro_igp_rt, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 5, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-X6. ET0 threshold 5 mm/day for a low-altitude summer taxon. All numbers are guesses.
+
+  - id: sun_exposure
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.sun_exposure
+    input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
+    response: {trapezoid: [80, 95, null, null]}
+    floor: 0.9
+    confidence: folklore
+    source: [matteucci2008_micoponte]
+    derived: true
+    data: derived
+    notes: >-
+      POR-A6. Tolerates or prefers sunny exposures (S x1.0, E/W x1.0, N x0.9): x0.9 at 80 % of
+      flat ground's sun or less, x1 from 95 %. Read on the day's sun ratio, the cell's sun as
+      a percentage of flat ground's (api.model.terrain), so it bites hardest in autumn, when
+      the sun is low. The terrain microclimate already makes sunny slopes warmer and drier for
+      every rule; this line is the species' own preference on top of that, kept soft.
+
+  - id: slope
+    role: stopper
+    kind: static_band
+    i18n_key: factor.slope
+    input: {attribute: slope_deg}
+    response: {trapezoid: [null, null, 25, 40]}
+    floor: 0.8
+    confidence: plausible
+    source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
+    derived: true
+    data: available
+    notes: >-
+      Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
+      1979), but a 1 km cell's mean slope is not the slope of the exact spot the mushrooms
+      grow on: normal terrain for Tuscan woodland scores full credit, and only clearly
+      steep cells lose it. Woodland cells on the Tuscan grid run p10 10.2°, p25 12.6°, median
+      16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up to 25°, about the p90, x0.8 from 40°.
+      Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B. edulis
+      yield was highest under about 11° on plots in north-east Turkey (Mumcu Küçüker 2019);
+      two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts on
+      the score only, never on the rain, so the same water is not counted twice.
+
+known_gaps:
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive.
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: soil
+    description: POR-N1. "Heavy loamy, often somewhat calcareous soil" (Dutch sampling); acid loams under Cistus in Spain.
+    needs: [soil_texture, soil_ph]
+    confidence: plausible
+    source: [beugelsdijk2008, alonso_ponce2011]

@@ -4315,3 +4315,456 @@ references:
       fit; above about 1,000 m every fit is extrapolated.'
     cited_as:
     - regions/abruzzo.md
+  # ---------------------------------------------------------------------------------------------
+  # Puglia (region card, 2026-09-28): sources for species/puglia/ and
+  # .gavin-root/docs/species-ecology/puglia.md. Appended as one block rather than sorted in.
+  # ---------------------------------------------------------------------------------------------
+  lr_puglia_12_2003:
+    citation: 'Regione Puglia (2003). Legge regionale 25 agosto 2003, n. 12, Disciplina della raccolta e
+      commercializzazione dei funghi epigei freschi e conservati nel territorio regionale (B.U.R. Puglia n. 99 del
+      29/08/2003), consolidated text with the amendments of L.R. 15 maggio 2006, n. 14, L.R. 3/2012 and L.R. 35/2020.
+      Consiglio regionale della Puglia, Codice delle leggi'
+    url: https://portale2015.consiglio.puglia.it/documentazione/leges/modulo.aspx?id=11284
+    kind: institutional
+    region: Puglia
+    verified: verified
+    supports: 'The picking law in force ("Legge Vigente"). Picking is allowed "tutti i giorni della settimana ... per
+      quantità non eccedente i tre chilogrammi al giorno per persona d''età superiore ai quattordici anni" with a
+      regional permit issued by the comune after a 12-hour course (art. 2-3; professional permit 10 kg a day). "È
+      vietata la raccolta dell''Amanita Caesarea allo stato d''ovolo chiuso"; caps under 3 cm are banned, 2 cm
+      allowed for "Cantharellus (tutte le specie)" (art. 2); no picking "dopo il tramonto e fino alle ore sette"
+      (art. 2 c. 9). Banned, "salvo diversa disposizione dei competenti organismi di gestione", in nature reserves
+      and in the areas of national parks and regional reserves their bodies identify (art. 5); the Region may ban
+      species "in pericolo di estinzione" for limited periods (art. 5 c. 9). No season calendar, no altitude rule.'
+    cited_as:
+    - species-ecology/puglia.md
+  pn_gargano_dpr1995:
+    citation: 'Presidente della Repubblica (1995). D.P.R. 5 giugno 1995, Istituzione dell''Ente parco nazionale del
+      Gargano, Allegato A, misure di salvaguardia (G.U. n. 181 del 4 agosto 1995); copy in ISPRA''s park-law archive'
+    url: https://www.isprambiente.gov.it/files/normativa-parchi/pn-gargano/dpr-05-06-1995-ispra.pdf
+    kind: institutional
+    region: Puglia
+    verified: verified
+    supports: 'Across the Gargano park picking the spontaneous flora is banned, but "sono peraltro consentiti, anche in
+      attuazione dell''art. 6, comma 1, lettera b), della legge 23 agosto 1993, n. 352, il pascolo e la raccolta di
+      funghi, tartufi ed altri prodotti del bosco, nel rispetto delle vigenti normative, degli usi civici e
+      consuetudini locali" (art. 3 c. 1 b).'
+    cited_as:
+    - species-ecology/puglia.md
+  pn_altamurgia_regolamento2015:
+    citation: 'Ente Parco nazionale dell''Alta Murgia (2015). Redazione del Piano per il Parco e del Regolamento del
+      Parco nazionale dell''Alta Murgia: Regolamento del Parco (draft of December 2015, with observations)'
+    url: https://www.parcoaltamurgia.it/officinadelpiano/images/sit2016/REGOLAMENTO_DIC_2015_OSS.pdf
+    kind: institutional
+    region: Puglia
+    verified: verified
+    supports: 'The picking of "funghi epigei e dei prodotti del sottobosco, tradizionalmente esercitata nell''Alta
+      Murgia, è consentita nel rispetto della disciplina stabilita dal presente Regolamento"; art. 20: "La raccolta dei
+      funghi epigei ed ipogei è consentita nei limiti e con le modalità previste dalla normativa vigente", but "è
+      vietata nelle aree oggetto di imboschimento. E'' vietata altresì nelle aree percorse da incendi prima che siano
+      trascorsi dodici mesi dall''evento". A draft: no record of its final approval was found.'
+    cited_as:
+    - species-ecology/puglia.md
+  ispra2019_mlg187_flora_micologica:
+    citation: 'Siniscalco C., Bianco P.M., Floccia F., Campana L. (eds.) (2019). La Flora Micologica delle principali
+      essenze vegetali italiane. Il contributo storico del Centro di Eccellenza ISPRA presso il GMEM-AMB ai piani di
+      gestione degli habitat di interesse comunitario. ISPRA, Manuali e linee guida 187/2019'
+    url: https://www.isprambiente.gov.it/files2019/pubblicazioni/manuali-linee-guida/MLG_187_19_flora_micologica.pdf
+    kind: institutional
+    verified: verified
+    supports: 'National record shares from ISPRA''s "Progetto Speciale Funghi" database. Downy-oak woods (1,072 records,
+      324 species; the southern type listed for Puglia among other regions): Armillaria tabescens 1.90 %, Boletus
+      aereus 1.81 %, Cantharellus cibarius 1.81 %, Amanita caesarea 1.24 %; C. cibarius "ha, in questa tipologia di
+      boschi, un picco di frequenza ... rispetto ad altri tipi di copertura arborea del suolo" (pp. 84-90). Beech woods
+      (4,718 records, 1,004 species): B. edulis 2.1 %, C. cibarius 1.8 %, B. pinophilus 1.0 %, B. reticulatus 1.0 %
+      (p. 63); the Gargano beech is EUNIS G1.681 in habitat 9210. Holm-oak woods (1,526 records, Puglia among the
+      regions): C. cibarius 0.9 %, C. ferruginascens 0.2 %, no porcino among the frequent species (pp. 72-75). Dune
+      pinewoods (habitat 2270): Inocybe, Helvella, Suillus, Chroogomphus, Rhizopogon, no porcino, ovolo or chanterelle
+      among the frequent species; natural dune Aleppo pine in Puglia "Isole Tremiti, Gargano e coste tarantine" (pp.
+      168-171).'
+    cited_as:
+    - species-ecology/puglia.md
+  ispra2018_mlg179_pino_aleppo:
+    citation: 'Siniscalco C., Bianco P.M., Lavorato C., Rotella M., Parrettini G.L., Marra E., Floccia F., Campana L.
+      (eds.) (2018). Abbinamento delle componenti micologiche della Calabria ai sistemi di classificazione degli
+      Habitat EUNIS e Natura 2000. Prima correlazione delle specie fungine dei rimboschimenti. ISPRA, Manuali e linee
+      guida 179/2018, chapter 10, Rimboschimenti a Pinus halepensis'
+    url: https://www.isprambiente.gov.it/files2018/pubblicazioni/manuali-linee-guida/MLG_179_18_Abbinamento_Calabria_Rimboschimenti.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'The nearest record table for planted Aleppo pine (Calabria, sea level to 1,200 m): 802 records of 227
+      species, led by Suillus collinitus 7.1 %, S. bellinii 6.1 %, S. mediterraneensis 5 %, Tricholoma striatum 4.4 %,
+      T. terreum 4.2 %, Lactarius sanguifluus 2.3 %; the only boletes are B. erythropus and B. fragrans (0.2 %
+      each); no porcino, ovolo or Cantharellus (Tab. 12, pp. 99-105). Cited for Puglia''s 16,000 ha of Aleppo-pine
+      reforestation.'
+    cited_as:
+    - species-ecology/puglia.md
+  ispra2018_mlg180_pino_aleppo:
+    citation: 'Siniscalco C., Bianco P.M., Lavorato C., Rotella M., Parrettini G.L., Marra E., Floccia F., Campana L.
+      (eds.) (2018). Abbinamento delle componenti micologiche della Calabria ai sistemi di classificazione degli
+      Habitat EUNIS e Natura 2000. Prima correlazione delle specie fungine delle foreste naturali. ISPRA, Manuali e
+      linee guida 180/2018, chapter 10, Pinete naturali a Pinus halepensis'
+    url: https://www.isprambiente.gov.it/files2018/pubblicazioni/manuali-linee-guida/MLG_180_18_Abbinamento_Calabria_Foreste.pdf
+    kind: institutional
+    region: Calabria
+    verified: verified
+    supports: 'Natural Aleppo pine of Villapiana (Pistacio lentisci-Pinetum halepensis, the association the regional
+      manual names for the Gargano and the Tremiti): 20 records of 15 species, Peziza, Geopora, Suillus bellinii and S.
+      mediterraneensis first; no porcino, ovolo or Cantharellus (Tab. 10, pp. 183-186). The natural range of the pine
+      includes "Puglia (Francini, 1953; Agostini 1964, 1967, 1973b; Barbone, 1988)".'
+    cited_as:
+    - species-ecology/puglia.md
+  daskalopoulos2024_trojana_tuber:
+    citation: 'Daskalopoulos V., Polemis E., Kioupidi I.-E., Trigas P., Zervakis G.I. (2024). Evaluation of the
+      colonization of plants from five Quercus taxa native to Greece by Tuber aestivum (Ascomycota, Pezizales). Life
+      14(7): 852'
+    doi: 10.3390/life14070852
+    kind: peer_reviewed
+    verified: verified
+    supports: 'Quercus trojana subsp. trojana (the fragno) formed ectomycorrhizae with T. aestivum, "medium to
+      relatively high (58-80%)" colonization at 7 months and "medium to high (45-87%)" at 12 months; its
+      ectomycorrhizae with T. aestivum "are described for the first time". The only study found that shows the fragno
+      as an ectomycorrhizal host; it says nothing about porcini, ovoli or chanterelles.'
+    cited_as:
+    - species-ecology/puglia.md
+  macchia2000_vegetazione_clima_puglia:
+    citation: 'Macchia F., Cavallaro V., Forte L., Terzi M. (2000). Vegetazione e clima della Puglia. In: Marchiori S.,
+      De Castro F., Myrta A. (eds.), La cooperazione italo-albanese per la valorizzazione della biodiversità. Bari:
+      CIHEAM, Cahiers Options Méditerranéennes 53: 33-49'
+    url: https://om.ciheam.org/om/pdf/c53/01002025.pdf
+    kind: monograph
+    region: Puglia
+    verified: verified
+    supports: 'Università di Bari. Five climate areas from January-February isotherms: Turkey oak on the Monti Dauni
+      and the Gargano plateau "da 600 ad oltre 800 m"; on the eastern plateau "il Cerro è sostituito dal Faggio come a
+      Foresta Umbra e Bosco Sfilzi", beech that "si associa o si sostituisce a Quercus cerris nelle aree in cui
+      l''aridità estiva viene periodicamente compensata da precipitazioni occulte notturne"; on the Monti Dauni beech
+      "non forma mai fitocenosi pure"; downy oak on the NW Murge, the Foggia plain and the Gargano at 400-850 m; Q.
+      trojana woods "quasi totalmente degradati a pascoli arborati" in the SE Murge (Turi, Castellana, Locorotondo,
+      Martina Franca, Ceglie Messapico, Mottola, Castellaneta, Santeramo, Acquaviva); holm oak and, on the coast, Aleppo
+      pine in the Brindisi-Lecce plain and on the Gargano at 150-400 m.'
+    cited_as:
+    - species-ecology/puglia.md
+  puglia_manuale_tipi_forestali2025:
+    citation: 'Sanesi G. (coord.), Bertani R., Franci G. (texts) (2025). I tipi forestali della Puglia. Classificazioni
+      e selvicoltura (Manuale delle tipologie forestali della Regione Puglia). Regione Puglia, Sezione Gestione
+      Sostenibile e Tutela delle Risorse Forestali e Naturali; Università di Bari. ISBN 978-88-88793-96-2'
+    url: https://foreste.regione.puglia.it/documents/1086071/1394254/foreste_ebook.pdf/6f9ab6a9-86aa-9621-15d3-57019bfeafdf
+    kind: institutional
+    region: Puglia
+    verified: verified
+    supports: 'The type sheets of the Carta dei Tipi Forestali. Beech 4,007.84 ha, "per la maggior parte sul promontorio
+      del Gargano e, in modestissimi nuclei, anche sulle cime più alte del sub-Appennino Dauno (Comuni di Roseto
+      Valfortore e Faeto)"; FA2 (the Foresta Umbra) "tra 600 e 1000 m s.l.m.", on soils "di norma profondi e freschi,
+      ... reazione chimica neutra o leggermente basica"; the "faggete abissali" "arrivando fino a circa 250 m s.l.m."
+      in the forre of the Bosco di Ischitella e Carpino, where sea winds "condensano l''umidità sotto forma di piogge o
+      nebbie". Chestnut 699.49 ha, mostly in the Foresta Umbra, "spiccatamente acidofilo". Fragno woods
+      "mesoxerofili neutro-subacidofili", with Cistus and Quercetea ilicis shrubs, "la formazione più rappresentativa
+      della bassa murgia". Aleppo pine 30,354 ha, "il nucleo di maggiore estensione fra quelli presenti in Italia", its
+      spread "prevalentemente attribuibile a massicci interventi antropici". Black and laricio pine 1,395 ha of 1960s
+      plantations on the Gargano and the Sub-Appennino Dauno, "tendente alla monocoltura". Invasion woods (BN2) of elm,
+      manna ash, maples and cherry on abandoned fields.'
+    cited_as:
+    - species-ecology/puglia.md
+  infc2015_puglia:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1-1.5 (Puglia). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Puglia
+    verified: verified
+    supports: 'Puglia bosco 142,349 ha (relative standard error 4 %), other wooded land 49,389 ha, of a territory of
+      1,936,580 ha; categories: Mediterranean oaks (Turkey oak, farnetto, fragno, vallonea) 38,728 ha, Mediterranean
+      pines 27,718, temperate oaks (downy oak) 25,865, holm oak 17,364, other deciduous 11,538, other evergreen
+      broadleaves 5,150, beech 4,661 (ES 28.6 %), hop-hornbeam and hornbeam 4,661, other conifers 2,331, black pines
+      1,554, chestnut 1,165 (ES 57.5 %), hygrophilous 388; cork oak, fir, spruce and larch 0; plantations 100 ha.'
+    cited_as:
+    - species-ecology/puglia.md
+  pcpuglia_annali_pioggia_mensile:
+    citation: 'Regione Puglia, Sezione Protezione Civile, Centro Funzionale Decentrato. Annali Idrologici Parte I, dati
+      storici: Precipitazioni totali mensili ed annue (station workbooks to 2020)'
+    url: https://protezionecivile.regione.puglia.it/annali-idrologici-parte-i-dati-storici
+    kind: dataset
+    region: Puglia
+    verified: verified
+    supports: 'Monthly rain at 164 stations, open download. Means over the complete years of 1991-2020 (computed by
+      mushma, 2026-09-28; heights from Copernicus GLO-30): Bosco Umbra (779 m, Foresta Umbra) 1,151 mm, July 54, August
+      46, December the wettest month; Vico del Gargano (452 m) 967; San Marco in Lamis (554 m) 993; Monte Sant''Angelo
+      (792 m) 712; Faeto (802 m) 949; Orsara di Puglia (690 m) 860; Monteleone di Puglia (869 m) 826; Martina Franca (448
+      m, 1994-2020) 883; Noci (411 m) 702; Mercadante (399 m) 667; Altamura (468 m) 602; Castellaneta (231 m) 599; Lecce
+      (44 m) 655; Foggia 488; Taranto 540. July and August bring 5.7-10.5 % of the year and September-November 28-39
+      %; November is the wettest month at most stations.'
+    cited_as:
+    - species-ecology/puglia.md
+  faggetevetuste_gargano:
+    citation: 'Parco Nazionale del Gargano, Italian component of the UNESCO site "Ancient and Primeval Beech Forests of
+      the Carpathians and Other Regions of Europe": Gargano National Park (faggetevetuste.it)'
+    url: https://www.faggetevetuste.it/en/faggeta/gargano-national-park/
+    kind: institutional
+    region: Puglia
+    verified: verified
+    supports: 'The Foresta Umbra "occupies an area of about 15,000 hectares" with the Umbra and Falascone reserves and
+      the Sfilzi integral reserve; a climate from "very dry summers in the coastal stations (550 mm of annual rainfall)"
+      to "significant rainfall during the autumn and the winter in the stations of the elevated inland areas (1,200 mm
+      in Foresta Umbra)"; beech with hornbeam, hop-hornbeam, maples, yew, Turkey oak and holm oak; Monte Calvo about
+      1,065 m.'
+    cited_as:
+    - species-ecology/puglia.md
+  asl_bari_ispettorato_micologico:
+    citation: 'ASL Bari, Dipartimento di Prevenzione, SIAN: Ispettorato Micologico (PugliaSalute)'
+    url: https://www.sanita.puglia.it/web/asl-bari/dettaglio-ricerca/-/asset_publisher/YTdcT3KpO3cy/content/ispettorato-micologico-1
+    kind: institutional
+    region: Puglia
+    verified: verified
+    supports: 'The mycological control and certification service of the province of Bari "sia attivo su tutto il
+      territorio provinciale dal 1° settembre al 31 gennaio di ogni anno": the season the health service plans for,
+      cardoncelli included.'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_boletus_gallery2019:
+    citation: 'Funghi Magazine (2019-05-31). Boletus Gallery 2019: i Porcini dei lettori, fine Maggio (read through the
+      Wayback Machine capture of 2021-06-19)'
+    url: https://web.archive.org/web/20210619221713/https://funghimagazine.it/boletus-gallery-2019-foto-porcini-lettori/
+    kind: web
+    verified: verified
+    supports: 'Late May 2019: "Dal Salento, Basilicata, Calabria e Sicilia le prime segnalazioni di ritrovamenti di
+      Boletus aereus (Porcini Neri o Bronzini). Questi in boschi di Leccio-Sughera-Quercia, per lo più con esposizione
+      ben soleggiata e possibilmente in ambiente termofilo"; a reader''s B. aereus photographed in Puglia (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_aggiornamento_2018_10_22:
+    citation: 'Funghi Magazine (2018-10-22). Aggiornamento funghi 22 Ottobre 2018 (Wayback Machine capture of
+      2019-07-23)'
+    url: https://web.archive.org/web/20190723060659/https://funghimagazine.it/aggiornamento-funghi-22-ottobre-2018/
+    kind: web
+    verified: verified
+    supports: '"tra Centro e Sud Italia stanno ancora nascendo abbondanti gli estivi Porcini aereus"; "Le nascite di Neri
+      e moltissimi altri funghi autunnali non si contano tra Sardegna, Sicilia, Calabria, Basilicata e Puglia. Il
+      Salento è un''esplosione di funghi nelle pinete litoranee, conseguente ai nubifragi" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_aggiornamento_2023_06_02:
+    citation: 'Funghi Magazine (2023-06-01). I Funghi Porcini dove stanno nascendo? Aggiornamento funghi 02-06-2023
+      (Wayback Machine capture of 2023-06-01)'
+    url: https://web.archive.org/web/20230601201646/https://funghimagazine.it/aggiornamento-funghi-02-06-2023/
+    kind: web
+    verified: verified
+    supports: 'Early June 2023: "Porcini Neri si iniziano invece a trovare in Salento e nelle Murge, Porcini Estivi
+      sporadici tra Murge, Daunia e Gargano. Ovviamente anche in Puglia, dove le piogge sono state più frequenti ed
+      insistenti, si stanno trovano per lo più Finferli, Mazze di Tamburo, Russule e nessun Porcino" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_aggiornamento_2023_06_16:
+    citation: 'Funghi Magazine (2023-06-15). Piogge, nubifragi e Anticiclone Africano in arrivo. Che ne sarà delle
+      nascite di funghi Porcini? Aggiornamento funghi 16-06-2023 (Wayback Machine capture of 2023-07-03)'
+    url: https://web.archive.org/web/20230703082634/https://funghimagazine.it/aggiornamento-funghi-16-06-2023/
+    kind: web
+    verified: verified
+    supports: 'Mid-June 2023: "completa assenza di nascite di funghi Porcini ... anche in Campania, Molise,
+      Puglia-Basilicata dove, però di contro abbondano più che mai Finferli/Galletti" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_nascite_2025_04_26:
+    citation: 'Funghi Magazine (2025-04-26). Tornano i Porcini: ecco dove, Meteo&Funghi e aggiornamento nascite funghi
+      26-04-2025 (Wayback Machine capture of 2025-04-26)'
+    url: https://web.archive.org/web/20250426075617/https://funghimagazine.it/aggiornamento-nascite-funghi-26-04-2025/
+    kind: web
+    verified: verified
+    supports: '"Si registrano i primi timidi Porcini estivi (Boletus reticulatus, o aestivalis) anche in Puglia. Molto
+      sporadici nel Salento, dove la siccità non aiuta, ma qualche segnalazione arriva dal Tarantino e dal Foggiano"
+      (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_nascite_2025_05_09:
+    citation: 'Funghi Magazine (2025-05-09). Aggiornamento nascite funghi 09-05-2025: Porcini sì, ma attenzione ai
+      segnali del bosco (Wayback Machine capture of 2025-05-13)'
+    url: https://web.archive.org/web/20250513202418/https://funghimagazine.it/aggiornamento-nascite-funghi-09-05-2025/
+    kind: web
+    verified: verified
+    supports: 'On the first summer porcini: "In Puglia si sono già registrati i primissimi ritrovamenti. Ma parliamo di
+      una regione che sta al confine tra il mondo caldo-mediterraneo e i venti freschi orientali: correnti secche e
+      persistenti che disidratano il terreno, annullando l''effetto delle piogge"; "Le prime nascite, in questi casi,
+      si concentrano lungo i litorali, dove il mare mitiga e ammorbidisce gli estremi" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_nascite_2025_08_22:
+    citation: 'Funghi Magazine (2025-08-21). Porcini: si prepara la grande buttata. Aggiornamento nascite funghi
+      22-08-2025 (Wayback Machine capture of 2025-08-22)'
+    url: https://web.archive.org/web/20250822194753/https://funghimagazine.it/aggiornamento-nascite-funghi-22-08-2025/
+    kind: web
+    verified: verified
+    supports: '"Nonostante lo scetticismo di chi vede boschi secchi, negli ultimi giorni sono arrivate segnalazioni
+      sorprendenti: Porcini neri e Ovoli reali spuntati in Puglia, Molise e Sicilia interna" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_nascite_2026_04_23:
+    citation: 'Funghi Magazine (2026-04-23). E'' partita la vera stagione dei funghi. Aggiornamento nascite funghi
+      23-04-2026 (Wayback Machine capture of 2026-04-25)'
+    url: https://web.archive.org/web/20260425073340/https://funghimagazine.it/aggiornamento-nascite-funghi-23-04-2026/
+    kind: web
+    verified: verified
+    supports: '"I Porcini estivi (Boletus reticulatus) un tempo precocissimi in Sardegna, Sicilia, Calabria, Lucania
+      costiera e Puglia, oggi sono diventati più pigri, più ritardatari" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_nascite_2026_05_08:
+    citation: 'Funghi Magazine (2026-05-08). Tempo da funghi. Aggiornamento nascite funghi 08-05-2026 (Wayback Machine
+      capture of 2026-05-18)'
+    url: https://web.archive.org/web/20260518090911/https://funghimagazine.it/tempo-da-funghi-aggiornamento-nascite-funghi-08-05-2026/
+    kind: web
+    verified: verified
+    supports: '"ci sono buone possibilità di trovare i primi Boletus aereus in Salento-Gargano, Calabria jonica, Sicilia
+      centrale e Sardegna meridionale"; "Anche i Finferli sono ai nastri di partenza. I primissimi segnalati in zone
+      assolate del Salento, ma anche nel Gargano e Molise" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_buttata_record_2025:
+    citation: 'Funghi Magazine (2025-09-04). Buttata record 2025: annata eccezionale per i funghi. Italia sotto assedio
+      dei Porcini, e il meglio deve ancora venire (Wayback Machine capture of 2025-12-20)'
+    url: https://web.archive.org/web/20251220154140/https://funghimagazine.it/buttata-record-2025-annata-eccezionale-per-i-porcini/
+    kind: web
+    verified: verified
+    supports: '"Lo abbiamo visto in Puglia, dove nessuno avrebbe scommesso che 30 millimetri di pioggia, caduti nel
+      cuore di una bolla africana, potessero innescare una buttata mordi-e-fuggi clamorosa. Breve, certo, ma
+      memorabile" (late August 2025; folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_natale_2022_12_21:
+    citation: 'Funghi Magazine (2022-12-21). Natale con i Porcini. Aggiornamento Funghi 21-12-2022 (Wayback Machine
+      capture of 2022-12-21)'
+    url: https://web.archive.org/web/20221221104120/https://funghimagazine.it/natale-con-i-porcini-aggiornamento-funghi-21-12-2022/
+    kind: web
+    verified: verified
+    supports: 'Mediterranean woods "ancora ricchi di nascite di Finferli/Cantarelli, spesso nelle varietà
+      tardo-autunnali/invernali, in particolar modo Cantharellus ferruginascens o C. alborufescens ma, tra Salento,
+      coste joniche ed isole, è ancora possibile trovare anche i più classici Cantharellus cibarius" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_meteofunghi_2023_04_28:
+    citation: 'Funghi Magazine (2023-04-27). Meteofunghi 28-04-2023: Moltissimi funghi Primaverili e all''orizzonte
+      anche i primi Porcini (Wayback Machine capture of 2023-05-20)'
+    url: https://web.archive.org/web/20230520125832/https://funghimagazine.it/meteofunghi-28-04-2023/
+    kind: web
+    verified: verified
+    supports: '"La Puglia ha vissuto un insolito periodo fortemente piovoso che ha consentito abbondanti
+      fruttificazioni di Cardoncelli e, persino di Galletti/Finferli nella Macchia Mediterranea" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_aggiornamento_2024_01_12:
+    citation: 'Funghi Magazine (2024-01-12). Finferli, Finferle e molti altri funghi. Aggiornamento funghi 12-01-2024
+      (Wayback Machine capture of 2024-02-22)'
+    url: https://web.archive.org/web/20240222142142/https://funghimagazine.it/aggiornamento-funghi-12-01-2024/
+    kind: web
+    verified: verified
+    supports: 'Among the places for winter chanterelles in January 2024: "Puglia (tutta dov''è piovuto durante gli
+      ultimi 15 giorni)" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  funghimagazine_aggiornamento_2024_03_14:
+    citation: 'Funghi Magazine (2024-03-14). Tornano i funghi primaverili. Aggiornamento funghi 14-03-2024 (Wayback
+      Machine capture of 2024-03-14)'
+    url: https://web.archive.org/web/20240314104541/https://funghimagazine.it/aggiornamento-funghi-14-03-2024/
+    kind: web
+    verified: verified
+    supports: '"In Salento e Gargano si trovano i primi Cardoncelli e pure sporadici Galletti" (mid-March 2024;
+      folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  myboletus_puglia:
+    citation: 'MyBoletus (2026). Funghi in Puglia: Gargano, Murgia e boschi pugliesi (regional forager page, updated
+      2026-08-24)'
+    url: https://myboletus.com/it/regioni/puglia/
+    kind: web
+    verified: verified
+    supports: 'In the Foresta Umbra "crescono porcini (soprattutto Boletus aereus e B. reticulatus) e ovoli"; "La Murgia
+      e i boschi della Daunia offrono ambienti di querceto con Boletus aereus"; "il picco autunnale arriva tipicamente a
+      novembre, a volte fino a dicembre"; main season "Ottobre-Dicembre", 200-1,000 m. A commercial app''s page whose
+      "ambiente, specie e periodo sono indicazioni nostre" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  sedicipuglia_galletto2024:
+    citation: 'Urbano C. (2024-11-07). Funghi galletti: proprietà e ricette. SediciPuglia (food blog)'
+    url: https://www.sedicipuglia.it/2024/11/fungo-galletto-un-gioiello-della.html
+    kind: web
+    verified: verified
+    supports: 'The galletto "Lo si trova principalmente nei boschi di faggio e quercia, in particolare nel Parco
+      Nazionale del Gargano e nella Foresta Umbra" and "può essere raccolto anche nei boschi misti del Subappennino
+      Daunio e dell''Alta Murgia", with "faggi, querce, castagni e persino alcune conifere" (folklore).'
+    cited_as:
+    - species-ecology/puglia.md
+  mushma_puglia_forest_composition_2026:
+    citation: 'mushma Puglia woodland composition: area and elevation of each habitat key on Regione Puglia''s Carta dei
+      Tipi Forestali (CF_TIPI_PUGLIA_REV03_FRA2000, DGR 1279/2022; 29,522 polygons from the SIT Puglia service
+      Operationals2/CartaTipiForestali, read through the class mapping of config/regions/puglia.yaml), exact polygon
+      areas per ISTAT 2025 comune and province, elevations on a 100 m lattice in EPSG:3035 with Copernicus DEM GLO-30
+      heights, sub-areas from the PPTR ambiti paesaggistici; approximate 1 km woodland cells (broadleaf and conifer over
+      half the cell) built from the same lattice, with the Tuscan and Puglia habitat and altitude gates; computed
+      2026-09-28 before the woodland grid was built'
+    url: http://webapps.sit.puglia.it/arcgis/rest/services/Operationals2/CartaTipiForestali/MapServer/0
+    kind: analysis
+    region: Puglia
+    verified: verified
+    supports: '247,418 ha mapped, 205,362 ha of it woods, macchia and scrub under a habitat key and 147,173 ha
+      broadleaf or conifer woodland (INFC 2015 bosco 142,349 ha, +3.4 %); grassland 321 (39,486 ha), bracken and
+      plantations left out. Shares of woods and scrub (of woodland) and elevations (median, p10-p90): deciduous_oak
+      36.3 % (50.6 %; 467 m, 323-795; fragno CE7 20,559 ha at 393 m, max 520, CE6 1,250 ha at 338 m; Turkey oak 31,935
+      ha at 657 m, p90 852, max 1,132; downy oak 20,754 ha at 442 m, p90 733), macchia 17.6 % (189 m; wild olive and
+      lentisk MM1 79 %), mediterranean_pine 15.6 % (21.8 %; 234 m; Aleppo pine reforestation PA1 3,499 ha at 12 m and
+      PA6 12,579 ha at 422 m, natural or secondary PA2/3/5/7 14,911 ha at 170 m), transitional_woodland_shrub 10.7 %
+      (460 m; blackthorn 47 %, Paliurus 21 %, wooded pastures 17 %, broom 14 %), evergreen_oak 8.7 % (12.1 %; 386 m;
+      cork oak 78 ha, 71 in Brindisi), mixed_broadleaf 6.1 % (586 m; invasion woods BN2 53 %, hop-hornbeam and
+      Carpinus orientalis 45 %), beech 1.95 % (2.7 %; 4,011 ha at 742 m, 549-802, 261-992; FA2 2,453 ha at 762 m, FA4
+      1,070 at 701, FA3 341 at 534, FA1 146 at 594; 99 % on the Gargano: Monte Sant''Angelo 1,951 ha, Vieste 907, Vico
+      del Gargano 860, Ischitella 202; Monti Dauni 37 ha at 843 m; 16.5 % below 600 m), riparian 1.9 %, mountain_pine
+      0.7 % (1,401 ha at 854 m; Monti Dauni 971 ha, Gargano 426), chestnut 0.34 % (699 ha at 658 m, all Gargano but 5
+      ha: San Marco in Lamis 342, Vico del Gargano 122), other_conifer 0.14 %. Fragno is 58 % in the province of
+      Taranto (Martina Franca 5,567 ha, Mottola 4,662, Noci 2,725). Approximate woodland cells: 1,106 (55 % of the
+      woodland; Gargano 651, Monti Dauni 157, Murgia dei Trulli 141, Murge 100), elevation median 492 m (p10 248, p90
+      789, max 1,051; 36 % above 600 m); mean habitat share deciduous oak 48.3 %, Mediterranean pine 17.9, evergreen oak
+      10.9, mixed broadleaf 8.2, transitional 5.9, beech 3.7. Gates, Tuscan rules to Puglia rules, share of cells at
+      full habitat credit: B. edulis 46.5 -> 18.5 %, B. reticulatus 78.1 -> 76.5, B. aereus 97.2 -> 81.2, ovolo 80.9
+      -> 79.7, chanterelles 94.5 -> 80.4; the best porcino''s habitat x altitude is 0.5 or more on 88.8 % of cells (99.9
+      % with the Tuscan rules), the rest being Aleppo-pine cells. See species-ecology/puglia.md.'
+    cited_as:
+    - species-ecology/puglia.md
+  mushma_occurrence_check_puglia_2026:
+    citation: 'mushma Puglia occurrence check: iNaturalist API (place 13069, verifiable; month and year histograms,
+      species counts; Copernicus DEM GLO-30 elevations for open, non-obscured records with positional accuracy of 1 km
+      or better; the Carta dei Tipi Forestali type at and within 500 m of each, deduplicated by observer, day and 1 km
+      cell; all 2,961 fungi records for effort; Basilicata 8763 and Molise 10871 for comparison) and GBIF occurrence API
+      (gadmGid ITA.2_1, and stateProvince Puglia/Apulia without coordinates; MATERIAL_SAMPLE excluded), queried
+      2026-09-28. Aggregates only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations
+    kind: analysis
+    region: Puglia
+    verified: verified
+    supports: 'iNaturalist verifiable records in Apulia: B. edulis 0, B. reticulatus 0, B. pinophilus 0, B. aereus 1
+      (September 2016, 435 m, in typical downy oak in the Murge), A. caesarea 1 (October 2015, Gargano; accuracy 7.8
+      km), Cantharellus 4 (C. cibarius 3; October 2, December 1, January 1; 3 located at 3-537 m, none inside a mapped
+      wood), Pleurotus eryngii 55 (October-April, none May-September; 44 by one observer on the coastal Tavoliere),
+      against 2,961 fungi records (488 observers, 91 % since 2020, 990 lichens; Basidiomycota 64 % in
+      October-December). Of 2,103 located fungi records, 194 are on the Gargano and 52 in the Monti Dauni; 75 fall in
+      beech FA2, 44 in fragno woods, 238 in Aleppo pine and 236 in deciduous oak; Suillus 62 records (S. collinitus 21).
+      GBIF has no porcino; its A. caesarea 1, C. cibarius 1 and P. eryngii 2 are iNaturalist copies, and its 2,249
+      georeferenced Apulian fungi are mostly lichen herbarium specimens. Too few to tune; Basilicata and Molise add 2 B.
+      edulis, 2 B. reticulatus, 1 B. aereus, 1 A. caesarea and 2 C. cibarius. See species-ecology/puglia.md.'
+    cited_as:
+    - species-ecology/puglia.md
+  mushma_puglia_gauge_check_2026:
+    citation: 'mushma Puglia rain check: raw ERA5-Land (CDS) monthly precipitation 2016-2020, read bilinearly from the
+      land nodes of the 0.2° lattice at each gauge (weights renormalised), against the monthly totals of the Regione
+      Puglia Protezione Civile gauges (Centro Funzionale Decentrato, Annali idrologici Parte I, dati storici: totali
+      mensili ed annui delle precipitazioni aggiornati al 2020); gauge heights from Copernicus GLO-30. See
+      .gavin-root/docs/regions/puglia.md, Weather'
+    url: https://protezionecivile.regione.puglia.it/annali-idrologici-parte-i-dati-storici
+    kind: analysis
+    region: Puglia
+    verified: verified
+    supports: 'Over the 139 gauges with at least three complete years in 2016-2020 raw CDS holds 1.00 of gauge rain
+      (1.07 below 200 m, 0.90-0.93 above 400 m); over the 42 gauges within 5 km of a woodland cell (27-914 m, 201
+      gauge-years) 0.91 (1.06 below 200 m, 0.80-0.87 above 400 m). A fit of gauge totals on model totals x (a + b x
+      elevation) through the origin on those 42 gives a = 0.933, b = 0.340 per km (leave-one-out 0.91-0.95 and
+      0.28-0.39), which brings every band to 0.97-1.04; all 139 gauges give 0.93 + 0.23.'
+    cited_as:
+    - regions/puglia.md

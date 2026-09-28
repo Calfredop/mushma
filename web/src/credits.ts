@@ -60,6 +60,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Puglia — Carta dei Tipi Forestali (ARIF, Università di Bari)',
+    url: 'https://foreste.regione.puglia.it/programmazione-e-pianificazione-forestale',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Regione Toscana — Uso e copertura del suolo',
     url: 'https://www502.regione.toscana.it/geonetwork/srv/api/records/r_toscan:0d4d6640-9a1c-47a4-9a5d-a85cdb36927c',
     use: 'landcover',
