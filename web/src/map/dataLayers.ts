@@ -2,9 +2,9 @@
  * mushma's own sources and layers, merged into the basemap style up front so
  * the map's first complete render already includes the score cells.
  *
- * Two score styles share the same sources:
- * - cloud: a heatmap so neighbouring cells merge into one soft field (no
- *   donut lattice from stacked circle-blur)
+ * Two score styles share the same hit targets:
+ * - cloud: one pre-blurred score raster (see cloudRaster.ts) so neighbours blend
+ *   without heatmap/circle-blur lattice artefacts, and empty space stays clear
  * - squircle: dots that morph into 1 km squares (the discrete cell view)
  */
 import type {
@@ -16,13 +16,9 @@ import type {
 } from 'maplibre-gl'
 import { FOREST_COLOR_BY_HABITAT, NEUTRAL_FOREST_COLOR } from '../score/forestColors'
 import { layerOpacities } from '../score/indicators'
-import {
-  GOOD_DAYS_CLASSES,
-  SCORE_CLASSES,
-  goodDaysStepExpression,
-  scoreStepExpression,
-} from '../score/scale'
+import { goodDaysStepExpression, scoreStepExpression } from '../score/scale'
 import { DATA_LAYERS_BEFORE, LABEL_FONT } from './basemap'
+import { EMPTY_CLOUD_DATA_URL, cloudImageCoordinates } from './cloudRaster'
 
 const LAGO = '#1F56A0'
 const HUMUS = '#1C211D'
@@ -79,40 +75,6 @@ export function cellColor(scale: CellScale): ExpressionSpecification {
     : (goodDaysStepExpression(['get', 'score']) as ExpressionSpecification)
 }
 
-/** Heatmap weight so a lone cell's score (or good-days count) maps onto the density ramp. */
-export function cloudWeight(scale: CellScale): ExpressionSpecification {
-  return scale === 'score'
-    ? (['interpolate', ['linear'], ['get', 'score'], 0, 0.15, 1, 1] as ExpressionSpecification)
-    : ([
-        'interpolate',
-        ['linear'],
-        ['get', 'score'],
-        0,
-        0.15,
-        GOOD_DAYS_CLASSES[GOOD_DAYS_CLASSES.length - 1].min,
-        1,
-      ] as ExpressionSpecification)
-}
-
-/** Soft field colour from heatmap density, using the same five Porcino stops. */
-export const CLOUD_HEATMAP_COLOR: ExpressionSpecification = [
-  'interpolate',
-  ['linear'],
-  ['heatmap-density'],
-  0,
-  'rgba(247,240,198,0)',
-  0.12,
-  SCORE_CLASSES[0].color,
-  0.32,
-  SCORE_CLASSES[1].color,
-  0.52,
-  SCORE_CLASSES[2].color,
-  0.72,
-  SCORE_CLASSES[3].color,
-  1,
-  SCORE_CLASSES[4].color,
-]
-
 export const EMPTY_COLLECTION = { type: 'FeatureCollection' as const, features: [] }
 
 /** Invisible 1 km hit fill a tap can land on (either score style). */
@@ -155,26 +117,6 @@ const CELL_DOT_RADIUS: ExpressionSpecification = [
   7,
 ]
 
-/**
- * Heatmap kernel in screen pixels, exponential in zoom so ~1 km neighbours merge at
- * every scale instead of pulling into isolated blobs.
- */
-export const CELL_CLOUD_RADIUS: ExpressionSpecification = [
-  'interpolate',
-  ['exponential', 2],
-  ['zoom'],
-  6,
-  6,
-  8,
-  10,
-  10,
-  16,
-  12,
-  64,
-  14,
-  256,
-]
-
 type Bounds = [[number, number], [number, number]]
 
 /** A world polygon with the region cut out of it. */
@@ -215,26 +157,14 @@ const CELL_LAYER_SPECS: LayerSpecification[] = [
     source: 'cells-squares',
     paint: { 'fill-color': '#000', 'fill-opacity': 0 },
   },
-  // Cloud: one soft field. Heatmap accumulates in a kernel, so there is no donut
-  // lattice from stacked circle-blur alphas.
+  // Cloud: one pre-blurred raster (painted in ConditionsMap). Transparent off woodland.
   {
     id: 'cells-cloud',
-    type: 'heatmap',
-    source: 'cells-points',
+    type: 'raster',
+    source: 'cells-cloud-raster',
     paint: {
-      'heatmap-weight': cloudWeight('score'),
-      'heatmap-intensity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        6,
-        0.7,
-        12,
-        1.15,
-      ],
-      'heatmap-radius': CELL_CLOUD_RADIUS,
-      'heatmap-color': CLOUD_HEATMAP_COLOR,
-      'heatmap-opacity': 0.88,
+      'raster-opacity': 1,
+      'raster-fade-duration': 0,
     },
   },
   // Squircle: a dot per cell, fading into the true 1 km squares.
@@ -441,6 +371,11 @@ export function withDataLayers(
       ...style.sources,
       'cells-points': empty(),
       'cells-squares': empty(),
+      'cells-cloud-raster': {
+        type: 'image',
+        url: EMPTY_CLOUD_DATA_URL,
+        coordinates: cloudImageCoordinates(region),
+      },
       sightings: empty(),
       'spot-point': empty(),
       'region-mask': { type: 'geojson', data: regionMask(region) },

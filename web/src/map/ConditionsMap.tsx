@@ -1,6 +1,7 @@
 import {
   type ExpressionSpecification,
   type GeoJSONSource,
+  type ImageSource,
   Map as MapLibreMap,
   type MapMouseEvent,
   Marker,
@@ -37,13 +38,17 @@ import {
   type CellScale,
   type CellStyle,
   cellColor,
-  cloudWeight,
   EMPTY_COLLECTION as EMPTY,
   FOREST_DOT_OPACITY,
   FOREST_FILL_OPACITY,
   SCORE_LAYERS,
   withDataLayers,
 } from './dataLayers'
+import {
+  cloudRasterDataUrl,
+  EMPTY_CLOUD_DATA_URL,
+  paintCloudRaster,
+} from './cloudRaster'
 import {
   cellsToPoints,
   cellsToSquares,
@@ -394,14 +399,38 @@ export function ConditionsMap({
     )
   }, [forestOn, ready])
 
-  // Colour scale: a day's score, or a season's good days.
+  // Colour scale for squircle layers; cloud raster is repainted with the scale below.
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    map.setPaintProperty('cells-cloud', 'heatmap-weight', cloudWeight(scale))
     map.setPaintProperty('cells-dot', 'circle-color', cellColor(scale))
     map.setPaintProperty('cells-fill', 'fill-color', cellColor(scale))
   }, [scale, ready])
+
+  // Soft cloud field: one blurred raster over the region (not a heatmap — those lattice on a grid).
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready) return
+    const source = map.getSource('cells-cloud-raster') as ImageSource | undefined
+    if (!source) return
+    if (inAnalysis || cellStyle !== 'cloud' || !cells?.length) {
+      source.updateImage({
+        url: EMPTY_CLOUD_DATA_URL,
+        coordinates: [
+          [region.bounds[0][0], region.bounds[1][1]],
+          [region.bounds[1][0], region.bounds[1][1]],
+          [region.bounds[1][0], region.bounds[0][1]],
+          [region.bounds[0][0], region.bounds[0][1]],
+        ],
+      })
+      return
+    }
+    const painted = paintCloudRaster(cells, region.bounds, scale, CELL_SIZE_KM)
+    source.updateImage({
+      url: cloudRasterDataUrl(painted),
+      coordinates: painted.coordinates,
+    })
+  }, [cells, scale, region.bounds, cellStyle, inAnalysis, ready])
 
   // Selection.
   useEffect(() => {

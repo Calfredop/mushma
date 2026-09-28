@@ -7,7 +7,6 @@ import {
   ANALYSIS_LAYERS,
   ANALYSIS_LAYERS_BEFORE,
   analysisLayers,
-  CELL_CLOUD_RADIUS,
   CELL_LAYERS,
   SCORE_CLOUD_LAYERS,
   SCORE_LAYERS,
@@ -37,23 +36,25 @@ describe('withDataLayers', () => {
     expect(ids.indexOf('region-mask')).toBeGreaterThan(ids.indexOf('places_locality'))
     expect(ids.slice(-3)).toEqual(['spot-point', 'sightings-circle', 'sightings-count'])
     expect(Object.keys(style.sources)).toEqual(
-      expect.arrayContaining(['protomaps', 'cells-points', 'cells-squares', 'sightings']),
+      expect.arrayContaining([
+        'protomaps',
+        'cells-points',
+        'cells-squares',
+        'cells-cloud-raster',
+        'sightings',
+      ]),
     )
-    expect(base.layers).toHaveLength(ids.length - 14) // the input style is not mutated
+    expect(base.layers).toHaveLength(ids.length - 14)
   })
 
-  it('draws cloud as a heatmap and squircle as dots that morph into squares', () => {
+  it('draws cloud as a raster image and squircle as dots that morph into squares', () => {
     const style = withDataLayers(buildMapStyle({ lang: 'it' }), region)
     const cloud = style.layers.find((l) => l.id === 'cells-cloud')!
     const hit = style.layers.find((l) => l.id === 'cells-hit')!
     const dot = style.layers.find((l) => l.id === 'cells-dot')!
     const fill = style.layers.find((l) => l.id === 'cells-fill')!
-    expect(cloud).toMatchObject({ type: 'heatmap', source: 'cells-points' })
-    expect(cloud.paint).toMatchObject({
-      'heatmap-radius': CELL_CLOUD_RADIUS,
-      'heatmap-opacity': expect.any(Number),
-    })
-    expect(CELL_CLOUD_RADIUS[1]).toEqual(['exponential', 2])
+    expect(cloud).toMatchObject({ type: 'raster', source: 'cells-cloud-raster' })
+    expect(style.sources['cells-cloud-raster']).toMatchObject({ type: 'image' })
     expect(hit).toMatchObject({
       type: 'fill',
       source: 'cells-squares',
@@ -63,17 +64,6 @@ describe('withDataLayers', () => {
     expect(fill).toMatchObject({ type: 'fill', source: 'cells-squares', minzoom: 9 })
     expect(dot.layout?.visibility).toBe('none')
     expect(fill.layout?.visibility).toBe('none')
-  })
-
-  it('keeps cloud radius geographic so adjacent 1 km cells stay linked when zooming in', () => {
-    const px = (z: number) => {
-      for (let i = 3; i < CELL_CLOUD_RADIUS.length; i += 2) {
-        if (CELL_CLOUD_RADIUS[i] === z) return CELL_CLOUD_RADIUS[i + 1] as number
-      }
-      return undefined
-    }
-    expect(px(14)! / px(10)!).toBeGreaterThan(12)
-    expect(px(10)!).toBeGreaterThanOrEqual(14)
   })
 
   it('has hidden analysis base layers among the cells, where indicators go in', () => {
