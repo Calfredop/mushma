@@ -90,6 +90,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione Siciliana, Comando del Corpo Forestale — Carta forestale regionale (SIF)',
+    url: 'https://sif.regione.sicilia.it/ilportale/carte-forestali1',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Copernicus DEM GLO-30',
     url: 'https://registry.opendata.aws/copernicus-dem/',
     use: 'elevation',
