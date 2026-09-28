@@ -1,0 +1,156 @@
+# Puglia: region #15 of the full-Italy rollout (.gavin-root/docs/regions/puglia.md).
+id: puglia
+name: {it: Puglia, en: Apulia}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°
+# (the Tremiti and Pianosa included).
+bbox_wgs84: [14.93, 39.79, 18.53, 42.23]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 16
+
+# Woodland: one regional map gives both layers. The Region's Carta dei Tipi Forestali (ARIF and the
+# Università di Bari, DGR 1279/2022, FRA 2000 definition) gives every polygon a forest type
+# (cod_tipo), which says both the broad group and the habitat. The Macedonian oak (fragno, CE6-CE7)
+# files with the deciduous oaks, as INFC's category 3111 does. The wild-olive woods (3119, AB1-AB2)
+# go to macchia: olive and lentisk are not hosts of the mapped species, and the map's own macchia
+# (MM1) is the same olive and lentisk lower down. Wooded pastures (3140), blackthorn, broom and
+# Paliurus scrub, tamarisk and shrub willows are transitional; bracken (AR3), grassland (321) and
+# the tree plantations (224x, arboricoltura, outside INFC's bosco) are left out. There is no mixed
+# class. See .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/puglia.md (Sources).
+forest:
+  groups:
+    source: puglia_tipi_forestali
+    class_column: cod_tipo
+    classes:
+      "QU1": broadleaf       # boschi di roverella tipici
+      "QU2": broadleaf       # boschi di roverella secondari di invasione
+      "QU3": broadleaf       # boschi di roverella termofili con leccio o olivastro
+      "QU4": broadleaf       # querceti mesofili di roverella (con cerro, carpino nero)
+      "QU5": broadleaf       # querceti di roverella con Carpinus orientalis
+      "CE1": broadleaf       # cerrete mesotermofile con roverella e leccio
+      "CE2": broadleaf       # cerrete mesoxerofile a carpino nero
+      "CE3": broadleaf       # cerrete mesofile tipiche
+      "CE4": broadleaf       # cerrete mesofile a carpino bianco
+      "CE5": broadleaf       # cerrete a farnetto
+      "CE6": broadleaf       # boschi e boscaglie di fragno dei suoli xerici
+      "CE7": broadleaf       # boschi di fragno dei suoli mesici
+      "CE8": broadleaf       # vallonea (Quercus macrolepis)
+      "CE9": broadleaf       # querceto di cerro con Carpinus orientalis
+      "OS1": broadleaf       # orno-ostrieto tipico
+      "OS2": broadleaf       # orno-ostrieto a carpino nero e Carpinus orientalis
+      "OS3": broadleaf       # boscaglie di Carpinus orientalis
+      "OS4": broadleaf       # orno-ostrieto primitivo
+      "OS5": broadleaf       # orno-ostrieto dei suoli mesici con aceri
+      "CA1": broadleaf       # boschi di castagno
+      "FA1": broadleaf       # faggeta submontana a carpino bianco
+      "FA2": broadleaf       # faggeta submontana a agrifoglio e tasso
+      "FA3": broadleaf       # faggete abissali (Gargano)
+      "FA4": broadleaf       # faggeta submontana con cerro
+      "BI1": broadleaf       # boschi igrofili a galleria di salici e pioppi
+      "BI2": broadleaf       # boschetti a olmo campestre e frassino meridionale
+      "BI5": broadleaf       # formazioni di aceri e frassino meridionale
+      "BN1": broadleaf       # acereti di invasione
+      "BN2": broadleaf       # altri boschi di invasione
+      "BN4": broadleaf       # pioppo tremulo
+      "LE1": broadleaf       # lecceta tipica
+      "LE2": broadleaf       # lecceta con carpino nero
+      "LE3": broadleaf       # lecceta con Carpinus orientalis
+      "LE4": broadleaf       # lecceta termofila
+      "LE5": broadleaf       # lecceta rupicola
+      "LE6": broadleaf       # lecceta con orniello
+      "LE7": broadleaf       # lecceta submontana con cerro
+      "LE8": broadleaf       # lecceta con Quercus coccifera
+      "SU1": broadleaf       # sughereta (Brindisi)
+      "PA1": conifer         # pinete di pino d'Aleppo da rimboschimento costiero
+      "PA2": conifer         # pinete di pino d'Aleppo con lentisco
+      "PA3": conifer         # pinete di pino d'Aleppo con leccio
+      "PA5": conifer         # pinete di pino d'Aleppo rupicole, di gravina
+      "PA6": conifer         # pinete di pino d'Aleppo da rimboschimento delle aree interne
+      "PA7": conifer         # pineta di pino d'Aleppo secondaria tipica
+      "PM1": conifer         # rimboschimenti di pino nero e pino laricio
+      "BC1": conifer         # altri boschi di conifere mediterranee (cipresso, pino domestico)
+      "BC2": conifer         # rimboschimento montano di altre conifere
+      "AB1": macchia         # formazioni a olivastro con arbusti della macchia
+      "AB2": macchia         # formazioni a olivastro a Paliurus e terebinto
+      "MM1": macchia         # macchia a olivastro e lentisco
+      "MM2": macchia         # macchia a Calicotome spinosa
+      "MM3": macchia         # macchia a Quercus coccifera
+      "MM4": macchia         # macchia dunale a ginepro e lentisco
+      "MM5": macchia         # macchia litoranea
+      "MM6": macchia         # garighe a rosmarino
+      "MM7": macchia         # macchie basse di degradazione e garighe
+      "MM9": macchia         # formazione a euforbia arborea
+      "MM10": macchia        # formazione a ginepro fenicio
+      "3140": transitional   # pascoli alberati
+      "AR1": transitional    # pruneti
+      "AR2": transitional    # ginestreti
+      "AR4": transitional    # pseudomacchie a Paliurus con olivastro
+      "BI3": transitional    # saliceti e formazioni riparie arbustive (tamerici)
+  types:
+    source: puglia_tipi_forestali
+    classes:
+      "QU1": deciduous_oak
+      "QU2": deciduous_oak
+      "QU3": deciduous_oak
+      "QU4": deciduous_oak
+      "QU5": deciduous_oak
+      "CE1": deciduous_oak
+      "CE2": deciduous_oak
+      "CE3": deciduous_oak
+      "CE4": deciduous_oak
+      "CE5": deciduous_oak
+      "CE6": deciduous_oak       # fragno
+      "CE7": deciduous_oak       # fragno
+      "CE8": deciduous_oak       # vallonea
+      "CE9": deciduous_oak
+      "OS1": mixed_broadleaf
+      "OS2": mixed_broadleaf
+      "OS3": mixed_broadleaf
+      "OS4": mixed_broadleaf
+      "OS5": mixed_broadleaf
+      "BN1": mixed_broadleaf
+      "BN2": mixed_broadleaf     # invasion woods of mixed broadleaves
+      "BN4": mixed_broadleaf
+      "CA1": chestnut
+      "FA1": beech
+      "FA2": beech
+      "FA3": beech
+      "FA4": beech
+      "BI1": riparian
+      "BI2": riparian
+      "BI5": riparian
+      "LE1": evergreen_oak
+      "LE2": evergreen_oak
+      "LE3": evergreen_oak
+      "LE4": evergreen_oak
+      "LE5": evergreen_oak
+      "LE6": evergreen_oak
+      "LE7": evergreen_oak
+      "LE8": evergreen_oak
+      "SU1": evergreen_oak       # cork oak
+      "PA1": mediterranean_pine
+      "PA2": mediterranean_pine
+      "PA3": mediterranean_pine
+      "PA5": mediterranean_pine
+      "PA6": mediterranean_pine  # Aleppo pine, also where it was planted inland
+      "PA7": mediterranean_pine
+      "BC1": mediterranean_pine
+      "PM1": mountain_pine       # black and laricio pine reforestation
+      "BC2": other_conifer
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Apulia, IT", admin level
+# 10) on 2026-09-28. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 13069
+

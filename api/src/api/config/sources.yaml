@@ -59,6 +59,29 @@ rer_carta_forestale:
         file: CartaForestale2025RN.zip
         shapefile: CartaForestale2025RN.shp
 
+puglia_tipi_forestali:
+  name: Regione Puglia — Carta dei Tipi Forestali della Regione Puglia (ARIF, Università di Bari, 2022)
+  homepage: https://foreste.regione.puglia.it/programmazione-e-pianificazione-forestale
+  license: Open by default (CAD, D.Lgs. 82/2005, art. 52 c. 2); reused as CC BY 4.0
+  attribution: "Carta dei Tipi Forestali © Regione Puglia (ARIF, DiSAAT Università di Bari), CC BY 4.0"
+  notes: >-
+    The Region's forest map, made with ARIF and the Università di Bari (DiSAAT) under DGR 806/2020
+    and approved by DGR 1279/2022; its types are described in "I tipi forestali della Puglia:
+    classificazioni e selvicoltura" (Regione Puglia 2025). 29,522 polygons over the whole region,
+    245,774 ha, each with its forest category (cod_categ: INFC-style 3110 roverella, 3111 cerro and
+    fragno, 3114 faggete, 3117 leccete, 3120 pinete mediterranee…, plus 3140 wooded pastures, 321
+    grassland, 322 scrub and 323 macchia) and its type (cod_tipo: CE7 fragno, FA2 faggeta, PA6
+    Aleppo-pine reforestation…), under the FRA 2000 forest definition; so one layer gives both the
+    broad groups and the forest types. Served on the SIT Puglia's ArcGIS server (the viewer's
+    webapps.sit.puglia.it service caps a query at 1,000 features and has no GeoJSON; the federated
+    one serves 2,000 as GeoJSON). No licence is stated on the SIT, the viewer or the forestry pages;
+    Italian public data published without one are open by default (CAD art. 52 c. 2), as for Marche's
+    REM map. The Region's Uso del Suolo 2011 (IODL 2.0, 1:5,000, no forest types) and ISPRA's Carta
+    della Natura 1:50,000 (2013) are the cross-checks in .gavin-root/docs/regions/puglia.md.
+  download:
+    arcgis_layer: https://arcgisfed-sit.regione.puglia.it/hosted/rest/services/Operationals2/CartaTipiForestali/MapServer/0
+    field: cod_tipo
+
 rt_ucs:
   name: Regione Toscana — Uso e copertura del suolo 2007-2019 (1:10.000)
   homepage: https://www502.regione.toscana.it/geonetwork/srv/api/records/r_toscan:0d4d6640-9a1c-47a4-9a5d-a85cdb36927c
