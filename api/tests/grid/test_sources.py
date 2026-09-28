@@ -202,6 +202,44 @@ def test_fetch_arcgis_features_pages_through_the_layer(tmp_path: Path) -> None:
     assert codes == ["3111", "3112", "3113", "3114", "3115"]
 
 
+class _CappedArcGIS(_FakeArcGIS):
+    """A server whose maxRecordCount (2) is below the page size the client asks for."""
+
+    max_record_count = 2
+
+    def do_GET(self) -> None:  # noqa: N802
+        query = parse_qs(urlparse(self.path).query)
+        offset = int(query["resultOffset"][0])
+        count = min(int(query["resultRecordCount"][0]), self.max_record_count)
+        page = self.features[offset : offset + count]
+        body = {
+            "type": "FeatureCollection",
+            "features": page,
+            "exceededTransferLimit": offset + count < len(self.features),
+        }
+        payload = json.dumps(body).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(payload)
+
+
+def test_fetch_arcgis_features_follows_a_server_capped_page(tmp_path: Path) -> None:
+    """Abruzzo's server returns 1,000 features when asked for 2,000: none may be skipped."""
+    server = HTTPServer(("127.0.0.1", 0), _CappedArcGIS)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        layer = f"http://127.0.0.1:{server.server_port}/MapServer/1"
+        pages = fetch_arcgis_features(
+            layer, (13.0, 41.6, 14.8, 42.9), tmp_path / "ctf", out_fields="clc18", page_size=4
+        )
+    finally:
+        server.shutdown()
+
+    codes = [f["properties"]["clc18"] for p in pages for f in json.loads(p.read_text())["features"]]
+    assert codes == ["3111", "3112", "3113", "3114", "3115"]
+
+
 class _FlakyServer(BaseHTTPRequestHandler):
     failures_left = 2
 
