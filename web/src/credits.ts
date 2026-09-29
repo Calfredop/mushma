@@ -96,6 +96,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Regione del Veneto — Carta della copertura del suolo 2021',
+    url: 'https://idt2.regione.veneto.it/portfolio/webgis-carta-copertura-del-suolo-regione-del-veneto/',
+    use: 'landcover',
+    license: 'IODL 2.0',
+  },
+  {
     name: 'ISPRA — Corine Land Cover 2018',
     url: 'https://groupware.sinanet.isprambiente.it/uso-copertura-e-consumo-di-suolo/library/copertura-del-suolo/corine-land-cover/corine-land-cover-2018-iv-livello',
     use: 'landcover',
