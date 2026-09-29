@@ -1,0 +1,570 @@
+# Press-contrast sanity check for Veneto (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025: Val di Zoldo, Alpago, Borgo Valbelluna, Setteville, Lusiana
+# Conco, Pieve del Grappa, Valbrenta, Barbarano Mossano are the merged comuni) or provinces (sigle);
+# windows and source URLs written down on 2026-09-29, before any Veneto score existed.
+# `seasons: normal` expands to `normal_seasons`. 14 contrasts are porcini (the default `--group
+# porcini`); `gallinacci_...` and `ovoli_...` are read with `--group gallinacci` and `--group ovoli`.
+# Quotes, second sources and caveats per contrast: .gavin-root/docs/species-ecology/veneto.md (Press
+# contrasts). Local papers rarely sum up a season: 7 contrasts rest on the Corriere delle Alpi, the
+# Tribuna di Treviso, OggiTreviso and the Mattino di Padova quoting the Belluno mycological group
+# (Associazione micologica Bresadola), the Cansiglio naturalists and the Treviso groups, the other 9
+# mainly on Funghi Magazine's weekly bulletins, one editor working from readers' reports and rain
+# gauges. Il Gazzettino, the Corriere del Veneto, L'Arena, Il Giornale di Vicenza, il Dolomiti,
+# L'Amico del Popolo and the Today sites block AI agents and were not read. In Belluno "gialletti"
+# and "finferli" are both used for C. cibarius.
+areas:
+  dolomites:
+    comuni:
+    - Cortina d'Ampezzo
+    - San Vito di Cadore
+    - Borca di Cadore
+    - Vodo Cadore
+    - Cibiana di Cadore
+    - Valle di Cadore
+    - Pieve di Cadore
+    - Calalzo di Cadore
+    - Domegge di Cadore
+    - Lozzo di Cadore
+    - Auronzo di Cadore
+    - Vigo di Cadore
+    - Lorenzago di Cadore
+    - Perarolo di Cadore
+    - Ospitale di Cadore
+    - Comelico Superiore
+    - Santo Stefano di Cadore
+    - San Pietro di Cadore
+    - San Nicolò di Comelico
+    - Danta di Cadore
+    - Agordo
+    - Falcade
+    - Canale d'Agordo
+    - Alleghe
+    - Rocca Pietore
+    - Cencenighe Agordino
+    - Vallada Agordina
+    - San Tomaso Agordino
+    - Selva di Cadore
+    - Colle Santa Lucia
+    - Livinallongo del Col di Lana
+    - Taibon Agordino
+    - Voltago Agordino
+    - La Valle Agordina
+    - Rivamonte Agordino
+    - Gosaldo
+    - Val di Zoldo
+    - Zoppè di Cadore
+    - Longarone
+  agordino:
+    comuni:
+    - Agordo
+    - Falcade
+    - Canale d'Agordo
+    - Alleghe
+    - Rocca Pietore
+    - Cencenighe Agordino
+    - Vallada Agordina
+    - San Tomaso Agordino
+    - Selva di Cadore
+    - Colle Santa Lucia
+    - Livinallongo del Col di Lana
+    - Taibon Agordino
+    - Voltago Agordino
+    - La Valle Agordina
+    - Rivamonte Agordino
+    - Gosaldo
+  asiago:
+    comuni:
+    - Asiago
+    - Gallio
+    - Roana
+    - Rotzo
+    - Enego
+    - Foza
+    - Lusiana Conco
+  lessinia:
+    comuni:
+    - Bosco Chiesanuova
+    - Erbezzo
+    - Roverè Veronese
+    - Selva di Progno
+    - Velo Veronese
+    - Sant'Anna d'Alfaedo
+    - Badia Calavena
+    - Cerro Veronese
+    - Vestenanova
+    - San Mauro di Saline
+  cansiglio_alpago:
+    comuni:
+    - Tambre
+    - Alpago
+    - Chies d'Alpago
+    - Fregona
+  prealps:
+    comuni:
+    - Asiago
+    - Gallio
+    - Roana
+    - Rotzo
+    - Enego
+    - Foza
+    - Lusiana Conco
+    - Bosco Chiesanuova
+    - Erbezzo
+    - Roverè Veronese
+    - Selva di Progno
+    - Velo Veronese
+    - Sant'Anna d'Alfaedo
+    - Badia Calavena
+    - Cerro Veronese
+    - Vestenanova
+    - San Mauro di Saline
+    - Seren del Grappa
+    - Pieve del Grappa
+    - Borso del Grappa
+    - Possagno
+    - Cavaso del Tomba
+    - Valbrenta
+    - Solagna
+    - Pove del Grappa
+    - Romano d'Ezzelino
+    - Setteville
+  prealps_pasubio:
+    comuni:
+    - Asiago
+    - Gallio
+    - Roana
+    - Rotzo
+    - Enego
+    - Foza
+    - Lusiana Conco
+    - Bosco Chiesanuova
+    - Erbezzo
+    - Roverè Veronese
+    - Selva di Progno
+    - Velo Veronese
+    - Sant'Anna d'Alfaedo
+    - Badia Calavena
+    - Cerro Veronese
+    - Vestenanova
+    - San Mauro di Saline
+    - Seren del Grappa
+    - Pieve del Grappa
+    - Borso del Grappa
+    - Possagno
+    - Cavaso del Tomba
+    - Valbrenta
+    - Solagna
+    - Pove del Grappa
+    - Romano d'Ezzelino
+    - Setteville
+    - Recoaro Terme
+    - Valli del Pasubio
+    - Posina
+    - Laghi
+    - Arsiero
+    - Tonezza del Cimone
+    - Velo d'Astico
+  colli:
+    comuni:
+    - Teolo
+    - Torreglia
+    - Galzignano Terme
+    - Arquà Petrarca
+    - Rovolon
+    - Vo'
+    - Baone
+    - Cinto Euganeo
+    - Montegrotto Terme
+    - Monselice
+    - Arcugnano
+    - Barbarano Mossano
+    - Nanto
+    - Zovencedo
+    - Castegnero
+    - Longare
+    - Val Liona
+    - Sossano
+    - Brendola
+    - Altavilla Vicentina
+  hills:
+    comuni:
+    - Teolo
+    - Torreglia
+    - Galzignano Terme
+    - Arquà Petrarca
+    - Rovolon
+    - Vo'
+    - Baone
+    - Cinto Euganeo
+    - Montegrotto Terme
+    - Monselice
+    - Arcugnano
+    - Barbarano Mossano
+    - Nanto
+    - Zovencedo
+    - Castegnero
+    - Longare
+    - Val Liona
+    - Sossano
+    - Brendola
+    - Altavilla Vicentina
+    - Volpago del Montello
+    - Giavera del Montello
+    - Nervesa della Battaglia
+    - Montebelluna
+    - Crocetta del Montello
+    - Asolo
+    - Maser
+    - Monfumo
+    - Castelcucco
+    - Fonte
+  hills_valpolicella:
+    comuni:
+    - Teolo
+    - Torreglia
+    - Galzignano Terme
+    - Arquà Petrarca
+    - Rovolon
+    - Vo'
+    - Baone
+    - Cinto Euganeo
+    - Montegrotto Terme
+    - Monselice
+    - Arcugnano
+    - Barbarano Mossano
+    - Nanto
+    - Zovencedo
+    - Castegnero
+    - Longare
+    - Val Liona
+    - Sossano
+    - Brendola
+    - Altavilla Vicentina
+    - Volpago del Montello
+    - Giavera del Montello
+    - Nervesa della Battaglia
+    - Montebelluna
+    - Crocetta del Montello
+    - Asolo
+    - Maser
+    - Monfumo
+    - Castelcucco
+    - Fonte
+    - Negrar di Valpolicella
+    - Marano di Valpolicella
+    - Fumane
+    - Sant'Ambrogio di Valpolicella
+  belluno:
+    provinces:
+    - BL
+  treviso:
+    provinces:
+    - TV
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: dolomites_2019_2017_august
+  claim: 'Mid to late August in the Belluno Dolomites: in 2019 "La stagione è buona anche se non ci
+    sono tanti funghi, se non in quota", with porcini the most present species (Fabio Padovan,
+    Associazione micologica Bresadola, Corriere delle Alpi, 2019-08-29); in 2017 "È una disperazione
+    quest''anno ... Non c''è praticamente niente da raccogliere nei nostri boschi" (Claudio
+    Sommavilla, same group, Corriere delle Alpi, 2017-08-29)'
+  source: https://www.corrierealpi.it/cronaca/funghi-tra-porcini-gialletti-e-russole-la-stagione-e-buona-jlojk87z
+  higher:
+    area: dolomites
+    seasons:
+    - 2019
+    start: 08-10
+    end: 08-28
+  lower:
+    area: dolomites
+    seasons:
+    - 2017
+    start: 08-10
+    end: 08-28
+- id: dolomites_2018_2017_late_august
+  claim: 'Late August: in 2018 "É toccato poi anche al Nord Est italiano con buone nascite in Veneto,
+    ma molto meno buone nel Trentino e meno ancora in Alto Adige" (Funghi Magazine, 2018-08-31), and
+    in mid-September an Alto Comelico haul "che nell''occasione è stata molto abbondante" (Corriere
+    delle Alpi, 2018-09-15); in 2017 "Non c''è praticamente niente da raccogliere nei nostri boschi"
+    (Associazione micologica Bresadola, Corriere delle Alpi, 2017-08-29)'
+  source: https://funghimagazine.it/aggiornamento-funghi-1-settembre-2018/
+  higher:
+    area: dolomites
+    seasons:
+    - 2018
+    start: 08-20
+    end: 08-30
+  lower:
+    area: dolomites
+    seasons:
+    - 2017
+    start: 08-20
+    end: 08-30
+- id: belluno_2023_2016_september
+  claim: 'First three weeks of September in Belluno province: in 2023 Belluno among "le province con
+    ottime nascite in corso, pur senza “delirio”" (Funghi Magazine, 2023-09-20); in 2016 "Assistiamo a
+    un annata molto scarsa ... La produzione di porcini è stata abbastanza ridotta" (Fabio Padovan,
+    Associazione micologica Bresadola, Corriere delle Alpi, 2016-09-21), fungi «notevolmente pochi»
+    (Ulss 1 food-hygiene service)'
+  source: https://www.corrierealpi.it/cronaca/sara-un-autunno-con-pochi-funghi-djbg1l34
+  higher:
+    area: belluno
+    seasons:
+    - 2023
+    start: 09-01
+    end: 09-20
+  lower:
+    area: belluno
+    seasons:
+    - 2016
+    start: 09-01
+    end: 09-20
+- id: dolomites_2023_2022_july
+  claim: 'Mid-July: in 2023 "Ottime nascite anche in tutto l''alto Veneto da Agordo-Longarone fino alle
+    Alpi Carniche" (Funghi Magazine, 2023-07-20); in 2022 "siccità e forte caldo da tre settimane
+    impediscono la crescita dei miceli", "Stagione semi compromessa per la raccolta dei funghi"
+    (Associazione micologica Bresadola, Corriere delle Alpi, 2022-07-29)'
+  source: https://funghimagazine.it/aggiornamento-funghi-20-07-2023/
+  higher:
+    area: dolomites
+    seasons:
+    - 2023
+    start: 07-12
+    end: 07-24
+  lower:
+    area: dolomites
+    seasons:
+    - 2022
+    start: 07-12
+    end: 07-24
+- id: belluno_2022_september_vs_july
+  claim: 'Belluno province 2022: in July "siccità e forte caldo da tre settimane impediscono la crescita
+    dei miceli", "Stagione semi compromessa" (Associazione micologica Bresadola, Corriere delle Alpi,
+    2022-07-29); by early September "è boom sulle Dolomiti di porcini, finferli" and for a Lorenzago
+    di Cadore forager "resta comunque una stagione da incorniciare" (Coldiretti, Mattino di Padova,
+    2022-09-06, datelined Belluno)'
+  source: https://www.mattinopadova.it/regione/coldiretti-grazie-alle-piogge-e-boom-di-funghi-porcini-nei-boschi-veneti-hch5atv7
+  higher:
+    area: belluno
+    seasons:
+    - 2022
+    start: 08-20
+    end: 09-05
+  lower:
+    area: belluno
+    seasons:
+    - 2022
+    start: 07-08
+    end: 07-28
+- id: agordino_vs_lessinia_2023_august
+  claim: 'Late July to 10 August 2023: "Una flessione sulle nascite la registriamo sui settori Sud del
+    Trentino, tra Lago d''Idro e Lago di Garda, zona di Rovereto-Pasubio e Lessinia. Meglio dalla
+    Valsugana all''Agordino e su tutte le Dolomiti Bellunesi" (Funghi Magazine, 2023-08-10)'
+  source: https://funghimagazine.it/aggiornamento-funghi-10-08-2023/
+  higher:
+    area: agordino
+    seasons:
+    - 2023
+    start: 07-28
+    end: 08-10
+  lower:
+    area: lessinia
+    seasons:
+    - 2023
+    start: 07-28
+    end: 08-10
+- id: asiago_2023_august_vs_july
+  claim: 'Asiago plateau 2023: on 27 July "Dall''Altopiano dei 7 Comuni riceviamo per esempio il report
+    che ieri non si è trovato un solo Porcino", the woods still soaked (Funghi Magazine, 2023-07-28);
+    by 10 August porcini edulis "si sono trovati in buone quantità anche in zone molto frequentate dai
+    cercatori di funghi, quali l''Altopiano dei 7 Comuni o i monti trevigiani" (Funghi Magazine,
+    2023-08-10)'
+  source: https://funghimagazine.it/aggiornamento-funghi-10-08-2023/
+  higher:
+    area: asiago
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-10
+  lower:
+    area: asiago
+    seasons:
+    - 2023
+    start: 07-20
+    end: 07-27
+- id: prealps_2022_august_vs_july
+  claim: 'Veneto Prealps 2022: after the drought, by mid-August "Partite le nascite anche in molte zone
+    del Veneto montano, finalmente anche tra Grappa-Lessinia ed Alpiano dei 7 Comuni. Un po'' meno in
+    Valpolicella" (Funghi Magazine, 2022-08-18); relayed as the first porcini "dopo il lungo stop per
+    la siccità" (AltoVicentinOnline, 2022-08-20)'
+  source: https://funghimagazine.it/molti-funghi-in-molte-zone-ditalia/
+  higher:
+    area: prealps
+    seasons:
+    - 2022
+    start: 08-10
+    end: 08-18
+  lower:
+    area: prealps
+    seasons:
+    - 2022
+    start: 07-10
+    end: 07-31
+- id: cansiglio_2023_2016_early_october
+  claim: 'Late September to early October: in 2023 porcini "in quantità anche in zone che fino ad ora
+    hanno avuto nascite più contenute o sporadiche, ovvero sulla fascia pedemontana veneta e
+    friulana", the peak "sui monti a quote comprese tra i 700 ed i 1500 mt" (Funghi Magazine,
+    2023-10-04); in 2016 "CANSIGLIO - Per i funghi, non è una buona stagione" (Associazione
+    Naturalistica Prealpi Cansiglio, OggiTreviso, 2016-10-04)'
+  source: https://www.oggitreviso.it/oltre-100-tipi-di-funghi-cansiglio-146011
+  higher:
+    area: cansiglio_alpago
+    seasons:
+    - 2023
+    start: 09-24
+    end: 10-03
+  lower:
+    area: cansiglio_alpago
+    seasons:
+    - 2016
+    start: 09-24
+    end: 10-03
+- id: lessinia_2019_2024_september
+  claim: 'Mid-September in the Lessinia: in 2019 "la nuova buttata è appena ripartita fin
+    sull''Altopiano di Asiago" but "è in Lessinia che al momento si registrano le nascite migliori"
+    (Funghi Magazine, about 20 September 2019); in 2024 "riceviamo report di nascite bloccate tra
+    Lessinia-Pasubio-7 comuni e Grappa" by cold and wind (Funghi Magazine, 2024-09-19)'
+  source: https://funghimagazine.it/dove-stanno-nascendo-i-funghi-porcini-le-piogge-cadute-in-italia/
+  higher:
+    area: lessinia
+    seasons:
+    - 2019
+    start: 09-10
+    end: 09-20
+  lower:
+    area: lessinia
+    seasons:
+    - 2024
+    start: 09-10
+    end: 09-20
+- id: hills_vs_dolomites_2020_september
+  claim: 'Mid-September 2020: "In Veneto le nascite sono diminuite sulle Dolomiti ma sono aumentate tra
+    Lessinia-Baldo-Altopiano di Asiago ma meglio ancora sulle zone prealpine e collinari dove nei
+    boschi caldi termofili sono partite ottime buttate di funghi Porcini aereus e subito dopo di Ovoli
+    reali" (Funghi Magazine, 2020-09-21)'
+  source: https://funghimagazine.it/meteofunghi-21-09-2020/
+  higher:
+    area: hills_valpolicella
+    seasons:
+    - 2020
+    start: 09-07
+    end: 09-21
+  lower:
+    area: dolomites
+    seasons:
+    - 2020
+    start: 09-07
+    end: 09-21
+- id: dolomites_vs_hills_2021_august
+  claim: 'Mid-August 2021: "Va'' un po'' meglio invece sulle Dolomiti dove i Boletus edulis risultano
+    sempre più frequenti, soprattutto nei boschi di Abete", while "La Bolla Calda Africana ha
+    interrotto bruscamente le nascite sui colli Berici e ancor di più sugli Euganei" (Funghi Magazine,
+    2021-08-19)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-porcini-20-08-2021/
+  higher:
+    area: dolomites
+    seasons:
+    - 2021
+    start: 08-08
+    end: 08-19
+  lower:
+    area: colli
+    seasons:
+    - 2021
+    start: 08-08
+    end: 08-19
+- id: hills_vs_prealps_2024_september
+  claim: 'Mid-September 2024: "Le zone del Veneto meridionale sembrano essere le più favorite per le
+    nascite", "Favoriti i colli pedemontani dove sopravvivono sparuti boschetti", while "riceviamo
+    report di nascite bloccate tra Lessinia-Pasubio-7 comuni e Grappa" (Funghi Magazine, 2024-09-19)'
+  source: https://funghimagazine.it/aggiornamento-nascite-funghi-19-09-2024/
+  higher:
+    area: hills
+    seasons:
+    - 2024
+    start: 09-08
+    end: 09-19
+  lower:
+    area: prealps_pasubio
+    seasons:
+    - 2024
+    start: 09-08
+    end: 09-19
+- id: treviso_2016_july_vs_august
+  claim: 'Treviso province 2016: "Quanto ai porcini, la stagione in estate era partita con il freno a
+    mano. Poi un periodo positivo tra fine giugno e luglio, fino a che di mezzo si è messa l''assenza
+    di piogge che ha di nuovo rallentato la crescita e quindi la raccolta" (Tribuna di Treviso,
+    2016-11-12)'
+  source: https://www.tribunatreviso.it/cronaca/sul-montello-boom-di-funghi-mai-cosi-tanti-lmhurciy
+  higher:
+    area: treviso
+    seasons:
+    - 2016
+    start: 06-25
+    end: 07-31
+  lower:
+    area: treviso
+    seasons:
+    - 2016
+    start: 08-01
+    end: 08-31
+- id: gallinacci_belluno_2019_2017
+  claim: 'August in Belluno province: in 2019 northern Veneto had "piogge troppo persistenti ... In
+    questo caso le nascite di funghi Galletti risultano abbondanti, ma non quelle di funghi Porcini"
+    (Funghi Magazine, about 16 August 2019), and gialletti were among the species "maggiormente
+    presenti" in late August (Associazione micologica Bresadola, Corriere delle Alpi, 2019-08-29); in
+    2017 the woods, which in other years "avevano già iniziato a riempire ceste e cestini di porcini,
+    finferli o anche di chiodini", had "praticamente niente da raccogliere" (Corriere delle Alpi,
+    2017-08-29)'
+  source: https://funghimagazine.it/buone-nascite-di-funghi-porcini-vediamo-dove-le-piogge-caduta-in-italia/
+  higher:
+    area: belluno
+    seasons:
+    - 2019
+    start: 08-05
+    end: 08-28
+  lower:
+    area: belluno
+    seasons:
+    - 2017
+    start: 08-05
+    end: 08-28
+- id: ovoli_hills_2020_2021
+  claim: 'The Colli Euganei, Berici and the Montello-Asolo hills in September: in 2020 "nei boschi caldi
+    termofili sono partite ottime buttate di funghi Porcini aereus e subito dopo di Ovoli reali"
+    (Funghi Magazine, 2020-09-21); in 2021 the African heat "ha interrotto bruscamente le nascite sui
+    colli Berici e ancor di più sugli Euganei" in mid-August (Funghi Magazine, 2021-08-19), and by 24
+    September in many places of the Triveneto "non si è ancora avuta la classica “buttata” d''Agosto,
+    neppure quella di Settembre" (Funghi Magazine, 2021-09-24)'
+  source: https://funghimagazine.it/meteofunghi-21-09-2020/
+  higher:
+    area: hills
+    seasons:
+    - 2020
+    start: 09-05
+    end: 09-21
+  lower:
+    area: hills
+    seasons:
+    - 2021
+    start: 09-05
+    end: 09-21

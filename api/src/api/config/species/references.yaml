@@ -5884,3 +5884,331 @@ references:
       (14); a gauge-total fit of scale = 0.82 + 0.23 per km of elevation brings them to 1.00, 1.03 and 0.94, and averages
       0.99 over the woodland cells. The five woodland-cell gauges (165-1,176 m) read 0.98 raw. Above 800 m the slope rests
       on one gauge (Accumoli) and is extrapolated.'
+  # ---------------------------------------------------------------------------------------------
+  # Veneto (region card, 2026-09-29): sources for species/veneto/ and
+  # .gavin-root/docs/species-ecology/veneto.md. Appended as one block; keys carry a ven_ prefix (or a
+  # _veneto_ infix for our own analyses) so merges with other region branches do not collide. Existing
+  # keys the region reuses (muse_censimento_*, fvg_muse_censimento_aestivalis,
+  # fvg_muse_censimento_ferruginascens, fvg_campo2022_cansiglio, taa_mandolini*,
+  # funghimagazine_carpino_nero2026, funghimagazine_alberi_porcini, funghimagazine_ovolo) were opened
+  # again for this card.
+  # ---------------------------------------------------------------------------------------------
+  mushma_veneto_occurrence_check_2026:
+    citation: 'mushma Veneto occurrence check: iNaturalist observations and histogram APIs (place 13074 Veneto,
+      verifiable; the fungi month histogram as observer effort), GBIF occurrence API (gadmGid ITA.20_1, dataset and
+      basis-of-record facets), Copernicus GLO-30 elevations for open records with an accuracy of 1 km or better,
+      comuni and provinces from the ISTAT 2025 boundaries, the forest types of the Region''s Carta regionale delle
+      categorie forestali within 500 m of each located record, and a recount of the MUSE census map points inside
+      the ISTAT 2025 Veneto boundary; queried 2026-09-29. Aggregates only (counts by month, elevation, comune and
+      province, habitat shares); no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations/histogram
+    kind: analysis
+    region: Veneto
+    verified: verified
+    supports: 'Veneto iNaturalist verifiable records against 12,721 fungi records (effort peaking in October, 20 %):
+      B. edulis 42 (July 7, August 19, September 12, October 4; 2.0x, 3.4x, 1.6x and 0.5x the effort; 34 located at
+      272-1,864 m, median 1,369 m, p90 1,662 m), B. reticulatus 19 (June-October; 13 located at 329-1,154 m, median
+      867 m), B. aereus 5 (2 located, 59 and 743 m), B. pinophilus 2, A. caesarea 6 (4 located at 15-410 m),
+      Cantharellus 50 (C. cibarius 25, C. amethysteus 7, C. pallens 6; 39 located, median 1,028 m, max 1,865 m).
+      GBIF adds only iNaturalist copies (and 2 Cantharellus). MUSE census map points in Veneto: B. edulis 206 (BL
+      178, VI 27, VR 1), B. aestivalis 152 (BL 129), B. aereus 8, B. pinophilus 18, A. caesarea 13, C. cibarius 290
+      (BL 278), C. amethysteus 44, C. pallens 39, C. friesii 30, C. ferruginascens 11. Habitat shares within 500 m of
+      the located records against the woods at the same elevations (B. edulis: spruce and fir 64 % against 47 %,
+      beech 13 % against 28 %; Cantharellus: spruce and fir 45 % against 28 %, mixed broadleaf 8 % against 21 %).
+      The census''s public, dated Cantharellus records in Veneto: C. cibarius 293 (BL 282, VI 11; 1990-2025; May 1,
+      June 22, July 93, August 117, September 42, October 15, November 3; 400-2,040 m, median 1,144 m; below 800 m
+      28 May to 5 November, at 1,000 m and above 10 of 176 in the first half of October and one on 1 November; habitat
+      notes naming spruce 126, beech 54, larch 29, never larch alone), C. pallens 39, C. amethysteus 43, C. friesii
+      30, C. ferruginascens 11. See species-ecology/veneto.md.'
+    cited_as:
+    - species-ecology/veneto.md
+  mushma_veneto_forest_check_2026:
+    citation: 'mushma Veneto forest check: the region''s woodland grid (built 2026-09-29 from the Region''s Carta della
+      copertura del suolo 2021, 4,025 woodland cells of 18,981) joined to the habitat mapping of
+      config/regions/veneto.yaml, with per-habitat elevations, slope and 15 October sun-ratio percentiles
+      (api.model.terrain), the habitat and altitude gates under the Tuscan and the regional rules, and the Carta
+      regionale delle categorie forestali (2006, Del Favero et al. 2000 typology) sampled on a 100 m lattice with
+      Copernicus GLO-30 elevations for the forest types inside each habitat'
+    url: https://idt2-geoserver.regione.veneto.it/geoserver/wfs?service=WFS&version=1.1.0&request=GetCapabilities
+    kind: analysis
+    region: Veneto
+    verified: verified
+    supports: 'habitat shares of the woodland cells: fir/spruce 24 % (weighted median elevation 1,304 m), beech 21 %
+      (1,048 m), mixed broadleaf 20 % (621 m; four fifths orno-ostrieti), other conifer 8 % (1,672 m), deciduous oak 6
+      % (328 m; nine tenths ostrio-querceti), transitional 5 % (mugo pine, green alder, Vaia-flattened forest),
+      chestnut 5 % (493 m, p90 740 m), mountain pine 3 % (Scots pine, 1,082 m), spruce-beech 3 %, robinia 3 %; below
+      700 m the woods are 42 % mixed broadleaf, 18 % deciduous oak, 13 % chestnut, 9 % robinia. Woodland cells:
+      elevation median 994 m (p10 357, p90 1,619, max 2,154 m), slope median 23.8°, p90 35.3°, max 49.9°, 15 October
+      sun ratio p10 78 %, median 101 %, p90 120 %, soil pH median 5.97. See species-ecology/veneto.md.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_lr23_1996:
+    citation: 'Regione del Veneto. Legge regionale 19 agosto 1996, n. 23, "Disciplina della raccolta e commercializzazione
+      dei funghi epigei freschi e conservati" (B.U.R. 23 agosto 1996, n. 76), consolidated text with the changes to L.R.
+      11/2021 (Edizioni Europee, Codici regionali Veneto § 3.1.53); art. 16 c.1 since replaced by L.R. 27 luglio 2023,
+      n. 15, art. 27 (the Giunta sets the fee limits at least every five years)'
+    url: https://www.edizionieuropee.it/LAW/HTML/186/ve3_01_053.html
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'the picking law: "La raccolta giornaliera pro-capite dei funghi epigei commestibili è limitata
+      complessivamente a kg 3, di cui non più di Kg. 1 delle seguenti specie" (ovoli, porcini, C. cibarius among them,
+      art. 3); "E'' vietata la raccolta dell''AMANITA CAESAREA allo stato di ovolo chiuso"; no minimum cap size;
+      searching banned "da un''ora dopo il tramonto a un''ora prima della levata del sole" (art. 4); permits issued by
+      the Unioni montane, the provinces, the regional-forest and park managers and the Regole, which also set the
+      picking days (art. 2). The official testo vigente on consiglioveneto.it answered HTTP 403.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_lr15_2023:
+    citation: 'Regione del Veneto. Legge regionale 27 luglio 2023, n. 15, artt. 26-27 (B.U.R. n. 101 del 31 luglio
+      2023), amending L.R. 23/1996'
+    url: https://bur.regione.veneto.it/BurvServices/pubblica/DettaglioLegge.aspx?id=508719
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'new art. 16 c.1 of L.R. 23/1996: "La Giunta regionale individua, con cadenza almeno quinquennale,
+      l''ammontare dei limiti del contributo che i raccoglitori di funghi sono tenuti a pagare"; a EUR 5-75 contribution
+      meanwhile.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_rv_raccolta_funghi:
+    citation: 'Regione del Veneto (2025). "Raccolta funghi" (enti locali), with the tables "Disciplina raccolta funghi
+      (L.R. 23/96) - Giornate di raccolta" and "Costo dei titoli per la raccolta", versione aggiornata al 2025'
+    url: https://www.regione.veneto.it/web/enti-locali/raccolta-funghi
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'permits valid only in the issuing body''s territory; fee limits of D.G.R. 267/2024 (daily EUR 5-12 to
+      annual EUR 75-200); default picking days "martedì, venerdì, domenica e tutte le festività infrasettimanali". The
+      2025 days table (read by the research agent from the rendered image): picking banned in the Parco naturale delle
+      Dolomiti d''Ampezzo, the Parco nazionale Dolomiti Bellunesi (residents excepted) and the Sile park; on the Montello
+      "la raccolta dei funghi è vietata per i non residenti".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_reggenza_funghi:
+    citation: 'Unione Montana Spettabile Reggenza dei Sette Comuni (2025). Disposizioni per la raccolta dei funghi
+      (Altopiano di Asiago)'
+    url: https://www.reggenza.com/ae00860/zf/index.php/servizi-aggiuntivi/index/index/idtesto/75
+    kind: institutional
+    region: Veneto (Asiago plateau)
+    verified: verified
+    supports: 'the plateau''s picking rules (non-residents on Tuesday, Friday, Sunday and holidays; EUR 12 a day) and its
+      species notes (folklore): A. caesarea "cresce soprattutto nei boschi di castagni e querce ad una altitudine che
+      solitamente non supera i 1000 m"; B. edulis "È frequente sotto conifere e faggi. Di solito si trova dal mese di
+      luglio in poi e preferisce climi freschi, resistendo anche a un discreto freddo, tanto che può resistere alle
+      prime gelate".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_del_favero2000:
+    citation: 'Del Favero R. (a cura di), Andrich O., De Mas G., Lasen C., Poldini L. et al. (2000) Biodiversità e
+      indicatori nei tipi forestali del Veneto. Regione del Veneto, Direzione Regionale dell''Economia Montana e delle
+      Foreste; Accademia Italiana di Scienze Forestali, Mestre-Venezia, 335 pp.'
+    url: https://www.regione.veneto.it/static/www/agricoltura-e-foreste/Biodiv.pdf
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'the regional forest typology behind the grid''s map: seven forest regions (costiera, planiziale,
+      avanalpica, esalpica, esomesalpica, mesalpica, endalpica); the avanalpica is "l''area di maggior diffusione dei
+      castagneti, degli ostrio-querceti e degli orno-ostrieti", with the Colli Euganei''s ostrio-querceti on carbonate
+      and chestnut on magmatic substrates; in the esalpica, "in cui prevalgono i substrati carbonatici, sono abbondanti
+      i consorzi, puri o misti, di carpino nero, che occupano circa un quinto dell''area forestale veneta", and "al di
+      sopra degli 800 m, agli orno-ostrieti si sostituiscono le faggete"; native black pine at its western limit along
+      the Piave; the esomesalpica takes in "il Monte Grappa, l''Altipiano dei Sette Comuni e il Cansiglio" from 800-900
+      m; the mesalpica has "le pinete di pino silvestre, che colonizzano ampi ambiti lungo l''alto corso del Piave e dei
+      suoi affluenti"; the endalpica has rain "attorno a 1000 mm annui" with a July maximum.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_del_favero2006:
+    citation: 'Del Favero R. (coord.) (2006) Carta regionale dei tipi forestali - Documento base. Regione del Veneto,
+      Accademia Italiana di Scienze Forestali'
+    url: https://www.regione.veneto.it/static/www/agricoltura-e-foreste/Libro_Carta_forestale.pdf
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'the 2006 forest-type map''s areas by category (orno-ostrieti e ostrio-querceti 82,203 ha, faggete
+      75,498, peccete 49,038, lariceti e larici-cembreti 34,193, conifer plantations 28,590, castagneti e rovereti
+      20,528, robinieti 18,216, pinete di pino silvestre 12,663); spruce plantations of the inter-war years from which
+      "l''abete rosso si è poi spesso spontaneamente diffuso", mostly on beech sites of the esalpica; in the Verona
+      area the hop-hornbeam "perde di competitività".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_raf2020:
+    citation: 'Regione del Veneto, Veneto Agricoltura (2021) Rapporto sullo stato delle foreste e del settore forestale
+      in Veneto 2020 (RaF Veneto 2020). Compagnia delle Foreste'
+    url: https://www.regione.veneto.it/web/agricoltura-e-foreste/pubblicazioni-on-line
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'forest by altitude: 28 % below 600 m, 22 % at 600-1,000 m, 30 % at 1,000-1,500 m, 20 % above 1,500 m;
+      Scots pine woods 12,653 ha, 12,468 of them in Belluno province; castagneti e rovereti 20,263 ha (Vicenza 10,255,
+      Treviso 4,368, Verona 2,430, Padova 1,781, Belluno 1,429); 390,000-580,000 people pick mushrooms at least once a
+      year; 27 mycological groups with 2,648 members.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_arpav_atlante_prec2013:
+    citation: 'Barbi A., Checchetto F., Delillo I., Rech F. (2013) Le precipitazioni sul Veneto - valori annuali e
+      mensili (chapters 08 and 10). In: ARPAV, Regione del Veneto, Atlante climatico del Veneto. Precipitazioni
+      (1950-2010)'
+    url: https://www.arpa.veneto.it/temi-ambientali/agrometeo/approfondimenti/atlante-agroclimatico-veneto-precipitazioni
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'annual rain "dai circa 670 mm ... (Provincia di Rovigo) fino ad oltre 2030 mm nella zona di Recoaro";
+      plain mean 884 mm, mountains above 400 m 1,466 mm; in the Agordino "si passa dai 1380 mm di Agordo ai 1020 mm di
+      Caprile", Cadore and Comelico about 1,110-1,120 mm, Belluno 1,320 mm; the regime has "un massimo di apporti
+      pluviometrici nei mesi di novembre e ottobre", a secondary maximum in April-June and a secondary minimum in
+      July-September, but in Cadore and Cortina "il massimo principale nel mese di giugno (anziché in autunno)".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_arpav_clima_cm:
+    citation: 'Mariani L., Parisi S.G., Rech F. Caratterizzazione climatica a scopo forestale delle Comunità Montane
+      della Regione Veneto (allegato all''Atlante climatico). ARPAV'
+    url: https://www.arpa.veneto.it/temi-ambientali/agrometeo/file-e-allegati/approfondimenti/clima_comunita_montane.pdf/@@download/file
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: 'annual temperature lapse rates of 0.43-0.58 °C per 100 m by mountain community (Sette Comuni "0.57 °C /
+      100 m", Valle del Boite "0.46 °C / 100 m", Agordina 0.50, Grappa 0.51, Alpago 0.52); station means Asiago (1,005
+      m) 3.4 / 12.6 °C and 1,455 mm, Cortina (1,191 m) 1.3 / 11.7 °C and 1,015 mm, Tambre (904 m) 1,535 mm, Recoaro (454
+      m) 1,947 mm.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_arpav_2022:
+    citation: 'ARPAV (2023) Indicatori ambientali: precipitazione annua, 2022'
+    url: https://www.arpa.veneto.it/arpavinforma/indicatori-ambientali/indicatori_ambientali/clima-e-rischi-naturali/clima/precipitazione-annua/2022
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: '2022: 774 mm on the region against 1,128 mm (1993-2021), "inferiori alla media del 31%"; "il 2022 è stato
+      l''anno meno piovoso a partire dal 1993".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_arpav_2017:
+    citation: 'ARPAV Servizio Meteorologico (2018) Anno 2017, sintesi agrometeorologica'
+    url: https://www.arpa.veneto.it/temi-ambientali/agrometeo/file-e-allegati/bollettino-mese/2017/sintesi-2017/anno-2017.pdf/@@download/file
+    kind: institutional
+    region: Veneto
+    verified: verified
+    supports: '2017: about 984 mm against 1,184 mm (1994-2016), "inferiori alle medie stagionali del 17% circa", the
+      largest deficits (40 %) in the centre-west.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_ambpd_fn2007b:
+    citation: 'Di Piazza P. (2007) Il castagneto. Funghi e Natura XXXIV, 2nd half 2007: 10-11, with the census of
+      Laghizzolo (Vo'', PD) on p. 9. Associazione Micologica Bresadola, Gruppo di Padova'
+    url: https://www.ambpadova.it/wp-content/uploads/2017/09/notiziario02.pdf
+    kind: society
+    region: Veneto (Colli Euganei)
+    verified: verified
+    supports: 'chestnut "sulle Alpi tra i 200 ed i 1000 metri di altitudine"; on the Colli Euganei it grows "soprattutto
+      nelle esposizioni più fresche, su suoli di origine vulcanica"; among its commonest fungi Amanita caesarea, Boletus
+      aestivalis, B. edulis and "Canthatellus cibarius e var. alborufescens"; the 2006 Laghizzolo census lists A.
+      caesarea, B. aereus and B. edulis.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_ambpd_fn2008a:
+    citation: 'Di Stasio G. (2008) Il bronzino nei Colli - Boletus aereus; Di Piazza P. (2008) La vegetazione dei Colli
+      Euganei - Il bosco misto di latifoglie su substrati carbonatici. Funghi e Natura XXXV, 1st half 2008: 14-17.
+      Associazione Micologica Bresadola, Gruppo di Padova'
+    url: https://www.ambpadova.it/wp-content/uploads/2017/09/notiziario03.pdf
+    kind: society
+    region: Veneto (Colli Euganei)
+    verified: verified
+    supports: 'B. aereus found at the end of October 2007 "nei boschi di castagni e querce a Laghizzolo (Monte Venda)",
+      "presente nei Colli, ma di non facile ritrovamento"; it "cresce sotto latifoglie, in particolare querce, castagni
+      e noccioli ... rarissima invece nelle aree settentrionali, prevalentemente a quote collinari durante i periodi
+      estivi"; after an autumn drought and an early cold spell, "Risultato: scarsità di crescita fungina nei Colli
+      Euganei". The downy oak, manna ash and hop-hornbeam wood on limestone (ostrio-querceto) lists among its commonest
+      fungi Amanita caesarea, Boletus aereus, aestivalis and "Cantharellus cibarius e var. alborufescens".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_ambpd_fn2008b:
+    citation: 'Associazione Micologica Bresadola, Gruppo di Padova (2008) Funghi e Natura XXXV, 2nd half 2008 (activity
+      report; Di Piazza P., I funghi del Monte Calbarina)'
+    url: https://www.ambpadova.it/wp-content/uploads/2017/09/notiziario04.pdf
+    kind: society
+    region: Veneto (Colli Euganei)
+    verified: verified
+    supports: 'the excursion of 27 April 2008 to Monte Venda: "Di rilievo il ritrovamento di un porcino (Boletus
+      reticulatus)"; on the 136 m Monte Calbarina, hop-hornbeam on the north slopes and downy oak with manna ash on the
+      south, A. caesarea and B. aestivalis among the commonest fungi, and no porcino among those listed under the pine
+      plantings.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_ambpd_fn2009a:
+    citation: 'Di Piazza P. (2009) La boscaglia termofila con elementi mediterranei; Di Stasio G. (2009) Primi passi -
+      Impariamo a riconoscere le amanite. Funghi e Natura XXXVI, 1st half 2009: 10-11, 22. Associazione Micologica
+      Bresadola, Gruppo di Padova'
+    url: https://www.ambpadova.it/wp-content/uploads/2017/09/notiziario05.pdf
+    kind: society
+    region: Veneto (Colli Euganei)
+    verified: verified
+    supports: 'the warm oak wood on magmatic substrates with downy oak, manna ash and holm oak lists among its commonest
+      fungi Amanita caesarea, Boletus aereus and Cantharellus cibarius e var. alborufescens; "La ricercatissima A.
+      caesarea predilige boschi di latifoglie, a quote piuttosto basse, e periodi caldi. E'' possibile il ritrovamento di
+      quest''ultima specie nei nostri Colli Euganei, pur essendo divenuta sempre più una rarità"; November 2008, after a
+      dry autumn and a week of rain, "la quasi totale assenza di boleti, russule, amanite e lattari".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_ambpd_fn2018:
+    citation: 'Di Piazza P. (2018) Rubroboletus lupinus sui Colli Euganei. Funghi e Natura 45, 2nd half 2018 (issue of
+      31 July 2018): 15-16. Associazione Micologica Bresadola, Gruppo di Padova'
+    url: https://www.ambpadova.it/wp-content/uploads/2018/07/notiziario-2018-tot-1.pdf
+    kind: society
+    region: Veneto (Colli Euganei)
+    verified: verified
+    supports: 'the previous autumn (2017) in the hills: "Lo scorso mese di settembre è stato, contrariamente al successivo
+      mese di ottobre, un mese alquanto piovoso", which brought fruiting forward, "particolarmente proficue" from
+      mid-September into the first ten days of October.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_saccardo_erbario:
+    citation: 'Gruppo Micologico della Marca Trevigiana "P.A. Saccardo" (2025) Erbario, catalogue of dried specimens
+      (aggiornamento al 20 dicembre 2025)'
+    url: http://www.gruppomicologicosaccardo.org/erbario/elenco/catalog.html
+    kind: society
+    region: Veneto (Treviso)
+    verified: verified
+    supports: 'undated Veneto specimens: A. caesarea from the Montello, the Sile park (Casale sul Sile, Vedelago) and
+      Villa Guidini (Zero Branco); B. aestivalis from Madean and San Pietro di Feletto; B. pinophilus and C. cibarius from
+      Madean (Treviso Prealps); B. edulis from Pian dei Castaldi (Sedico); no Veneto B. aereus.'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_gmb_primipassi:
+    citation: 'Gruppo Micologico G. Bresadola (2008-2010) Primi passi in Micologia (estratto). Bollettino del Gruppo
+      micologico G. Bresadola (n.s.) 51-53, Trento'
+    url: https://www2.muse.it/bresadola/download/bgmb_pdf/AA.VV.%20(2008-2010)%20-%20Primi%20passi%20in%20Micologia%20(estratto).%20Boll.%20Gr.%20micol.%20G.%20Bres.%20(n.s.)%2051-53%20(1-3).pdf
+    kind: society
+    region: north-east Italian Alps
+    verified: verified
+    supports: 'B. pinophilus "cresce in simbiosi non solo con il pino, come il suo nome suggerirebbe, ma spesso anche ad
+      altre essenze (abete rosso, faggio, ecc.)" and appears "già all''inizio dell''estate"; B. aereus "è specie tipica
+      delle zone termofile o mediterranee ed è praticamente assente nell''areale alpino"; B. edulis "rinvenibile dalla
+      pianura fino a oltre 2000 m di quota".'
+    cited_as:
+    - species-ecology/veneto.md
+  ven_fm_funghi_giugno:
+    citation: 'Funghi Magazine, Redazione (2021-05-30, updated 2024-03-15). I funghi di giugno'
+    url: https://funghimagazine.it/i-funghi-di-giugno/
+    kind: web
+    verified: verified
+    supports: 'forager magazine (folklore): in June B. aereus "si potrebbero già vedere in Veneto tra la bassa Lessinia e
+      Colli Berici / Euganei"; B. pinophilus "entro la fine del mese anche in Trentino Alto Adige, alto Veneto e
+      Friuli".'
+    cited_as:
+    - species-ecology/veneto.md
+  mushma_veneto_arpav_gauge_check_2026:
+    citation: 'mushma Veneto rain check: raw ERA5-Land (CDS) precipitation summed per month, read bilinearly from
+      the 0.2° land nodes at each gauge, against the monthly totals of ARPAV''s stations (Principali variabili
+      meteorologiche 1994-2025, CC BY 4.0; May-October 2016-2025, months with a missing day left out, 153 gauges
+      with at least six complete seasons, -3 to 2,235 m). See regions/veneto.md'
+    url: https://www.arpa.veneto.it/dati-ambientali/open-data/clima/principali-variabili-meteorologiche
+    kind: analysis
+    region: Veneto
+    verified: verified
+    supports: 'ERA5-Land holds 1.20 of the gauges'' May-October rain (1.18-1.33 by height band, 1.01-1.48 by year;
+      0.72 at Rifugio la Guardia above Recoaro to 1.82 at Agordo); least squares through the origin of gauge totals
+      on model totals x (a + b x km) gives a = 0.847, b = -0.037 per km (a factor alone 0.820), leaving every height
+      band within 0.94-1.03 of the gauges; fitted on 2016-2021 it leaves 2022-2025 at 0.96.'
+    cited_as:
+    - regions/veneto.md
