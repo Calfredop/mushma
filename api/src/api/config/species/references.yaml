@@ -4768,3 +4768,305 @@ references:
       0.28-0.39), which brings every band to 0.97-1.04; all 139 gauges give 0.93 + 0.23.'
     cited_as:
     - regions/puglia.md
+  # ---------------------------------------------------------------------------------------------
+  # Valle d'Aosta (region card, 2026-09-29): sources for species/valle_d_aosta/ and
+  # .gavin-root/docs/species-ecology/valle_d_aosta.md. Appended as one block; keys carry a vda_
+  # prefix (or a _vda_ infix for our own analyses) so merges with other region branches do not
+  # collide. Existing keys the region reuses (taa_mandolini*, muse_censimento_*, swissfungi_wsl,
+  # mushma_swissfungi_check_2026, funghimagazine_laricino, funghimagazine_ovolo) were opened again.
+  # ---------------------------------------------------------------------------------------------
+  mushma_occurrence_check_vda_2026:
+    citation: 'mushma Valle d''Aosta occurrence check: iNaturalist histogram and observations APIs (place 10882,
+      verifiable; and a box 45.3-46.45 N, 6.6-8.2 E around the region), GBIF occurrence API (gadmGid ITA.19_1 and
+      stateProvince Valle d''Aosta; the SwissFungi dataset c0633ec5-19cd-4a58-b84c-ca55c2e7ae64 for canton Vs),
+      the SwissFungi atlas REST diagrams (partner trees, altitude extremes) and the Open-Meteo elevation API,
+      queried 2026-09-29. Aggregates only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations/histogram?interval=month_of_year&verifiable=true&place_id=10882
+    kind: analysis
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'Valle d''Aosta (iNaturalist, against 2,794 fungi records, July 37 %): B. edulis 17 (Jul 3, Aug 6, Sep
+      5, Oct 3; 8 located at 1341-1833 m), B. reticulatus 3 (June; about 430 and 789 m), B. pinophilus 3 (Jul, Aug,
+      Sep; 1799 m), B. aereus 0, A. caesarea 0, Cantharellus 9 (all C. cibarius; 8 located at 1273-2023 m); GBIF
+      adds only iNaturalist copies. Box around the region (21,410 fungi records): B. edulis 132 (119
+      observer-days; enrichment Jul 0.4, Aug 1.7, Sep 1.8, Oct 1.0, Nov 0.6; 97 located p10 1140, median 1596, p90
+      1847, p95 1897, max 2110 m; at 1400 m or higher 58 observer-days from the second half of July to October),
+      Cantharellus 95 (Jul 1.5, Aug 1.7, Sep 1.0, Oct 1.1, Nov 0; 81 located p90 1855, p95 2016, max 2120 m), B.
+      reticulatus 21 (Jun 3.9, Oct 0.4), B. pinophilus 6, B. aereus 1 (Haute-Savoie, 893 m), A. caesarea 3, all in
+      Piemonte (Chiaverano 639 m, 7.5 km from the regional border, October 2023; Masino 414 m, 22.6 km; a 2120 m
+      record on the Mombarone ridge, likely misplaced). Valais (SwissFungi, against 38,176 Valais fungi records):
+      B. edulis 110 (Jul 2.2, Aug 1.8, Sep 0.9, Oct 0.7, Nov 0.5), Cantharellus 135 (Jul 1.6, Aug 2.1, Sep 0.95, Oct
+      0.6, Nov 0.13), B. reticulatus 17 (Jun 6.1, Sep 0.3, Oct 0), B. pinophilus 15 (Sep 1.8), B. aereus 0, A.
+      caesarea 1 atlas cell (Savièse above Sion, 1069 m, "Quercus, Pinus, Juniperus, mousse", 29 September 1997);
+      Valais records with an altitude: B. edulis 68 at 556-1922 m (median 1586), C. cibarius 95 at 442-2018 m
+      (median 1586), B. pinophilus 13 at 611-2001 m; Swiss A. caesarea 212-1104 m. Swiss partner
+      trees named: B. edulis 960 (larch 25, 2.6 %; stone pine 3), C. cibarius 1,271 (beech 550, spruce 294, fir 256,
+      larch 32), B. pinophilus 37 (Scots pine 10, larch 2). See species-ecology/valle_d_aosta.md.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  mushma_vda_terrain_check_2026:
+    citation: 'mushma Valle d''Aosta terrain check: 1 km EPSG:3035 cells inside the ISTAT 2025 boundary, tree cover
+      from ESA WorldCover 2021 (class 10, tile N45E006) and slope, aspect and elevation from the Copernicus GLO-30 DEM
+      reduced as the woodland grid does (api.grid.terrain), sun ratio from api.model.terrain; 2026-09-29, before the
+      region grid existed'
+    url: https://esa-worldcover.org/en
+    kind: analysis
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'tree cover 1,092 km2; 1,174 cells at least half tree-covered (the grid''s woodland rule): elevation p5
+      719, p10 853, p25 1168, median 1566, p75 1840, p90 1998, p95 2072, max 2225 m (below 1000 m 186 cells, 1800
+      m or higher 337); slope p10 20.4, p25 24.2, median 28.5, p75 32.8, p90 36.5, p99 40.1, max 44.4 degrees, 72 %
+      steeper than 25; sun ratio on 15 October p10 63, median 94, p90 124 % of flat ground (below 1000 m 66 / 98 /
+      124 %; below 700 m 74 / 99 / 119 %). An approximation to be replaced by the region grid.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_tipi_forestali_2007:
+    citation: 'Camerano P., Terzuolo P.G., Varese P. - IPLA (2007) I Tipi Forestali della Valle d''Aosta. Regione
+      Autonoma Valle d''Aosta, Assessorato Agricoltura e Risorse naturali; Compagnia delle Foreste, Arezzo, 240 pp.'
+    url: https://www.regione.vda.it/allegato.aspx?pk=85741
+    kind: institutional
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'forests 89,539 ha, 27.4 % of the region; larch "la specie forestale più diffusa in Valle d''Aosta", its
+      dominance shaped by "la contestuale e sistematica eliminazione del pino cembro e delle altre conifere"; in the
+      larch stands "Le altre specie presenti, rappresentate soprattutto da conifere, non superano nel complesso il
+      14% del numero ed il 6 % del volume", spruce the tree that "più spesso accompagna il larice", larch woods
+      "generalmente quasi puri" at the tree line; montane-subalpine boundary about 1800 m (1600 m in the wetter
+      mesalpic Bassa Valle); "Sopra i 2.000 m larice e pino cembro sono le uniche specie arboree"; spruce (1000)
+      1200-1800 (2000) m; Scots pine (500) 600-1600 (1700) m, almost unbroken between Verrayes and Morgex; Pinus
+      uncinata 1300-2200 m; chestnut mostly in the Bassa Valle up to Châtillon, "sin verso i 1.000 m"; downy oak
+      from 300 m to 1400 m on south slopes; beech only in the Bassa Valle, 700-1500 m; green-alder scrub mostly in
+      the mesalpic valleys and around the highest massifs.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_carta_forestale_2020:
+    citation: 'IPLA per la Regione Autonoma Valle d''Aosta (2021) Valutazione delle potenzialità per le filiere
+      forestali dai boschi della Valle d''Aosta (Carta forestale regionale, revisione 2020)'
+    url: https://gestionewww.regione.vda.it/allegato.aspx?pk=99543
+    kind: institutional
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'forest 98,869 ha (94,425 ha of woods, 28.7 % of the region); by category (Tabella 5, 2020): Lariceti e
+      Cembrete 43,089 ha (43.6 %), Peccete 13,545, Pinete di pino silvestre 9,614, Boscaglie pioniere e d''invasione
+      6,171, Acero-tiglio-frassineti 5,954, Castagneti 4,720, Querceti di roverella 3,846, Pinete di pino montano
+      3,247, Arbusteti subalpini (green alder) 2,775, Abetine 1,762, Rimboschimenti 1,310, Faggete 1,154, Robinieti
+      126, Querceti di rovere 68; by type, Larici-cembreto su rodoreto-vaccinieto 21,800 ha and Lariceto montano
+      8,664 ha (together 70 % of the larch category), betuleto montano 790 ha and boscaglia rupestre pioniera 2,829
+      ha of the pioneer woods, 94 % of the ash-maple-lime woods of invasion origin; category shifts between spruce
+      or fir "var. con larice" and larch "var. con abete rosso o abete bianco"; grasslands with forest potential "in
+      media fino ai 2.300 m di quota".'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_cf_inquadramento_climatico:
+    citation: 'Regione Autonoma Valle d''Aosta, Centro funzionale regionale. Inquadramento climatico'
+    url: https://cf.regione.vda.it/it/inquadramento-climatico
+    kind: institutional
+    region: Valle d'Aosta
+    verified: verified
+    supports: '"un''isola di scarsa piovosità nel fondovalle del settore centrale: la zona di Aosta registra mediamente
+      circa 550 mm annui, le zone prossime ai rilievi di confine con la Francia si attestano intorno a 750 mm l''anno
+      mentre al confine con il Piemonte la precipitazione media è circa 950 mm l''anno".'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_annuario_2023_precipitazioni:
+    citation: 'Regione Autonoma Valle d''Aosta, Osservatorio economico e sociale. Annuario statistico regionale 2023,
+      Tavola 1.8: Precipitazioni cumulate (mm) in alcune località della Valle d''Aosta, anno 2022 (Centro funzionale
+      regionale and ARPA Valle d''Aosta data)'
+    url: https://www.regione.vda.it/statistica/pubblicazioni/annuari/annuario2023/SITE/1/8.PDF
+    kind: institutional
+    region: Valle d'Aosta
+    verified: verified
+    supports: '2022 rain totals: Aosta Mont Fleury 413.8 mm, Saint-Vincent 364.2, Verrès 371.0, Cogne Gimillan 423.6,
+      Courmayeur Dolonne 873.2, Valtournenche Breuil-Cervinia 867.6 mm; July 2022 under 35 mm at every station
+      listed.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_siccita_2022:
+    citation: 'Regione Autonoma Valle d''Aosta (2023) Siccità: il 2022 in sintesi (information sheet)'
+    url: https://gestionewww.regione.vda.it/allegato.aspx?pk=103788
+    kind: institutional
+    region: Valle d'Aosta
+    verified: verified
+    supports: '"IL 2022 IN SINTESI L''ANNO PIÙ CALDO E SICCITOSO DEGLI ULTIMI 80 ANNI".'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_lr16_1977_funghi:
+    citation: 'Regione Autonoma Valle d''Aosta. Legge regionale 31 marzo 1977, n. 16, Norme per la disciplina della
+      raccolta dei funghi e per la tutela di alcune specie della fauna inferiore (testo vigente, Consiglio Valle)'
+    url: https://www.consiglio.vda.it/app/leggieregolamenti/dettaglio?tipo=L&numero_legge=16/77&versione=V
+    kind: institutional
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'the picking law in force: "Nei boschi è ammessa ai terzi la raccolta di una quantità giornaliera non
+      superiore ad un chilo per persona"; picking on farmland banned "fatta eccezione per i pascoli al di sopra
+      dell''altitudine di 1800 metri slm"; banned "da un''ora dopo il tramonto ad un''ora prima del levar del sole";
+      always "subordinata al consenso del proprietario". No season calendar, no permit and no species named (no
+      ovolo rule).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_marra2001_macromiceti:
+    citation: 'Marra D. (2001) Macromiceti della Valle d''Aosta: indagine bibliografica e dati inediti. Revue
+      Valdôtaine d''Histoire Naturelle 55: 85-125'
+    url: https://www.sfv.it/public/uploads/Revue/2001%2055/2001%2055%20085_125%20Marra.pdf
+    kind: society
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'the regional checklist from 1,031 reports since 1850 (455 Basidiomycota, 33 Ascomycota): no Amanita
+      caesarea and no Boletus aereus; B. edulis, B. pinophilus, B. aestivalis and C. cibarius present; data mostly
+      from Cogne (40.1 %), Piccolo San Bernardo-La Thuile (17.7 %), Lago di Villa (15.6 %), Mont Avic (9.7 %) and
+      the Val Ferret (8.6 %). Collections: B. edulis in "Boschi frondoso-laricini" at La Thuile (1800 m, 26 August
+      1929), at Cogne in Picea-Larix (August-September 1969-1977), "In un bosco di larici" in the Val Ferret
+      (September 1980); B. pinophilus at Cogne (Picea, Larix, P. cembra, September 1971) and in the Val Ferret in
+      "boschi di Larix, Betula verrucosa, Sorbus aucuparia e Pinus sylvestris" (25 September and 10 October 1979);
+      C. cibarius in "Boschi di larice" at La Thuile (1800-1900 m), under spruce at Cogne and in the Val Ferret;
+      B. edulis and C. cibarius in Scots pine and spruce at the Lago di Lolair (1184 m) between 16 June and 9
+      August 2000.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_marra2000_lago_villa:
+    citation: 'Marra D. (2000) Osservazioni sui macromiceti nella Riserva Naturale regionale del Lago di Villa
+      (Challand St. Victor). Revue Valdôtaine d''Histoire Naturelle 54: 37-56'
+    url: https://www.sfv.it/revue/54/
+    kind: society
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'a full-season survey (2 November 1999 to 13 November 2000) of a 25 ha reserve at 820-969 m under
+      Quercus pubescens and Castanea sativa with Scots pine and larch: 169 taxa; the ectomycorrhizal Amanita are
+      citrina, crocea, pantherina, phalloides, rubescens and vaginata (no A. caesarea); Boletus aestivalis and B.
+      luridus the only Boletus (no B. edulis, no B. aereus); C. cibarius and C. cinereus present.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_peretti1999_mont_avic:
+    citation: 'Peretti F., Meotto F., Vizzini A., Buffa G. (1999) Ricerche micoecologiche sugli ectosimbionti del Pino
+      uncinato nel Parco Naturale del Mont Avic. Revue Valdôtaine d''Histoire Naturelle 53: 63-84'
+    url: https://www.sfv.it/revue/53/
+    kind: society
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'Pinus uncinata woods at 1350-2100 m, three seasons: in 1997 fruiting was "modestissima" until the rain
+      of 2-3 and 13 September, then "molto abbondanti il giorno 16", the rain of 28 August having given nothing
+      after cold nights, and -10 °C on 28 October ended it; in 1998, with no rain in September until the 30th and
+      "forte vento per diversi giorni consecutivi", only sporadic fruit bodies from June to 24 September and a
+      flush in early October; 1999 (577 mm June-November against 317 in 1998 and 410 in 1997) abundant from late
+      August to 8 October. B. edulis from 25 August (1999) or mid-September to 8-21 October, up to 2000 m; B.
+      pinophilus at 1750-1850 m (1 September to 8 October 1999); C. cibarius 25 August to 8 October 1999 at
+      1500-1850 m; nothing in the June and July visits.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_onofri2003_checklist:
+    citation: 'Onofri S., Bernicchia A., Filipello Marchisio V., Padovan F., Perini C., Ripa C., Salerni E., Savino E.,
+      Venturella G., Vizzini A., Zotti M., Zucconi L. (2003) The check-list of Italian fungi. Part I.
+      Basidiomycetes. Bocconea 16(2): 1083-1089'
+    url: https://herbmedit.org/storage/2489/16-1083.pdf
+    kind: peer_reviewed
+    region: Italy
+    verified: verified
+    supports: 'Valle d''Aosta has 150 basidiomycete taxa on record against thousands in the best-studied regions;
+      "Molise and Valle d''Aosta are the less investigated Regions": absence from its records is weak evidence.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_faverges_amanite_2023:
+    citation: 'Groupe Nature de Faverges (2023-12-13) L''Amanite des Césars ou Oronge, champignon magnifique et
+      succulent (blog)'
+    url: https://groupenaturefaverges.over-blog.fr/2023/12/l-amanite-des-cesars-ou-oronge-champignon-magnifique-et-succulent.html
+    kind: society
+    region: Haute-Savoie
+    verified: verified
+    supports: '"C''est une espèce méridionale et thermophile, rare chez nous"; picked every year in the Semine near
+      Bellegarde; "Avec le réchauffement climatique on la trouve de plus en plus fréquemment plus au nord"; five young
+      specimens at Seythenex above Faverges in early October 2023 and a small station at Saint-Jorioz.'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2020_07_03:
+    citation: 'Funghi Magazine (2020-07-03) Aggiornamento meteofunghi 3 luglio 2020. Arrivano i Porcini edulis'
+    url: https://funghimagazine.it/aggiornamento-meteofunghi-3-luglio-2020/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: '"Porcini edulis si sono trovati finalmente in Valle d''Aosta, soprattutto sui settori occidentali dov''è
+      piovuto maggiormente"; "le prime interessanti nascite di Galletti/Finferli nei boschi più umidi dei settori
+      occidentali, e a Nord della Dora da Valpelline a Gressoney" (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2021_08_06:
+    citation: 'Funghi Magazine, Redazione (2021-08-06) Aggiornamento meteofunghi Porcini 06-08-2021'
+    url: https://funghimagazine.it/aggiornamento-meteofunghi-porcini-06-08-2021/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: '"Dopo anni di simil-siccità, finalmente è piovuto copiosamente e quindi adeguatamente anche in Val
+      d''Aosta"; "I primi edulis si sono trovati in Val d''Aosta, grazie al ritorno delle piogge" at the end of July
+      2021 (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2022_07_01:
+    citation: 'Giovinazzo A. (2022-07-01) Molti Porcini a breve. Vediamo dove. Aggiornamento Meteofunghi 1 Luglio 2022.
+      Funghi Magazine'
+    url: https://funghimagazine.it/molti-porcini-a-breve-vediamo-dove-01-07-2022/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'after the storms of 26-30 June 2022, "Accumuli interessanti, quando non anche importanti, stanno facendo
+      nascere in quantità Finferli/Galletti in regione" (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2023_10_12:
+    citation: 'Giovinazzo A. (2023-10-12) Funghi Porcini spaccati dalla siccità africana ma, alle porte piogge e
+      ulteriori nascite. Vediamo dove. Aggiornamento Porcini 12-10-2023. Funghi Magazine'
+    url: https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: '"In Valle d''Aosta le nascite sono al momento del tutto cessate sui settori Ovest della regione"; east of
+      Aosta porcini still found in mixed woods, "Poco o nulla tra fondovalle e mezza costa, decisamente di più da
+      mezza costa in su" (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2024_05_31:
+    citation: 'Giovinazzo A. (2024-05-31) Sono arrivati i Porcini. Ecco dove. Aggiornamento Funghi 31-05-2024. Funghi
+      Magazine'
+    url: https://funghimagazine.it/aggiornamento-funghi-31-05-2024/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'in Valle d''Aosta "si trovano di già i primi Porcini Rossi-Pinicola (B. pinophilus)", "in boschi radi e
+      ben soleggiati ... per lo più nella porzione sudorientale della regione. Altezze medie 800/1000 metri"
+      (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2024_06_14:
+    citation: 'Funghi Magazine, Redazione (2024-06-14) Porcini sì, Porcini no. Dove stanno nascendo - Aggiornamento
+      funghi 14-06-2024'
+    url: https://funghimagazine.it/aggiornamento-funghi-14-06-2024/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'sporadic B. pinophilus and B. edulis "in boschi misti a base di Pino o Abete con Faggi o Castagni e quasi
+      esclusivamente in zone assolate della VdA meridionale", the windward north of the Dora wetter (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2024_06_28:
+    citation: 'Giovinazzo A. (2024-06-28) C''è chi sta raccogliento moltissimi Porcini. Aggiornamento funghi 28-06-2024.
+      Funghi Magazine'
+    url: https://funghimagazine.it/aggiornamento-funghi-28-06-2024/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: '"in Val d''Aosta si stanno raccogliendo bene funghi Porcini, per lo più Porcini rossi-pinicola in boschi
+      misti adatti e meno frequentemente ... Porcini estivi e molto sporadici Porcini edulis, in boschi di latifoglie
+      di media e bassa quota, fino a fondovalle" (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
+  vda_fm_2024_07_25:
+    citation: 'Funghi Magazine, Redazione (2024-07-25) Moltissimi Finferli ma Porcini edulis sì o no? Aggiornamento
+      funghi 25-07-2024'
+    url: https://funghimagazine.it/aggiornamento-funghi-25-07-2024/
+    kind: web
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'after "massicce ... nascite di Porcini Rossi-Pinicola", "una bellissima e insolita buttata", "numerosi
+      Porcini estatini/reticulatus" and the first B. edulis; in the valleys flooded at the end of June (Gran Paradiso,
+      Cervino-Monte Rosa) "non si stanno registrando nascite porcine, ma solamente di moltissimi Finferli"
+      (folklore).'
+    cited_as:
+    - species-ecology/valle_d_aosta.md
