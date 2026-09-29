@@ -180,7 +180,8 @@ class LiveRepository:
         con = duckdb.connect()
 
         species_forecasts = []
-        for group in SPECIES:
+        # The region's own groups: a region may omit one (Valle d'Aosta has no ovoli).
+        for group in (g for g in SPECIES if g in self.rules.groups):
             # The daily job scores this window at 05:00 Europe/Rome (M4-api.md); before that (or
             # after a failed run) fewer than FORECAST_OFFSETS days are stored. Serve whichever
             # ones are, rather than 500 until the job catches up -- get_spot's contract
