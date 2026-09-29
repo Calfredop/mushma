@@ -436,3 +436,66 @@ def test_forest_classes_reject_a_code_yaml_read_as_a_boolean() -> None:
     region.extra["forest"]["types"][0]["classes"] = {True: "riparian"}
     with pytest.raises(ValueError, match="quote"):
         forest_classes(region, load_vocabulary())
+
+
+def test_group_layers_on_an_arcgis_source_share_the_types_download(tmp_path: Path) -> None:
+    """Sicily's forest map is one ArcGIS layer read by several group layers and by the types:
+    all of them read the per-region page cache, so the layer is paged once."""
+    import json
+
+    cache = tmp_path / "sif" / "sicilia"
+    cache.mkdir(parents=True)
+    rows = [("31a - boschi", "CA1"), ("31a - boschi", "RI3"), ("32x - arbusteti", "MM2")]
+    features = []
+    for i, (description, code) in enumerate(rows):
+        x = 4_800_000 + i * 200
+        ring = [[x, 1_600_000], [x + 100, 1_600_000], [x + 100, 1_600_100], [x, 1_600_000]]
+        features.append(
+            {
+                "type": "Feature",
+                "properties": {"DESCRIPTION": description, "CODCAMPO": code},
+                "geometry": {"type": "Polygon", "coordinates": [ring]},
+            }
+        )
+    (cache / "page_0000.geojson").write_text(
+        json.dumps({"type": "FeatureCollection", "features": features})
+    )
+    (cache / ".complete").touch()
+    forest_config = {
+        "groups": [
+            {
+                "source": "sif",
+                "class_column": "CODCAMPO",
+                "where": "DESCRIPTION = '31a - boschi'",
+                "classes": {"CA1": "broadleaf", "RI3": "conifer", "MM2": "broadleaf"},
+            },
+            {
+                "source": "sif",
+                "class_column": "CODCAMPO",
+                "where": "DESCRIPTION = '32x - arbusteti'",
+                "classes": {"MM2": "macchia"},
+            },
+        ],
+        "types": {
+            "source": "sif",
+            "class_column": "CODCAMPO",
+            "where": "DESCRIPTION = '31a - boschi'",
+        },
+    }
+    # An unreachable server: any read outside the per-region cache fails the test.
+    sources = {"sif": _source("sif", {"arcgis_layer": "http://127.0.0.1:9/MapServer/38"})}
+
+    cover = build.read_forest_cover(
+        forest_config,
+        sources,
+        tmp_path,
+        region_id="sicilia",
+        bbox_wgs84=(11.9, 35.4, 15.7, 38.9),
+        crs="EPSG:3035",
+        group_classes={"CA1": "broadleaf", "RI3": "conifer", "MM2": "macchia"},
+        type_classes={"CA1": "chestnut", "RI3": "mediterranean_pine", "MM2": "macchia"},
+    )
+
+    assert sorted(cover.groups["group"]) == ["broadleaf", "conifer", "macchia"]
+    assert sorted(cover.types["habitat"]) == ["chestnut", "mediterranean_pine"]
+    assert cover.sources == ["sif"]

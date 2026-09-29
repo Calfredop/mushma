@@ -1,0 +1,185 @@
+# Sicilia: region #18 of the full-Italy rollout (.gavin-root/docs/regions/sicilia.md).
+id: sicilia
+name: {it: Sicilia, en: Sicily}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°:
+# Pantelleria to the west, Lampedusa to the south, the Eolie to the north.
+bbox_wgs84: [11.92, 35.49, 15.66, 38.82]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 19
+
+# Woodland: one regional map gives both layers. The Regione Siciliana's Carta forestale regionale
+# (SIF, 1:10,000) gives every polygon its inventory class (DESCRIPTION) and, on woods and shrubland,
+# its forest type (CODCAMPO). Only "31a boschi" counts as forest, split into broadleaf and conifer
+# by its type; sparse woods (31b, 5-10 % tree cover, INFC's "boschi radi"), temporarily unstocked
+# woods (31c) and montane scrub are transitional, Mediterranean scrub is macchia. Wood plantations
+# (21), grassland and pasture (32) are left out. Reforestation is filed by what was planted:
+# Mediterranean conifers (Aleppo, stone and maritime pine, cypress) as mediterranean_pine, montane
+# conifers (black and laricio pine, cedar) as mountain_pine, eucalyptus as exotic_broadleaf. There
+# is no mixed class. See .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/sicilia.md
+# (Sources).
+forest:
+  groups:
+    - source: sif_carta_forestale
+      class_column: CODCAMPO
+      where: "DESCRIPTION = '31a - boschi'"
+      classes:
+        BA1: broadleaf   # boschi di altre latifoglie autoctone
+        BS1: broadleaf   # betuleto a Betula aetnensis
+        BS2: broadleaf   # pioppeto di pioppo tremolo
+        BS3: broadleaf   # boscaglia pioniera ad orniello
+        BS4: broadleaf   # boscaglia ad olmo campestre
+        BS5: broadleaf   # robinieto
+        BS6: broadleaf   # boscaglia ad ailanto
+        BS7: broadleaf   # boscaglia di specie alloctone minori
+        CA1: broadleaf   # castagneto termofilo
+        CA2: broadleaf   # castagneto montano mesofilo
+        CE1: broadleaf   # cerreta termofila a Quercus gussonei
+        CE2: broadleaf   # cerreta montana
+        FA1: broadleaf   # faggeta mesofila dei substrati silicatici
+        FA2: broadleaf   # faggeta su lave dell'Etna
+        FA3: broadleaf   # faggeta mesofila calcifila
+        FA4: broadleaf   # faggeta mesoxerofila calcifila
+        FR1: broadleaf   # plataneto a platano orientale
+        FR2: broadleaf   # pioppeto-saliceto arboreo
+        FR3: broadleaf   # saliceto ripario arbustivo
+        FR4: broadleaf   # formazioni a tamerici e oleandro
+        FR5: broadleaf   # frassineto ripario a Fraxinus oxycarpa
+        LE1: broadleaf   # lecceta pioniera rupestre
+        LE2: broadleaf   # lecceta termomediterranea costiera e delle cave iblee
+        LE3: broadleaf   # lecceta xerofila mesomediterranea
+        LE4: broadleaf   # lecceta mesoxerofila
+        OS1: broadleaf   # ostrieto pioniero
+        OS2: broadleaf   # ostrieto mesoxerofilo di forra
+        QU1: broadleaf   # querceto di rovere
+        QU2: broadleaf   # querceto termofilo di roverella
+        QU3: broadleaf   # querceto mesoxerofilo di roverella
+        QU4: broadleaf   # querceto xerofilo di roverella dei substrati carbonatici
+        QU5: broadleaf   # querceto di roverella dei substrati silicatici
+        RI1: broadleaf   # rimboschimenti di eucalipti
+        RI2: broadleaf   # rimboschimento di latifoglie varie
+        SU1: broadleaf   # sughereta termomediterranea costiera
+        SU2: broadleaf   # sughereta interna
+        SU3: broadleaf   # sughereta su vulcaniti degli Iblei
+        PL1: conifer     # pineta inferiore di pino laricio (Etna)
+        PL2: conifer     # pineta pioniera di pino laricio
+        PL3: conifer     # pineta superiore di pino laricio
+        PM1: conifer     # pineta di pino d'Aleppo della Sicilia sud-orientale
+        PM2: conifer     # pineta di pino marittimo di Pantelleria
+        PM3: conifer     # pineta di pino domestico
+        PM4: conifer     # pineta di pini mediterranei naturalizzata
+        RI3: conifer     # rimboschimento mediterraneo di conifere
+        RI4: conifer     # rimboschimento montano di conifere
+    - source: sif_carta_forestale
+      class_column: DESCRIPTION
+      classes:
+        "31b - formazioni forestali rade": transitional
+        "31c- aree boscate temporaneamente priva di copertura": transitional
+    - source: sif_carta_forestale
+      class_column: CODCAMPO
+      where: "DESCRIPTION = '32x - arbusteti'"
+      classes:
+        MM0: macchia        # macchia a Salsola verticillata
+        MM1: macchia        # macchia dunale a ginepri e lentisco
+        MM2: macchia        # macchia-gariga a oleastro e euforbia arborescente
+        MM3: macchia        # arbusteto a Calicotome infesta
+        MM4: macchia        # genisteto a ginestra di Spagna
+        MM5: macchia        # arbusteto a Rhus coriaria
+        MM6: macchia        # macchia-gariga dei substrati carbonatici
+        MM7: macchia        # macchia-gariga dei substrati silicatici
+        MM8: macchia        # gariga a palma nana
+        MM9: macchia        # arbusteto mediterraneo a rosacee
+        AS1: transitional   # genisteto a Genista aetnensis
+        AS2: transitional   # genisteto a Cytisus scoparius
+        AS3: transitional   # ericeto a Erica arborea dei Peloritani
+        AS4: transitional   # formazioni ad agrifoglio
+        AS5: transitional   # arbusteto a rosacee
+        FR3: transitional   # saliceto ripario arbustivo (the shrub stands)
+        FR4: transitional   # tamerici e oleandro (the shrub stands)
+  types:
+    source: sif_carta_forestale
+    class_column: CODCAMPO
+    where: "DESCRIPTION = '31a - boschi'"
+    classes:
+      FA1: beech
+      FA2: beech
+      FA3: beech
+      FA4: beech
+      CA1: chestnut
+      CA2: chestnut
+      QU1: deciduous_oak
+      QU2: deciduous_oak
+      QU3: deciduous_oak
+      QU4: deciduous_oak
+      QU5: deciduous_oak
+      CE1: deciduous_oak       # Quercus gussonei, the Sicilian Turkey oak
+      CE2: deciduous_oak
+      LE1: evergreen_oak
+      LE2: evergreen_oak
+      LE3: evergreen_oak
+      LE4: evergreen_oak
+      SU1: evergreen_oak       # cork oak
+      SU2: evergreen_oak
+      SU3: evergreen_oak
+      BA1: mixed_broadleaf
+      BS1: mixed_broadleaf     # Etna birch
+      BS2: mixed_broadleaf
+      BS3: mixed_broadleaf
+      BS4: mixed_broadleaf
+      OS1: mixed_broadleaf     # hop-hornbeam
+      OS2: mixed_broadleaf
+      RI2: mixed_broadleaf     # broadleaf reforestation
+      FR1: riparian
+      FR2: riparian
+      FR3: riparian
+      FR4: riparian
+      FR5: riparian
+      RI1: exotic_broadleaf    # eucalyptus
+      BS5: exotic_broadleaf    # robinia
+      BS6: exotic_broadleaf    # ailanthus
+      BS7: exotic_broadleaf
+      PL1: mountain_pine       # laricio pine, as CLC IV 3122 files it
+      PL2: mountain_pine
+      PL3: mountain_pine
+      RI4: mountain_pine       # montane conifer reforestation (black and laricio pine, cedar)
+      PM1: mediterranean_pine
+      PM2: mediterranean_pine
+      PM3: mediterranean_pine
+      PM4: mediterranean_pine
+      RI3: mediterranean_pine  # Mediterranean conifer reforestation (Aleppo, stone pine, cypress)
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Sicily, IT", admin level
+# 10) on 2026-09-28. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 96908
+
+# Rain scale (merged onto config/model.yaml), fitted on the SIAS gauges (Regione Siciliana open
+# data): June 2019 to May 2020, the one whole year the portal publishes. Sicily's history is CDS, so
+# the scale names that source too: the national one scales era5_seamless only, while the rain
+# normals are scaled whatever their source. .gavin-root/docs/regions/sicilia.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.88
+    per_km: 0.10
+    source: [mushma_sicilia_sias_gauge_check_2026]
+    notes: >-
+      Least squares through the origin of gauge totals on raw CDS era5_land_cds totals (read
+      bilinearly from the land nodes at each station) x (a + b x elevation) over the 94 SIAS stations
+      at 10-1,875 m with whole days on 80 % of June 2019 to May 2020 gave a = 0.880, b = 0.101 per km:
+      raw CDS holds 1.10 of the gauge rain below 200 m and 0.99 at 800 m and above. Leave-one-out
+      slopes run 0.08-0.13; the 40 stations at 400 m and above give 0.87 + 0.11. The 7 gauges inside
+      woodland cells (440-1,840 m) hold 0.94 of the rain downscaled and 0.92 scaled, so the woods may
+      be up to 8 % dry. One year only, a wet autumn and a dry winter. It gives 0.90 at 200 m, 0.93 at
+      500 m, 0.96 at 800 m and 1.00 at 1,200 m.

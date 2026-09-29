@@ -207,3 +207,36 @@ def test_lazio_reads_the_siarl_agrometeo_network_on_calendar_days(tmp_path) -> N
     assert network.series(gauge)[date(2020, 1, 3)] == pytest.approx(3.5)
     calendar = pd.Series([1.0, 2.0], index=[date(2020, 1, 1), date(2020, 1, 2)])
     assert network.day_totals(calendar).tolist() == pytest.approx([1.0, 2.0])
+
+
+def test_sicilia_reads_sias_hourly_rain_as_whole_days(tmp_path) -> None:
+    import zipfile
+    from datetime import date
+
+    from api.weather.checks import GAUGE_NETWORKS
+
+    folder = tmp_path / "sias"
+    folder.mkdir()
+    rows = "".join(
+        f'"1466";"65";"2019-11-{day:02d} {hour:02d}:00:00.0";"{0.5 if hour == 6 else 0:.2f}"\n'
+        for day in (1, 2)
+        for hour in range(24 if day == 1 else 9)
+    )
+    with zipfile.ZipFile(folder / "sias-precipitazioni_csv_2019_11.zip", "w") as archive:
+        archive.writestr("m.csv", '"ID_STAZ";"ID_PAR";"DATARIL";"VALORE"\n' + rows)
+    with zipfile.ZipFile(folder / "elenco-sensori-meteo_csv_rsd.zip", "w") as archive:
+        archive.writestr(
+            "s.csv",
+            '"ID_STAZ";"DESC_STAZ";"ALTIT";"X_LON";"Y_LAT";"COMUNE_CODISTAT";"COMUNE_NOME";'
+            '"PROVINCIA_IDPROVINCIAISTAT";"PROVINCIA_SIGLAPROVINCIA"\n'
+            '"1466";"Cesaro Monte Soro";"1840";"14.69";"37.93";"083018";"CESARO";"083";"ME"\n',
+        )
+
+    network = GAUGE_NETWORKS["sicilia"](tmp_path, date(2019, 11, 1), date(2019, 11, 2))
+
+    gauge = next(network.gauges.itertuples())
+    assert (gauge.code, gauge.elevation_m) == ("1466", 1840.0)
+    series = network.series(gauge)
+    assert series.to_dict() == {date(2019, 11, 1): pytest.approx(0.5)}
+    days = pd.Series([1.0], index=[date(2019, 11, 1)])
+    assert network.day_totals(days).tolist() == [1.0]

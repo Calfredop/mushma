@@ -1579,6 +1579,427 @@ references:
     supports: 'Liguria holds more than 36 % of the Italian macrofungal species on about 2 % of the territory, with
       only about half of it surveyed; Cantharellus cibarius var. alborufescens in holm-oak wood at 50 m on 26
       November 2003 and var. rufipes in holm-oak wood at 190 m on 23 October 2001.'
+  # ---------------------------------------------------------------------------------------------
+  # Sicilia (region card, 2026-09-28): sources for species/sicilia/ and
+  # .gavin-root/docs/species-ecology/sicilia.md. One block rather than sorted in, placed here after the
+  # Liguria entries so it merges cleanly with the region branches that insert at the end of the file
+  # or before the Piemonte block.
+  # ---------------------------------------------------------------------------------------------
+  vasquez2013_boletales_sicilia:
+    citation: 'Vasquez G. (2013). Indagini micologiche sulle Boletales epigee del territorio siciliano: mappatura e
+      censimento delle specie. Tesi di dottorato in Biologia evoluzionistica e dell''ambiente, XXVI ciclo (2010-2013),
+      Università degli Studi di Catania (tutor P. Minissale), 376 pp.'
+    url: https://www.iris.unict.it/retrieve/28a5e8a0-8d2e-42a6-bd4c-f4393bb9b132/tesi%20G.E.%20Vasquez.pdf
+    kind: thesis
+    region: Sicilia
+    verified: verified
+    supports: 'Three-year census (2011-2013) of the Sicilian Boletales, with habitat tables and dated records (place,
+      height, wood, number of fruit bodies), mostly from Etna and the Nebrodi. B. aereus and B. aestivalis (=
+      reticulatus) abound "Tra i Boleti dei castagneti (Castanea sativa), dei boschi di roverella (Quercus pubescens) e
+      delle leccete (Quercus ilex), non appena le piogge lo permettono"; B. edulis and B. pinophilus "prediligono
+      temperature più fresche e crescono perciò negli umidi boschi di betulla e faggio ad alta quota ... l''autunnale
+      ''testa di fagu'' (Boletus edulis) e ''testa russa'' (Boletus pinophilus), in realtà molto più raro" (pp. 4-5).
+      Evergreen oaks and macchia sampled "nei mesi di Ottobre, Novembre e Dicembre, poiché, nei restanti, o per la
+      siccità o per la temperatura molto bassa, i funghi generalmente non producono corpi fruttiferi" (p. 144);
+      deciduous oaks: most fruit bodies "nei mesi di Giugno, Ottobre e Novembre", about 1,000 mm of rain,
+      "concentrate nel mese di Novembre e la massima siccità nel mese di Luglio" (p. 147); pine (Aleppo, stone and
+      laricio): 22 Boletales, the only porcino B. pinophilus (Pineta Ragabo, Linguaglossa), not sampled in July-
+      September (pp. 151-153); hazel "il primo habitat a produrre ... subito dopo le piogge ... anticipando di qualche
+      giorno la fruttificazione dei funghi nei castagni ... e anche di una o più settimane quella nelle querce ... e
+      nei faggi" (p. 155); chestnut "tra i 300 m e i 1700-1800 m" (p. 158); beech season "inizia ... con lo sciogliersi
+      delle nevi a fine aprile per continuare, precipitazioni permettendo, fino al mese di novembre; a volte si
+      interrompe durante i mesi più caldi", beech "al di sopra dei 1000 m fino ai 1800-2000 m sui versanti N, N-W
+      dell''Etna", about 1,500 mm of rain, and "poche piogge ... accompagnate da forte vento di tramontana, fatale per
+      la crescita dei carpofori" (pp. 161-163); Etna birch at 1,550-1,850 m with B. edulis f. betulicola and a B.
+      aereus at 1,800 m (pp. 165-167); porcini reported "in eucalipteto puro" at Piazza Armerina, Pergusa and Aidone,
+      which the author doubts (pp. 176-177). Record tables (pp. 299-309): B. aestivalis 116 records (May 18, June 35,
+      July 12, August 7, September 16, October 18, November 9, December 1), 530-1,900 m, median 1,240 m; B. aereus 82
+      (May 3, June 5, July 1, August 5, September 13, October 25, November 26, December 4), 300-1,700 m, median 1,000
+      m; B. edulis 30 (August 1, September 11, October 9, November 8, December 1), 800-2,000 m, median 1,500 m; B.
+      pinophilus 8 (September 2, October 3, November 3), 1,300-1,700 m. Summary of the regional law L.R. 3/2006 and
+      the 2007 and 2009 species-list decrees (pp. 101-104).'
+  ferraro2022_checklist_sicilia:
+    citation: 'Ferraro V., Venturella G., Cirlincione F., Mirabile G., Gargano M.L., Colasuonno P. (2022). The
+      Checklist of Sicilian Macrofungi: Second Edition. Journal of Fungi 8(6): 566'
+    doi: 10.3390/jof8060566
+    kind: peer_reviewed
+    region: Sicilia
+    verified: verified
+    supports: '1,919 infraspecific taxa of Sicilian macrofungi with the provinces they were recorded in. B. aereus, B.
+      edulis, B. reticulatus, A. caesarea and C. cibarius var. cibarius in all nine provinces; B. pinophilus in
+      Catania, Messina and Palermo only; C. alborufescens, C. amethysteus, C. friesii and C. pallens in Catania,
+      Messina and Palermo, C. ferruginascens in Catania, Messina and Trapani (Table 1). "An exclusive characteristic of
+      Sicily is the presence of forests of Q. ilex that reach an altitude of 1500 m well above the maximum elevation
+      found in other parts of Italy"; fewer macrofungi in Q. suber forests and in the maquis "due to the greater state
+      of degradation of the forest coenosis due to frequent fires".'
+  lr_sicilia_3_2006:
+    citation: 'Regione Siciliana. Legge regionale 1 febbraio 2006, n. 3: Disciplina della raccolta, commercializzazione
+      e valorizzazione dei funghi epigei spontanei. GURS parte I n. 6, 3 February 2006'
+    url: http://www.gurs.regione.sicilia.it/Gazzette/g06-06/g06-06-p1.htm
+    kind: institutional
+    region: Sicilia
+    verified: verified
+    supports: 'The Sicilian picking law: a regional permit ("tesserino") for amateurs, up to "quattro chilogrammi di
+      funghi al giorno", and for professionals, up to "dodici chilogrammi" (art. 2); a 15-hour course; no picking
+      "durante le ore notturne" (art. 4 c. 1); "E'' vietata la raccolta e la commercializzazione di esemplari del genere
+      Amanita caesarea allo stato di ovolo chiuso" (art. 4 c. 5); minimum sizes set by presidential decree (art. 4 c.
+      6); bans in areas closed "per motivi silvocolturali" or of natural value, reclaimed landfills and industrial
+      zones (art. 5); temporary suspensions where picking has impoverished the woods (art. 6). No season calendar and
+      no altitude rule.'
+  ispra2021_raccolta_funghi_sicilia:
+    citation: 'ISPRA (2021). Raccolta dei funghi epigei nel rispetto dell''ambiente e della biodiversità: Regione
+      Sicilia (national and regional rules side by side; last updated April 2021)'
+    url: https://www.isprambiente.gov.it/files/biodiversita/raccolta-dei-funghi-epigei-regione-sicilia.pdf
+    kind: institutional
+    region: Sicilia
+    verified: verified
+    supports: 'Lists L. 352/1993 and L.R. 1 febbraio 2006, n. 3 as the only laws in force for Sicily and reprints the
+      regional articles unchanged (permits, quantities, the closed-ovolo ban, bans and sanctions).'
+  regione_sicilia_tesserino_funghi2023:
+    citation: 'Regione Siciliana (2023-11-02). Raccolta funghi epigei spontanei: modalità e criteri per il rilascio del
+      tesserino'
+    url: https://www.regione.sicilia.it/la-regione-informa/raccolta-funghi-epigei-spontanei-modalita-criteri-rilascio-tesserino
+    kind: institutional
+    region: Sicilia
+    verified: verified
+    supports: 'The permit directives under L.R. 3/2006 art. 2 c. 2: D.A. n. 236/2023 and D.A. n. 362 of 31 October 2023
+      (administrative decrees on issuing and renewing the permit; they do not amend the law).'
+  micologiamessinese_edules:
+    citation: 'Micologia Messinese (web). Genere BOLETUS, Sez. Edules: i ricercati Porcini'
+    url: https://micologiamessinese.altervista.org/Boletus_edules.htm
+    kind: web
+    region: Sicilia (Messina)
+    verified: verified
+    supports: 'Messina amateur mycology site. B. aereus "Termofilo, predilige le calde zone mediterranee. Cresce
+      dall''inizio dell''estate all''autunno, in boschi di latifoglie, specialmente sotto quercia o castagno e nella
+      macchia mediterranea"; B. reticulatus "Cresce dalla primavera al primo autunno, nei boschi termofili di
+      latifoglie (castagno, quercia, faggio) e nella macchia mediterranea, più raro presso conifere"; B. edulis and B.
+      pinophilus "Cresce in estate e autunno sia nei boschi di latifoglie che in quelli di aghifoglie" (folklore).'
+  micologiamessinese_caesarea:
+    citation: 'Micologia Messinese (web). Amanita caesarea e Amanita cesarea forma lutea'
+    url: https://micologiamessinese.altervista.org/amanita_caesarea.htm
+    kind: web
+    region: Sicilia (Messina)
+    verified: verified
+    supports: 'Ovolo: "Cresce, rapidamente, con clima caldo-umido da agosto a settembre in boschi termofili di Querce e
+      Castagni, su substrarti acidi"; local names "Ovulu", "Funci d''ovu" (folklore).'
+  micologiamessinese_cantharellaceae:
+    citation: 'Micologia Messinese (web). Funghi Cantarelli e Craterelli: Cantharellus e Craterellus'
+    url: https://micologiamessinese.altervista.org/Cantarellaceae.htm
+    kind: web
+    region: Sicilia (Messina)
+    verified: verified
+    supports: 'Sicilian names "Ciurrittu, Jadduzzu". C. cibarius "presso latifoglie e conifere, dalla primavera
+      all''autunno"; C. alborufescens "Cresce in boschi termofili preferibilmente di Leccio ma è stato ritrovato (Monti
+      Peloritani) anche associato ad altre latifoglie (Quercus e Castanea) ed aghifoglie (Cedrus misto con Pinus)"; C.
+      ferruginascens "in estate o autunno in boschi caldi di latifoglie"; Craterellus melanoxeros in chestnut, oak and
+      hazel woods of the Nebrodi (Montagnareale); a Cantharellus "presso leccio e sughere (Nebrodi)" (folklore).'
+  micologiamessinese_nebrodi:
+    citation: 'Micologia Messinese (web). Monti Nebrodi: il Parco, itinerari natura tra boschi e funghi'
+    url: https://micologiamessinese.altervista.org/Monti_Nebrodi.htm
+    kind: web
+    region: Sicilia (Nebrodi)
+    verified: verified
+    supports: 'Nebrodi belts: beech "alle quote alte (1200-1600 m)", deciduous oaks, pines and chestnut "Alle quote medie
+      (800-1200 m.)", Turkey oak "dominante nelle aree più fresche, specie se esposte a nord", cork oak and cultivated
+      hazel lower; fungi: "i porcini (Boletus aereus, B. reticulatus, B.edulis) che fanno la parte del leone, ma con
+      abbondanza anche di Amanita caesarea, Cantharellus cibarius"; the high lakes (Maulazzo, Biviere, Trearie,
+      Cartolari) keep the air humid "fondamentali per la crescita dei funghi anche nei periodi meno piovosi"
+      (folklore).'
+  pavone_signorello_funghi_etna:
+    citation: 'Pavone P., Signorello P. (eds.) (web, captured 2022). Funghi dell''Etna. Orto Botanico dell''Università di
+      Catania, Hortus Botanicus Catinensis (Wayback Machine capture of 26 May 2022)'
+    url: https://web.archive.org/web/20220526051239/http://www.hortusbotanicuscatinensis.it/ambienti-naturali/ctnatura/flora/FUNGHI.html
+    kind: institutional
+    region: Sicilia (Etna)
+    verified: verified
+    supports: 'The commonest fungi of the Etna woods ("pinete, faggete, castagneti"). B. edulis ("Funciu siddu, Testa di
+      fagu"): "Dalla fine dell''estate all''autunno inoltrato", "In boschi di latifoglie e di aghifoglie"; B. aereus
+      ("Porcinu niuru, Funciu siddu, Testa niura"): "Dall''inizio dell''estate a tutto l''autunno", "In boschi di
+      latifoglie".'
+  hortus_catinensis_etna_boschi:
+    citation: 'Orto Botanico dell''Università di Catania (web, captured 2022). Ambienti naturali: Etna, flora (pages
+      Boschi a Pinus nigra ssp. calabrica, Faggete, Castagneti, Cerrete, Betulleti, Rimboschimenti). Hortus Botanicus
+      Catinensis (Wayback Machine captures of June 2022)'
+    url: https://web.archive.org/web/20220626020849/http://www.hortusbotanicuscatinensis.it/ambienti-naturali/ctnatura/flora/faggete.html
+    kind: institutional
+    region: Sicilia (Etna)
+    verified: verified
+    supports: 'Etna forest belts. Beech on every flank but the south, "in massima parte fra 1400 e 2000 m di quota",
+      down to about 800 m in deep damp valleys of the east flank (Valle S. Giacomo); Etna birch above 1,400 m, "si
+      spinge sino a 2000 m"; Turkey oak on the east flank "a quote comprese tra 1200 e 1500 metri" with Q. congesta,
+      Q. dalechampii, chestnut, laricio and birch; chestnut "al di sopra di 800-900 metri di quota" (Tarderia, Milia,
+      Zafferana); "estese pinete (Pineta di Linguaglossa, dei Piani di Mirio, di Serra la Nave) a Pino laricio",
+      natural and planted, and stone pine planted on the Monti Rossi of Nicolosi.'
+  barreca2010_pineta_ragabo:
+    citation: 'Barreca L., Marziliano P.A., Menguzzato G., Scuderi A. (2010). Avifauna e struttura nella pineta Ragabo
+      (Linguaglossa, CT). Forest@ 7: 223-233'
+    doi: 10.3832/efor0633-007
+    kind: peer_reviewed
+    region: Sicilia (Etna)
+    verified: verified
+    supports: 'The laricio pine "In Sicilia vegeta quasi esclusivamente sull''Etna e caratterizza alcuni ambiti
+      territoriali distribuiti in modo non uniforme da 1000 a 2000 m di quota"; "Interessa una superficie di 5654
+      ettari, 1200 dei quali nel solo demanio del Comune di Linguaglossa"; "per la maggior parte (87%) di popolamenti
+      puri".'
+  seiler2021_etna_treering:
+    citation: 'Seiler R., Hajdas I., Saurer M., Houlié N., D''Arrigo R., Kirchner J.W., Cherubini P. (2021). Tree-ring
+      stable isotopes and radiocarbon reveal pre- and post-eruption effects of volcanic processes on trees on Mt. Etna
+      (Sicily, Italy). Ecohydrology 14: e2340'
+    doi: 10.1002/eco.2340
+    kind: peer_reviewed
+    region: Sicilia (Etna)
+    verified: verified
+    supports: 'On Etna "intermediate elevations (1,000–1,600 m a.s.l.) are covered by forest stands dominated by European
+      beech (Fagus sylvatica L.) and at higher elevations (1,600–1900 m a.s.l.) by Corsican black pine (Pinus nigra
+      J.F. Arnold)", with undisturbed stands mostly on the north side.'
+  parks_nebrodi_ambiente:
+    citation: 'Parks.it (web). Parco Naturale dei Nebrodi: l''area protetta'
+    url: https://www.parks.it/parco.nebrodi/par.php
+    kind: web
+    region: Sicilia (Nebrodi)
+    verified: verified
+    supports: 'Nebrodi belts: macchia with cork and holm oak to 600-800 m; "piano supramediterraneo, espressione delle
+      querce di caducifoglie" at 800-1,200/1,400 m with "la diffusa Roverella, la Rovere, la Quercus gussonei" and "il
+      Cerro che diventa dominante nelle aree più fresche"; above 1,200-1,400 m "le faggete ... che coprono tutto il
+      crinale dei Nebrodi per più di 10.000 ettari", with holly and yew.'
+  wikipedia_parco_madonie:
+    citation: 'Wikipedia (it). Parco delle Madonie (section Flora; consulted 2026-09-28)'
+    url: https://it.wikipedia.org/wiki/Parco_delle_Madonie
+    kind: web
+    region: Sicilia (Madonie)
+    verified: verified
+    supports: 'Madonie belts: cork oak "fra 40 e 1000 metri"; holm oak belt at 400-1,000 m; downy oak "dai 400 ai 1200
+      metri"; beech "al di sopra dei 1000 metri trovando il suo optimum a 1600-1700 metri di quota"; fewer than thirty
+      Abies nebrodensis trees in the Vallone Madonna degli Angeli at 1,400-1,650 m.'
+  sif_carta_forestale_sicilia:
+    citation: 'Regione Siciliana, Comando del Corpo Forestale, Sistema Informativo Forestale (SIF). Carta forestale
+      regionale (1:10,000, forest types after La Mantia et al.) and Piano forestale regionale portal'
+    url: https://sif.regione.sicilia.it/ilportale/piano-forestale
+    kind: dataset
+    region: Sicilia
+    verified: verified
+    supports: 'The Sicilian woodland map the grid uses (config/regions/sicilia.yaml), drawn "secondo le definizioni di
+      bosco FAO-FRA 2000, L.R. 16/1996 e D.Lgs 227/2001" (portal page). Its forest types and whole-map areas of class
+      31a (boschi, 321,618 ha) as the region card reads them: downy oak s.l. QU2-QU5 about 87,600 ha and Turkey oak and
+      Q. gussonei CE1-CE2 25,263 ha (deciduous_oak); holm oak LE1-LE4 24,239 ha and cork oak SU1-SU3 21,464 ha
+      (evergreen_oak); beech FA1-FA4 16,794 ha (beech); chestnut CA1-CA2 11,879 ha; laricio PL1-PL3 3,681 ha and
+      montane conifer reforestation RI4 7,197 ha (mountain_pine); Mediterranean conifer reforestation RI3 53,315 ha
+      and small natural pinewoods (mediterranean_pine); eucalyptus RI1 38,818 ha (exotic_broadleaf); broadleaf
+      reforestation, Etna birch, aspen, manna ash, elm, hop-hornbeam (mixed_broadleaf); macchia MM0-MM9 126,665 ha;
+      montane scrub AS1-AS5 39,257 ha with sparse and unstocked woods (transitional_woodland_shrub). The per-type
+      areas were not opened here: they come from the region card.'
+  infc2015_sicilia:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1-1.5 (Sicilia). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Sicilia
+    verified: verified
+    supports: 'Sicilia bosco 285,489 ha (relative standard error 3.2 %), other wooded land 101,745 ha (of which shrubs
+      65,753 ha); tall-tree forest by category: temperate oaks (sessile, downy and pedunculate oak) 71,887 ha,
+      Mediterranean pines 45,327, other evergreen broadleaves 39,151, Turkey, Hungarian, Macedonian and valonia oak 30,989,
+      holm oak 19,536, cork oak 17,261, beech 15,165, other deciduous 13,237, other conifers 9,299, chestnut 8,720,
+      black, laricio and loricato pine 7,493, hygrophilous 4,929, hop-hornbeam and hornbeam 1,737; no fir, spruce,
+      larch or Scots pine; plantations 758 ha.'
+  arnone2013_rainfall_sicily:
+    citation: 'Arnone E., Pumo D., Viola F., Noto L.V., La Loggia G. (2013). Rainfall statistics changes in Sicily.
+      Hydrology and Earth System Sciences 17: 2449-2458'
+    doi: 10.5194/hess-17-2449-2013
+    kind: peer_reviewed
+    region: Sicilia
+    verified: verified
+    supports: 'Mean annual rainfall across the Sicilian gauges "ranging from 400 mm to 1300 mm", the gauge at Zafferana
+      Etnea standing out for its annual maxima; two seasons "based on the typical precipitation regime of Sicily and
+      Mediterranean areas: the dry season (from April to September) and the wet season"; a significant decrease in
+      annual rain, "mainly due to a reduction in the seasonal rainfall during the wet period (fall and winter)".'
+  mushma_occurrence_check_sicilia_2026:
+    citation: 'mushma Sicilia occurrence check: iNaturalist API (place 96908, verifiable; elevations from the Open-Meteo
+      elevation API for open, non-obscured records with positional accuracy of 1 km or better; compared with Toscana,
+      place 13073, same method) and GBIF occurrence API (gadmGid ITA.15_1), queried 2026-09-28. Aggregates only; no
+      coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations
+    kind: analysis
+    region: Sicilia
+    verified: verified
+    supports: 'iNaturalist verifiable records: B. edulis 2 (September, October 2021; located 826 m), B. reticulatus 10
+      (June 3, July 1, August 1, September 3, October 2; located 466-1,801 m, median 1,247 m, n=6), B. aereus 12
+      (July 1, August 1, September 3, October 6, November 1; located 450-938 m, n=4), B. pinophilus 0, A. caesarea 12
+      (August 1, September 4, October 5, November 2; located 163-680 m, median 455 m, n=5), Cantharellus 13 (October-
+      November, one August 2026; located 349-1,585 m, n=5). All Sicilian fungi 5,448 (Tuscany 19,136), 88 % of them
+      from 2021 on; by month (%) January 5, February 3, March 3, April 19, May 9, June 3, July 2, August 3, September
+      7, October 21, November 14, December 11. Tuscan located medians: B. edulis 1,054 m (22), B. reticulatus 649 m
+      (19), B. pinophilus 692 m (6), B. aereus 352 m (42), A. caesarea 364 m (32), Cantharellus 283 m (93). GBIF
+      (gadmGid ITA.15_1): B. edulis 2, B. reticulatus 3, B. aereus 11, B. pinophilus 0, A. caesarea 7, Cantharellus
+      26, mostly iNaturalist copies and soil-DNA samples, plus preserved specimens of C. pallens, C. ferruginascens and
+      C. romagnesianus from the Peloritani (Dinnammare, Colle San Rizzo; 350-1,000 m; "Mixed woods with mainly Quercus
+      ilex and Pinus domesticus", "mainly Cedrus sp., Quercus ilex, Quercus virgiliana s.l., Pinus domesticus",
+      "Pinus and Quercus, and some Erica arborea"; 31 October-3 November 2018, 2 October 2020).'
+  fm_sicilia_2018_04_30:
+    citation: 'Funghi Magazine (2018-04-30). Aggiornamento funghi 30 aprile [2018] (Wayback Machine capture of 23 August
+      2019)'
+    url: https://web.archive.org/web/20190823121726/https://funghimagazine.it/aggiornamento-funghi-30-aprile/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: '"Tanto in Sardegna quanto in Corsica, Elba e Sicilia ma pure lungo la macchia costiera del Tirreno,
+      Leccinun lepidum e Porcini aereus sono più presenti ormai da qualche settimana"; "Per quanto i Galletti siano
+      funghi tipicamente estivi, tra la Sardegna, Sicilia, Elba e Macchia Mediterranea, si sono già trovati i primi
+      esemplari" (folklore).'
+  fm_sicilia_2018_05_09:
+    citation: 'Funghi Magazine (2018-05-09). Aggiornamento funghi 08 maggio 2018 (Wayback Machine capture of 20 August
+      2019)'
+    url: https://web.archive.org/web/20190820041932/https://funghimagazine.it/aggiornamento-funghi-08-maggio-2018/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: '"Estatini o aereus per ora sono sempre ben presenti nella macchia mediterranea, quindi in Sardegna,
+      Sicilia, Elba ed isole minori" (folklore).'
+  fm_sicilia_2020_05_22:
+    citation: 'Funghi Magazine (2020-05-22). Aggiornamento funghi 22 maggio [2020], Sicilia (Wayback Machine capture of
+      2 July 2020)'
+    url: https://web.archive.org/web/20200702182825/https://funghimagazine.it/aggiornamento-funghi-22-maggio/
+    kind: web
+    region: Sicilia
+    verified: verified
+    supports: '"In regione si registrano però già nascite di Porcini Estivi, sia Boletus reticulatus che
+      eccezionalmente Boletus aereus, grazie soprattutto all''umidità prodotta dalla rugiada notturna ... in boschi non
+      troppo distanti dal mare, in particolar modo a Nord ed Est oltre che sull''Etna" (folklore).'
+  fm_sicilia_2021_06_24:
+    citation: 'Funghi Magazine (2021-06-24). Aggiornamento meteofunghi 24-06-2021: funghi porcini, si inizia a fare
+      sul serio (Wayback Machine capture of 25 July 2021)'
+    url: https://web.archive.org/web/20210725030935/https://funghimagazine.it/aggiornamento-meteofunghi-24-06-2021-funghi-porcini-si-inizia-a-fare-sul-serio/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: 'June 2021: "ottime le nascite di Porcini in Sicilia, dapprima sui soli settori Orientali, poi anche su
+      quelli Centrali, infine solo sui settori Settentrionali, al riparo dal vento, con buona continuità tra Etna e
+      Nebrodi"; on B. pinophilus, granite "qua e là in piccoli affioramenti tra Peloritani–Nebrodi e molto meno sulle
+      Madonie in Sicilia, ma anche qua il clima caldo-ventoso, con scarse nevicate invernali e pochi shock termici,
+      rendono l''isola poco adatta per questa varietà di Porcino" (folklore).'
+  fm_sicilia_2019_09_20:
+    citation: 'Funghi Magazine (2019-09-20). Dove stanno nascendo i funghi porcini: le piogge cadute in Italia (Wayback
+      Machine capture of 16 October 2019)'
+    url: https://web.archive.org/web/20191016204920/https://funghimagazine.it/dove-stanno-nascendo-i-funghi-porcini-le-piogge-cadute-in-italia/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: 'Sicily, September 2019: "Estatini ed Aereus si sono trovati non solo nei boschi termofili della Sicilia
+      Settentrionale ma anche sui monti tra Peloritani, Madonie e sull''Etna. Da poco, si registrano già le prime
+      sporadiche nascite di Edulis soprattutto sull''Etna e comunque oltre i 1200 mt. nel resto della regione"
+      (folklore).'
+  fm_sicilia_2019_05_30:
+    citation: 'Funghi Magazine (2019-05-30). Inizio porcini e funghi estivi (Wayback Machine capture of 20 August 2019)'
+    url: https://web.archive.org/web/20190820042220/https://funghimagazine.it/inizio-porcini-e-funghi-estivi/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: 'The first Porcini Neri of late May 2019: "In Sicilia in particolar modo sono segnalati i migliori
+      ritrovamenti, soprattutto alle falde dell''Etna e tra le falde tirreniche di Nebrodi-Peloritani e Madonie"
+      (folklore).'
+  fm_calendario_autunno2019_sicilia:
+    citation: 'Funghi Magazine (2019-10-21). Il calendario dei funghi porcini autunnali-invernali (Wayback Machine
+      capture of 20 November 2019)'
+    url: https://web.archive.org/web/20191120130500/https://funghimagazine.it/il-calendario-dei-funghi-porcini-autunnali-invernali/
+    kind: web
+    region: Italia (Centro-Sud)
+    verified: verified
+    supports: 'B. aestivalis "sotto Faggio, Castagno ... e sotto i vari tipi di Quercia, anche sempreverde ... al Sud
+      Italia, soprattutto tra Calabria e Sicilia, potranno persino apparire sotto le piante di Eucalipto"; B. edulis
+      "Abbastanza diffusi ... sui suoli cristallini/quarziferi ed acidi della Sila, Pollino, Serre-Aspromonte e monti
+      del Nord della Sicilia fin sull''Etna ... con preferenza per i boschi di Pino della Sila e di Faggio del resto del
+      Sud" (folklore).'
+  fm_sicilia_2023_05_25:
+    citation: 'Funghi Magazine (2023-05-25). Aggiornamento 26-05-2023 (Wayback Machine capture of 25 May 2023)'
+    url: https://web.archive.org/web/20230525132156/https://funghimagazine.it/aggiornamento-26-05-2023/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: '"nel Lazio, in Campania, Calabria e Sicilia, si sono già trovati i primi Ovoli Reali (Amanita caesarea)"
+      (folklore).'
+  fm_sicilia_2023_06_02:
+    citation: 'Funghi Magazine (2023-06-01). Aggiornamento funghi 02-06-2023, Sicilia (Wayback Machine capture of 1
+      June 2023)'
+    url: https://web.archive.org/web/20230601201646/https://funghimagazine.it/aggiornamento-funghi-02-06-2023/
+    kind: web
+    region: Sicilia
+    verified: verified
+    supports: 'After a rainy May 2023: "Nascite di Porcini Neri (Boletus aereus) si stanno infatti registrando non solo
+      nei boschi ma, anche e soprattutto nelle Macchie, in boschetti, gruppetti di alberi isolati"; the "Finferli/
+      Galletti ... risultano ben presenti nei boschi scuri e ben umidi, al riparo dal vento"; "Sporadici Porcini Rossi
+      ci vengono segnalati sull''Etna, alle quate superiori dove fa ancora più freddo" (folklore).'
+  fm_sicilia_2024_05_30:
+    citation: 'Funghi Magazine (2024-05-30). Aggiornamento funghi 31-05-2024 (Wayback Machine capture of 24 June 2024)'
+    url: https://web.archive.org/web/20240624072920/https://funghimagazine.it/aggiornamento-funghi-31-05-2024/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: 'Ovolo: "Già se ne vendono i primi esemplari provenienti dalla Calabria, Sicilia e Sardegna"; after the
+      May flush "ora le nascite dovrebbero essere terminate ovunque, semmai ancora qualche Porcino si potrà trovare nel
+      solo Messinese montano" (folklore).'
+  fm_sicilia_2024_09_19:
+    citation: 'Funghi Magazine (2024-09-19). Aggiornamento nascite funghi 19-09-2024'
+    url: https://funghimagazine.it/aggiornamento-nascite-funghi-19-09-2024/
+    kind: web
+    region: Sicilia
+    verified: verified
+    supports: '"In Sicilia situazione perfetta come non accadeva da tempo. Da fine agosto finalmente sono tornate
+      frequenti le piogge ... Rallentano leggermente ora le nascite sui Nebrodi settentrionali e Peloritani dove sono
+      iniziate prime, i Neri sono già arrivati al capolinea"; porcini "tra Sicani, Erei e Iblei oltre che sull''Etna"
+      (folklore).'
+  fm_sicilia_2025_11_08:
+    citation: 'Funghi Magazine (2025-11-08). Aggiornamento nascite 08-11-2025 (Wayback Machine capture of 20 December
+      2025)'
+    url: https://web.archive.org/web/20251220120016/https://funghimagazine.it/aggiornamento-nascite-08-11-2025/
+    kind: web
+    region: Italia (Sicilia)
+    verified: verified
+    supports: '"Al Sud, invece, la stagione prosegue. Continuano le nascite di Porcini, soprattutto Boletus aereus, ma
+      anche, sui monti della Calabria e tra Etna e Nebrodi, i meno comuni edulis e pinicola" (folklore).'
+  lasicilia_bronte118_funghi2018:
+    citation: 'Quaiotti M.E. (2018-09-28). Speciale funghi: i più buoni sul terreno calcare dell''Etna. La Sicilia,
+      reprinted by Bronte118 (2018-09-29)'
+    url: https://www.bronte118.it/speciale-funghi-i-piu-buoni-sul-terreno-calcare-delletna/
+    kind: web
+    region: Sicilia (Etna)
+    verified: verified
+    supports: '"Quest''anno la stagione è stata anticipata dalle piogge che hanno caratterizzato i mesi estivi e già in
+      agosto si sono raccolte grandi quantità dei pregiati porcini dell''Etna", prices down to "sette euro al chilo";
+      a Milo forager: "Dopo una grande pioggia per i porcini bisogna aspettare almeno sette, otto giorni" (folklore).'
+  lasicilia_minardo_porcino2024:
+    citation: 'La Sicilia (2024-09-04). Il fungo porcino dell''Etna da record trovato sul Monte Minardo a Bronte è
+      pesantissimo'
+    url: https://www.lasicilia.it/news/buongusto/2250580/il-fungo-porcino-dell-etna-da-record-trovato-sul-monte-minardo-a-bronte-e-pesantissimo.html
+    kind: web
+    region: Sicilia (Etna)
+    verified: verified
+    supports: 'A Bronte forager at Monte Minardo: "Sono circa dieci giorni che piove, anche se a tratti ... una
+      condizione ideale alla proliferazione dei funghi"; "circa 10 kg di funghi"; "il periodo ideale dura solo fino a
+      metà settembre" (folklore).'
+  feelingetna_timparossa2024:
+    citation: 'Feeling Etna Trekking (2024-09-24). I porcini della faggeta Timparossa'
+    url: https://feelingetnatrekking.com/2024/09/24/i-porcini-della-faggeta-timparossa/
+    kind: web
+    region: Sicilia (Etna)
+    verified: verified
+    supports: '"Quest''anno la faggeta del Timparossa ha regalato un''enorme crescita di Boletus Edulis, il porcino per
+      eccellenza che ha fatto riempire i panari di tutti i cercatori di funghi" (Castiglione di Sicilia, north flank of
+      Etna; folklore).'
+  mushma_sicilia_sias_gauge_check_2026:
+    citation: 'mushma Sicilia rain check: raw ERA5-Land (CDS) daily precipitation, read bilinearly from the land nodes
+      of the 0.2° lattice, against the SIAS gauges'' whole days from June 2019 to May 2020 (94 stations at 10-1,875 m,
+      Regione Siciliana open data, CC BY 4.0), and downscaled to the 7 gauges inside woodland cells. See
+      .gavin-root/docs/regions/sicilia.md, Weather'
+    url: https://dati.regione.sicilia.it/dataset/sias-precipitazioni
+    kind: analysis
+    region: Sicilia
+    verified: verified
+    supports: 'Raw CDS holds 1.06 of the gauge rain pooled over 94 stations (1.10 below 200 m, 1.05 at 200-400 m, 1.06 at
+      400-800 m, 0.99 at 800 m and above; median daily correlation 0.73-0.75); a fit of gauge totals on model totals x
+      (a + b x elevation) gives 0.88 + 0.10 per km (leave-one-out slopes 0.08-0.13; 0.87 + 0.11 on the 40 stations at
+      400 m and above). The 7 woodland gauges (440-1,840 m) hold 0.94 raw and 0.92 scaled. The bias is spatial more
+      than altitudinal: wet on the Tyrrhenian coast (Patti 2.03, Lascari 1.57), dry on the Iblei (Modica 0.63, Ragusa
+      0.68).'
   altotronto_porcini2017:
     citation: Alto Tronto (2017-01-03). Funghi porcini (porcini of the Monti della Laga and Sibillini)
     url: https://www.altotronto.it/funghi-porcini/

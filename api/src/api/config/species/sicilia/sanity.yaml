@@ -1,0 +1,494 @@
+# Press-contrast sanity check for Sicilia (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names, all in Sicily). Windows and source URLs written down on
+# 2026-09-28, before any Sicily score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); no ovoli or gallinacci contrast was found for Sicily.
+# Sicilian local press rarely says how a season went, and the Giornale di Sicilia, Gazzetta del Sud
+# and the Today network block AI agents; most contrasts rest on Funghi Magazine's national
+# bulletins (read through Wayback Machine captures, the live site is behind a captcha), whose
+# Sicily paragraphs are written from readers' reports and name sectors of the island ("settori
+# Est" = Etna and the Messinese, "Nord" = Nebrodi, Madonie and the Tyrrhenian Peloritani, "Ovest" =
+# the Trapanese and Palermitano, "Sud" = the Agrigentino and Ragusano) more often than comuni.
+# Etna includes Randazzo and Bronte, which also reach into the Nebrodi; no contrast sets Etna
+# against the Nebrodi. Quotes, second sources and weaknesses per contrast:
+# .gavin-root/docs/species-ecology/sicilia.md (Sanity contrasts).
+areas:
+  etna:
+    comuni:
+    - Linguaglossa
+    - Castiglione di Sicilia
+    - Randazzo
+    - Bronte
+    - Maletto
+    - Nicolosi
+    - Ragalna
+    - Zafferana Etnea
+    - Milo
+    - 'Sant''Alfio'
+    - Mascali
+    - Trecastagni
+    - Pedara
+    - Viagrande
+    - Piedimonte Etneo
+    - Adrano
+    - Biancavilla
+    - Belpasso
+  etna_peloritani:
+    comuni:
+    - Linguaglossa
+    - Castiglione di Sicilia
+    - Randazzo
+    - Bronte
+    - Maletto
+    - Nicolosi
+    - Ragalna
+    - Zafferana Etnea
+    - Milo
+    - 'Sant''Alfio'
+    - Mascali
+    - Trecastagni
+    - Pedara
+    - Viagrande
+    - Piedimonte Etneo
+    - Adrano
+    - Biancavilla
+    - Belpasso
+    - Messina
+    - Monforte San Giorgio
+    - Fiumedinisi
+    - Santa Lucia del Mela
+    - Castroreale
+    - Novara di Sicilia
+    - Antillo
+    - Mandanici
+    - Itala
+    - Scaletta Zanclea
+    - Barcellona Pozzo di Gotto
+  etna_nebrodi:
+    comuni:
+    - Linguaglossa
+    - Castiglione di Sicilia
+    - Randazzo
+    - Bronte
+    - Maletto
+    - Nicolosi
+    - Ragalna
+    - Zafferana Etnea
+    - Milo
+    - 'Sant''Alfio'
+    - Mascali
+    - Trecastagni
+    - Pedara
+    - Viagrande
+    - Piedimonte Etneo
+    - Adrano
+    - Biancavilla
+    - Belpasso
+    - Cesarò
+    - San Fratello
+    - Floresta
+    - Ucria
+    - Tortorici
+    - Longi
+    - Alcara li Fusi
+    - Galati Mamertino
+    - Caronia
+    - Mistretta
+    - Capizzi
+    - Santa Domenica Vittoria
+    - Maniace
+    - San Teodoro
+    - Militello Rosmarino
+    - Castel di Lucio
+    - 'Castell''Umberto'
+    - Raccuja
+    - Sinagra
+  etna_nebrodi_peloritani:
+    comuni:
+    - Linguaglossa
+    - Castiglione di Sicilia
+    - Randazzo
+    - Bronte
+    - Maletto
+    - Nicolosi
+    - Ragalna
+    - Zafferana Etnea
+    - Milo
+    - 'Sant''Alfio'
+    - Mascali
+    - Trecastagni
+    - Pedara
+    - Viagrande
+    - Piedimonte Etneo
+    - Adrano
+    - Biancavilla
+    - Belpasso
+    - Cesarò
+    - San Fratello
+    - Floresta
+    - Ucria
+    - Tortorici
+    - Longi
+    - Alcara li Fusi
+    - Galati Mamertino
+    - Caronia
+    - Mistretta
+    - Capizzi
+    - Santa Domenica Vittoria
+    - Maniace
+    - San Teodoro
+    - Militello Rosmarino
+    - Castel di Lucio
+    - 'Castell''Umberto'
+    - Raccuja
+    - Sinagra
+    - Messina
+    - Monforte San Giorgio
+    - Fiumedinisi
+    - Santa Lucia del Mela
+    - Castroreale
+    - Novara di Sicilia
+    - Antillo
+    - Mandanici
+    - Itala
+    - Scaletta Zanclea
+    - Barcellona Pozzo di Gotto
+  madonie:
+    comuni:
+    - Castelbuono
+    - Isnello
+    - Petralia Sottana
+    - Petralia Soprana
+    - Polizzi Generosa
+    - Collesano
+    - Geraci Siculo
+    - Gangi
+    - Sclafani Bagni
+    - Scillato
+    - Caltavuturo
+    - Pollina
+    - San Mauro Castelverde
+    - Gratteri
+    - Cefalù
+  sicani_ficuzza:
+    comuni:
+    - Santo Stefano Quisquina
+    - Bivona
+    - Castronovo di Sicilia
+    - Cammarata
+    - Palazzo Adriano
+    - Prizzi
+    - Corleone
+    - Godrano
+    - Monreale
+    - Marineo
+    - Mezzojuso
+  sicani_erei:
+    comuni:
+    - Santo Stefano Quisquina
+    - Bivona
+    - Castronovo di Sicilia
+    - Cammarata
+    - Palazzo Adriano
+    - Prizzi
+    - Piazza Armerina
+    - Aidone
+    - Nicosia
+    - Sperlinga
+  sicani_erei_iblei:
+    comuni:
+    - Santo Stefano Quisquina
+    - Bivona
+    - Castronovo di Sicilia
+    - Cammarata
+    - Palazzo Adriano
+    - Prizzi
+    - Piazza Armerina
+    - Aidone
+    - Nicosia
+    - Sperlinga
+    - Buccheri
+    - Giarratana
+    - Chiaramonte Gulfi
+    - Palazzolo Acreide
+    - Ferla
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: etna_2018_2017_late_summer
+  claim: 'Late summer 2018 on Etna: ''già in agosto si sono raccolte grandi quantità dei pregiati
+    porcini dell''Etna'', prices ''scesi fino a sette euro al chilo'', foragers bringing home ''anche
+    20 chili'' between Bronte and Randazzo (La Sicilia, 2018-09-28, via Bronte118); ''Sardegna e
+    Sicilia ... hanno avuto piogge di gran lunga superiori alle attese e nascite di funghi
+    eccezionali'' (FM 2018-08-31); an Etna forager on 2017: ''il bilancio devo dire è stato piuttosto
+    fallimentare'', 2018: ''quest''anno è diverso ... piuttosto soddisfacenti'' (Steemit, 2018-08-31)'
+  source: https://www.bronte118.it/speciale-funghi-i-piu-buoni-sul-terreno-calcare-delletna/
+  higher:
+    area: etna
+    seasons:
+    - 2018
+    start: 08-10
+    end: 09-30
+  lower:
+    area: etna
+    seasons:
+    - 2017
+    start: 08-10
+    end: 09-30
+- id: etna_2018_2025_august
+  claim: 'August 2018: ''già in agosto si sono raccolte grandi quantità dei pregiati porcini
+    dell''Etna'' (La Sicilia, 2018-09-28), ''Mai quanto quest''anno era piovuto così tanto ad Agosto
+    nel corso dell''ultimo lustro'' (FM 2018-08-31); August 2025: ''Calabria, Sicilia e Sardegna
+    restano ancora fuori dai giochi, salvo micro-zone montane umide'' (FM 2025-08-01), ''Sicilia: al
+    momento le probabilità di nascite sono molto basse'' (FM 2025-08-29), ''Dopo la magra estiva''
+    (FM 2025-10-16)'
+  source: https://web.archive.org/web/20250829134646/https://funghimagazine.it/aggiornamento-nascite-funghi-29-08-2025/
+  higher:
+    area: etna
+    seasons:
+    - 2018
+    start: 08-01
+    end: 08-31
+  lower:
+    area: etna
+    seasons:
+    - 2025
+    start: 08-01
+    end: 08-31
+- id: etna_nebrodi_peloritani_june_2018_2021_vs_2022_2024
+  claim: 'June 2021: ''ottime le nascite di Porcini in Sicilia, dapprima sui soli settori Orientali,
+    poi anche su quelli Centrali, infine solo sui settori Settentrionali ... con buona continuità tra
+    Etna e Nebrodi'' (FM 2021-06-24); June 2018: ''Sicilia favorita in aree di montagna tra Etna,
+    Nebrodi e Peloritani'' (FM 2018-06-16), ''nascite abbondanti'' (FM 2018-07-01); June 2022: ''La
+    Sicilia resta ferma al chiodo ... Sporadiche nascite si sono avute tra Etna e Peloritani'' (FM
+    2022-06-10); June 2024: ''sporadiche nascite in Sicilia orientale, anche di Porcini, però spesso
+    già screpolati'' (FM 2024-06-14), ''giusto qualche sporadicissimo ritrovamento'' (FM 2024-06-28)'
+  source: https://web.archive.org/web/20210725030935/https://funghimagazine.it/aggiornamento-meteofunghi-24-06-2021-funghi-porcini-si-inizia-a-fare-sul-serio/
+  higher:
+    area: etna_nebrodi_peloritani
+    seasons:
+    - 2018
+    - 2021
+    start: 06-05
+    end: 06-22
+  lower:
+    area: etna_nebrodi_peloritani
+    seasons:
+    - 2022
+    - 2024
+    start: 06-05
+    end: 06-22
+- id: etna_peloritani_vs_sicani_ficuzza_2020_late_june
+  claim: 'Late June 2020: ''In Sicilia buoni i settori orientali che hanno avuto diverse piogge, più
+    asciutti i boschi dei settori Ovest che sono assai meno produttivi'' (FM 2020-06-25); ''ultimi
+    ritrovamenti in zone montane della Sicilia orinetale, limitatamente ai boschi dell''Alcantara ed
+    Etna Settentrionale'' (FM 2020-07-03); ''scarse nascite di funghi in Sardegna e Sicilia
+    occidentale'' (FM 2020-07-10)'
+  source: https://web.archive.org/web/20200929081804/https://funghimagazine.it/aggiornamento-funghi-25-giugno-2020/
+  higher:
+    area: etna_peloritani
+    seasons:
+    - 2020
+    start: 06-15
+    end: 07-10
+  lower:
+    area: sicani_ficuzza
+    seasons:
+    - 2020
+    start: 06-15
+    end: 07-10
+- id: etna_nebrodi_peloritani_vs_sicani_ficuzza_2020_october
+  claim: 'October 2020: ''ottime nascite sui settori Est e Nord dell''Isola'' (FM 2020-10-08);
+    ''Sicilia settentrionale ed orientale ... nascite di funghi Porcini progressivamente sempre più
+    massicce e talvolta persino sbalorditive'' (FM 2020-10-15); ''ancora una volta protagonisti i
+    settori Est e Nord ... Sud ed Ovest dell''isola continuamente sferzati dal vento e con piogge più
+    contenute, registrano nascite del tutto sporadiche o persino localmente assenti'' (FM 2020-10-23)'
+  source: https://web.archive.org/web/20201204163307/https://funghimagazine.it/meteofunghi-23-10-2020/
+  higher:
+    area: etna_nebrodi_peloritani
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-25
+  lower:
+    area: sicani_ficuzza
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-25
+- id: etna_nebrodi_peloritani_2020_2022_early_october
+  claim: 'Early October 2020: ''un buon periodo fungino con ottime nascite sui settori Est e Nord''
+    (FM 2020-10-08), ''massicce e talvolta persino sbalorditive'' (FM 2020-10-15); 2022: ''fino ad
+    Ottobre le nascite sono state quasi del tutto assenti, tranne in pochi episodi e sparute
+    località'' (FM 2022-11-05), ''tranne che nelle siccitose Sicilia e Sardegna'' (FM 2022-10-28)'
+  source: https://web.archive.org/web/20221129141843/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+  higher:
+    area: etna_nebrodi_peloritani
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-15
+  lower:
+    area: etna_nebrodi_peloritani
+    seasons:
+    - 2022
+    start: 10-01
+    end: 10-15
+- id: etna_vs_sicani_erei_2021_september
+  claim: 'Late September 2021: ''In Sicilia si raccoglie ... quasi esclusivamente sui settori Est, in
+    modo particolare attorno all''Etna dove si sono formate lunghissime code d''auto di cercatori'';
+    ''Tra Sicilia centrale e meridionale ... è sempre la siccità a farla da padrona con miceli
+    superficiali completamente morti'' (FM 2021-09-24); births already ''tra Etna, Nebrodi e
+    Peloritani'' (FM 2021-09-10)'
+  source: https://web.archive.org/web/20211024074056/https://funghimagazine.it/aggiornamento-meteofunghi-24-09-2021-funghi-porcini-situazione-italia/
+  higher:
+    area: etna
+    seasons:
+    - 2021
+    start: 09-12
+    end: 09-30
+  lower:
+    area: sicani_erei
+    seasons:
+    - 2021
+    start: 09-12
+    end: 09-30
+- id: sicani_erei_iblei_2024_2021_september
+  claim: 'September 2024: ''In Sicilia situazione perfetta come non accadeva da tempo ... Nascono e
+    nasceranno ancora per qualche giorno Porcini ... In particolar modo tra Sicani, Erei e Iblei oltre
+    che sull''Etna'' (FM 2024-09-19), after August storms of ''fino a 200 mm sui monti Iblei'' and
+    about 100 mm on the Sicani (FM 2024-08-16); September 2021: ''Tra Sicilia centrale e
+    meridionale ... è sempre la siccità a farla da padrona'' (FM 2021-09-24)'
+  source: https://funghimagazine.it/aggiornamento-nascite-funghi-19-09-2024/
+  higher:
+    area: sicani_erei_iblei
+    seasons:
+    - 2024
+    start: 09-12
+    end: 09-30
+  lower:
+    area: sicani_erei_iblei
+    seasons:
+    - 2021
+    start: 09-12
+    end: 09-30
+- id: sicani_ficuzza_vs_etna_2022_november
+  claim: 'November 2022: ''non si registrano nascite degne di nota sui settori orientali, tranno che
+    localmente sull''Etna, continuano invece le nascite'' where storm fronts keep crossing ''soprattutto
+    il Trapanese e a tratti il Palermitano, l''Agrigentino'' (FM 2022-11-05); ''ottime nascite sui
+    settori occidentali ... scarse sui settori orientali'' (FM 2022-11-12); ''ultime nascite in
+    diminuzione tra Etna-Catanese e Ragusano-Siracusano'' (FM 2022-11-19)'
+  source: https://web.archive.org/web/20221129141843/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+  higher:
+    area: sicani_ficuzza
+    seasons:
+    - 2022
+    start: 10-25
+    end: 11-20
+  lower:
+    area: etna
+    seasons:
+    - 2022
+    start: 10-25
+    end: 11-20
+- id: etna_nebrodi_vs_madonie_2023_october
+  claim: 'Early October 2023: ''In Sicilia finalmente ben si raccoglie sui monti settentrionali ...
+    Non male le nascite sui Peloritani, ancor meglio sui Nebrodi, ottime sull''Etna, appena
+    sufficienti sulle Madonie'' (FM 2023-10-12); ''una buona buttata tra Etna e monti settentrionali,
+    nella prima quindicina di ottobre'' (FM 2023-10-27)'
+  source: https://web.archive.org/web/20231012124159/https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: etna_nebrodi
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-15
+  lower:
+    area: madonie
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-15
+- id: etna_nebrodi_2023_timing_october
+  claim: 'October 2023: ''In Sicilia c''è stata una buona buttata tra Etna e monti settentrionali,
+    nella prima quindicina di ottobre ... seppur di breve durata''; since then ''è finalmente piovuto
+    quasi dappertutto, salvo che sulla Sicilia'', ''Sfavorite Marche e Sicilia'' (FM 2023-10-27);
+    ''mai piogge serie e ben organizzate'' (FM 2023-11-09)'
+  source: https://web.archive.org/web/20231027093132/https://funghimagazine.it/aggiornamento-porcini-27-10-2023/
+  higher:
+    area: etna_nebrodi
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-15
+  lower:
+    area: etna_nebrodi
+    seasons:
+    - 2023
+    start: 10-20
+    end: 11-10
+- id: etna_nebrodi_peloritani_2024_timing_late_summer
+  claim: 'Summer 2024: ''in alcune aree della Sicilia, soprattutto orientale, da settimane o mesi,
+    la siccità si fa sempre più pesante'' (FM 2024-06-14), heat through July; then ''In Sicilia
+    finalmente si raccoglie!'' (FM 2024-08-30), ''situazione perfetta come non accadeva da tempo''
+    (FM 2024-09-19); at Monte Minardo, Bronte, ''Sono circa dieci giorni che piove ... una condizione
+    ideale'', about 10 kg in a day (La Sicilia, 2024-09-04)'
+  source: https://www.lasicilia.it/news/buongusto/2250580/il-fungo-porcino-dell-etna-da-record-trovato-sul-monte-minardo-a-bronte-e-pesantissimo.html
+  higher:
+    area: etna_nebrodi_peloritani
+    seasons:
+    - 2024
+    start: 08-25
+    end: 09-30
+  lower:
+    area: etna_nebrodi_peloritani
+    seasons:
+    - 2024
+    start: 06-10
+    end: 08-10
+- id: etna_nebrodi_2024_2025_september
+  claim: 'September 2024: ''la faggeta del Timparossa ha regalato un''enorme crescita di Boletus
+    Edulis'' (Feeling Etna Trekking, 2024-09-24), ''situazione perfetta come non accadeva da tempo''
+    (FM 2024-09-19); September 2025: ''al momento le probabilità di nascite sono molto basse'' (FM
+    2025-08-29), the 3 September rains ''non produrranno buttate clamorose'' (FM 2025-09-18), ''Dopo
+    la magra estiva, è finita la lunga attesa per Sardegna e Sicilia'' (FM 2025-10-16)'
+  source: https://feelingetnatrekking.com/2024/09/24/i-porcini-della-faggeta-timparossa/
+  higher:
+    area: etna_nebrodi
+    seasons:
+    - 2024
+    start: 09-01
+    end: 09-30
+  lower:
+    area: etna_nebrodi
+    seasons:
+    - 2025
+    start: 09-01
+    end: 09-30
+- id: etna_nebrodi_2025_timing_autumn
+  claim: '2025: ''Calabria, Sicilia e Sardegna restano ancora fuori dai giochi'' (FM 2025-08-01),
+    ''al momento le probabilità di nascite sono molto basse'' (FM 2025-08-29); then ''Le nascite
+    porcine sono già iniziate in Sicilia'' (FM 2025-10-16) and ''Al Sud, invece, la stagione prosegue.
+    Continuano le nascite di Porcini, soprattutto Boletus aereus, ma anche ... tra Etna e Nebrodi, i
+    meno comuni edulis e pinicola'' (FM 2025-11-08)'
+  source: https://web.archive.org/web/20251220120016/https://funghimagazine.it/aggiornamento-nascite-08-11-2025/
+  higher:
+    area: etna_nebrodi
+    seasons:
+    - 2025
+    start: 10-12
+    end: 11-15
+  lower:
+    area: etna_nebrodi
+    seasons:
+    - 2025
+    start: 08-01
+    end: 09-30

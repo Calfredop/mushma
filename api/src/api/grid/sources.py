@@ -249,6 +249,7 @@ def read_vector(
     segment does not name it (e.g. ``.../@@download/file``).
     """
     import pandas as pd
+    import pyogrio
 
     cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -278,7 +279,11 @@ def read_vector(
             out_fields=download.get("field", "*"),
             geometry_precision=download.get("geometry_precision"),
         )
-        frame = pd.concat([gpd.read_file(p) for p in pages], ignore_index=True)
+        # The pages hold every field; the reader's filter and columns apply to each page.
+        frame = pd.concat(
+            [pyogrio.read_dataframe(p, columns=columns, where=where) for p in pages],
+            ignore_index=True,
+        )
         if len(pages):
             # Pages are written in the requested outSR (EPSG:3035 by default).
             frame = frame.set_crs(3035, allow_override=True)

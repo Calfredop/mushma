@@ -285,7 +285,8 @@ uv run python -m api.weather.ingest backfill --wait
 uv run python -m api.weather.ingest update            # daily: recent reanalysis + 7-day forecast
 uv run python -m api.weather.ingest downscale --start 2026-09-10 --end 2026-09-24
 uv run python -m api.weather.checks gauges --start 2025-01-01 --end 2025-12-31
-# Another region's gauges (api.weather.checks GAUGE_NETWORKS; Emilia-Romagna: ARPAE open data):
+# Another region's gauges (api.weather.checks GAUGE_NETWORKS; Emilia-Romagna: ARPAE open data;
+# Sicily: SIAS hourly rain, whole only from June 2019 to May 2020):
 uv run python -m api.weather.checks gauges --region emilia_romagna
 # Lombardia: ARPA Lombardia's CC0 open data, days summed on dati.lombardia.it:
 uv run python -m api.weather.checks gauges --region lombardia --start 2019-01-01 --end 2025-12-31

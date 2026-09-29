@@ -197,17 +197,19 @@ def read_group_cover(
     crs: str,
     *,
     bbox_wgs84: tuple[float, float, float, float] | None = None,
+    region_id: str = "",
 ) -> gpd.GeoDataFrame:
     """Every layer's features mapped to their group (``group``, ``geometry``) in ``crs``.
 
-    ``bbox_wgs84`` goes to the layers whose source is queried by bbox (WFS, ArcGIS).
+    ``bbox_wgs84`` goes to the layers whose source is queried by bbox (WFS, ArcGIS), whose pages
+    are cached per region (``source_cache_dir``), where the forest types read them too.
     """
     frames = []
     for layer in layers:
         download = sources[layer.source].download or {}
         cover = read_vector(
             download,
-            raw / layer.source,
+            source_cache_dir(raw, layer.source, download, region_id),
             bbox_wgs84=bbox_wgs84 if _needs_bbox(download) else None,
             # OGR skips unread columns in a filter, so read them all when the layer filters.
             columns=None if layer.where else [layer.class_column],
@@ -306,9 +308,11 @@ def read_forest_cover(
         types_download, types_cache, bbox_wgs84=bbox_wgs84, where=types_config.get("where")
     )
     return ForestCover(
-        groups=read_group_cover(group_layers, sources, raw, crs, bbox_wgs84=bbox_wgs84),
+        groups=read_group_cover(
+            group_layers, sources, raw, crs, bbox_wgs84=bbox_wgs84, region_id=region_id
+        ),
         types=tagged(types, type_field, "habitat", type_classes),
-        sources=[*dict.fromkeys(layer.source for layer in group_layers), types_source_id],
+        sources=list(dict.fromkeys([*(layer.source for layer in group_layers), types_source_id])),
     )
 
 
