@@ -155,6 +155,32 @@ fvg_tipologie_forestali:
     srs: EPSG:25833
     field: CODICE_TIPO
 
+rv_ccs2021:
+  name: Regione del Veneto — Carta della copertura del suolo 2021 (1:10.000)
+  homepage: https://idt2.regione.veneto.it/portfolio/webgis-carta-copertura-del-suolo-regione-del-veneto/
+  license: IODL 2.0
+  attribution: "Carta della copertura del suolo 2021 © Regione del Veneto – L.R. n. 28/76 – Formazione della Carta Tecnica Regionale, IODL 2.0"
+  notes: >-
+    The Region's land-cover database updated to 2021 (RNDT record r_veneto:c0506171_CCS2021,
+    published 2025-07-03 by the Direzione Pianificazione Territoriale): photo-interpreted from the
+    AGEA 2021 orthophoto, nominal scale 1:10,000, minimum unit 0.25 ha, a five-level Corine legend
+    whose forest classes are the regional forest categories (level 4) and types (level 5) of the
+    Carta regionale dei tipi forestali (Del Favero et al. 2000). Code `clc_lv_all` is the level-5
+    code, or the level-4 code with a trailing 0 where a polygon has no type. `specific` flags forest
+    hit by the Vaia storm (01), bark beetle (02) or fire (03). The RNDT record gives IODL 2.0 and no
+    limits on public access; the Geoportale's terms name the credit line for the Direzione
+    Pianificazione Territoriale's data. The GeoServer layer holds all 407,081 polygons of the
+    region; a CQL filter fetches the 32,000 forest and scrub polygons (about 500 MB of GeoJSON in
+    Monte Mario / Italy 1) in one GetFeature.
+  download:
+    wfs: https://idt2-geoserver.regione.veneto.it/geoserver/wfs
+    type_name: rv:c0506171_ccs2021
+    version: 1.1.0
+    srs: EPSG:3003
+    # The server answers HTTP 500 to any CQL OR; an IN list works.
+    cql_filter: "clc_lvl_3 IN ('311', '312', '313', '322', '323')"
+    field: clc_lv_all
+
 rm_rem_vegetazione:
   name: Regione Marche — Rete Ecologica Marche (REM), Vegetazione naturale 1:50.000
   homepage: https://www.regione.marche.it/Entra-in-Regione/Rete-Ecologica-Marche-REM/Cartografia-shapefile

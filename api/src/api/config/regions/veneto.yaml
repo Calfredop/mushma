@@ -1,0 +1,207 @@
+# Veneto: region #10 of the full-Italy rollout (.gavin-root/docs/regions/veneto.md).
+id: veneto
+name: {it: Veneto, en: Veneto}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [10.62, 44.79, 13.11, 46.68]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 5
+
+# Woodland: one regional map gives both layers. The Region's Carta della copertura del suolo 2021
+# (AGEA 2021 orthophoto, 1:10,000, 0.25 ha) carries the regional forest categories and types
+# (Del Favero et al. 2000) as its Corine levels 4 and 5, so the code (clc_lv_all: the level-5
+# code, or the level-4 code and a 0 where a polygon has no type) says both which broad group a
+# polygon is and which habitat. Forest the map flags as hit by the Vaia storm of 2018, bark beetle
+# or fire (`specific` 01, 02, 03: 10,226 ha, nine tenths of it Vaia) was flattened or killed and
+# goes to the transitional group, as not woodland. Mugo-pine krummholz, green alder and shrubland
+# are not forest, as INFC counts them, and go to transitional too; broadleaf plantations for
+# timber (31151, arboricoltura) are left out, as INFC leaves them out. Spruce-beech woods are the
+# map's only mixed forest. See .gavin-root/docs/woodland-grid.md and
+# .gavin-root/docs/regions/veneto.md (Sources).
+forest:
+  groups:
+    - source: rv_ccs2021
+      class_column: clc_lv_all
+      where: "specific = '-99994'"
+      classes:
+        # 311 bosco di latifoglie
+        "31100": broadleaf      # latifoglie, no category
+        "31111": broadleaf      # aceri-frassineto con ontano bianco
+        "31112": broadleaf      # aceri-frassineto con ostria
+        "31113": broadleaf      # aceri-frassineto tipico
+        "31114": broadleaf      # aceri-tiglieto di versante
+        "31115": broadleaf      # aceri-tiglieto tipico
+        "31121": broadleaf      # alneta di ontano nero e/o bianco
+        "31122": transitional   # alneta di ontano verde (subalpine scrub)
+        "31123": broadleaf      # betuleto
+        "31130": broadleaf      # castagneto con frassino
+        "31132": broadleaf      # castagneto dei substrati magmatici
+        "31133": broadleaf      # castagneto dei suoli mesici
+        "31134": broadleaf      # castagneto dei suoli xerici
+        "31135": broadleaf      # rovereto dei substrati magmatici
+        "31136": broadleaf      # rovereto tipico
+        "31141": broadleaf      # faggeta altimontana
+        "31142": broadleaf      # faggeta montana tipica esalpica
+        "31143": broadleaf      # faggeta montana tipica esomesalpica
+        "31144": broadleaf      # faggeta montana tipica mesalpica
+        "31145": broadleaf      # faggeta primitiva
+        "31146": broadleaf      # faggeta submontana con ostria
+        "31147": broadleaf      # faggeta submontana dei suoli acidi
+        "31148": broadleaf      # faggeta submontana dei suoli mesici
+        "31149": broadleaf      # faggeta submontana tipica
+        "31152": broadleaf      # robinieto
+        "31161": broadleaf      # bosco costiero dei suoli idrici
+        "31162": broadleaf      # lecceta
+        "31163": broadleaf      # saliceti e altre formazioni riparie
+        "31171": broadleaf      # querceto dei substrati magmatici con elementi mediterranei
+        "31181": broadleaf      # orno-ostrieto con leccio
+        "31182": broadleaf      # orno-ostrieto primitivo
+        "31183": broadleaf      # orno-ostrieto tipico
+        "31184": broadleaf      # ostrio-querceto a scotano
+        "31185": broadleaf      # ostrio-querceto tipico
+        "31191": broadleaf      # carpineto con cerro
+        "31192": broadleaf      # carpineto con frassino
+        "31193": broadleaf      # carpineto con ostria
+        "31194": broadleaf      # carpineto tipico
+        "31195": broadleaf      # querco-carpineto collinare
+        "31196": broadleaf      # querco-carpineto planiziale
+        # 312 bosco di conifere
+        "31211": conifer        # abieteto dei substrati carbonatici
+        "31212": conifer        # abieteto dei substrati silicatici
+        "31213": conifer        # abieteto dei suoli mesici con faggio
+        "31214": conifer        # abieteto dei suoli mesici tipico
+        "31215": conifer        # abieteto esomesalpico montano
+        "31220": conifer        # formazione antropogena di conifere
+        "31231": conifer        # lariceto primitivo
+        "31232": conifer        # lariceto tipico
+        "31233": conifer        # larici-cembreto con abete rosso
+        "31234": conifer        # larici-cembreto con ontano verde
+        "31235": conifer        # larici-cembreto tipico
+        "31241": conifer        # pecceta con frassino e/o acero
+        "31242": conifer        # pecceta dei substrati carbonatici altimontana
+        "31243": conifer        # pecceta dei substrati carbonatici subalpina
+        "31244": conifer        # pecceta dei substrati silicatici dei suoli mesici altimontana
+        "31245": conifer        # pecceta dei substrati silicatici dei suoli mesici subalpina
+        "31246": conifer        # pecceta dei substrati silicatici dei suoli xerici altimontana
+        "31247": conifer        # pecceta dei substrati silicatici dei suoli xerici montana
+        "31248": conifer        # pecceta dei substrati silicatici dei suoli xerici subalpina
+        "31249": conifer        # pecceta secondaria montana
+        "31251": conifer        # pineta di pino silvestre endalpica
+        "31252": conifer        # pineta di pino silvestre esalpica con faggio
+        "31253": conifer        # pineta di pino silvestre esalpica con pino nero
+        "31254": conifer        # pineta di pino silvestre esalpica tipica
+        "31255": conifer        # pineta di pino silvestre mesalpica con abete rosso
+        "31256": conifer        # pineta di pino silvestre mesalpica tipica
+        "31257": conifer        # pineta di pino silvestre primitiva
+        # 313 bosco misto
+        "31311": mixed          # piceo-faggeto dei suoli mesici
+        "31312": mixed          # piceo-faggeto dei suoli xerici
+        # 322 lande e cespuglieti, 323 vegetazione in evoluzione
+        "32200": transitional   # lande e cespuglieti
+        "32211": transitional   # arbusteto
+        "32221": macchia        # pseudomacchia (Colli Euganei)
+        "32231": transitional   # mugheta macroterma
+        "32232": transitional   # mugheta mesoterma
+        "32233": transitional   # mugheta microterma
+        "32300": transitional   # vegetazione boschiva e arbustiva in evoluzione
+    # Forest hit by Vaia, bark beetle or fire.
+    - source: rv_ccs2021
+      class_column: clc_lvl_3
+      where: "specific <> '-99994'"
+      classes:
+        "311": transitional
+        "312": transitional
+        "313": transitional
+  types:
+    source: rv_ccs2021
+    class_column: clc_lv_all
+    where: "specific = '-99994'"
+    classes:
+      # 311 bosco di latifoglie (31100, no category: typed from the cells around)
+      "31111": mixed_broadleaf           # aceri-frassineto con ontano bianco
+      "31112": mixed_broadleaf           # aceri-frassineto con ostria
+      "31113": mixed_broadleaf           # aceri-frassineto tipico
+      "31114": mixed_broadleaf           # aceri-tiglieto di versante
+      "31115": mixed_broadleaf           # aceri-tiglieto tipico
+      "31121": riparian                  # alneta di ontano nero e/o bianco
+      "31123": mixed_broadleaf           # betuleto
+      "31130": chestnut                  # castagneto con frassino
+      "31132": chestnut                  # castagneto dei substrati magmatici
+      "31133": chestnut                  # castagneto dei suoli mesici
+      "31134": chestnut                  # castagneto dei suoli xerici
+      "31135": deciduous_oak             # rovereto dei substrati magmatici
+      "31136": deciduous_oak             # rovereto tipico
+      "31141": beech                     # faggeta altimontana
+      "31142": beech                     # faggeta montana tipica esalpica
+      "31143": beech                     # faggeta montana tipica esomesalpica
+      "31144": beech                     # faggeta montana tipica mesalpica
+      "31145": beech                     # faggeta primitiva
+      "31146": beech                     # faggeta submontana con ostria
+      "31147": beech                     # faggeta submontana dei suoli acidi
+      "31148": beech                     # faggeta submontana dei suoli mesici
+      "31149": beech                     # faggeta submontana tipica
+      "31152": exotic_broadleaf          # robinieto
+      "31161": riparian                  # bosco costiero dei suoli idrici
+      "31162": evergreen_oak             # lecceta
+      "31163": riparian                  # saliceti e altre formazioni riparie
+      "31171": deciduous_oak             # querceto dei substrati magmatici con elementi mediterranei
+      "31181": mixed_broadleaf           # orno-ostrieto con leccio
+      "31182": mixed_broadleaf           # orno-ostrieto primitivo
+      "31183": mixed_broadleaf           # orno-ostrieto tipico
+      "31184": deciduous_oak             # ostrio-querceto a scotano
+      "31185": deciduous_oak             # ostrio-querceto tipico
+      "31191": mixed_broadleaf           # carpineto con cerro
+      "31192": mixed_broadleaf           # carpineto con frassino
+      "31193": mixed_broadleaf           # carpineto con ostria
+      "31194": mixed_broadleaf           # carpineto tipico
+      "31195": deciduous_oak             # querco-carpineto collinare
+      "31196": deciduous_oak             # querco-carpineto planiziale
+      # 312 bosco di conifere
+      "31211": fir_spruce                # abieteto dei substrati carbonatici
+      "31212": fir_spruce                # abieteto dei substrati silicatici
+      "31213": fir_spruce                # abieteto dei suoli mesici con faggio
+      "31214": fir_spruce                # abieteto dei suoli mesici tipico
+      "31215": fir_spruce                # abieteto esomesalpico montano
+      # Conifer plantations: three quarters spruce on beech and hop-hornbeam sites in the
+      # Carta forestale of 2006, the rest black pine, larch and a little stone pine on the coast.
+      "31220": fir_spruce                # formazione antropogena di conifere
+      "31231": other_conifer             # lariceto primitivo
+      "31232": other_conifer             # lariceto tipico
+      "31233": other_conifer             # larici-cembreto con abete rosso
+      "31234": other_conifer             # larici-cembreto con ontano verde
+      "31235": other_conifer             # larici-cembreto tipico
+      "31241": fir_spruce                # pecceta con frassino e/o acero
+      "31242": fir_spruce                # pecceta dei substrati carbonatici altimontana
+      "31243": fir_spruce                # pecceta dei substrati carbonatici subalpina
+      "31244": fir_spruce                # pecceta dei substrati silicatici dei suoli mesici altimontana
+      "31245": fir_spruce                # pecceta dei substrati silicatici dei suoli mesici subalpina
+      "31246": fir_spruce                # pecceta dei substrati silicatici dei suoli xerici altimontana
+      "31247": fir_spruce                # pecceta dei substrati silicatici dei suoli xerici montana
+      "31248": fir_spruce                # pecceta dei substrati silicatici dei suoli xerici subalpina
+      "31249": fir_spruce                # pecceta secondaria montana
+      "31251": mountain_pine             # pineta di pino silvestre endalpica
+      "31252": mountain_pine             # pineta di pino silvestre esalpica con faggio
+      "31253": mountain_pine             # pineta di pino silvestre esalpica con pino nero
+      "31254": mountain_pine             # pineta di pino silvestre esalpica tipica
+      "31255": mountain_pine             # pineta di pino silvestre mesalpica con abete rosso
+      "31256": mountain_pine             # pineta di pino silvestre mesalpica tipica
+      "31257": mountain_pine             # pineta di pino silvestre primitiva
+      # 313 bosco misto
+      "31311": mixed_broadleaf_conifer   # piceo-faggeto dei suoli mesici
+      "31312": mixed_broadleaf_conifer   # piceo-faggeto dei suoli xerici
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Veneto, IT", admin level
+# 10) on 2026-09-29. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 13074
