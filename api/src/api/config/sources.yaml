@@ -91,6 +91,28 @@ rt_ucs:
     url: https://www502.regione.toscana.it/geoscopio/download/tematici/ucs_rt/USO_E_COPERTURA_DEL_SUOLO_REGIONE_TOSCANA.zip
     shapefile: UCS_07_19.shp
 
+lazio_carta_forestale:
+  name: Regione Lazio — Carta forestale su base tipologica (1:10.000)
+  homepage: https://dati.lazio.it/dataset/carta-forestale-su-base-tipologica-della-regione-lazio
+  license: CC BY 4.0
+  attribution: "Carta forestale su base tipologica © Regione Lazio, CC BY 4.0"
+  notes: >-
+    Derived from the Region's Carta delle formazioni naturali e seminaturali by photo-interpretation
+    of the 2005-2007 ADS40 flight and SPOT5 images at 1:10,000 (0.5 ha minimum unit; E-GEOS and
+    Forest Lab for the Agenzia Regionale Parchi, final test February 2011; Chirici et al. 2014,
+    Forest@ 11: 65-71). Its 39,095 polygons carry the forest category (categoria: Faggeta,
+    Cerreta, Castagneto…) and type (tipologia: Faggeta montana eutrofica, Castagneto (eutrofico) su
+    depositi vulcanici…) of every wood and shrubland, so one layer gives both the broad groups and
+    the forest types. The open-data portal lists it under CC BY 4.0 (licence_id cc-by4) and
+    publishes the WFS SHAPE-ZIP below as its download. The Region's land-use map (CUS 2000,
+    1:25,000; its 2016 update revises urban and farm classes only) serves as the forest-area
+    cross-check in .gavin-root/docs/regions/lazio.md.
+  download:
+    url: https://geoportale.regione.lazio.it/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Atipi_forestali2&outputFormat=SHAPE-ZIP&srs=EPSG%3A25833&format_options=charset%3AUTF-8
+    file: tipi_forestali2.zip
+    shapefile: tipi_forestali2.shp
+    field: tipologia
+
 rl_tipi_forestali:
   name: Regione Liguria — Tipi forestali della Regione Liguria sc. 1:10.000, ed. 2025
   homepage: https://geoportal.regione.liguria.it/catalogo/mappe.html?typeEvent=detailFromHome&idmap=2661

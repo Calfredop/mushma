@@ -8,6 +8,7 @@ import { calabria } from './calabria.js'
 import { campania } from './campania.js'
 import { emiliaRomagna } from './emilia-romagna.js'
 import { friuliVeneziaGiulia } from './friuli-venezia-giulia.js'
+import { lazio } from './lazio.js'
 import { liguria } from './liguria.js'
 import { lombardia } from './lombardia.js'
 import { marche } from './marche.js'
@@ -38,6 +39,7 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [abruzzo.slug]: abruzzo,
   [calabria.slug]: calabria,
   [puglia.slug]: puglia,
+  [lazio.slug]: lazio,
 }
 
 export const DEFAULT_REGION_SLUG = toscana.slug

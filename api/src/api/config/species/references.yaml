@@ -5085,3 +5085,381 @@ references:
       b = 0.036 per km (a factor alone 0.633), leaving every height band within 0.98-1.04 of the gauges.'
     cited_as:
     - regions/valle_d_aosta.md
+  # ---------------------------------------------------------------------------------------------
+  # Lazio (region card, 2026-09-28): sources for species/lazio/ and
+  # .gavin-root/docs/species-ecology/lazio.md. Appended as one block rather than sorted in.
+  # It also cites bonanomi2020_treeline (Abruzzo), bmeteo_porcini_maggio2026 and
+  # funghimagazine_calendario_autunno2019 (Campania), which are in those regions' blocks above.
+  # ---------------------------------------------------------------------------------------------
+  lr_lazio_32_1998:
+    citation: 'Regione Lazio. L.R. 5 agosto 1998, n. 32, Disciplina della raccolta e della commercializzazione dei
+      funghi epigei spontanei e di altri prodotti del sottobosco (BUR Lazio n. 23 of 20 August 1998, S.O. 2),
+      testo coordinato with the amendments of L.R. 9/2017, 1/2018, 13/2018, 1/2020 and 20/2024. Consiglio
+      regionale del Lazio'
+    url: https://www.consiglio.regione.lazio.it/?vw=leggiregionalidettaglio&id=8275&sv=vigente
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'the regional picking law in force: "determinata complessivamente in tre chilogrammi" per person per
+      day (art. 3.1); minimum cap of 4 cm for "Amanita caesarea (ovolo buono)" and "Boletus edulis e relativo gruppo
+      (porcino)" (3.2), none for "Cantharellus Adans ex Fries tutte le specie" (3.2 bis); "vietata la raccolta della
+      Amanita caesarea allo stato di ovolo chiuso" (3.4); a permit after a 14-hour course and a yearly contribution
+      (art. 4); no picking at night (9.1); bans in integral reserves and in the park areas their bodies choose (art.
+      10); temporary closures, and since L.R. 20/2024 the weekdays open to picking, set by the Giunta (art. 11). No
+      season calendar and no altitude rule. Confirms the porcini group, the ovolo and the chanterelles as regional
+      species.'
+    cited_as:
+    - species-ecology/lazio.md
+  regione_lazio_carta_forestale2011:
+    citation: 'e-geos and Forest Lab Centre (Università del Molise) for Regione Lazio (2010, published 2011). Carta
+      delle formazioni naturali e seminaturali mediante approfondimento al 4° e 5° livello Corine Land Cover della
+      Carta dell''Uso del Suolo della Regione Lazio; Carta forestale su base tipologica: Report finale (versione del
+      15/11/2010). Open Data Lazio'
+    url: https://dati.lazio.it/dataset/91a9cd67-1a41-4584-b611-960c65d82724/resource/68897c70-79ab-4f86-b20c-9c920442ec05/download/relazionecartaforestaletipologicadellazio.pdf
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'the Lazio forest types the grid reads (pp. 45-80). Faggete montane "tipici della fascia altitudinale
+      compresa tra 900 e 1800 m", the lower montane ones "generalmente tra 1000 e 1400 m", the upper ones "tra 1400 e
+      1800-1900 m" (p. 53); Faggeta altomontana e rupestre "indicativamente 1500-1800) fino al limite della
+      vegetazione arborea" (p. 75); Faggete termofile e basso-montane "Boschi di bassa quota, generalmente di media e
+      alta collina (500-800 m, eccezionalmente piccoli lembi anche a 300 m)", with "carpino nero (Ostrya
+      carpinifolia), cerro (Quercus cerris), castagno (Castanea sativa), carpino bianco" (pp. 52-53), "discese fino a
+      500 m sui substrati vulcanici, es. Faggete di Oriolo e di Allumiere" (p. 76). Chestnut woods "Interessano
+      essenzialmente i versanti dei rilievi vulcanici", and limestone relief only where the soil has acidified (p.
+      52): on potassic volcanics (Vulsino, Vicano, Sabatini, Colli Albani), acid lavas (Monti Cimini, Tolfa,
+      Allumiere), sandstone and marl (Carseolani, Cicolano, Velino, Ruffi, Prenestini, Affilani, Cairo) and limestone
+      (Vicovaro, Lepini, Liri) (p. 75). Ostrieti mesofili "Su tutti i rilievi montuosi carbonatici", "Molti
+      rimboschimenti di conifere, prevalentemente a Pinus nigra" in their belt (p. 51); conifer reforestation of black
+      pine, locally Douglas fir, firs, Weymouth pine, "Tipicamente nella fascia montana dei rilievi calcarei del Lazio
+      (es. M. Simbruini, Serra Traversa, M. Cairo, Reatino) o substrati vulcanici (prevalentemente su M. Cimini)" (pp.
+      76-77). Arbusteti temperati: broom, juniper, blackthorn, bramble and rose scrub "ai margini dei boschi collinari e
+      montani (mantello) o in aree abbandonate dall''agricoltura e dal pascolo", "generalmente costituenti il mantello
+      di querceti caducifogli" (p. 80); macchia "dominata da arbusti sclerofilli quali leccio (arbustivo), lentisco,
+      fillirea, corbezzolo, erica" on the old dunes and coastal hills (p. 79); Boschi di neoformazione of elm, field
+      maple, hornbeam, robinia on abandoned farmland (pp. 52, 77); stone-pine woods "generalmente nell''ambito della
+      duna consolidata e della duna antica" (p. 54). The map itself (39,095 polygons) is published under CC BY 4.0 on
+      the same portal.'
+    cited_as:
+    - species-ecology/lazio.md
+  parchilazio_faggeta_monte_venere:
+    citation: 'Santodonato S. Faggeta depressa di Monte Venere (Riserva Naturale Regionale Lago di Vico, Caprarola).
+      Parchilazio.it, the Regione Lazio protected-areas portal'
+    url: https://www.parchilazio.it/vico-schede-16296-faggeta_depressa_di_monte_venere
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'beech "Nel Lazio ricopre quasi settantamila ettari di montagna, prevalentemente nella dorsale appenninica
+      tra gli 800 e i 1.800 metri, ma in alcuni casi può scendere anche a quote più basse"; part of the Monte Venere
+      beech "si sviluppa da 570 metri fino a 853 metri sul livello del mare".'
+    cited_as:
+    - species-ecology/lazio.md
+  parchilazio_vico_funghi:
+    citation: 'Riserva Naturale Regionale Lago di Vico. Funghi (Natura, Flora). Parchilazio.it'
+    url: https://www.parchilazio.it/vico-schede-115-funghi
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'among the fungi of the Lago di Vico reserve (Monti Cimini: Monte Venere, Monte Fogliano) "il ricercato
+      porcino (Boletus edulis), che cresce prevalentemente su terreni acidi".'
+    cited_as:
+    - species-ecology/lazio.md
+  parchilazio_monte_rufeno_funghi:
+    citation: 'Riserva Naturale Monte Rufeno (Acquapendente). I Funghi della Riserva Naturale Monte Rufeno.
+      Parchilazio.it'
+    url: https://www.parchilazio.it/schede-144-i_funghi_della_riserva_naturale_monte_rufeno
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'the reserve''s edible fungi include "il porcino (Boletus aereus Bull.), l''ovulo (Amanita cesarea
+      (Scop.:Fr.) Pers.), il galletto (Cantharellus cibarius Fr.)"; "si stima una lista di 1080 specie di funghi";
+      its woods are Turkey oak, downy oak and mixed mesophilous stands (the Bosco del Sasseto).'
+    cited_as:
+    - species-ecology/lazio.md
+  parchilazio_ti_presento_il_galletto:
+    citation: 'Ti presento il Galletto (Rocca Priora, RM). Parchilazio.it, Uomo e territorio: tradizione e folklore'
+    url: https://www.parchilazio.it/schede-464-ti_presento_il_galletto
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'at Rocca Priora (Castelli Romani) the Associazione "Amici del Fungo Galletto", with the Lazio health
+      service mycologists (AMISS), holds a mycological festival whose "Protagonista assoluto" is "il Galletto, tra i
+      funghi più buoni e più cucinati, insieme al Porcino": the chanterelle as a signature fungus of the Castelli
+      Romani chestnut and oak woods.'
+    cited_as:
+    - species-ecology/lazio.md
+  parcolucretili_amanita_caesarea:
+    citation: 'Matteucci A. (2019-08-05). Amanita caesarea, fungo dei Cesari (page slug "amanita-caesarea-un-fungo-
+      estivo"). Parco Naturale Regionale dei Monti Lucretili'
+    url: https://parcolucretili.it/amanita-caesarea-un-fungo-estivo/
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'the Lucretili park''s card: "Cresce sotto latifoglie, preferibilmente sotto quercia e castagno e in boschi
+      misti"; the page address calls it "un fungo estivo"; local names "ovuli, velocce, ovulo buono, cocco, bolè, fungo reale".'
+    cited_as:
+    - species-ecology/lazio.md
+  fem_migliozzi_faggeto_allumiere2008:
+    citation: 'Migliozzi V. (2008-12-27). Il faggeto di Allumiere. Forum Funghi e Micologia (funghiemicologia.com),
+      section Parchi boschi e riserve d''Italia'
+    url: https://www.funghiemicologia.com/phpBB3/viewtopic.php?t=5930
+    kind: web
+    region: Lazio
+    verified: verified
+    supports: 'folklore (a Roman forager-mycologist): the beech wood of Allumiere (Monti della Tolfa, Monte Urbano 628 m,
+      Poggio Elceto 611 m) "deve essere considerato come una ''faggeta depressa''", of beech, oak and chestnut; porcini
+      "ben presenti in tutto il territorio del Faggeto e dei boschi limitrofi"; "Oltre ai boleti del gruppo edulis, è
+      possibile raccogliere in quantità galletti (Cantharellus cibarius)".'
+    cited_as:
+    - species-ecology/lazio.md
+  fem_migliozzi_monte_venere2009:
+    citation: 'Migliozzi V. (2009-01-04). Monte Venere e monte Fogliano. Forum Funghi e Micologia (funghiemicologia.com),
+      section Parchi boschi e riserve d''Italia'
+    url: https://www.funghiemicologia.com/phpBB3/viewtopic.php?t=6005
+    kind: web
+    region: Lazio
+    verified: verified
+    supports: 'folklore: in the Lago di Vico reserve the "Faggeta depressa" of Monte Venere starts "già alla quota di 500
+      metri"; beech covers much of the 900 ha of woods, Turkey oak the slopes above the lake, chestnut lower down;
+      "sia sotto faggio che ... sotto cerro ... nei mesi di giugno, settembre ed ottobre ... è relativamente facile
+      riempire il canestro di porcini (Boletus aestivalis). Più frequente, ma sotto cerro, Boletus aereus e Amanita
+      caesarea"; "una stagione micologica abbastanza lunga (dalla primavera all''inverno)".'
+    cited_as:
+    - species-ecology/lazio.md
+  fem_migliozzi_mola_oriolo2009:
+    citation: 'Migliozzi V. (2009-01-07). La mola di Oriolo romano. Forum Funghi e Micologia (funghiemicologia.com),
+      section Parchi boschi e riserve d''Italia'
+    url: https://www.funghiemicologia.com/phpBB3/viewtopic.php?t=6054
+    kind: web
+    region: Lazio
+    verified: verified
+    supports: 'folklore: the downy-oak, Turkey-oak and chestnut woods of the Mola di Oriolo (Mignone valley) fill with
+      russules "Già dalla fine del mese di Aprile e fino ai primi giorni di Novembre, salvo il periodo siccitoso estivo"; "In
+      autunno è possibile riempire facilmente i canestri di galletti (Cantharellus cibarius) ... di ovoli (Amanita
+      caesarea) e di porcini"; "Frequente è il Boletus aestivalis (= B. reticulatus) mentre è un po'' più raro il
+      Boletus aereus".'
+    cited_as:
+    - species-ecology/lazio.md
+  fem_macchia_grande_manziana2011:
+    citation: 'Franco55, Migliozzi V. and others (2011-08-07 to 2011-08-08). Gli ultimi "botti" nel bosco di Macchia
+      Grande di Manziana. Forum Funghi e Micologia (funghiemicologia.com)'
+    url: http://www.funghiemicologia.com/phpBB3/viewtopic.php?t=22231
+    kind: web
+    region: Lazio
+    verified: verified
+    supports: 'folklore: in the Turkey-oak wood of Macchia Grande di Manziana on 6 August 2011, "complice questo caldo
+      insopportabile, malgrado le abbondanti pioggie" the ground was drying, but a cool, moist patch gave "15 porcini
+      di quercia"; "gli aereus di cerro"; on 8 August "la buttata è finita" and "sono ricominciati ad apparire gli
+      ovoli di Amanita caesarea".'
+    cited_as:
+    - species-ecology/lazio.md
+  bmeteo_macchia_mediterranea2025:
+    citation: 'Oppicelli N. (2025-11-13). Verso l''inverno: andar per funghi in macchia mediterranea. Passione Funghi,
+      3BMeteo'
+    url: https://funghi.3bmeteo.com/macchia-mediterranea/
+    kind: web
+    verified: verified
+    supports: 'folklore: macchia runs along the coast "Dalla Liguria di Ponente alle fasce litoranee tirreniche della
+      Toscana e del Lazio"; there the season "non coincide con il classico ''luglio–ottobre'' dei boschi interni: le
+      crescite più significative compaiono spesso da novembre in avanti"; "fra fine maggio e settembre, le piogge utili
+      al suolo sono poche o nulle"; B. aereus "il simbolo stesso delle leccete e delle sugherete mediterranee ... ed è
+      tipicamente tardivo"; ovoli "legati ai querceti termofili e alle leccete miste"; C. alborufescens "tipico delle
+      leccete", "nelle zone più calde, possono presentarsi anche in pieno mese di gennaio".'
+    cited_as:
+    - species-ecology/lazio.md
+  chirici2014_carta_forestale_lazio:
+    citation: 'Chirici G., Fattori C., Cutolo N., Tufano M., Corona P., Barbati A., Blasi C., Copiz R., Rossi L.,
+      Biscontini D., Ribera A., Morgante L., Marchetti M. (2014). La realizzazione della carta delle formazioni
+      naturali e semi-naturali e della carta forestale su basi tipologiche della regione Lazio. Forest@ 11: 65-71'
+    doi: 10.3832/efor1204-011
+    kind: peer_reviewed
+    region: Lazio
+    verified: verified
+    supports: 'the regional forest map the Lazio grid reads: 1:10,000 from ADS40 and SPOT5 imagery, "17 categorie e 36
+      tipi" (p. 65); areas by type (Tab. 1, p. 66): beech 86,079 ha (montana eutrofica 80,149, termofila e basso montana
+      5,368, altomontana e rupestre 562), chestnut 56,443 ha (27,984 on volcanic deposits, 368 on acid lavas, 23,287 on
+      sandstone and marl, 4,804 on limestone), Turkey-oak woods 145,330 ha, hop-hornbeam 83,887 ha, conifer
+      reforestation 11,536 ha.'
+    cited_as:
+    - species-ecology/lazio.md
+  infc2015_lazio:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1, 1.2, 1.4 and 1.5 (Lazio). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Lazio
+    verified: verified
+    supports: 'Lazio bosco 560,236 ha (relative standard error 1.6 %), other wooded land 87,912 ha, 32.6 % of the region;
+      categories of the tall forest: Turkey oak, Hungarian oak and other Mediterranean oaks 132,444 ha (23.6 % of the
+      bosco), hop-hornbeam and hornbeam 97,974, downy, sessile and pedunculate oak 81,764, beech 74,430 (13.3 %), other
+      deciduous 54,024, holm oak 48,267, chestnut 35,792 (6.4 %; 6,264 of it fruit orchards), hygrophilous 9,211, black
+      and laricio pine 8,474, Mediterranean pines 7,344, cork oak 2,579, other conifers 1,474, Norway spruce 368
+      (standard error 100 %), silver fir 0; plantations 2,176 ha, none of conifers.'
+    cited_as:
+    - species-ecology/lazio.md
+  parchilazio_faggio:
+    citation: 'Faggio (Fagus sylvatica). Parchilazio.it, the Regione Lazio protected-areas portal, flora cards'
+    url: https://www.parchilazio.it/schede-10-faggio
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: '"Nel Lazio, il faggio copre quasi settantamila ettari di montagna, di solito tra gli 800 e i 1.800 metri,
+      anche se può scendere a quote più basse in presenza di particolari condizioni microclimatiche, come accade per le
+      "faggete depresse" sul Monte Cimino, sul Monte Fogliano, sul Monte Venere, sui Monti della Tolfa e sul Monte
+      Rufeno."'
+    cited_as:
+    - species-ecology/lazio.md
+  faggetevetuste_monte_raschio:
+    citation: 'Faggete vetuste d''Italia (Parco Nazionale Foreste Casentinesi, for the UNESCO serial site "Ancient and
+      Primeval Beech Forests of the Carpathians and Other Regions of Europe"). Bracciano-Martignano Regional Park: Monte
+      Raschio'
+    url: https://www.faggetevetuste.it/en/faggeta/bracciano-martignano-regional-park/
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'the Monte Raschio beech (Oriolo Romano, UNESCO since 2017) "develops between 400 and 550 m,
+      extraordinarily low altitudes"; "The beech forest covers about 80 hectares", with conifer reforestation and a
+      buffer of "other deciduous broad-leaved trees, mainly Turkey oaks"; "in the volcanic mountains of Lazio, thanks
+      to the abundant rainfall and the favorable soil conditions, beech forests develop at lower altitudes – even at
+      350-400 m".'
+    cited_as:
+    - species-ecology/lazio.md
+  faggetevetuste_monte_cimino:
+    citation: 'Faggete vetuste d''Italia (Parco Nazionale Foreste Casentinesi, for the UNESCO serial site). Comune di
+      Soriano nel Cimino: Monte Cimino'
+    url: https://www.faggetevetuste.it/en/faggeta/comune-di-soriano-nel-cimino/
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'on Monte Cimino "the pure beech forest covers about 60 hectares, ranging from the 1,054 m of the summit to
+      800-850 m of altitude", "confined to the summit of the mountain, above 900 m"; "The most widespread forest type is
+      undoubtedly represented by coppice and fruit sweet chestnut woodlands between 550 and 950 m of altitude, often
+      associated with oak woods at lower altitudes", on the acid volcanic substratum.'
+    cited_as:
+    - species-ecology/lazio.md
+  parchilazio_castelli_vegetazione:
+    citation: 'Parco Regionale dei Castelli Romani. Vegetazione. Parchilazio.it'
+    url: https://www.parchilazio.it/castelliromani-schede-716-vegetazione
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: '"Il castagneto è la forma di vegetazione più diffusa nel paesaggio dei Castelli Romani, rappresentato
+      prevalentemente da boschi cedui monospecifici di castagno", cut every 18-20 years; beech survives only as
+      "nuclei residuali su Monte Cavo (Rocca di Papa) e sui monti dell''Artemisio (Velletri)", above 800 m; a
+      pedunculate-oak and Turkey-oak wood at the Cerquone.'
+    cited_as:
+    - species-ecology/lazio.md
+  castagna_vallerano_dop:
+    citation: 'Disciplinare di produzione della Denominazione di Origine Protetta "Castagna di Vallerano". Ministero
+      dell''agricoltura (MASAF)'
+    url: https://www.masaf.gov.it/flex/files/e/5/5/D.9adabeeb3f27f5193617/Disciplinare_di_produzione_Castagna_Vallerano.doc
+    kind: institutional
+    region: Lazio (Monti Cimini)
+    verified: verified
+    supports: 'Lazio''s only chestnut PDO: orchards "ubicati in terreni di origine vulcanica (Monti Cimini)", mostly "ad
+      una quota di 400 – 500 m. s.l.m." (art. 4), eligible "a una quota tra i 400 ed i 750 metri s.l.m." (art. 5), on
+      "strati tufacei di origine vulcanica ricchi di sostanza organica, profondi, ben drenati, freschi" (art. 6); the
+      nuts are picked "tra il 20 settembre e il 10 novembre" (art. 5).'
+    cited_as:
+    - species-ecology/lazio.md
+  arsial_atlante_suoli2019:
+    citation: 'Napoli R., Paolanti M., Di Ferdinando S. (eds.) (2019). Atlante dei Suoli del Lazio. ARSIAL and Regione
+      Lazio'
+    url: https://dati.lazio.it/dataset/17f16ae6-7372-45bc-97b8-82768b55e1b0/resource/575846e9-29fa-4125-b264-8b73315268de/download/atlantelaziocompletolow.pdf
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'the volcanic soil region covers 5,299 km², "circa il 30,7 % del territorio della Regione" (p. 71), on
+      the Vulsini, Cimini, Sabatini and Colli Albani; Andosols, whose "orizzonti sil-andici, hanno una reazione da acida
+      a neutra, mentre gli orizzonti alu-andici variano da estremamente acidi ad acidi" (p. 108), "Umbric Andosols ...
+      principalmente ai bordi delle caldere di Vico e Bracciano (M.ti Cimini e Sabatini)", Vitric Andosols on the Colli
+      Albani (p. 110); the Bolsena, Vico and Bracciano caldera slopes carry "castagneti da frutto e cedui, faggete,
+      cerrete, boschi di roverella" on Dystric Umbric Andosols (p. 75); the Terminillo and Simbruini-Ernici beech on
+      Rendzic Leptosols and Phaeozems (pp. 93-94).'
+    cited_as:
+    - species-ecology/lazio.md
+  lazio_ptar2018:
+    citation: 'Regione Lazio and ARPA Lazio (2018). Piano di Tutela delle Acque Regionale (PTAR), Aggiornamento. BUR
+      Lazio n. 103 of 20 December 2018, Suppl. 3 (the climate chapter summarises Blasi C. 1994, Fitoclimatologia del
+      Lazio)'
+    url: https://www.regione.lazio.it/sites/default/files/amministrazione-trasparente/tbl_contenuti/Piano_Tutela_Acque_Regionale_Aggiornamento.pdf
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'Lazio phytoclimate (pp. 64-73 of the PDF): the temperate mountains (Terminillo, Gorzano, Meta) "P molto
+      abbondante (1614 mm); Pest frequente e abbondante (277 mm)", no summer drought; the Cimini, Vico caldera, Colli
+      Albani and Fiuggi 1,247-1,606 mm, drought absent or very weak; the Mediterranean region of transition (inner
+      Maremma, Tolfa, Sabatini, Campagna Romana) "tra 810 e 1.519 mm e da un regime di aridità estiva che generalmente
+      dura da due a tre mesi"; the Mediterranean coast, the Agro Pontino and the low Viterbo hills "inferiori ai 650 mm.
+      Il periodo di aridità estiva è sempre presente, con una durata di circa 5 mesi", the Viterbo and Rome coast "P
+      scarsa (593÷811 mm); Pest da 53 a 71 mm". "La faggeta occupa una fascia altitudinale compresa tra i 700 e 1400 m"
+      (p. 78).'
+    cited_as:
+    - species-ecology/lazio.md
+  carabinieri_foresta_circeo:
+    citation: 'Arma dei Carabinieri, Reparto Biodiversità di Fogliano. Foresta Demaniale del Circeo'
+    url: https://www.carabinieri.it/chi-siamo/oggi/organizzazione/tutela-forestale-ambientale-e-agroalimentare/comando-tutela-biodiversita'-e-parchi/utcb-e-le-130-riserve-naturali/utcb-di-fogliano/foresta-demaniale-del-circeo
+    kind: institutional
+    region: Lazio
+    verified: verified
+    supports: 'the Circeo state forest (Sabaudia, San Felice Circeo, Latina, Terracina), "oltre 3 mila ettari", "la più
+      estesa foresta planiziaria di origine naturale in Italia", "dominata da grandi querce caducifoglie, quali la farnia,
+      il cerro e il farnetto", with holm and cork oak, heath and strawberry tree on the drier "lestre".'
+    cited_as:
+    - species-ecology/lazio.md
+  mushma_lazio_forest_composition_2026:
+    citation: 'mushma Lazio woodland composition: area and elevation of each forest type and habitat key in the Regione
+      Lazio Carta forestale su base tipologica (39,095 polygons, the WFS download of config/sources.yaml, read by the
+      class mapping of config/regions/lazio.yaml), rasterized on a 100 m lattice in EPSG:25833 with Copernicus DEM
+      GLO-30 elevations at each lattice centre, computed 2026-09-28 before the Lazio woodland grid existed'
+    url: https://dati.lazio.it/dataset/carta-forestale-su-base-tipologica-della-regione-lazio
+    kind: analysis
+    region: Lazio
+    verified: verified
+    supports: 'the map holds 619,200 ha of woods and scrub, 530,400 ha of it broadleaf or conifer wood (elevation p10
+      142 m, median 607 m, p90 1,263 m, max 1,915 m; 41 % below 500 m, 1.9 % above 1,600 m). Shares of the wood and
+      elevations (p10 / median / p90): deciduous_oak 41.1 % (107 / 388 / 902 m; a quarter acidophilous Turkey oak),
+      mixed_broadleaf 16.5 % (402 / 751 / 1,052 m; 96 % hop-hornbeam), beech 16.2 % (998 / 1,302 / 1,620 m, p99
+      1,785, max 1,915; 11.7 % above 1,600 m; 788 ha below 700 m, 3,322 ha below 900 m), chestnut 10.7 % (327 / 603 /
+      956 m; on volcanic ash median 497 m, on sandstone and marl 778 m), evergreen_oak 8.8 % (92 / 483 / 860 m),
+      riparian 3.1 %, mountain_pine 2.2 % (black-pine reforestation, median 926 m), mediterranean_pine 1.2 % (median
+      66 m), exotic_broadleaf 0.2 %; outside the wood, transitional_woodland_shrub 74,800 ha (Arbusteti temperati
+      64,000 ha, median 483 m) and macchia 13,200 ha (median 217 m). No fir wood, no mixed broadleaf-conifer class.
+      See species-ecology/lazio.md.'
+    cited_as:
+    - species-ecology/lazio.md
+  mushma_occurrence_check_lazio_2026:
+    citation: 'mushma Lazio occurrence check: iNaturalist observations and histogram APIs (place 8670, verifiable;
+      locations used only for open records with positional accuracy of 1 km or better), GBIF occurrence API (gadmGid
+      ITA.8_1, MATERIAL_SAMPLE rows excluded, iNaturalist copies set apart), elevations from the Open-Meteo
+      elevation API, and the comune (ISTAT 2025) and Carta forestale type at each located record, queried
+      2026-09-28. Aggregates only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/docs/
+    kind: analysis
+    region: Lazio
+    verified: verified
+    supports: 'Lazio iNaturalist verifiable records against 11,498 fungi records: B. edulis 6 (Aug 1, Oct 5; none of 5
+      located inside a mapped wood, 3 at street addresses), B. reticulatus 10 (May-Jul 4, Sep-Oct 6; 9 located at
+      75-1,433 m, median 654 m; in beech at 1,433 m in July), B. aereus 14 (Jun 1, Sep 7, Oct 3, Nov 3; 26-937 m,
+      median 384 m; 5 of 8 in-wood records in deciduous oak, 2 in hop-hornbeam or ravine wood), B. pinophilus 0, A.
+      caesarea 24 (Aug 1, Sep 10, Oct 13; 21 located at 25-943 m, median 418 m, 5 at 753-943 m; in-wood: deciduous
+      oak 7, chestnut 4, low thermophilous beech 2, holm oak 2), Cantharellus 46 (C. cibarius 22, C. pallens 9, C.
+      alborufescens 3, C. ferruginascens 2; Sep 9, Oct 16, Nov 8, Dec 2, Jan 2, Feb-Jun 8, Aug 1; 38 located at
+      5-1,463 m, median 348 m; in-wood: deciduous oak 10, chestnut 4, holm and cork oak 4, temperate scrub 3,
+      hop-hornbeam 2, montane beech 2 at 1,387-1,463 m). GBIF adds only herbarium specimens (1 ovolo, 5 Cantharellus,
+      2020-2022). See species-ecology/lazio.md.'
+    cited_as:
+    - species-ecology/lazio.md
+  mushma_lazio_siarl_rain_check_2026:
+    citation: 'mushma Lazio rain check: downscaled ERA5-Land (CDS) daily precipitation, read bilinearly at each gauge,
+      against the Regione Lazio ARSIAL SIARL agrometeo network (open station list and yearly daily CSVs, CC BY 4.0), the
+      published years 2016, 2018, 2020, 2021 to July and 2023 to June, the 92 gauges at 1-1,176 m with 1,000 or more days
+      (calendar days); five of them lie in woodland cells. See .gavin-root/docs/regions/lazio.md, Weather'
+    url: https://dati.lazio.it/dataset/serie-storica-agrometeo
+    kind: analysis
+    region: Lazio
+    verified: verified
+    supports: 'Raw CDS rain holds 1.19 of gauge rain below 200 m (40 gauges), 1.17 at 200-400 m (37) and 1.01 at 400-800 m
+      (14); a gauge-total fit of scale = 0.82 + 0.23 per km of elevation brings them to 1.00, 1.03 and 0.94, and averages
+      0.99 over the woodland cells. The five woodland-cell gauges (165-1,176 m) read 0.98 raw. Above 800 m the slope rests
+      on one gauge (Accumoli) and is extrapolated.'

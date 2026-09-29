@@ -1,0 +1,130 @@
+# Lazio: region #4 of the full-Italy rollout (.gavin-root/docs/regions/lazio.md).
+id: lazio
+name: {it: Lazio, en: Lazio}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°
+# (it holds the Pontine islands: Ponza, Palmarola, Zannone, Ventotene).
+bbox_wgs84: [11.44, 40.78, 14.03, 42.84]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 12
+
+# Woodland: one regional map gives both layers. The Region's Carta forestale su base tipologica
+# (1:10,000, 2005-2007 photos) gives every wood and shrubland polygon its forest type (tipologia),
+# which says both which broad group it is (how much of each cell is broadleaf or conifer woodland,
+# macchia or scrub) and which kind. There is no mixed class. Its chestnut woods hold 94 % of the
+# chestnut orchards of the Region's land-use map (CUS 2000). Timber plantations (arboricoltura da
+# legno) stay farmland; regrowth on abandoned land and the Paliurus scrub count as transitional,
+# as CLC 324 does. See .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/lazio.md.
+forest:
+  groups:
+    source: lazio_carta_forestale
+    class_column: tipologia
+    classes:
+      "Faggeta altomontana e rupestre": broadleaf
+      "Faggeta montana eutrofica": broadleaf
+      "Faggeta termofila e basso montana": broadleaf
+      "Cerreta acidofila e subacidofila collinare": broadleaf
+      "Cerreta acidofila e subacidofila submontana": broadleaf
+      "Cerreta neutro-basifila collinare": broadleaf
+      "Cerreta neutro-basifila submontana": broadleaf
+      "Querceto a cerro e farnetto": broadleaf
+      "Querceto a roverella con cerro": broadleaf
+      "Querceto a roverella mesoxerofilo": broadleaf
+      "Querceto a farnia": broadleaf
+      # Filed under Pseudo-macchia, but a xeric deciduous-oak wood with tree cover over 10 %.
+      "Querceto a caducifoglie mediterranee xerofile": broadleaf
+      "Castagneto (eutrofico) su depositi vulcanici": broadleaf
+      "Castagneto (oligotrofico) su lave acide": broadleaf
+      "Castagneto dei rilievi calcarei": broadleaf
+      "Castagneto dei substrati arenacei e marnosi": broadleaf
+      "Ostrieto mesofilo": broadleaf
+      "Orno-ostrieto e boscaglie a carpinella": broadleaf
+      "Bosco di forra": broadleaf
+      "Lecceta mesoxerofila": broadleaf
+      "Lecceta costiera termofila": broadleaf
+      "Lecceta rupicola": broadleaf
+      "Lecceta con faggio": broadleaf
+      "Sughereta con caducifoglie": broadleaf
+      "Sughereta costiera tipica": broadleaf
+      "Altri boschi igrofili": broadleaf
+      "Saliceto ripariale": broadleaf
+      "Robinieto/ailanteto": broadleaf
+      "Pineta di pino domestico": conifer
+      "Pineta di altre specie termofile": conifer
+      "Rimboschimento di pini e/o altre conifere montane": conifer
+      "Arbusteti a specie della macchia mediterranea": macchia
+      "Arbusteti temperati": transitional
+      "Boschi di neoformazione": transitional
+      "Boscaglie a paliuro e terebinto": transitional
+  types:
+    source: lazio_carta_forestale
+    class_column: tipologia
+    classes:
+      "Faggeta altomontana e rupestre": beech
+      "Faggeta montana eutrofica": beech
+      "Faggeta termofila e basso montana": beech
+      "Cerreta acidofila e subacidofila collinare": deciduous_oak
+      "Cerreta acidofila e subacidofila submontana": deciduous_oak
+      "Cerreta neutro-basifila collinare": deciduous_oak
+      "Cerreta neutro-basifila submontana": deciduous_oak
+      "Querceto a cerro e farnetto": deciduous_oak
+      "Querceto a roverella con cerro": deciduous_oak
+      "Querceto a roverella mesoxerofilo": deciduous_oak
+      "Querceto a farnia": deciduous_oak
+      "Querceto a caducifoglie mediterranee xerofile": deciduous_oak
+      "Castagneto (eutrofico) su depositi vulcanici": chestnut
+      "Castagneto (oligotrofico) su lave acide": chestnut
+      "Castagneto dei rilievi calcarei": chestnut
+      "Castagneto dei substrati arenacei e marnosi": chestnut
+      "Ostrieto mesofilo": mixed_broadleaf
+      "Orno-ostrieto e boscaglie a carpinella": mixed_broadleaf
+      "Bosco di forra": mixed_broadleaf           # ravine woods: maples, lime, ash, hornbeam
+      "Lecceta mesoxerofila": evergreen_oak
+      "Lecceta costiera termofila": evergreen_oak
+      "Lecceta rupicola": evergreen_oak
+      "Lecceta con faggio": evergreen_oak
+      "Sughereta con caducifoglie": evergreen_oak
+      "Sughereta costiera tipica": evergreen_oak
+      "Altri boschi igrofili": riparian
+      "Saliceto ripariale": riparian
+      "Robinieto/ailanteto": exotic_broadleaf
+      "Pineta di pino domestico": mediterranean_pine
+      "Pineta di altre specie termofile": mediterranean_pine  # Aleppo and maritime pine
+      "Rimboschimento di pini e/o altre conifere montane": mountain_pine  # mostly black pine
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Lazio, IT", admin level
+# 10) on 2026-09-28. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 8670
+
+# Rain scale (merged onto config/model.yaml), fitted on the Region's open SIARL agrometeo gauges
+# (the gauge check asked for it: raw CDS rain is 15 % wet at the gauges, most of them farm stations
+# in the lowlands). Lazio's history is CDS, which the national block does not scale while the rain
+# normals are scaled whatever their source, so both reanalysis sources are listed.
+# .gavin-root/docs/regions/lazio.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 0.82
+    per_km: 0.23
+    source: [mushma_lazio_siarl_rain_check_2026]
+    notes: >-
+      Least squares through the origin of gauge totals on model totals x (a + b x elevation) over the
+      92 ARSIAL SIARL agrometeo gauges with 1,000 or more days in the published years (2016, 2018,
+      2020, 2021 to July, 2023 to June; 1-1,176 m, calendar days, the CDS rain read bilinearly at each
+      gauge) gave a = 0.819, b = 0.229 per km: raw pooled ratio 1.19 below 200 m, 1.17 at 200-400 m
+      and 1.01 at 400-800 m. It gives 0.86 at 200 m, 0.93 at 500 m, 1.00 at 800 m and 1.09 at 1,200 m,
+      0.99 on average over the woodland cells. Above 800 m it rests on one gauge (Accumoli, 1,176 m,
+      raw 1.12) and is an extrapolation. The five gauges inside woodland cells (165-1,176 m) read
+      0.98 raw and 0.94 scaled.
