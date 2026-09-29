@@ -264,3 +264,178 @@ Gauss-Boaga position, height, monthly rain and a table of missing days), cached 
 - Monthly totals check amounts only: not the wet-day timing, the 3-day triggers' hit rate, nor
   drizzle. A daily check would need ARPAV's form data. The ARPAV figures feed this check only; they
   are not republished or shown in the app.
+
+## Data
+
+- cells: 18981
+- woodland cells: 4025
+- INFC deviation: -4.4% (grid 398,369 ha vs 416,704 ha) — within ±10 %
+- weather nodes: 69
+- years stored: 2016–2026 (11 years)
+- sightings kept: 37
+- backtest AUC (auc_local, model, all): gallinacci 0.625, ovoli 0.985, porcini 0.472
+- sanity contrasts: 8/16 passed
+
+
+
+## Validation
+
+### Backtest (priors: rules version from this branch)
+
+Run 2026-09-29 on the stores above: the onboard's hold-out run (`backtest/veneto/onboard/`) and the
+train seasons (`--seasons train --label onboard-train`). Scores cover 4,025 cells × 3,848 days of
+history (2016-03-18 to 2026-09-29) and the served window to 2026-10-06 (from the forecast after
+2026-09-23), none without weather.
+
+**Usable presences (unique, unobscured group-cell-day sightings on woodland cells) in the train
+seasons 2016–2023: 14** (porcini 10, gallinacci 4, ovoli 0; by year 2017: 1, 2018: 3, 2019: 2, 2020:
+1, 2022: 3, 2023: 4), far below the 50 the card asks before tuning. **Nothing is tuned: the researched
+priors ship.** The hold-out 2024–2025 holds 13 (porcini 9, gallinacci 3, ovoli 1). The fetch found
+617 GBIF records of the six taxa in the bbox and 3 recent iNaturalist ones; 298 passed the quality
+filters (a date and a position precise enough for a 1 km cell: 284 were too imprecise, 124 of unknown
+uncertainty), and 261 of those fall outside the region's woodland cells (the bbox takes in Trentino,
+eastern Lombardy and western Friuli, and the plain). The species research counts 42 *B. edulis* and
+50 *Cantharellus* among Veneto's 12,721 iNaturalist fungi records (`species-ecology/veneto.md`,
+Sightings).
+
+| seasons | group | n | `auc_region` model | calendar | habitat | `auc_time_effort` model | calendar | `auc_local` model | habitat |
+|---|---|---|---|---|---|---|---|---|---|
+| train 2016–2023 | porcini | 10 | 0.865 (0.82–0.91) | 0.845 | 0.535 | 0.562 (0.40–0.72) | 0.545 | 0.427 (0.30–0.57) | 0.532 |
+| train 2016–2023 | gallinacci | 4 | 0.950 (0.95–0.95) | 0.875 | 0.551 | 0.701 (0.67–0.73) | 0.589 | 0.651 (0.62–0.68) | 0.573 |
+| hold-out 2024–2025 | porcini | 9 | 0.854 (0.79–0.92) | 0.811 | 0.477 | 0.676 (0.54–0.80) | 0.570 | 0.472 (0.34–0.59) | 0.465 |
+| hold-out 2024–2025 | gallinacci | 3 | 0.887 (0.84–0.94) | 0.875 | 0.551 | 0.613 (0.49–0.74) | 0.519 | 0.625 (0.55–0.70) | 0.529 |
+| hold-out 2024–2025 | ovoli | 1 | 0.987 | 0.954 | 0.904 | 0.947 | 0.344 | 0.985 | 0.887 |
+
+With 1 to 10 presences these are anecdotes, not measures. Against the whole region the model ranks
+the finds high (`auc_region` 0.85–0.95, a little above the calendar alone), and against the same
+cells' other days it does better than the calendar (`auc_time_effort` 0.56–0.70 against 0.52–0.59);
+within 20 km on the day it does no better than habitat for porcini (`auc_local` 0.43 and 0.47): the
+porcini finds sit in the mountains, where every cell around has the same season.
+
+### Press contrasts (`sanity.yaml`, `backtest/veneto/onboard/sanity_*.csv`)
+
+**9 of 16 hold**, each contrast read for its own group (the onboard's summary, 8/16, reads the ovoli
+and gallinacci contrasts as porcini too). Weather columns: area means of the history tables' rain and
+temperature over the contrast's window, weighted by woodland cells, and the 30 days before the
+window, against the 2016–2025 normals.
+
+| contrast | group | higher | lower | holds |
+|---|---|---|---|---|
+| `dolomites_2019_2017_august` | porcini | 0.845 | 0.835 | yes (narrowly) |
+| `dolomites_2018_2017_late_august` | porcini | 0.504 | 0.835 | no |
+| `belluno_2023_2016_september` | porcini | 0.639 | 0.506 | yes |
+| `dolomites_2023_2022_july` | porcini | 0.697 | 0.602 | yes |
+| `belluno_2022_september_vs_july` | porcini | 0.809 | 0.635 | yes |
+| `agordino_vs_lessinia_2023_august` | porcini | 0.847 | 0.962 | no |
+| `asiago_2023_august_vs_july` | porcini | 0.788 | 0.773 | yes (narrowly) |
+| `prealps_2022_august_vs_july` | porcini | 0.788 | 0.520 | yes |
+| `cansiglio_2023_2016_early_october` | porcini | 0.255 | 0.596 | no |
+| `lessinia_2019_2024_september` | porcini | 0.726 | 0.853 | no |
+| `hills_vs_dolomites_2020_september` | porcini | 0.688 | 0.896 | no |
+| `dolomites_vs_hills_2021_august` | porcini | 0.894 | 0.647 | yes |
+| `hills_vs_prealps_2024_september` | porcini | 0.691 | 0.790 | no |
+| `treviso_2016_july_vs_august` | porcini | 0.505 | 0.526 | no (nearly a tie) |
+| `gallinacci_belluno_2019_2017` | gallinacci | 0.936 | 0.889 | yes |
+| `ovoli_hills_2020_2021` | ovoli | 0.769 | 0.115 | yes |
+
+- The year contrasts in the Dolomites and on the Prealps hold (2019 and 2023 against the dry 2017 and
+  2016, the 2022 drought's July against its August and September, 2021's Alps against the hills), and
+  so do the gallinacci and ovoli contrasts, the ovoli one by a wide margin (the hills' 2020 against the
+  dry 2021).
+- **The misses, with the weather:**
+  - `dolomites_2018_2017_late_august`: the reanalysis puts the Dolomites' rain of late August 2018 in
+    the window itself (144 % of normal, after a dry, 1 °C warm month at 77 %), and 2017's the other
+    way round (38 % in the window after 120 %). The rules count the rain lag in growth days, so they
+    score 2017's wet month before and not 2018's rain in the window; the press's 2018 haul in the Alto
+    Comelico came in mid-September, after it.
+  - `agordino_vs_lessinia_2023_august`: the reanalysis gives the Lessinia the wetter month before
+    (161 % of normal against 111 %, the storms of July 2023); the press's shortfall there is not in
+    the rain.
+  - `cansiglio_2023_2016_early_october`: the window of 2023 was almost rainless (1 % of normal) and
+    2.8 °C warm after a wet September (113 %); the drying rule reads the rainless warm days as
+    stopping the flush the press saw on the Prealps' 700–1,500 m.
+  - `lessinia_2019_2024_september` and `hills_vs_prealps_2024_september`: the press says the flushes
+    of mid-September 2024 were "bloccate tra Lessinia-Pasubio-7 comuni e Grappa" by cold and wind,
+    and favoured the southern hills. The reanalysis has the Lessinia's window at 102 % of normal rain
+    after a wet, warm month (146 %, +2.0 °C), and 2.8 °C colder than normal; the Pasubio and the
+    Prealps at 219 % in the window, 2.4 °C cold; the hills at 237 %, 2.0 °C cold. The rules read the
+    rain as favourable everywhere, the cold spell above frost lowers the growth clock too little to
+    hold the flush back, and the wind that dried the Prealps is not in the rules (the drying-wind gap
+    earlier regions named).
+  - `hills_vs_dolomites_2020_september`: the press has the Dolomites' flush declining and "ottime
+    buttate di funghi Porcini aereus e subito dopo di Ovoli reali" in the warm hills. The reanalysis
+    gives the Dolomites more rain than the Valpolicella hills in both periods (126 % of normal before
+    and 39 % in the window, against 113 % and 15 %), both 2.2–2.7 °C warm; the Alpine season window
+    is still full in mid-September, so nothing in the rules ends the mountain flush first.
+  - `treviso_2016_july_vs_august`: nearly a tie; the press's August drought is not in the rain totals
+    (91 % of normal in August after 69 % in the month before, against 75 % in late June–July after
+    134 %).
+
+## After the deploy: what to verify
+
+The stores were rsync'd to the server on 2026-09-29 (`deploy/rsync-region-data.sh veneto`, 219
+files, 277 MB, no redeploy). Checked right after the sync: `/regions` lists the sixteen live regions
+without this one, and `/status?region=veneto` answers 404. The server serves a region only when its
+YAML is in the deployed code and its stores are on disk, so they stay inert until `main` with
+`config/regions/veneto.yaml` is deployed by the rail's "Deploy pulled main" step, with the daily job.
+The stores are scored through 2026-10-06 (the served window of 2026-09-29, forecast from 2026-09-24),
+and the seasonal tendencies and outlook were built the same evening. A deploy after 2026-10-06 but
+before the daily job leaves the region out of the hub's `/overview` until the job runs (main's
+`api/src/api/registry.py` skips a region not scored through the date). Then check:
+
+- [ ] The daily job after the deploy has a `region_done` line for `veneto` (`journalctl -u
+  mushma-daily`), with the weather update filling from 2026-09-24 onward, the served window scored
+  with factors, the seasonal fetch and the outlook built; its Open-Meteo call count stays inside the
+  budget (this region adds 69 nodes).
+- [ ] `https://mappafunghi.app/veneto` and `/veneto/porcini`, `/ovoli`, `/gallinacci` show real
+  scores for today (not fixtures), and a tapped cell's "why this score" names the region's habitats
+  (spruce and fir on the Asiago plateau and in Cadore, beech in the Cansiglio, chestnut on the Colli
+  Euganei, robinia on the Montello).
+- [ ] `https://api.mappafunghi.app/regions` lists `veneto` with all three species; the hub `/` lists
+  it and colours it from `/overview`.
+- [ ] `https://mappafunghi.app/sitemap.xml` has the four Veneto URLs (built from the registry; the
+  local build has them).
+- [ ] Lighthouse SEO is 100 on `/veneto` (prerendered title, description, canonical, og image
+  `og/veneto.png`, JSON-LD Dataset with `sameAs` Wikidata Q1243).
+- [ ] `/credits` shows "Regione del Veneto — Carta della copertura del suolo 2021" (IODL 2.0).
+- [ ] From the hub, a search for Padova or the Colli Euganei offers Veneto; a search for Asiago or
+  Cortina offers Trentino-Alto Adige (the bbox lookup, below): expected until
+  `fix-region-lookup-by-boundary.md` ships, not a regression.
+- [ ] The next morning's daily job has a `region_done` line for `veneto` again, and no
+  `region_failed`.
+
+## Known limitations
+
+- **Region finder by bbox.** The web registry finds a region by bbox (`findRegionAt`), and Veneto's
+  overlaps its neighbours' more than any region so far: 3,896 of its 4,025 woodland cells lie inside
+  Trentino-Alto Adige's, Lombardia's or Friuli-Venezia Giulia's bboxes, and its own holds 5,625 of
+  Trentino-Alto Adige's 7,698 and 1,767 of Friuli-Venezia Giulia's 3,304. So Veneto is registered
+  last: no served region changes, but from the hub a GPS fix or a search in Belluno, Cortina, Asiago,
+  the Grappa or the Lessinia is offered the neighbour. Inside `/veneto` everything is served (the
+  current region comes first). Added to `fix-region-lookup-by-boundary.md`; the simplified
+  boundaries it needs are already in `web/src/regions/boundaries.json`.
+- **Rain scale by area, not height.** One regional factor (0.85 − 0.04 per km) leaves the wettest
+  Prealps (Recoaro, Posina, the Cansiglio) at about 0.6 of their gauges and the Dolomites' inner
+  valleys (Agordo, Caprile, Cortina) at 1.2–1.5 (Weather history, rain scale). Monthly totals only:
+  the wet-day timing is not checked. `fix-rain-calibration-region-borders.md` is where a finer scale
+  would go.
+- **Few dated sightings.** 14 usable presences in 2016–2023 and 13 in 2024–2025: the backtest
+  measures nothing, and the validation rests on 16 press contrasts, 9 of them from Funghi Magazine's
+  bulletins. The north-east census's dated chanterelle records (293 *C. cibarius*) are the best
+  regional data (species research, Sightings).
+- **Cold spells and wind on the Prealps.** Three of the seven misses are the Prealps in a cold, windy
+  spell after rain (September 2024) or a warm, dry one (October 2023): the rules have no drying-wind
+  stopper, and a cold snap above frost slows the growth clock too little.
+- **Conifer plantations are one class.** The 2021 map's *formazione antropogena di conifere* (27,894
+  ha) names no species; mapped to `fir_spruce` because three quarters of it is spruce, it also takes
+  in the coastal stone and maritime pine plantations of Rosolina, Bibione and the Bosco Nordio (a few
+  hundred hectares, few woodland cells) and the black-pine plantations of the Prealps.
+- **Storm and bark-beetle damage as of 2021.** The flag the grid reads (10,227 ha to transitional)
+  dates from the 2021 photos; the bark-beetle kill has spread since in the Agordino, Comelico and on
+  the Asiago plateau, and the regrowth on Vaia's clearings will come back. A newer map edition or
+  damage layer would move cells between woodland and not.
+- **8,600 ha of broadleaf without a category** (`31100`) take their type from the cell's other
+  woods; one cell takes more than half its type that way.
+- **Hop-hornbeam for *B. edulis*.** The orno-ostrieti, the region's commonest forest below 700 m, are
+  0.1 for *B. edulis* (0.3 in the neighbours); the Lessinia and Baldo cells are where a finer check
+  would settle it (species research, Open questions).
