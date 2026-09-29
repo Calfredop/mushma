@@ -45,6 +45,35 @@ describe('SpotPanel', () => {
     expect(within(why).getByText('Porcini · giovedì 17 settembre')).toBeInTheDocument()
   })
 
+  it("draws each species' last 15 days, ending on today's chip", () => {
+    const detail: CellDetailResponse = {
+      ...CELL_DETAIL,
+      species: CELL_DETAIL.species.map((forecast) => ({
+        ...forecast,
+        past: [
+          { date: '2026-09-15', score: 0.2 },
+          { date: '2026-09-16', score: 0.3 },
+        ],
+      })),
+    }
+    render(
+      <SpotPanel
+        {...base}
+        spot={{ kind: 'cell', cellId: CELL_DETAIL.cell_id }}
+        detail={detail}
+        species="porcini"
+        date="2026-09-17"
+      />,
+    )
+    expect(screen.getByText('Ultimi 15 giorni')).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', {
+        name: /^Porcini, ultimi 15 giorni\. In crescita: da 0,20 a /,
+      }),
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('img', { name: /, ultimi 15 giorni\./ })).toHaveLength(3)
+  })
+
   it('switches the why breakdown when a day bar is picked', async () => {
     render(
       <SpotPanel

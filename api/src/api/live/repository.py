@@ -41,15 +41,27 @@ from api.models import (
     SightingsResponse,
     SpeciesForecast,
     StatusResponse,
+    TrendPoint,
+    TrendResponse,
 )
-from api.repository import CellNotFound, DateOutOfRange, ScoresUnavailable
+from api.repository import TREND_DAYS, CellNotFound, DateOutOfRange, ScoresUnavailable
 from api.sightings.store import SightingsStore
 from api.species import SPECIES, Species, SpeciesOrCombined
 from api.timeutil import today_rome
 
 FORECAST_OFFSETS = range(0, 8)  # today + 7-day outlook, PRD -> Features 2
 HOTSPOT_SIGHTINGS_WINDOW_DAYS = 90
-CELL_COLUMNS = ["cell_id", "lon", "lat", "woodland", "comune_name", "place_name", "x_min", "y_min"]
+CELL_COLUMNS = [
+    "cell_id",
+    "lon",
+    "lat",
+    "woodland",
+    "comune_code",
+    "comune_name",
+    "place_name",
+    "x_min",
+    "y_min",
+]
 
 
 class LiveRepository:
@@ -203,7 +215,14 @@ class LiveRepository:
                 rules = self.rules.species[row.source_key]
                 breakdown = reconstruct_breakdown(rules.enabled_factors, factor_row, rules.clock)
                 days.append(DayScore(date=row.date, score=float(row.score), factors=breakdown))
-            species_forecasts.append(SpeciesForecast(species=group, days=days))
+            past = self._daily_means(
+                con,
+                group,
+                [cell_id],
+                start - timedelta(days=TREND_DAYS - 1),
+                start - timedelta(days=1),
+            )
+            species_forecasts.append(SpeciesForecast(species=group, days=days, past=past))
 
         return CellDetailResponse(
             cell_id=cell_id,
@@ -219,6 +238,44 @@ class LiveRepository:
 
     def get_spot(self, lat: float, lon: float) -> CellDetailResponse:
         return self._forecast(self._nearest_cell(lat, lon))
+
+    # --- Trend lines -----------------------------------------------------------------------------
+
+    def _daily_means(
+        self,
+        con: duckdb.DuckDBPyConnection,
+        key: str,
+        cell_ids: list[str],
+        start: date,
+        end: date,
+    ) -> list[TrendPoint]:
+        """The mean score of ``cell_ids`` per day from ``start`` to ``end``; a day none of them
+        was scored is left out."""
+        rows = self.scores.read(con, key, start, end, cell_ids=cell_ids)
+        if "score" not in rows.columns:  # the key was never scored
+            return []
+        means = rows.aggregate("date, avg(score) AS score", "date").order("date").fetchall()
+        return [
+            TrendPoint(date=day, score=min(max(round(score, 3), 0.0), 1.0)) for day, score in means
+        ]
+
+    def _trend(self, species: SpeciesOrCombined, cell_ids: list[str]) -> list[TrendPoint]:
+        today = today_rome()
+        start = today - timedelta(days=TREND_DAYS - 1)
+        return self._daily_means(duckdb.connect(), species, cell_ids, start, today)
+
+    def get_trend(self, species: SpeciesOrCombined, comune: str | None) -> TrendResponse:
+        _, area = self.time_views.area(comune)
+        cells = self.cells
+        if comune is not None:
+            cells = cells[cells["comune_code"] == comune]
+        return TrendResponse(
+            species=species, area=area, days=self._trend(species, cells["cell_id"].tolist())
+        )
+
+    def region_trend(self, species: SpeciesOrCombined) -> list[TrendPoint]:
+        """The whole region's trend, for the hub: needs no history tables."""
+        return self._trend(species, self.cells["cell_id"].tolist())
 
     def get_hotspots(
         self, species: SpeciesOrCombined, target_date: date, limit: int

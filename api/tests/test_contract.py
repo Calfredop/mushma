@@ -23,7 +23,9 @@ from api.models import (
     SeasonsResponse,
     SightingsResponse,
     StatusResponse,
+    TrendResponse,
 )
+from api.repository import TREND_DAYS
 from api.timeutil import today_rome
 
 
@@ -129,6 +131,12 @@ class TestSpotAndCells:
                 assert len(forecast.days) == 8  # today + 7-day outlook
                 dates = [day.date for day in forecast.days]
                 assert dates == sorted(dates)
+                # The trend line's days before today, oldest first.
+                past = [day.date for day in forecast.past]
+                assert past == sorted(set(past))
+                assert len(past) <= TREND_DAYS - 1
+                assert all(0 < (dates[0] - day).days < TREND_DAYS for day in past)
+                assert all(0.0 <= day.score <= 1.0 for day in forecast.past)
                 for day in forecast.days:
                     assert 0.0 <= day.score <= 1.0
                     assert len(day.factors) > 0
@@ -381,6 +389,48 @@ class TestSpecies:
         assert response.status_code == 404
 
 
+def _check_trend(body: TrendResponse) -> None:
+    today = today_rome()
+    dates = [day.date for day in body.days]
+    assert dates, "no trend days"
+    assert dates == sorted(set(dates))
+    assert dates[-1] == today
+    assert all(0 <= (today - day).days < TREND_DAYS for day in dates)
+    assert all(0.0 <= day.score <= 1.0 for day in body.days)
+
+
+class TestTrend:
+    def test_the_region_by_default(self, client: httpx.Client) -> None:
+        response = client.get("/trend")
+        assert response.status_code == 200
+        body = TrendResponse.model_validate(response.json())
+        assert body.species == "combined"
+        assert (body.area.kind, body.area.code) == ("region", None)
+        _check_trend(body)
+
+    @pytest.mark.parametrize("species", ["porcini", "ovoli", "gallinacci", "combined"])
+    def test_one_comune(self, client: httpx.Client, comuni: ComuniResponse, species: str) -> None:
+        comune = comuni.comuni[0]
+        response = client.get("/trend", params={"species": species, "comune": comune.code})
+        assert response.status_code == 200
+        body = TrendResponse.model_validate(response.json())
+        assert body.species == species
+        assert (body.area.kind, body.area.code, body.area.name) == (
+            "comune",
+            comune.code,
+            comune.name,
+        )
+        _check_trend(body)
+
+    def test_an_unknown_comune_404s(self, client: httpx.Client) -> None:
+        response = client.get("/trend", params={"comune": "not-a-comune"})
+        assert response.status_code == 404
+
+    def test_rejects_an_unknown_species(self, client: httpx.Client) -> None:
+        response = client.get("/trend", params={"species": "amanita_phalloides"})
+        assert response.status_code == 422
+
+
 class TestStatus:
     def test_scored_through_covers_at_least_today(self, client: httpx.Client) -> None:
         response = client.get("/status")
@@ -405,4 +455,5 @@ class TestOpenAPISurface:
             "/history/season/{year}",
             "/outlook",
             "/species",
+            "/trend",
         }

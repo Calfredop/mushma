@@ -35,12 +35,21 @@ import {
   useSpotForecast,
   useStatus,
   useOverview,
+  useOverviewTrend,
+  useTrend,
 } from './api/queries'
 import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import { ChevronIcon, CloudIcon, GitHubIcon, LayersIcon, LocateIcon, SquircleIcon } from './components/icons'
+import {
+  ChevronIcon,
+  CloudIcon,
+  GitHubIcon,
+  LayersIcon,
+  LocateIcon,
+  SquircleIcon,
+} from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
 import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
@@ -78,7 +87,7 @@ import './i18n'
 import { type AnalysisView, ConditionsMap } from './map/ConditionsMap'
 import type { MapPadding } from './map/padding'
 import { CreditsPage } from './pages/CreditsPage'
-import { HubPage } from './pages/HubPage'
+import { HubPage, type HubTrend } from './pages/HubPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { TermsPage } from './pages/TermsPage'
@@ -240,6 +249,21 @@ function MapScreen() {
     isLoading: plausibleQuery.isPending,
     isError: plausibleQuery.isError,
     onRetry: () => void plausibleQuery.refetch(),
+  }
+  // The zone's (or the whole region's) last 15 days, wherever the zone picker shows.
+  const trendQuery = useTrend(
+    apiRegionId,
+    app.species,
+    app.comune,
+    app.today,
+    app.view === 'seasons' || (app.view === 'outlook' && app.species !== 'combined'),
+  )
+  const trend = {
+    data: trendQuery.data,
+    isLoading: trendQuery.isPending,
+    isError: trendQuery.isError,
+    onRetry: () => void trendQuery.refetch(),
+    today: app.today,
   }
 
   // Sightings from the time on the map: the last months, the weeks around a replayed day, or
@@ -609,9 +633,7 @@ function MapScreen() {
               aria-label={
                 cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')
               }
-              title={
-                cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')
-              }
+              title={cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')}
               aria-pressed={cellStyle === 'cloud'}
               onClick={toggleCellStyle}
             >
@@ -831,6 +853,7 @@ function MapScreen() {
                       sightingsVisible={app.sightingsVisible}
                       onSightingsVisibleChange={app.setSightingsVisible}
                       plausible={plausible}
+                      trend={trend}
                     />
                   )}
                   {app.view === 'outlook' && (
@@ -846,6 +869,7 @@ function MapScreen() {
                       isError={outlook.isError}
                       onRetry={() => void outlook.refetch()}
                       plausible={plausible}
+                      trend={trend}
                     />
                   )}
                 </PanelBoundary>
@@ -936,6 +960,7 @@ function Root() {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
   const overview = useOverview(app.species, app.date, app.today, app.route.kind === 'hub')
+  const overviewTrend = useOverviewTrend(app.species, app.today, app.route.kind === 'hub')
 
   useEffect(() => {
     if (app.route.kind === 'hub') {
@@ -973,6 +998,11 @@ function Root() {
       <HubShell
         overview={overview.data?.regions}
         overviewPending={overview.isPending}
+        trend={
+          overviewTrend.data
+            ? { regions: overviewTrend.data.regions, today: app.today }
+            : undefined
+        }
         onSelectRegion={(slug) => {
           rememberRegion(slug)
           app.navigate(regionPath(slug))
@@ -987,10 +1017,12 @@ function Root() {
 function HubShell({
   overview,
   overviewPending,
+  trend,
   onSelectRegion,
 }: {
   overview: RegionOverview[] | undefined
   overviewPending: boolean
+  trend: HubTrend | undefined
   onSelectRegion: (slug: string) => void
 }) {
   const { navigate } = useAppState()
@@ -1002,6 +1034,7 @@ function HubShell({
       <HubPage
         overview={overview}
         overviewPending={overviewPending}
+        trend={trend}
         onSelectRegion={onSelectRegion}
         onNavigate={navigate}
         onDisclaimer={() => setDisclaimerOpen(true)}

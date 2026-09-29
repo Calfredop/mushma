@@ -39,7 +39,6 @@
     "version": "rules",
     "versionHint": "Rules version stamped by the last scoring pipeline run"
   },
-
   "species": {
     "label": "Species",
     "porcini": {
@@ -573,6 +572,22 @@
   "area": {
     "label": "Area",
     "comune": "{{name}} ({{province}})"
+  },
+  "trend": {
+    "title": "Trend over the last 15 days",
+    "key": "Last 15 days",
+    "note": "The mean score across the area's woods, day by day. The arrow says whether it rose, fell or held steady over the two weeks.",
+    "up": "Rising",
+    "down": "Falling",
+    "steady": "Steady",
+    "summary": "{{subject}}, last 15 days. {{direction}}: from {{from}} to {{to}}",
+    "today": "Today",
+    "day": "{{date}}: score {{value}}",
+    "dayColumn": "Day",
+    "scoreColumn": "Score",
+    "loading": "Loading the trend…",
+    "loadError": "Couldn't load the trend.",
+    "empty": "No scores in the last 15 days."
   },
   "plausible": {
     "title": "Species suited to the area",

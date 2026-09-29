@@ -55,7 +55,8 @@ def ruleset(species: dict[str, SpeciesRules], groups: dict[str, list[str]]) -> R
 
 
 def write_cells(root: Path, cells: list[dict]) -> None:
-    """``cells``: dicts of cell_id/x_min/y_min/lon/lat/woodland/comune_name/place_name."""
+    """``cells``: dicts of cell_id/x_min/y_min/lon/lat/woodland/comune_code/comune_name/
+    place_name."""
     path = root / "grid" / REGION / "cells.parquet"
     path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(cells).to_parquet(path, index=False)
@@ -81,6 +82,7 @@ def cell(x: int, y: int, lon: float, lat: float, *, woodland: bool = True, **ove
         "lon": lon,
         "lat": lat,
         "woodland": woodland,
+        "comune_code": None,
         "comune_name": "Comune",
         "place_name": "Place",
     }
@@ -117,9 +119,21 @@ def write_sightings(root: Path, records: list[dict]) -> None:
 
 SCORES_DATE = today_rome() - timedelta(days=200)  # any date well away from the "today" window
 
-CELL_A = cell(0, 0, lon=10.000, lat=43.000, comune_name="Alpha", place_name="APlace")
-CELL_B = cell(1000, 0, lon=10.010, lat=43.000, comune_name="Beta", place_name="BPlace")
-CELL_C = cell(50_000, 50_000, lon=10.5, lat=43.5, comune_name="Gamma", place_name="CPlace")
+CELL_A = cell(
+    0, 0, lon=10.000, lat=43.000, comune_code="045001", comune_name="Alpha", place_name="APlace"
+)
+CELL_B = cell(
+    1000, 0, lon=10.010, lat=43.000, comune_code="045002", comune_name="Beta", place_name="BPlace"
+)
+CELL_C = cell(
+    50_000,
+    50_000,
+    lon=10.5,
+    lat=43.5,
+    comune_code="045003",
+    comune_name="Gamma",
+    place_name="CPlace",
+)
 CELL_D_NON_WOODLAND = cell(0, 50_000, lon=10.0, lat=43.5, woodland=False)
 # Each woodland cell's forest types. Cell B's two tie, and the vocabulary order breaks the tie.
 HABITATS = {

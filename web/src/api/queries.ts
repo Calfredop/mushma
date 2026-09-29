@@ -47,6 +47,10 @@ export type CellForestType = components['schemas']['CellForestType']
 export type RegionsResponse = components['schemas']['RegionsResponse']
 export type OverviewResponse = components['schemas']['OverviewResponse']
 export type RegionOverview = components['schemas']['RegionOverview']
+export type TrendPoint = components['schemas']['TrendPoint']
+export type TrendResponse = components['schemas']['TrendResponse']
+export type OverviewTrendResponse = components['schemas']['OverviewTrendResponse']
+export type RegionTrend = components['schemas']['RegionTrend']
 
 export class ApiError extends Error {
   readonly status: number
@@ -371,6 +375,31 @@ export function useOutlook(
   })
 }
 
+/** The region's (`comune` null) or a comune's mean score per day, over the 15 days ending today.
+ * Keyed on today: the window moves at midnight. */
+export function useTrend(
+  apiRegionId: string,
+  species: SpeciesOrCombined,
+  comune: string | null,
+  today: IsoDate,
+  enabled: boolean,
+) {
+  return useQuery({
+    queryKey: ['trend', apiRegionId, species, comune, today],
+    enabled,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/trend', {
+          params: {
+            query: { species, region: apiRegionId, ...(comune ? { comune } : {}) },
+          },
+          signal,
+        })
+        .then(unwrap<TrendResponse>('/trend')),
+    staleTime: 10 * MINUTE,
+  })
+}
+
 /** Which species the woodland of a comune (or the region) plausibly holds, per species and taxon,
  * and each one's good days per season. */
 export function usePlausibleSpecies(
@@ -422,6 +451,27 @@ export function useOverview(
         })
         .then(unwrap<OverviewResponse>('/overview')),
     staleTime: staleTimeFor(date, today),
+    placeholderData: (previous) => previous,
+  })
+}
+
+/** National hub: every served region's mean score per day, over the 15 days ending today. */
+export function useOverviewTrend(
+  species: SpeciesOrCombined,
+  today: IsoDate,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ['overview-trend', species, today],
+    enabled,
+    queryFn: ({ signal }) =>
+      apiClient
+        .GET('/overview/trend', {
+          params: { query: { species } },
+          signal,
+        })
+        .then(unwrap<OverviewTrendResponse>('/overview/trend')),
+    staleTime: 10 * MINUTE,
     placeholderData: (previous) => previous,
   })
 }

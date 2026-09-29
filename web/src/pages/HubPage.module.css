@@ -78,6 +78,13 @@
   font-weight: 700;
 }
 
+.keys {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
 /* The key to the fill and the chips: a caption and the five score classes. */
 .scaleKey {
   display: inline-flex;

@@ -14,6 +14,7 @@ import { intlLocale, type Language } from '../i18n'
 import type { RegionDefinition } from '../regions'
 import { SPECIES, type Species, type SpeciesOrCombined } from '../state/urlState'
 import { addDays, formatDayMonth, formatMonth } from '../time/days'
+import { AreaTrend, type TrendState } from './AreaTrend'
 import styles from './OutlookPanel.module.css'
 import panel from './panel.module.css'
 import { PlausibleSpecies, type PlausibleState } from './PlausibleSpecies'
@@ -32,6 +33,8 @@ interface Props {
   onRetry: () => void
   /** The chosen zone's plausible species; not shown for the whole region. */
   plausible?: PlausibleState
+  /** The chosen zone's (or the whole region's) last 15 days. */
+  trend?: TrendState
 }
 
 const TILT_MARK = { better: '▲', usual: '●', worse: '▼', unknown: '?' } as const
@@ -57,6 +60,7 @@ export function OutlookPanel({
   isError,
   onRetry,
   plausible,
+  trend,
 }: Props) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
@@ -116,6 +120,14 @@ export function OutlookPanel({
             value={comune}
             onChange={onComune}
           />
+          {trend && (
+            <AreaTrend
+              trend={trend}
+              species={species}
+              comune={comune}
+              regionName={region.name[language]}
+            />
+          )}
           {zone && <PlausibleSpecies plausible={zone} />}
           {isLoading && <p className={panel.status}>{t('outlook.loading')}</p>}
           {isError && (

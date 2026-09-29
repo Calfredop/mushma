@@ -22,6 +22,7 @@ import { intlLocale, type Language } from '../i18n'
 import type { RegionDefinition } from '../regions'
 import type { SpeciesOrCombined } from '../state/urlState'
 import { formatDayLong, formatDayMonth, formatMonth, type IsoDate } from '../time/days'
+import { AreaTrend, type TrendState } from './AreaTrend'
 import panel from './panel.module.css'
 import { PlausibleSpecies, type PlausibleState } from './PlausibleSpecies'
 import styles from './SeasonsPanel.module.css'
@@ -47,6 +48,8 @@ interface Props {
   onSightingsVisibleChange: (visible: boolean) => void
   /** The chosen zone's plausible species; not shown for the whole region. */
   plausible?: PlausibleState
+  /** The chosen zone's (or the whole region's) last 15 days. */
+  trend?: TrendState
 }
 
 const TOP_COMUNI = 5
@@ -76,6 +79,7 @@ export function SeasonsPanel({
   sightingsVisible,
   onSightingsVisibleChange,
   plausible,
+  trend,
 }: Props) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage as Language
@@ -120,6 +124,14 @@ export function SeasonsPanel({
         value={comune}
         onChange={onComune}
       />
+      {trend && (
+        <AreaTrend
+          trend={trend}
+          species={species}
+          comune={comune}
+          regionName={region.name[language]}
+        />
+      )}
       {zone && <PlausibleSpecies plausible={zone} />}
 
       {isLoading && <p className={panel.status}>{t('seasons.loading')}</p>}

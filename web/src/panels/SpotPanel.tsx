@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { CellDetailResponse } from '../api/queries'
 import { CloseIcon } from '../components/icons'
 import { ScoreChip } from '../components/ScoreChip'
+import { TrendKey, TrendLine } from '../components/TrendLine'
 import { distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
 import { useForestTypes } from '../hooks/useForestTypes'
 import { intlLocale, type Language } from '../i18n'
@@ -143,7 +144,10 @@ export function SpotPanel({
       {date < today && <p className={panel.note}>{t('spot.pastDateNote')}</p>}
 
       <div className={styles.outlook}>
-        <h3 className={styles.outlookTitle}>{t('spot.outlook')}</h3>
+        <div className={styles.outlookHead}>
+          <h3 className={styles.outlookTitle}>{t('spot.outlook')}</h3>
+          <TrendKey />
+        </div>
         {detail.species.map((forecast) => {
           const todayScore = forecast.days[0]?.score ?? 0
           return (
@@ -160,6 +164,12 @@ export function SpotPanel({
                   {t(`species.${forecast.species}.latin`)}
                 </span>
               </div>
+              <TrendLine
+                // The days before today, then today: the line ends on today's chip.
+                points={[...(forecast.past ?? []), ...forecast.days]}
+                today={today}
+                subject={t(`species.${forecast.species}.name`)}
+              />
               <ScoreChip score={todayScore} />
               <div className={styles.bars}>
                 {forecast.days.map((day) => {

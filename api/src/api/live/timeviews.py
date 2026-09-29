@@ -112,7 +112,9 @@ class TimeViews:
         self._require()
         return self.store.read_areas()
 
-    def _area(self, comune: str | None) -> tuple[str, Area]:
+    def area(self, comune: str | None) -> tuple[str, Area]:
+        """The region (``comune`` None) or one comune with woodland: its area code and name.
+        Raises AreaNotFound."""
         areas = self._areas().set_index("area_code")
         if comune is None:
             return self.region, Area(
@@ -155,7 +157,7 @@ class TimeViews:
     # --- seasons -----------------------------------------------------------------------------
 
     def get_seasons(self, species: SpeciesOrCombined, comune: str | None) -> SeasonsResponse:
-        code, area = self._area(comune)
+        code, area = self.area(comune)
         seasons = self.store.read_seasons()
         seasons = seasons[(seasons["area_code"] == code) & (seasons["species"] == species)]
         months = self.store.read_months()
@@ -248,7 +250,7 @@ class TimeViews:
     # --- plausible species -------------------------------------------------------------------
 
     def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
-        code, area = self._area(comune)
+        code, area = self.area(comune)
         meta = self.store.read_meta()
         groups, taxa = meta.get("groups"), meta.get("taxa")
         if not groups or not taxa or not self.store.area_fit_path.exists():
@@ -301,7 +303,7 @@ class TimeViews:
     # --- outlook -----------------------------------------------------------------------------
 
     def get_outlook(self, species: Species, comune: str | None) -> OutlookResponse:
-        code, area = self._area(comune)
+        code, area = self.area(comune)
         today = self.today()
         meta = self.store.read_meta()
         span = meta.get("windows", {}).get(species)

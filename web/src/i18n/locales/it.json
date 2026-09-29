@@ -39,7 +39,6 @@
     "version": "regole",
     "versionHint": "Versione delle regole stampata dall'ultimo calcolo della pipeline"
   },
-
   "species": {
     "label": "Specie",
     "porcini": {
@@ -573,6 +572,22 @@
   "area": {
     "label": "Zona",
     "comune": "{{name}} ({{province}})"
+  },
+  "trend": {
+    "title": "Andamento degli ultimi 15 giorni",
+    "key": "Ultimi 15 giorni",
+    "note": "L'indice medio dei boschi della zona, giorno per giorno. La freccia dice se nelle due settimane è salito, sceso o rimasto stabile.",
+    "up": "In crescita",
+    "down": "In calo",
+    "steady": "Stabile",
+    "summary": "{{subject}}, ultimi 15 giorni. {{direction}}: da {{from}} a {{to}}",
+    "today": "Oggi",
+    "day": "{{date}}: indice {{value}}",
+    "dayColumn": "Giorno",
+    "scoreColumn": "Indice",
+    "loading": "Carico l'andamento…",
+    "loadError": "Non riesco a caricare l'andamento.",
+    "empty": "Nessun indice calcolato negli ultimi 15 giorni."
   },
   "plausible": {
     "title": "Specie adatte alla zona",

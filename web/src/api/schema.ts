@@ -174,6 +174,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/overview/trend': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Per served region: the mean score per day over the 15 days ending today */
+    get: operations['get_overview_trend_overview_trend_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/regions': {
     parameters: {
       query?: never
@@ -268,6 +285,23 @@ export interface paths {
     }
     /** Data freshness: the latest scored day, when it was generated, and the rules version */
     get: operations['get_status_status_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/trend': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** The region's or a comune's mean score per day over the 15 days ending today */
+    get: operations['get_trend_trend_get']
     put?: never
     post?: never
     delete?: never
@@ -776,6 +810,19 @@ export interface components {
        */
       species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
     }
+    /**
+     * OverviewTrendResponse
+     * @description Every served region's trend, for the hub's list.
+     */
+    OverviewTrendResponse: {
+      /** Regions */
+      regions: components['schemas']['RegionTrend'][]
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+    }
     /** Place */
     Place: {
       /** Comune */
@@ -877,6 +924,16 @@ export interface components {
       region: string
       /** Updated At */
       updated_at: string | null
+    }
+    /** RegionTrend */
+    RegionTrend: {
+      /**
+       * Days
+       * @description the region's mean score per day, oldest first, ending today
+       */
+      days: components['schemas']['TrendPoint'][]
+      /** Region */
+      region: string
     }
     /** RegionsResponse */
     RegionsResponse: {
@@ -1056,6 +1113,11 @@ export interface components {
       /** Days */
       days: components['schemas']['DayScore'][]
       /**
+       * Past
+       * @description the days before today in the trend window (today is `days[0]`), oldest first; a day with no stored score is left out
+       */
+      past?: components['schemas']['TrendPoint'][]
+      /**
        * Species
        * @enum {string}
        */
@@ -1144,6 +1206,40 @@ export interface components {
       mean_c: number
       /** Normal C */
       normal_c: number
+    }
+    /**
+     * TrendPoint
+     * @description One day of a trend line: a score alone, without its breakdown.
+     */
+    TrendPoint: {
+      /**
+       * Date
+       * Format: date
+       */
+      date: string
+      /**
+       * Score
+       * @description 0-1 conditions index, never a probability
+       */
+      score: number
+    }
+    /**
+     * TrendResponse
+     * @description An area's conditions index over the trend window, today included: per day, the mean score
+     *     over the area's woodland cells.
+     */
+    TrendResponse: {
+      area: components['schemas']['Area']
+      /**
+       * Days
+       * @description oldest first, ending today; a day with no stored scores is left out
+       */
+      days: components['schemas']['TrendPoint'][]
+      /**
+       * Species
+       * @enum {string}
+       */
+      species: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
     }
     /** ValidationError */
     ValidationError: {
@@ -1566,6 +1662,37 @@ export interface operations {
       }
     }
   }
+  get_overview_trend_overview_trend_get: {
+    parameters: {
+      query?: {
+        species?: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OverviewTrendResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   get_regions_regions_get: {
     parameters: {
       query?: never
@@ -1785,6 +1912,55 @@ export interface operations {
         }
       }
       /** @description the pipeline has never scored anything yet */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
+  get_trend_trend_get: {
+    parameters: {
+      query?: {
+        /** @description ISTAT comune code (see /comuni); omit for the whole region */
+        comune?: string | null
+        species?: 'porcini' | 'ovoli' | 'gallinacci' | 'combined'
+        /** @description Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working */
+        region?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TrendResponse']
+        }
+      }
+      /** @description unknown comune or region */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+      /** @description history not built yet */
       503: {
         headers: {
           [name: string]: unknown

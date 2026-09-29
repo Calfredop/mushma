@@ -35,6 +35,14 @@
   gap: var(--space-2);
 }
 
+.outlookHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
 .outlookTitle {
   margin: 0;
   color: var(--felce);
@@ -42,10 +50,10 @@
   font-weight: 650;
 }
 
-/* One line for a species (name, binomial, today's chip), then its eight days. */
+/* One line for a species (name, binomial, its last 15 days, today's chip), then its eight days. */
 .species {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 4px var(--space-2);
   align-items: center;
   padding: var(--space-2) 0 var(--space-1);

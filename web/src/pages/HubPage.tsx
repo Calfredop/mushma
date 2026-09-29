@@ -1,12 +1,13 @@
 import { LazyMotion } from 'motion/react'
 import { type MouseEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { RegionOverview } from '../api/queries'
+import type { RegionOverview, RegionTrend, TrendPoint } from '../api/queries'
 import { ChevronIcon, GitHubIcon } from '../components/icons'
 import { InfoMenu } from '../components/InfoMenu'
 import { MapLoading } from '../components/MapLoading'
 import { ScoreChip } from '../components/ScoreChip'
 import { Sheet, type SheetLayout } from '../components/Sheet'
+import { TrendKey, TrendLine } from '../components/TrendLine'
 import { REPO_URL } from '../config'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { intlLocale, type Language } from '../i18n'
@@ -15,6 +16,7 @@ import type { MapPadding } from '../map/padding'
 import { regionPath } from '../routes'
 import { SCORE_CLASSES } from '../score/scale'
 import { type Snap, visibleAt } from '../sheet/snaps'
+import type { IsoDate } from '../time/days'
 import styles from './HubPage.module.css'
 import { type HubRegion, hubRegions } from './hubRegions'
 
@@ -39,10 +41,17 @@ const plainClick = (event: MouseEvent) =>
   !event.shiftKey &&
   !event.altKey
 
+/** Every served region's last 15 days, for a line beside each row's score. */
+export interface HubTrend {
+  regions: RegionTrend[]
+  today: IsoDate
+}
+
 interface HubPageProps {
   overview: RegionOverview[] | undefined
   /** Today's overview is still on its way: the rows wait for their numbers. */
   overviewPending: boolean
+  trend?: HubTrend
   onSelectRegion: (slug: string) => void
   onNavigate: (path: string) => void
   onDisclaimer: () => void
@@ -57,6 +66,7 @@ interface HubPageProps {
 export function HubPage({
   overview,
   overviewPending,
+  trend,
   onSelectRegion,
   onNavigate,
   onDisclaimer,
@@ -74,6 +84,11 @@ export function HubPage({
   const mapAreaRef = useRef<HTMLElement>(null)
 
   const regions = useMemo(() => hubRegions(overview, language), [overview, language])
+  const trendRows = trend?.regions
+  const trends = useMemo(
+    () => new Map(trendRows?.map((row) => [row.region, row.days])),
+    [trendRows],
+  )
 
   const padding = useMemo<MapPadding | undefined>(() => {
     if (desktop) return { top: MARGIN, right: MARGIN, bottom: MARGIN, left: PANEL_INSET }
@@ -154,13 +169,18 @@ export function HubPage({
               <h2 id="hub-regions-title" className={styles.listTitle}>
                 {t('hub.regions')}
               </h2>
-              <ScaleKey />
+              <div className={styles.keys}>
+                <ScaleKey />
+                {trend && <TrendKey />}
+              </div>
             </div>
             <ul className={styles.regionList}>
               {regions.map((entry) => (
                 <li key={entry.region.slug}>
                   <RegionRow
                     entry={entry}
+                    trend={trends.get(entry.region.apiRegionId)}
+                    today={trend?.today}
                     language={language}
                     pending={overviewPending}
                     highlighted={highlighted === entry.region.slug}
@@ -229,6 +249,9 @@ function ScaleKey() {
 
 interface RegionRowProps {
   entry: HubRegion
+  /** The region's last 15 days, when the overview trend has them. */
+  trend: TrendPoint[] | undefined
+  today: IsoDate | undefined
   language: Language
   pending: boolean
   highlighted: boolean
@@ -238,6 +261,8 @@ interface RegionRowProps {
 
 function RegionRow({
   entry,
+  trend,
+  today,
   language,
   pending,
   highlighted,
@@ -276,6 +301,9 @@ function RegionRow({
         <span className={styles.regionName}>{region.name[language]}</span>
         <span className={styles.regionSummary}>{summary}</span>
       </span>
+      {trend && today && (
+        <TrendLine points={trend} today={today} subject={region.name[language]} />
+      )}
       {meanScore !== undefined && <ScoreChip score={meanScore} />}
       <ChevronIcon direction="right" />
     </a>

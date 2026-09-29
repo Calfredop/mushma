@@ -147,9 +147,21 @@ class DayScore(BaseModel):
     factors: list[FactorBreakdown]
 
 
+class TrendPoint(BaseModel):
+    """One day of a trend line: a score alone, without its breakdown."""
+
+    date: date
+    score: float = Field(ge=0, le=1, description="0-1 conditions index, never a probability")
+
+
 class SpeciesForecast(BaseModel):
     species: Species
     days: list[DayScore]
+    past: list[TrendPoint] = Field(
+        default_factory=list,
+        description="the days before today in the trend window (today is `days[0]`), oldest "
+        "first; a day with no stored score is left out",
+    )
 
 
 class GridCellScore(BaseModel):
@@ -512,3 +524,28 @@ class OverviewResponse(BaseModel):
     date: date
     good_score: float = Field(gt=0, le=1)
     regions: list[RegionOverview]
+
+
+class TrendResponse(BaseModel):
+    """An area's conditions index over the trend window, today included: per day, the mean score
+    over the area's woodland cells."""
+
+    species: SpeciesOrCombined
+    area: Area
+    days: list[TrendPoint] = Field(
+        description="oldest first, ending today; a day with no stored scores is left out"
+    )
+
+
+class RegionTrend(BaseModel):
+    region: str
+    days: list[TrendPoint] = Field(
+        description="the region's mean score per day, oldest first, ending today"
+    )
+
+
+class OverviewTrendResponse(BaseModel):
+    """Every served region's trend, for the hub's list."""
+
+    species: SpeciesOrCombined
+    regions: list[RegionTrend]

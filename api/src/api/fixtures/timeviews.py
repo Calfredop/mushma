@@ -226,6 +226,11 @@ class FixtureTimeViews:
         self.cells = cells
         self.region_name = region_name or region_display_name(region_id)
 
+    def area(self, comune: str | None) -> tuple[str, Area]:
+        """The region (``comune`` None) or one comune: its key here (a comune's name) and area.
+        Raises AreaNotFound."""
+        return _area(self.region_id, self.region_name, self.cells, comune)
+
     def get_comuni(self) -> ComuniResponse:
         return ComuniResponse(
             comuni=[

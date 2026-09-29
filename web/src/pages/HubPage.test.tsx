@@ -21,7 +21,21 @@ vi.mock('../map/HubMap', () => ({
   ),
 }))
 
-function renderHub(overviewPending = false) {
+const TREND = {
+  regions: [
+    {
+      region: 'tuscany',
+      days: [
+        { date: '2026-09-27', score: 0.9 },
+        { date: '2026-09-28', score: 0.87 },
+        { date: '2026-09-29', score: 0.855 },
+      ],
+    },
+  ],
+  today: '2026-09-29',
+}
+
+function renderHub(overviewPending = false, trend?: typeof TREND) {
   const handlers = {
     onSelectRegion: vi.fn(),
     onNavigate: vi.fn(),
@@ -34,6 +48,7 @@ function renderHub(overviewPending = false) {
         { region: 'tuscany', mean_score: 0.855, good_share: 0.89, updated_at: null },
       ]}
       overviewPending={overviewPending}
+      trend={trend}
       {...handlers}
     />,
   )
@@ -54,6 +69,20 @@ describe('HubPage', () => {
     // Served, but missing from today's overview.
     expect(umbria).toHaveAttribute('href', '/umbria')
     expect(umbria).toHaveTextContent('Indice di oggi non ancora disponibile')
+  })
+
+  it("draws a region's last 15 days beside its score, when the trend has it", () => {
+    renderHub(false, TREND)
+    const list = screen.getByRole('list')
+    const toscana = within(list).getByRole('link', { name: /^Toscana/ })
+    expect(
+      within(toscana).getByRole('img', {
+        name: 'Toscana, ultimi 15 giorni. In calo: da 0,90 a 0,86',
+      }),
+    ).toBeInTheDocument()
+    const umbria = within(list).getByRole('link', { name: /^Umbria/ })
+    expect(within(umbria).queryByRole('img', { name: /ultimi 15 giorni/ })).toBeNull()
+    expect(screen.getByText('Ultimi 15 giorni')).toBeInTheDocument()
   })
 
   it('opens a region from its row or from the map', async () => {

@@ -1,0 +1,146 @@
+/* A score line over the last 15 days. The line is quiet ink; only today's dot wears a score
+   colour, and only the arrow wears a direction colour (tokens.css → Trend arrows). */
+
+.line {
+  fill: none;
+  stroke: var(--felce);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* A thin ink ring, so the palest score class still shows on the panel. */
+.dot {
+  stroke: var(--humus);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.arrow {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--trend-steady);
+}
+
+.arrow svg {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.arrow[data-direction='up'] {
+  color: var(--trend-up);
+}
+
+.arrow[data-direction='up'] svg {
+  transform: rotate(-45deg);
+}
+
+.arrow[data-direction='down'] {
+  color: var(--trend-down);
+}
+
+.arrow[data-direction='down'] svg {
+  transform: rotate(45deg);
+}
+
+/* Words stay in ink: the arrow beside them carries the colour. */
+.word {
+  color: var(--humus);
+  font-size: var(--text-caption);
+  font-weight: 650;
+}
+
+/* --- small: a row's sparkline and arrow ---------------------------------------------------- */
+
+.small {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+}
+
+.small .chart {
+  display: block;
+  width: 56px;
+  height: 20px;
+  overflow: visible;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--felce);
+  font-size: var(--text-caption);
+  white-space: nowrap;
+}
+
+.key svg {
+  flex: none;
+}
+
+/* --- large: a panel-wide chart you can drag along ------------------------------------------ */
+
+.large {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.status {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.status .arrow {
+  align-self: center;
+}
+
+.readout {
+  color: var(--felce);
+  font-size: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.readout strong {
+  color: var(--humus);
+  font-family: var(--font-data);
+  font-weight: 700;
+}
+
+.large .chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-s);
+  background: rgb(28 33 29 / 5%);
+  cursor: crosshair;
+  overflow: visible;
+  /* Sideways drags read the days; up and down still scroll the sheet. */
+  touch-action: pan-y;
+}
+
+.hairline {
+  stroke: var(--humus);
+  stroke-width: 1;
+  stroke-opacity: 0.35;
+  vector-effect: non-scaling-stroke;
+}
+
+.axis {
+  display: flex;
+  justify-content: space-between;
+  color: var(--felce);
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+}

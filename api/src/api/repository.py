@@ -18,8 +18,12 @@ from api.models import (
     SeasonsResponse,
     SightingsResponse,
     StatusResponse,
+    TrendResponse,
 )
 from api.species import Species, SpeciesOrCombined
+
+# The trend line's window: the 15 days ending today, today included.
+TREND_DAYS = 15
 
 
 class DateOutOfRange(Exception):
@@ -103,6 +107,10 @@ class ScoresRepository(Protocol):
     def get_species(self, comune: str | None) -> PlausibleSpeciesResponse:
         """Which species the woodland of Tuscany or one comune plausibly holds, and each one's
         good days per season. Raises AreaNotFound."""
+
+    def get_trend(self, species: SpeciesOrCombined, comune: str | None) -> TrendResponse:
+        """The mean score of the region's (``comune`` None) or one comune's woodland cells, per
+        day of the TREND_DAYS ending today. Raises AreaNotFound."""
 
     def get_status(self) -> StatusResponse:
         """Data freshness. Raises ScoresUnavailable if the pipeline has never scored anything."""

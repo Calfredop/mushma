@@ -15,6 +15,7 @@ from api.models import (
     HotspotsResponse,
     OutlookResponse,
     OverviewResponse,
+    OverviewTrendResponse,
     PlausibleSpeciesResponse,
     RegionsResponse,
     ScoresResponse,
@@ -22,9 +23,15 @@ from api.models import (
     SeasonsResponse,
     SightingsResponse,
     StatusResponse,
+    TrendResponse,
 )
 from api.regions import RegionNotServed
-from api.registry import get_overview_response, get_regions_response, repository_for
+from api.registry import (
+    get_overview_response,
+    get_overview_trend_response,
+    get_regions_response,
+    repository_for,
+)
 from api.repository import (
     AreaNotFound,
     CellNotFound,
@@ -114,6 +121,27 @@ def get_overview(
         date=target_date,
     )
     response.headers["Cache-Control"] = cache_control_for_date(target_date)
+    return result
+
+
+@router.get(
+    "/overview/trend",
+    response_model=OverviewTrendResponse,
+    summary="Per served region: the mean score per day over the 15 days ending today",
+)
+def get_overview_trend(
+    response: Response,
+    species: Annotated[SpeciesOrCombined, Query()] = "combined",
+) -> OverviewTrendResponse:
+    result = cached_model(
+        NATIONAL_REGION,
+        "overview-trend",
+        OverviewTrendResponse,
+        lambda: get_overview_trend_response(species),
+        species=species,
+        until=today_rome(),
+    )
+    response.headers["Cache-Control"] = SHORT_LIVED  # today's score is still a forecast
     return result
 
 
@@ -439,6 +467,39 @@ def get_outlook(
         comune=comune,
     )
     response.headers["Cache-Control"] = SHORT_LIVED
+    return result
+
+
+@router.get(
+    "/trend",
+    response_model=TrendResponse,
+    summary="The region's or a comune's mean score per day over the 15 days ending today",
+    responses={404: {"description": "unknown comune or region"}, **_HISTORY_ERRORS},
+)
+def get_trend(
+    repository: Repository,
+    response: Response,
+    comune: Comune = None,
+    species: Annotated[SpeciesOrCombined, Query()] = "combined",
+) -> TrendResponse:
+    def compute() -> TrendResponse:
+        try:
+            return repository.get_trend(species, comune)
+        except AreaNotFound as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except HistoryUnavailable as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    result = cached_model(
+        repository.region,
+        "trend",
+        TrendResponse,
+        compute,
+        species=species,
+        comune=comune,
+        until=today_rome(),
+    )
+    response.headers["Cache-Control"] = SHORT_LIVED  # today's score is still a forecast
     return result
 
 

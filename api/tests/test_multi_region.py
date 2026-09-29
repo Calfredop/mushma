@@ -6,7 +6,14 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
-from api.models import OverviewResponse, RegionsResponse, ScoresResponse
+from api.models import (
+    OverviewResponse,
+    OverviewTrendResponse,
+    RegionsResponse,
+    ScoresResponse,
+)
+from api.repository import TREND_DAYS
+from api.timeutil import today_rome
 
 client = TestClient(app)
 
@@ -22,6 +29,7 @@ DATA_ROUTES = (
     ("/history/seasons", {}),
     ("/outlook", {"species": "porcini"}),
     ("/species", {}),
+    ("/trend", {}),
 )
 
 
@@ -107,6 +115,31 @@ class TestOverviewEndpoint:
     def test_unknown_region_is_not_a_query_here(self) -> None:
         # /overview is national: no region filter; an unknown species still 422s.
         response = client.get("/overview", params={"species": "amanita_phalloides"})
+        assert response.status_code == 422
+
+
+class TestOverviewTrendEndpoint:
+    def test_every_served_region_has_the_days_ending_today(self) -> None:
+        response = client.get("/overview/trend", params={"species": "porcini"})
+        assert response.status_code == 200
+        body = OverviewTrendResponse.model_validate(response.json())
+        assert body.species == "porcini"
+        assert [row.region for row in body.regions] == ["tuscany", "umbria"]
+        for row in body.regions:
+            assert len(row.days) == TREND_DAYS
+            assert row.days[-1].date == today_rome()
+            assert all(0.0 <= day.score <= 1.0 for day in row.days)
+
+    def test_today_matches_the_overview(self) -> None:
+        trend = OverviewTrendResponse.model_validate(client.get("/overview/trend").json())
+        overview = OverviewResponse.model_validate(client.get("/overview").json())
+        assert trend.species == "combined"
+        today = {row.region: row.mean_score for row in overview.regions}
+        for row in trend.regions:
+            assert row.days[-1].score == pytest.approx(today[row.region], abs=1e-3)
+
+    def test_rejects_an_unknown_species(self) -> None:
+        response = client.get("/overview/trend", params={"species": "amanita_phalloides"})
         assert response.status_code == 422
 
 

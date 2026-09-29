@@ -25,11 +25,13 @@ from api.models import (
     HotspotsResponse,
     OutlookResponse,
     OverviewResponse,
+    OverviewTrendResponse,
     Place,
     PlausibleSpeciesResponse,
     RegionInfo,
     RegionOverview,
     RegionsResponse,
+    RegionTrend,
     ScoresResponse,
     SeasonMapResponse,
     SeasonsResponse,
@@ -37,6 +39,8 @@ from api.models import (
     SightingsResponse,
     SpeciesForecast,
     StatusResponse,
+    TrendPoint,
+    TrendResponse,
 )
 from api.regions import (
     FIXTURE_REGIONS,
@@ -44,13 +48,14 @@ from api.regions import (
     history_start_date,
     species_for_region,
 )
-from api.repository import CellNotFound, DateOutOfRange
+from api.repository import TREND_DAYS, CellNotFound, DateOutOfRange
 from api.species import SPECIES, Species, SpeciesOrCombined
 from api.timeutil import today_rome
 
 WINDOW_START = WINDOW_OFFSETS.start  # -6
 WINDOW_END = WINDOW_OFFSETS.stop - 1  # 7
 FORECAST_OFFSETS = range(0, 8)  # today + 7-day outlook (PRD -> Features 2)
+TREND_OFFSETS = range(1 - TREND_DAYS, 1)  # the trend line: the days ending today
 HOTSPOT_SIGHTINGS_WINDOW_DAYS = 90
 # Stable across requests so ``/status`` without ``region`` matches ``?region=tuscany``.
 FIXTURE_UPDATED_AT = datetime(2026, 9, 18, 6, 0, 0, tzinfo=UTC)
@@ -87,6 +92,11 @@ def _offset_for(target_date: date) -> int:
             target_date, today + timedelta(days=WINDOW_START), today + timedelta(days=WINDOW_END)
         )
     return offset
+
+
+def _trend_days(today: date) -> list[tuple[int, date]]:
+    """The trend window's days, oldest first, each with its offset from today."""
+    return [(offset, today + timedelta(days=offset)) for offset in TREND_OFFSETS]
 
 
 def _score_for(cell: CellSpec, species: SpeciesOrCombined, target_date: date, offset: int) -> float:
@@ -162,7 +172,11 @@ class FixtureRepository:
                 target_date = today + timedelta(days=offset)
                 score, factors = score_and_factors(cell, species, target_date, offset)
                 days.append(DayScore(date=target_date, score=score, factors=_to_breakdown(factors)))
-            species_forecasts.append(SpeciesForecast(species=species, days=days))
+            past = [
+                TrendPoint(date=day, score=score_and_factors(cell, species, day, offset)[0])
+                for offset, day in _trend_days(today)[:-1]
+            ]
+            species_forecasts.append(SpeciesForecast(species=species, days=days, past=past))
         return CellDetailResponse(
             cell_id=cell.id,
             lon=cell.lon,
@@ -219,6 +233,23 @@ class FixtureRepository:
             ).items()
         ]
         return SightingsResponse(species=species, since=since, counts=counts)
+
+    def _trend(self, species: SpeciesOrCombined, cells: list[CellSpec]) -> list[TrendPoint]:
+        if not cells:
+            return []
+        points = []
+        for offset, day in _trend_days(today_rome()):
+            mean = sum(_score_for(cell, species, day, offset) for cell in cells) / len(cells)
+            points.append(TrendPoint(date=day, score=round(mean, 3)))
+        return points
+
+    def get_trend(self, species: SpeciesOrCombined, comune: str | None) -> TrendResponse:
+        name, area = self._time_views.area(comune)
+        cells = [cell for cell in self.cells if comune is None or cell.comune == name]
+        return TrendResponse(species=species, area=area, days=self._trend(species, cells))
+
+    def region_trend(self, species: SpeciesOrCombined) -> list[TrendPoint]:
+        return self._trend(species, list(self.cells))
 
     def get_status(self) -> StatusResponse:
         # Fixtures are computed on the fly (api.fixtures.generator), so they're always "fresh".
@@ -290,6 +321,16 @@ def fixture_overview(species: SpeciesOrCombined, target_date: date) -> OverviewR
         good_score=good_score,
         regions=[
             FixtureRepository(region_id).overview_row(species, target_date)
+            for region_id in FIXTURE_REGIONS
+        ],
+    )
+
+
+def fixture_overview_trend(species: SpeciesOrCombined) -> OverviewTrendResponse:
+    return OverviewTrendResponse(
+        species=species,
+        regions=[
+            RegionTrend(region=region_id, days=FixtureRepository(region_id).region_trend(species))
             for region_id in FIXTURE_REGIONS
         ],
     )

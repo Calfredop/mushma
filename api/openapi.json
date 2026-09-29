@@ -1211,6 +1211,34 @@
         "title": "OverviewResponse",
         "type": "object"
       },
+      "OverviewTrendResponse": {
+        "description": "Every served region's trend, for the hub's list.",
+        "properties": {
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/RegionTrend"
+            },
+            "title": "Regions",
+            "type": "array"
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci",
+              "combined"
+            ],
+            "title": "Species",
+            "type": "string"
+          }
+        },
+        "required": [
+          "species",
+          "regions"
+        ],
+        "title": "OverviewTrendResponse",
+        "type": "object"
+      },
       "Place": {
         "properties": {
           "comune": {
@@ -1436,6 +1464,28 @@
           "updated_at"
         ],
         "title": "RegionOverview",
+        "type": "object"
+      },
+      "RegionTrend": {
+        "properties": {
+          "days": {
+            "description": "the region's mean score per day, oldest first, ending today",
+            "items": {
+              "$ref": "#/components/schemas/TrendPoint"
+            },
+            "title": "Days",
+            "type": "array"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "region",
+          "days"
+        ],
+        "title": "RegionTrend",
         "type": "object"
       },
       "RegionsResponse": {
@@ -1879,6 +1929,14 @@
             "title": "Days",
             "type": "array"
           },
+          "past": {
+            "description": "the days before today in the trend window (today is `days[0]`), oldest first; a day with no stored score is left out",
+            "items": {
+              "$ref": "#/components/schemas/TrendPoint"
+            },
+            "title": "Past",
+            "type": "array"
+          },
           "species": {
             "enum": [
               "porcini",
@@ -2060,6 +2118,62 @@
           "normal_c"
         ],
         "title": "TemperatureStat",
+        "type": "object"
+      },
+      "TrendPoint": {
+        "description": "One day of a trend line: a score alone, without its breakdown.",
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "score": {
+            "description": "0-1 conditions index, never a probability",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "score"
+        ],
+        "title": "TrendPoint",
+        "type": "object"
+      },
+      "TrendResponse": {
+        "description": "An area's conditions index over the trend window, today included: per day, the mean score\nover the area's woodland cells.",
+        "properties": {
+          "area": {
+            "$ref": "#/components/schemas/Area"
+          },
+          "days": {
+            "description": "oldest first, ending today; a day with no stored scores is left out",
+            "items": {
+              "$ref": "#/components/schemas/TrendPoint"
+            },
+            "title": "Days",
+            "type": "array"
+          },
+          "species": {
+            "enum": [
+              "porcini",
+              "ovoli",
+              "gallinacci",
+              "combined"
+            ],
+            "title": "Species",
+            "type": "string"
+          }
+        },
+        "required": [
+          "species",
+          "area",
+          "days"
+        ],
+        "title": "TrendResponse",
         "type": "object"
       },
       "ValidationError": {
@@ -2742,6 +2856,52 @@
         "summary": "Per served region: mean score and share of woodland at or above good_score"
       }
     },
+    "/overview/trend": {
+      "get": {
+        "operationId": "get_overview_trend_overview_trend_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "species",
+            "required": false,
+            "schema": {
+              "default": "combined",
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci",
+                "combined"
+              ],
+              "title": "Species",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewTrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Per served region: the mean score per day over the 15 days ending today"
+      }
+    },
     "/regions": {
       "get": {
         "operationId": "get_regions_regions_get",
@@ -3109,6 +3269,88 @@
           }
         },
         "summary": "Data freshness: the latest scored day, when it was generated, and the rules version"
+      }
+    },
+    "/trend": {
+      "get": {
+        "operationId": "get_trend_trend_get",
+        "parameters": [
+          {
+            "description": "ISTAT comune code (see /comuni); omit for the whole region",
+            "in": "query",
+            "name": "comune",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISTAT comune code (see /comuni); omit for the whole region",
+              "title": "Comune"
+            }
+          },
+          {
+            "in": "query",
+            "name": "species",
+            "required": false,
+            "schema": {
+              "default": "combined",
+              "enum": [
+                "porcini",
+                "ovoli",
+                "gallinacci",
+                "combined"
+              ],
+              "title": "Species",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "default": "tuscany",
+              "description": "Italian region slug with underscores (e.g. emilia_romagna); defaults to tuscany so installed PWAs keep working",
+              "title": "Region",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "unknown comune or region"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "history not built yet"
+          }
+        },
+        "summary": "The region's or a comune's mean score per day over the 15 days ending today"
       }
     }
   }

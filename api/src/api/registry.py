@@ -10,12 +10,20 @@ from pathlib import Path
 from api.fixtures.repository import (
     FixtureRepository,
     fixture_overview,
+    fixture_overview_trend,
     fixture_regions_response,
 )
 from api.grid.sources import data_dir
 from api.history.config import load_history_config
 from api.live.repository import LiveRepository
-from api.models import OverviewResponse, RegionInfo, RegionOverview, RegionsResponse
+from api.models import (
+    OverviewResponse,
+    OverviewTrendResponse,
+    RegionInfo,
+    RegionOverview,
+    RegionsResponse,
+    RegionTrend,
+)
 from api.regions import (
     cached_region_config,
     history_start_date,
@@ -99,3 +107,22 @@ def get_overview_response(
     if not rows and out_of_range is not None:
         raise out_of_range
     return OverviewResponse(species=species, date=target_date, good_score=good_score, regions=rows)
+
+
+def get_overview_trend_response(
+    species: SpeciesOrCombined, *, root: Path | None = None
+) -> OverviewTrendResponse:
+    """Every served region's trend, ending today, for the hub's list."""
+    if _fixtures_mode():
+        return fixture_overview_trend(species)
+    root = root or data_dir()
+    return OverviewTrendResponse(
+        species=species,
+        regions=[
+            RegionTrend(
+                region=region_id,
+                days=_live_repository(region_id, str(root)).region_trend(species),
+            )
+            for region_id in list_served_region_ids(root)
+        ],
+    )

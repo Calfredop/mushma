@@ -20,6 +20,14 @@
   --score-4: #b34f2a;
   --score-5: #652d1f;
 
+  /* Trend arrows: which way a score line is heading. Always with the arrow's own angle (and a
+     word where there is room), so the colour never carries the direction alone. Down is a cool
+     raspberry, not a red, so it can't read as the warm top of the score scale (OKLab ΔE 11.9 from
+     class 4). Both clear 4.5:1 on Lichene. */
+  --trend-up: #1e7b4a;
+  --trend-down: #9e2a55;
+  --trend-steady: var(--felce);
+
   /* Forecast hatch: the signature. Ink at low alpha over whatever is below. */
   --hatch: repeating-linear-gradient(
     -45deg,
