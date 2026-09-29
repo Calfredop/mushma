@@ -343,6 +343,42 @@ def test_read_vector_concatenates_parts_saved_under_their_own_names(tmp_path: Pa
     assert (tmp_path / "cache" / "south.zip").is_file()
 
 
+def test_read_vector_reads_a_manual_download_saved_in_the_cache(tmp_path: Path) -> None:
+    # Valle d'Aosta's forest map is downloaded by hand behind a login: the file is placed in the
+    # source's cache under the name the config gives, and read like any zipped shapefile.
+    _zip_layer(
+        tmp_path / "cache" / "tipi.zip",
+        "tipi",
+        _frame(box(X0, Y0, X0 + 100, Y0 + 100), ca=["LC"]),
+    )
+
+    frames = read_vector(
+        {
+            "manual": "https://portal.example/repertorio",
+            "file": "tipi.zip",
+            "shapefile": "tipi.shp",
+        },
+        tmp_path / "cache",
+    )
+
+    assert list(frames["ca"]) == ["LC"]
+
+
+def test_read_vector_says_where_to_get_a_missing_manual_download(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError) as error:
+        read_vector(
+            {
+                "manual": "https://portal.example/repertorio",
+                "file": "tipi.zip",
+                "shapefile": "tipi.shp",
+            },
+            tmp_path / "cache",
+        )
+
+    assert "https://portal.example/repertorio" in str(error.value)
+    assert str(tmp_path / "cache" / "tipi.zip") in str(error.value)
+
+
 def test_read_vector_rejects_an_unknown_download_shape(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="download"):
         read_vector({"url": "https://example.com/x.bin"}, tmp_path / "cache")
