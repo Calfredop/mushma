@@ -138,6 +138,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY-NC 3.0',
   },
   {
+    name: "Regione Autonoma Valle d'Aosta — Carta forestale, Tipi forestali 2020 (Repertorio cartografico SCT)",
+    url: 'https://geoportale.regione.vda.it/ricerche-nuove/scheda-nuova/?id_tipo=3&uuid=r_vda:04259-META:20211029:091000',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Copernicus DEM GLO-30',
     url: 'https://registry.opendata.aws/copernicus-dem/',
     use: 'elevation',
