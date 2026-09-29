@@ -5070,3 +5070,18 @@ references:
       (folklore).'
     cited_as:
     - species-ecology/valle_d_aosta.md
+  mushma_vda_yearbook_gauge_check_2026:
+    citation: 'mushma Valle d''Aosta rain check: raw ERA5-Land (CDS) precipitation summed per month, read bilinearly
+      from the land nodes at each gauge, against the monthly totals of the 15 stations of the Region''s statistical
+      yearbook (Annuario statistico regionale 2017-2025, Tavola "Precipitazioni cumulate": Centro funzionale
+      regionale and ARPA Valle d''Aosta; 2016-2024, 318-2,045 m, gauge-years with all twelve months). See
+      regions/valle_d_aosta.md'
+    url: https://www.regione.vda.it/statistica/pubblicazioni/annuari/annuario2025/SITE/1/7.PDF
+    kind: analysis
+    region: Valle d'Aosta
+    verified: verified
+    supports: 'ERA5-Land holds 1.67 of the gauges'' rain (1.20 at Champorcher to 2.31 at Aosta, 1.28-1.75 by year);
+      least squares through the origin of May-October gauge totals on model totals x (a + b x km) gives a = 0.584,
+      b = 0.036 per km (a factor alone 0.633), leaving every height band within 0.98-1.04 of the gauges.'
+    cited_as:
+    - regions/valle_d_aosta.md
