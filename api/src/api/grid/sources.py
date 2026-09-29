@@ -239,7 +239,8 @@ def read_vector(
     - ``member`` + ``layer`` (+ ``url`` zip): named layer inside a file member of a zip
     - ``arcgis_layer`` (+ ``field``, needs ``bbox_wgs84``): ArcGIS REST FeatureServer/MapServer
     - ``wfs`` (+ ``type_name``, needs ``bbox_wgs84``): OGC WFS GetFeature; with ``page_size``
-      (+ ``sort_by``) it pages a server that caps the feature count
+      (+ ``sort_by``) it pages a server that caps the feature count; with ``cql_filter`` it sends
+      a GeoServer CQL_FILTER in place of the bbox, for a region's own layer too big to fetch whole
     - ``parts``: a list of the url shapes above (e.g. one zip per province), read and concatenated
     - ``manual`` (+ ``file``): a file with no open download link (behind a login), saved by hand
       as ``cache_dir/file``; ``manual`` is the page to get it from, named when it is missing.
@@ -292,7 +293,10 @@ def read_vector(
     if "wfs" in download:
         if bbox_wgs84 is None:
             raise ValueError("wfs downloads need bbox_wgs84")
-        return _read_wfs(download, cache_dir, bbox_wgs84)
+        pages = _fetch_wfs(download, cache_dir, bbox_wgs84)
+        # The pages hold every field; the reader's filter and columns apply to each page.
+        frames = [pyogrio.read_dataframe(p, columns=columns, where=where) for p in pages]
+        return gpd.GeoDataFrame(pd.concat(frames, ignore_index=True), crs=frames[0].crs)
 
     if "manual" in download:
         local = cache_dir / download["file"]
@@ -369,9 +373,16 @@ def _part_cache_dir(part: dict, cache_dir: Path) -> Path:
     return cache_dir / f"part_{hashlib.sha1(key).hexdigest()[:10]}"
 
 
-def _read_wfs(
+def _fetch_wfs(
     download: dict, cache_dir: Path, bbox_wgs84: tuple[float, float, float, float]
-) -> gpd.GeoDataFrame:
+) -> list[Path]:
+    """Fetch a WFS layer's GetFeature pages into ``cache_dir`` once; return their paths.
+
+    GeoServer refuses a BBOX sent with a CQL_FILTER, so ``cql_filter`` replaces the bbox: it must
+    select the region's features itself (a region's own map, clipped to the region anyway).
+    """
+    import pyogrio
+
     lon_min, lat_min, lon_max, lat_max = bbox_wgs84
     params = {
         "SERVICE": "WFS",
@@ -380,35 +391,35 @@ def _read_wfs(
         "TYPENAME": download["type_name"],
         "OUTPUTFORMAT": download.get("output_format", "application/json"),
         "SRSNAME": download.get("srs", "EPSG:4326"),
-        "BBOX": f"{lon_min},{lat_min},{lon_max},{lat_max},EPSG:4326",
     }
     base = download["wfs"].rstrip("?")
     sep = "&" if "?" in base else "?"
     # Bbox is part of the cache key so overlapping regions do not share a stale clip.
     stem = f"wfs_{lon_min}_{lat_min}_{lon_max}_{lat_max}".replace(".", "p")
+    if download.get("cql_filter"):
+        params["CQL_FILTER"] = download["cql_filter"]
+        stem += "_cql" + hashlib.sha1(download["cql_filter"].encode()).hexdigest()[:10]
+    else:
+        params["BBOX"] = f"{lon_min},{lat_min},{lon_max},{lat_max},EPSG:4326"
     page_size = download.get("page_size")
     if not page_size:
         dest = cache_dir / f"{stem}.json"
-        fetch(f"{base}{sep}{urllib.parse.urlencode(params)}", dest)
-        return gpd.read_file(dest)
-
-    import pandas as pd
+        return [fetch(f"{base}{sep}{urllib.parse.urlencode(params)}", dest)]
 
     # Servers cap GetFeature (GeoServer's maxFeatures); page with WFS 2.0 COUNT/STARTINDEX,
     # sorted on a stable key so pages neither overlap nor skip, until a short page.
     if download.get("sort_by"):
         params["SORTBY"] = download["sort_by"]
-    frames = []
+    pages = []
     start = 0
     while True:
         page = {**params, "COUNT": str(page_size), "STARTINDEX": str(start)}
         dest = cache_dir / f"{stem}_page{start // page_size:04d}.json"
-        frame = gpd.read_file(fetch(f"{base}{sep}{urllib.parse.urlencode(page)}", dest))
-        frames.append(frame)
-        if len(frame) < page_size:
+        pages.append(fetch(f"{base}{sep}{urllib.parse.urlencode(page)}", dest))
+        if pyogrio.read_info(dest, force_feature_count=True)["features"] < page_size:
             break
         start += page_size
-    return gpd.GeoDataFrame(pd.concat(frames, ignore_index=True), crs=frames[0].crs)
+    return pages
 
 
 def _read_zip_shapefile(
