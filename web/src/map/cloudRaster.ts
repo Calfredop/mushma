@@ -5,11 +5,7 @@
  * the lattice/donut artefacts of heatmaps or stacked circle-blur, and land on
  * the same centres as the squircle GeoJSON cells.
  */
-import {
-  GOOD_DAYS_CLASSES,
-  SCORE_CLASSES,
-  type ScoreClass,
-} from '../score/scale'
+import { GOOD_DAYS_CLASSES, SCORE_CLASSES, type ScoreClass } from '../score/scale'
 
 const KM_PER_DEGREE_LAT = 111.32
 
@@ -186,7 +182,8 @@ export function paintCloudRaster(
   const halfLat = sizeKm / 2 / KM_PER_DEGREE_LAT
   const midLat = (south + north) / 2
   const cellH =
-    (Math.abs(mercatorY(midLat + halfLat) - mercatorY(midLat - halfLat)) / spanMy) * height
+    (Math.abs(mercatorY(midLat + halfLat) - mercatorY(midLat - halfLat)) / spanMy) *
+    height
   const blurPx = Math.max(1, cellH * CLOUD_BLUR_CELLS)
 
   for (const cell of cells) {

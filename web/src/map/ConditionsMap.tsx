@@ -44,11 +44,7 @@ import {
   SCORE_LAYERS,
   withDataLayers,
 } from './dataLayers'
-import {
-  cloudRasterDataUrl,
-  EMPTY_CLOUD_DATA_URL,
-  paintCloudRaster,
-} from './cloudRaster'
+import { cloudRasterDataUrl, EMPTY_CLOUD_DATA_URL, paintCloudRaster } from './cloudRaster'
 import {
   cellsToPoints,
   cellsToSquares,
@@ -89,7 +85,10 @@ function addRelief(map: MapLibreMap) {
   if (!TERRAIN_URL || map.getSource('terrain')) return
   const relief = hillshade(TERRAIN_URL)
   map.addSource('terrain', relief.source)
-  map.addLayer(relief.layer, map.getLayer('cells-cloud') ? 'cells-cloud' : DATA_LAYERS_BEFORE)
+  map.addLayer(
+    relief.layer,
+    map.getLayer('cells-cloud') ? 'cells-cloud' : DATA_LAYERS_BEFORE,
+  )
 }
 
 /** Keeps fitted features clear of the species bar (top) and legend and dates (bottom). */

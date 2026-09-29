@@ -11,12 +11,7 @@ import {
 import { SCORE_CLASSES } from '../score/scale'
 
 /** Latitude at a pixel row as MapLibre maps an image between north and south (Mercator-linear). */
-function latAtPixelRow(
-  y: number,
-  height: number,
-  north: number,
-  south: number,
-): number {
+function latAtPixelRow(y: number, height: number, north: number, south: number): number {
   const myNorth = mercatorY(north)
   const mySouth = mercatorY(south)
   const my = myNorth + ((y + 0.5) / height) * (mySouth - myNorth)
@@ -36,8 +31,24 @@ describe('rampColor', () => {
 
 describe('cloudRasterSize', () => {
   it('fits the longer side to the max edge', () => {
-    expect(cloudRasterSize([[0, 0], [2, 1]], 100)).toEqual({ width: 100, height: 50 })
-    expect(cloudRasterSize([[0, 0], [1, 2]], 100)).toEqual({ width: 50, height: 100 })
+    expect(
+      cloudRasterSize(
+        [
+          [0, 0],
+          [2, 1],
+        ],
+        100,
+      ),
+    ).toEqual({ width: 100, height: 50 })
+    expect(
+      cloudRasterSize(
+        [
+          [0, 0],
+          [1, 2],
+        ],
+        100,
+      ),
+    ).toEqual({ width: 50, height: 100 })
   })
 })
 
@@ -88,13 +99,12 @@ describe('paintCloudRaster', () => {
       [12.38, 44.48],
     ]
     const cell = { lon: 11.0, lat: 43.4, score: 0.9 }
-    const { data, width, height, bounds: painted } = paintCloudRaster(
-      [cell],
-      region,
-      'score',
-      1,
-      768,
-    )
+    const {
+      data,
+      width,
+      height,
+      bounds: painted,
+    } = paintCloudRaster([cell], region, 'score', 1, 768)
     const [[, south], [, north]] = painted
 
     let sumA = 0
@@ -118,7 +128,12 @@ describe('paintCloudRaster', () => {
     // Two adjacent 1 km cells on a fine raster: centres 1 km apart in lon at ~43.5°.
     const lat = 43.5
     const dLon = 1 / (111.32 * Math.cos((lat * Math.PI) / 180))
-    const { data, width, height, bounds: painted } = paintCloudRaster(
+    const {
+      data,
+      width,
+      height,
+      bounds: painted,
+    } = paintCloudRaster(
       [
         { lon: 10.5, lat, score: 0.1 },
         { lon: 10.5 + dLon, lat, score: 0.9 },

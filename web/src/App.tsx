@@ -40,7 +40,14 @@ import styles from './App.module.css'
 import { CookieBanner } from './components/CookieBanner'
 import { DataStatus } from './components/DataStatus'
 import { DisclaimerDialog, disclaimerAccepted } from './components/DisclaimerDialog'
-import { ChevronIcon, CloudIcon, GitHubIcon, LayersIcon, LocateIcon, SquircleIcon } from './components/icons'
+import {
+  ChevronIcon,
+  CloudIcon,
+  GitHubIcon,
+  LayersIcon,
+  LocateIcon,
+  SquircleIcon,
+} from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
 import { InfoMenu } from './components/InfoMenu'
 import { InstallBanner } from './components/InstallBanner'
@@ -609,9 +616,7 @@ function MapScreen() {
               aria-label={
                 cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')
               }
-              title={
-                cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')
-              }
+              title={cellStyle === 'cloud' ? t('map.styleCloud') : t('map.styleSquircle')}
               aria-pressed={cellStyle === 'cloud'}
               onClick={toggleCellStyle}
             >
