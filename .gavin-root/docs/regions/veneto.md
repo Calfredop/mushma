@@ -188,3 +188,79 @@ are the best of the three on the leave-out test:
 | Bosco Nordio | `1kmE4499N2449` | no | 0.44 | evergreen_oak 0.93 | 4 | Chioggia (VE) |
 | Venezia (city) | `1kmE4503N2483` | no | 0.00 | — | 9 | Venezia (VE) |
 | Padova (city) | `1kmE4468N2479` | no | 0.00 | — | 19 | Padova (PD) |
+
+## Weather history
+
+From the Copernicus CDS, 2016-01-01 to 2026-09-18, through the ERA5-Land time-series product
+(`cds.method: timeseries`): 69 node requests, all fetched, at about 55 s each (63 min on
+2026-09-29, none failed). **Snowfall** comes from the shared Italy-wide gridded files (23 half-year
+files, all cached by earlier lanes); the region's northernmost cells (Comelico, 46.68° N) are well
+inside their 47.1° N edge.
+
+**Open-Meteo.** The update step stored `era5_seamless` for 2026-09-15 to 09-23 and the forecast on
+the evening of 2026-09-29; the lattice check and the update took the day's shared tally from 655 to
+1,657 of the 10,000 calls.
+
+### Rain scale: ARPAV's monthly gauge totals
+
+ARPAV runs about 200 automatic stations in the region. Its daily data are sent by e-mail on request
+(the "Dati meteorologici giornalieri" form, from 2010), so there is no open daily series to feed
+`api.weather.checks gauges`. It does publish, as open data, the **monthly totals of every station
+from 1994** ("Principali variabili meteorologiche", CC BY 4.0: one CSV per station with its
+Gauss-Boaga position, height, monthly rain and a table of missing days), cached as
+`raw/arpav/trend_variabili_meteorologiche.zip`. The check follows Valle d'Aosta's yearbook check:
+
+- **Method.** Raw ERA5-Land (CDS) daily rain summed per month and read bilinearly at each gauge from
+  the 0.2° lattice's land nodes (weights renormalised over the corners stored; 184 of 205 gauges
+  have at least two), against the gauge's month, **May–October 2016–2025** (the months the rules
+  score, as Lombardia and Valle d'Aosta fitted). A month with any day in the station's
+  missing-days table is left out; a gauge-season needs all six months, a gauge six such seasons:
+  **153 gauges, 1,287 gauge-seasons**, −3 to 2,235 m (Faloria above Cortina).
+- **ERA5-Land holds 1.20 of the gauges' rain** in all (median gauge 1.23; 10th–90th percentile
+  0.99–1.52), about the same at every height: 1.20 below 500 m (99 gauges), 1.23 at 500–1,000 m
+  (21), 1.18 at 1,000–1,500 m (22), 1.33 above (11): less excess than Valle d'Aosta (1.67) or
+  Piemonte (1.33) on the same CDS rain.
+- **The fit.** Least squares through the origin of gauge totals on model totals × (a + b × km):
+  **a = 0.847, b = −0.037 per km** (a factor alone 0.820). Leaving one gauge out moves a within
+  0.843–0.852 and b within −0.043 to −0.033; the gauges above 300 m alone give 0.892 − 0.072 per km,
+  above 800 m 0.879 − 0.063. Fitted on 2016–2021 (0.830 − 0.034), it leaves 2022–2025 at 0.96 of the
+  gauges. **`veneto.yaml` sets 0.85 − 0.04 per km, clamped at 2,200 m**, over `era5_land_cds` and
+  `era5_seamless` (reference `mushma_veneto_arpav_gauge_check_2026`).
+
+| May–October | gauges | raw / gauge | scaled (0.85 − 0.04 × km) | a factor alone (0.820) |
+|---|---|---|---|---|
+| below 500 m | 99 | 1.197 | 1.008 | 0.982 |
+| 500–1,000 m | 21 | 1.232 | 1.009 | 1.010 |
+| 1,000–1,500 m | 22 | 1.177 | 0.943 | 0.965 |
+| 1,500 m and above | 11 | 1.329 | 1.033 | 1.090 |
+
+- **By year** the raw excess runs from 1.01 (2018) to 1.48 (2017), 1.13–1.33 in 2019–2025: the
+  scale is right on average, not in every season.
+- **The spread is by area, not height.** Raw, the reanalysis is too dry on the wettest Prealps and
+  too wet in the Dolomites' inner valleys, and a regional scale keeps that pattern:
+
+| gauge | m | seasons | gauge mm | raw CDS mm | raw / gauge | scaled / gauge |
+|---|---|---|---|---|---|---|
+| Rifugio la Guardia (Recoaro Terme) | 1130 | 10 | 1,240 | 896 | 0.72 | 0.58 |
+| Passo Xomo (Posina) | 1051 | 8 | 1,170 | 906 | 0.77 | 0.63 |
+| Cansiglio – Tramedere | 1022 | 9 | 1,219 | 937 | 0.77 | 0.62 |
+| Castana | 420 | 8 | 1,052 | 978 | 0.93 | 0.77 |
+| Bosco Chiesanuova | 1051 | 8 | 832 | 818 | 0.98 | 0.79 |
+| Teolo | 155 | 10 | 582 | 611 | 1.05 | 0.89 |
+| Valdobbiadene – Bigolino | 225 | 8 | 783 | 885 | 1.13 | 0.95 |
+| Asiago – aeroporto | 1016 | 6 | 969 | 1,177 | 1.21 | 0.98 |
+| Arabba | 1642 | 7 | 909 | 1,111 | 1.22 | 0.96 |
+| Belluno – aeroporto | 379 | 10 | 966 | 1,216 | 1.26 | 1.05 |
+| Faloria | 2235 | 7 | 938 | 1,284 | 1.37 | 1.04 |
+| Cortina d'Ampezzo – Gilardon | 1271 | 7 | 853 | 1,270 | 1.49 | 1.19 |
+| Caprile | 1007 | 8 | 779 | 1,333 | 1.71 | 1.38 |
+| Agordo | 585 | 8 | 777 | 1,418 | 1.82 | 1.51 |
+
+  The Piccole Dolomiti above Recoaro and Posina and the Cansiglio take the first orographic rain off
+  the plain; the reanalysis's 9 km land grid spreads it inland, over the Agordino and Cadore. Scaled,
+  the first read about 0.6 of their gauges and the second 1.2–1.5. Porcini's 30-day rain is scored
+  as a share of each cell's own normal and does not depend on the scale; the 3-day triggers and the
+  ovoli and gallinacci 30-day ramps do.
+- Monthly totals check amounts only: not the wet-day timing, the 3-day triggers' hit rate, nor
+  drizzle. A daily check would need ARPAV's form data. The ARPAV figures feed this check only; they
+  are not republished or shown in the app.
