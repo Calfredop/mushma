@@ -285,6 +285,29 @@ rp_carta_forestale:
     layer: CF_2025
     field: ca_1
 
+rvda_tipi_forestali:
+  name: Regione Autonoma Valle d'Aosta — Carta forestale, Tipi forestali 2020 (IPLA, 1:10.000)
+  homepage: https://geoportale.regione.vda.it/ricerche-nuove/scheda-nuova/?id_tipo=3&uuid=r_vda:04259-META:20211029:091000
+  license: CC BY 4.0
+  attribution: "Dati estratti dal Repertorio cartografico SCT della Regione Autonoma Valle d'Aosta (Tipi forestali 2020, IPLA), CC BY 4.0"
+  notes: >-
+    The regional forest map on the IPLA typology shared with Piemonte, made by IPLA in 2021 from 2012
+    orthophotos checked against 2018-2020 imagery (1 ha mapping unit, isolated polygons to 0.2 ha):
+    forest only, each polygon with its forest category (ca: 17 categories, e.g. LC lariceti e
+    cembrete, PE peccete, PS pinete di pino silvestre, CA castagneti) and type (tipo). The SCT
+    Repertorio licenses it CC BY 4.0 (DGR 899/2014, DGR 1620/2016), but serves the vector file only
+    to registered users signed in with SPID, and the Forestazione WFS lists no layer: it is saved by
+    hand (the `manual` download shape), once, into the source's raw folder. The Repertorio's download
+    (u<user>_<date>.zip) wraps forestale_tipi_forestali_2020.zip, which holds the shapefile in ED50 /
+    UTM 32N (23032) and in RDN2008 / UTM 32N (7791, converted with the IGM grids): save that inner zip
+    as tipi_forestali_2020.zip. 17,374 polygons, 98,868 ha. Here QR is querceti di roverella and QV
+    querceti di rovere, the reverse of Piemonte's codes.
+  download:
+    manual: https://sct-outil.regione.vda.it/SCTProfessional/repertcarto/repertcarto
+    file: tipi_forestali_2020.zip
+    shapefile: forestale_tipi_forestali_2020_7791.shp
+    field: ca
+
 pat_tipi_forestali:
   name: Provincia autonoma di Trento — Tipi forestali PAT integrati, elaborazione statica 2021
   homepage: https://siatservices.provincia.tn.it/geonetwork/srv/api/records/p_TN:920383ad-092c-4f8f-8f8a-1c9db904b36f

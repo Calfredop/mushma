@@ -241,12 +241,14 @@ def read_vector(
     - ``wfs`` (+ ``type_name``, needs ``bbox_wgs84``): OGC WFS GetFeature; with ``page_size``
       (+ ``sort_by``) it pages a server that caps the feature count
     - ``parts``: a list of the url shapes above (e.g. one zip per province), read and concatenated
+    - ``manual`` (+ ``file``): a file with no open download link (behind a login), saved by hand
+      as ``cache_dir/file``; ``manual`` is the page to get it from, named when it is missing.
+      Then read like a url shape (``shapefile``, ``geopackage``, ``member`` + ``layer``)
 
     A url shape may set ``file``, the name the download is saved under, when the url's last
     segment does not name it (e.g. ``.../@@download/file``).
     """
     import pandas as pd
-    import pyogrio
 
     cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -287,25 +289,50 @@ def read_vector(
             raise ValueError("wfs downloads need bbox_wgs84")
         return _read_wfs(download, cache_dir, bbox_wgs84)
 
+    if "manual" in download:
+        local = cache_dir / download["file"]
+        _check_file_shape(download, local.name)
+        if not local.is_file():
+            raise FileNotFoundError(
+                f"{local} is missing: this source has no open download link. Download it by hand "
+                f"from {download['manual']} and save it there unchanged."
+            )
+        return _read_local(local, download, cache_dir, columns, where)
+
     if "url" not in download:
         raise ValueError(
-            f"unsupported download shape (need url, parts, arcgis_layer or wfs): {download}"
+            f"unsupported download shape (need url, parts, arcgis_layer, wfs or manual): {download}"
         )
 
+    url = download["url"]
+    name = download.get("file") or Path(urllib.parse.urlparse(url).path).name
+    _check_file_shape(download, Path(urllib.parse.urlparse(url).path).name)
+    return _read_local(fetch(url, cache_dir / name), download, cache_dir, columns, where)
+
+
+def _check_file_shape(download: dict, name: str) -> None:
+    """A downloaded file must say how to read it: a shapefile in a zip, a GeoPackage, or a named
+    layer inside a zip member."""
     if not (
         download.get("geopackage")
         or download.get("shapefile")
         or ("member" in download and "layer" in download)
-        or Path(urllib.parse.urlparse(download["url"]).path).suffix.lower() == ".gpkg"
+        or Path(name).suffix.lower() == ".gpkg"
     ):
         raise ValueError(
             "unsupported download shape: need shapefile, geopackage, member+layer, "
             f"arcgis_layer or wfs, got {sorted(download)}"
         )
 
-    url = download["url"]
-    name = download.get("file") or Path(urllib.parse.urlparse(url).path).name
-    local = fetch(url, cache_dir / name)
+
+def _read_local(
+    local: Path,
+    download: dict,
+    cache_dir: Path,
+    columns: list[str] | None,
+    where: str | None,
+) -> gpd.GeoDataFrame:
+    import pyogrio
 
     if download.get("geopackage") or local.suffix.lower() == ".gpkg":
         kwargs: dict = {}

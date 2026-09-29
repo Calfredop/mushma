@@ -2,6 +2,8 @@
 Parquet tree from tests/live/helpers.py (shaped exactly like the real M2/M3/M4 stores)."""
 
 import math
+import shutil
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -10,7 +12,7 @@ import pytest
 from api.live.repository import LiveRepository
 from api.repository import CellNotFound, DateOutOfRange, ScoresUnavailable
 from api.timeutil import today_rome
-from tests.live.helpers import CELL_A, CELL_B, CELL_C, SCORES_DATE, build_dataset
+from tests.live.helpers import CELL_A, CELL_B, CELL_C, REGION, SCORES_DATE, build_dataset
 
 
 @pytest.fixture
@@ -140,6 +142,24 @@ class TestGetCellDetailAndSpot:
     def test_spot_resolves_to_the_nearest_woodland_cell(self, repo: LiveRepository) -> None:
         spot = repo.get_spot(lat=CELL_A["lat"] + 0.0001, lon=CELL_A["lon"] + 0.0001)
         assert spot.cell_id == CELL_A["cell_id"]
+
+    def test_a_region_without_a_group_details_only_the_groups_it_has(self, tmp_path: Path) -> None:
+        # Valle d'Aosta has no ovoli rules, so the pipeline never writes an ovoli store: the cell
+        # detail must list the region's own groups, not fail on the missing one.
+        rules = build_dataset(tmp_path)
+        shutil.rmtree(tmp_path / "scores" / REGION / "daily" / "species=ovoli")
+        shutil.rmtree(tmp_path / "scores" / REGION / "factors" / "species=ovoli_a")
+        without_ovoli = replace(
+            rules,
+            species={k: v for k, v in rules.species.items() if v.group != "ovoli"},
+            groups={g: keys for g, keys in rules.groups.items() if g != "ovoli"},
+        )
+        repo = LiveRepository(tmp_path, rules=without_ovoli)
+
+        detail = repo.get_cell_detail(CELL_A["cell_id"])
+
+        assert [f.species for f in detail.species] == ["porcini", "gallinacci"]
+        assert all(len(f.days) == 8 for f in detail.species)
 
     def test_an_incomplete_outlook_returns_the_days_actually_stored(self, tmp_path: Path) -> None:
         # Overnight before the 05:00 Europe/Rome daily job runs (or after a failed run), only

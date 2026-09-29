@@ -17,6 +17,7 @@ import { toscana } from './toscana.js'
 import { trentinoAltoAdige } from './trentino-alto-adige.js'
 import type { Bounds, RegionDefinition } from './types.js'
 import { umbria } from './umbria.js'
+import { valleDAosta } from './valle-d-aosta.js'
 
 export type { Bounds, RegionDefinition, RegionLocaleCopy } from './types.js'
 
@@ -26,6 +27,9 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [liguria.slug]: liguria,
   [emiliaRomagna.slug]: emiliaRomagna,
   [marche.slug]: marche,
+  // Before Piemonte: findRegionAt takes the first bbox that holds the point, and Piemonte's holds
+  // all of Valle d'Aosta's.
+  [valleDAosta.slug]: valleDAosta,
   [piemonte.slug]: piemonte,
   [trentinoAltoAdige.slug]: trentinoAltoAdige,
   [lombardia.slug]: lombardia,

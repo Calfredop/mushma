@@ -1,0 +1,417 @@
+# Press-contrast sanity check for Valle d'Aosta (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names, as the grid's comune_name carries them: note "Etroubles" and
+# "Emarèse" without an accent on the E) or by province sigla ("*" is the whole region, AO its only
+# province). Windows and source URLs written down on 2026-09-29, before any score for the region
+# existed. `seasons: normal` expands to `normal_seasons`. All contrasts are porcini (run with the
+# default `--group porcini`): the chanterelle notes found were one-sided or contradicted each other,
+# and ovoli are not modelled in the region.
+# The Valdostan papers (AostaSera, AostaOggi, Gazzetta Matin, La Vallée Notizie, Bobine.tv, 12vda,
+# Valledaostaglocal) print incidents, seizures and USL notices but no season comparisons; La Stampa
+# Aosta and Rai TGR could not be read. So every contrast rests on Funghi Magazine's weekly
+# bulletins (one editor, reader reports and rain-gauge reasoning): several partly test the rain
+# data, not only the fruiting. Every main source was opened and its quote checked. Quotes, second
+# sources and weaknesses per contrast: .gavin-root/docs/species-ecology/valle_d_aosta.md (Press
+# contrasts).
+areas:
+  region:
+    provinces:
+    - '*'
+  lys:
+    comuni:
+    - Gressoney-La-Trinité
+    - Gressoney-Saint-Jean
+    - Gaby
+    - Issime
+    - Fontainemore
+    - Lillianes
+    - Perloz
+  cervino:
+    comuni:
+    - Valtournenche
+    - Antey-Saint-André
+    - La Magdeleine
+    - Chamois
+    - Torgnon
+  rosa_cervino:
+    comuni:
+    - Gressoney-La-Trinité
+    - Gressoney-Saint-Jean
+    - Gaby
+    - Issime
+    - Fontainemore
+    - Lillianes
+    - Perloz
+    - Ayas
+    - Brusson
+    - Challand-Saint-Anselme
+    - Valtournenche
+    - Antey-Saint-André
+    - La Magdeleine
+    - Chamois
+    - Torgnon
+  gran_paradiso:
+    comuni:
+    - Cogne
+    - Valsavarenche
+    - Rhêmes-Notre-Dame
+    - Rhêmes-Saint-Georges
+    - Introd
+    - Aymavilles
+  east_of_aosta:
+    comuni:
+    - Quart
+    - Brissogne
+    - Saint-Marcel
+    - Nus
+    - Fénis
+    - Verrayes
+    - Chambave
+    - Saint-Denis
+    - Pontey
+    - Châtillon
+    - Torgnon
+    - Antey-Saint-André
+    - La Magdeleine
+    - Chamois
+    - Valtournenche
+    - Saint-Vincent
+    - Emarèse
+    - Montjovet
+    - Champdepraz
+    - Issogne
+    - Verrès
+    - Challand-Saint-Victor
+    - Challand-Saint-Anselme
+    - Brusson
+    - Ayas
+    - Arnad
+    - Hône
+    - Bard
+    - Pontboset
+    - Champorcher
+    - Donnas
+    - Perloz
+    - Pont-Saint-Martin
+    - Lillianes
+    - Fontainemore
+    - Issime
+    - Gaby
+    - Gressoney-Saint-Jean
+    - Gressoney-La-Trinité
+  west_of_aosta:
+    comuni:
+    - Sarre
+    - Saint-Pierre
+    - Aymavilles
+    - Villeneuve
+    - Introd
+    - Saint-Nicolas
+    - Avise
+    - Arvier
+    - Valgrisenche
+    - Rhêmes-Saint-Georges
+    - Rhêmes-Notre-Dame
+    - Valsavarenche
+    - La Salle
+    - Morgex
+    - Pré-Saint-Didier
+    - La Thuile
+    - Courmayeur
+  north_of_dora:
+    comuni:
+    - La Salle
+    - Avise
+    - Saint-Nicolas
+    - Saint-Pierre
+    - Sarre
+    - Gignod
+    - Allein
+    - Doues
+    - Etroubles
+    - Saint-Oyen
+    - Saint-Rhémy-en-Bosses
+    - Valpelline
+    - Ollomont
+    - Oyace
+    - Bionaz
+    - Roisan
+    - Saint-Christophe
+    - Quart
+    - Nus
+    - Verrayes
+    - Saint-Denis
+    - Torgnon
+    - Antey-Saint-André
+    - La Magdeleine
+    - Chamois
+    - Valtournenche
+    - Saint-Vincent
+    - Emarèse
+    - Challand-Saint-Victor
+    - Challand-Saint-Anselme
+    - Brusson
+    - Ayas
+    - Arnad
+    - Perloz
+    - Lillianes
+    - Fontainemore
+    - Issime
+    - Gaby
+    - Gressoney-Saint-Jean
+    - Gressoney-La-Trinité
+  south_of_dora:
+    comuni:
+    - La Thuile
+    - Valgrisenche
+    - Rhêmes-Notre-Dame
+    - Rhêmes-Saint-Georges
+    - Introd
+    - Valsavarenche
+    - Aymavilles
+    - Jovençan
+    - Gressan
+    - Charvensod
+    - Pollein
+    - Brissogne
+    - Saint-Marcel
+    - Fénis
+    - Pontey
+    - Champdepraz
+    - Issogne
+    - Champorcher
+    - Pontboset
+    - Hône
+    - Bard
+    - Donnas
+    - Cogne
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: region_2023_2022_mid_august
+  claim: 'Valle d''Aosta, mid to late August: 2023 "Dopo lunga attesa, registriamo finalmente discrete o buone
+    nascite di funghi Porcini anche in Val d''Aosta", "In tutta la regione le piogge sono state abbastanza
+    democratiche" (Funghi Magazine, 2023-08-17); 2022 "l''intera Val d''Aosta, con poche eccezioni per i settori
+    orientali" among the zones "leggermente o assai più sfavorite" (Funghi Magazine, 2022-08-18) and "Fanalino di
+    coda Val d''Aosta, baciata da piogge sempre troppo brevi, irrisorie e spesso seguite da vento secco" (Funghi
+    Magazine, 2022-08-26)'
+  source: https://funghimagazine.it/aggiornamento-funghi-17-08-2023/
+  higher:
+    area: region
+    seasons:
+    - 2023
+    start: 08-12
+    end: 08-26
+  lower:
+    area: region
+    seasons:
+    - 2022
+    start: 08-12
+    end: 08-26
+- id: region_2021_2022_august
+  claim: 'Valle d''Aosta, August: 2021 "Dopo anni di simil-siccità, finalmente è piovuto copiosamente e quindi
+    adeguatamente anche in Val d''Aosta dove, in risposta al ritorno delle piogge, si sono registrate importanti
+    nascite di funghi, anche e soprattutto Porcini" (Funghi Magazine, 2021-08-06), "proseguono le nascite"
+    (2021-08-12); 2022 "l''intera Val d''Aosta" among the zones without adequate recent rain (2022-08-18),
+    "Fanalino di coda Val d''Aosta" (2022-08-26); "In ritardo ad oggi la raccolta in Valle d''Aosta" (ANSA,
+    2022-08-19, quoting Funghi Magazine)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-porcini-06-08-2021/
+  higher:
+    area: region
+    seasons:
+    - 2021
+    start: 08-05
+    end: 08-20
+  lower:
+    area: region
+    seasons:
+    - 2022
+    start: 08-05
+    end: 08-20
+- id: region_2021_august_normal
+  claim: 'Valle d''Aosta, August 2021: "dopo un lungo mese di ottime nascite, dovute al ritorno della pioggia, in
+    una regione che non vedeva piovere in estate ormai da troppo tempo, la super buttata è ormai giunta al
+    capolinea" (Funghi Magazine, 2021-09-10); the first B. edulis at the end of July "grazie al ritorno delle
+    piogge" after "anni di simil-siccità" (2021-08-06)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-10-09-2021-tanti-funghi-porcini/
+  higher:
+    area: region
+    seasons:
+    - 2021
+    start: 08-01
+    end: 08-31
+  lower:
+    area: region
+    seasons: normal
+    start: 08-01
+    end: 08-31
+- id: gran_paradiso_2019_2020_august
+  claim: 'Gran Paradiso valleys, mid to late August: 2019 "Nascite di Galletti e finalmente anche di Porcini si
+    registrano in alcune vallate della Valle d''Aosta, principalmente a Sud nelle valli del Gran Paradiso e
+    soprattutto ad Est al confine col Piemonte" (Funghi Magazine, 2019-08-16), "la buttata prosegue ancora nei
+    settori delle vallate del Gran Paradiso" (2019-08-29); 2020 "le valli del Gran Paradiso a secco da settimane"
+    (2020-08-20)'
+  source: https://funghimagazine.it/buone-nascite-di-funghi-porcini-vediamo-dove-le-piogge-caduta-in-italia/
+  higher:
+    area: gran_paradiso
+    seasons:
+    - 2019
+    start: 08-10
+    end: 08-25
+  lower:
+    area: gran_paradiso
+    seasons:
+    - 2020
+    start: 08-10
+    end: 08-25
+- id: lys_vs_gran_paradiso_august_2020
+  claim: 'August 2020: "Stessa situazione in Valle d''Aosta con cenni di nascite ad Est al confine con Valsesia e
+    Biellese, meno al confine col Torinese, con le valli del Gran Paradiso a secco da settimane" (Funghi
+    Magazine, 2020-08-20); "Qualche discreta nascita di funghi Porcini la si era avuta sui settori Est della
+    regione, soprattutto nella valle di Gressoney al confine con la Valsesia" (2020-09-04)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-20-08-2020/
+  higher:
+    area: lys
+    seasons:
+    - 2020
+    start: 08-05
+    end: 08-25
+  lower:
+    area: gran_paradiso
+    seasons:
+    - 2020
+    start: 08-05
+    end: 08-25
+- id: lys_vs_cervino_august_2020
+  claim: 'August 2020: "Nascite col contagocce in regione, dopo che le nascite di Agosto si sono fatte desiderare a
+    lungo. Qualche discreta nascita di funghi Porcini la si era avuta sui settori Est della regione, soprattutto
+    nella valle di Gressoney al confine con la Valsesia, non al confine con le valli del Cervino" (Funghi
+    Magazine, 2020-09-04); earlier, flushes only in "pochissime zone della Valsesia di confine con il Vco e della
+    Valle di Gressoney con cenni di sconfinamento anche in Valle d''Aosta orientale" (2020-08-07)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2020/
+  higher:
+    area: lys
+    seasons:
+    - 2020
+    start: 08-05
+    end: 08-31
+  lower:
+    area: cervino
+    seasons:
+    - 2020
+    start: 08-05
+    end: 08-31
+- id: rosa_cervino_vs_gran_paradiso_september_2019
+  claim: 'Mid-September 2019: "Valle d''Aosta al momento in fase di riposo vegetativo ma le prime nascite si
+    registrano già ad Oriente, al confine con il Piemonte ed in particolar modo nelle valli del Rosa e del
+    Cervino. A giorni dovrebbero partire anche nelle valli del Gran Paradiso dov''è piovuto di recente" (Funghi
+    Magazine, 2019-09-20)'
+  source: https://funghimagazine.it/dove-stanno-nascendo-i-funghi-porcini-le-piogge-cadute-in-italia/
+  higher:
+    area: rosa_cervino
+    seasons:
+    - 2019
+    start: 09-12
+    end: 09-20
+  lower:
+    area: gran_paradiso
+    seasons:
+    - 2019
+    start: 09-12
+    end: 09-20
+- id: south_vs_north_dora_late_august_2021
+  claim: 'Late August to early September 2021: "a Sud della Dora Baltea le nascite rallentano o cessano. Qua e là si
+    trovano ancora pochissimi funghi giovani"; "Assai peggio a Nord della Dora dove il vento favonico ha
+    letteralmente prosciugato ogni cenno d''acqua presente nei boschi, con nascite cessate rapidissimamente e non
+    più riprese" (Funghi Magazine, 2021-09-04)'
+  source: https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2021-porcini-giganti/
+  higher:
+    area: south_of_dora
+    seasons:
+    - 2021
+    start: 08-22
+    end: 09-04
+  lower:
+    area: north_of_dora
+    seasons:
+    - 2021
+    start: 08-22
+    end: 09-04
+- id: east_vs_west_autumn_2023
+  claim: 'Late September to early October 2023: "Pure la Valle d''Aosta ha avuto piogge mal distribuite con accumuli
+    nettamente inferiori ad Ovest di Aosta ma più consistenti sui settori Est dove le nascite di funghi Porcini
+    continuano ininterrotte ormai da settimane" (Funghi Magazine, 2023-10-04); on 12 October "le nascite sono al
+    momento del tutto cessate sui settori Ovest della regione", while east of Aosta "si trovano ancora Porcini in
+    boschi misti dei settori orientali"'
+  source: https://funghimagazine.it/aggiornamento-porcini-04-10-2023/
+  higher:
+    area: east_of_aosta
+    seasons:
+    - 2023
+    start: 09-20
+    end: 10-10
+  lower:
+    area: west_of_aosta
+    seasons:
+    - 2023
+    start: 09-20
+    end: 10-10
+- id: south_vs_north_dora_september_2024
+  claim: 'Mid-September 2024: "in Valle d''Aosta dove nelle zone a nord della Dora Baltea fa ancora molto freddo e le
+    nascite sembrano bloccate o rallentate"; "Situazione leggermente migliore a sud della Dora dove si registrano
+    già nascite di “bocciotti” piccini che fanno ben sperare" (Funghi Magazine, 2024-09-19)'
+  source: https://funghimagazine.it/aggiornamento-nascite-funghi-19-09-2024/
+  higher:
+    area: south_of_dora
+    seasons:
+    - 2024
+    start: 09-12
+    end: 09-20
+  lower:
+    area: north_of_dora
+    seasons:
+    - 2024
+    start: 09-12
+    end: 09-20
+- id: region_june_july_2024_normal
+  claim: 'Valle d''Aosta, late June to mid-July 2024: "Chi l''avrebbe mai detto, eppure in Val d''Aosta si stanno
+    raccogliendo bene funghi Porcini, per lo più Porcini rossi-pinicola" (Funghi Magazine, 2024-06-28); by 25 July
+    the "massicce (per lo più passate in sordina) nascite di Porcini Rossi-Pinicola" were "una bellissima e
+    insolita buttata" that was over (2024-07-25)'
+  source: https://funghimagazine.it/aggiornamento-funghi-28-06-2024/
+  higher:
+    area: region
+    seasons:
+    - 2024
+    start: 06-20
+    end: 07-15
+  lower:
+    area: region
+    seasons: normal
+    start: 06-20
+    end: 07-15
+- id: region_late_july_vs_early_august_2025
+  claim: 'Valle d''Aosta 2025: at the end of July "piccola sorpresa. Senza piogge violente ma con clima fresco, si
+    segnalano buone nascite su tutto il territorio, dai fondovalle ai monti" (Funghi Magazine, 2025-08-01); a week
+    later "Nascite molto localizzate. Le zone più alte sono state colpite da caldo, vento e grandinate che hanno
+    danneggiato le chiome arboree" (2025-08-08)'
+  source: https://funghimagazine.it/aggiornamento-nascite-01-08-agosto-2025/
+  higher:
+    area: region
+    seasons:
+    - 2025
+    start: 07-26
+    end: 08-01
+  lower:
+    area: region
+    seasons:
+    - 2025
+    start: 08-06
+    end: 08-14
