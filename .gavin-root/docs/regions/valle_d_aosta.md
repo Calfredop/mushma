@@ -336,8 +336,10 @@ Four sightings can say no more than that. The press contrasts are the real check
 
 ## After the deploy: what to verify
 
-The stores were rsync'd to the server with `deploy/rsync-region-data.sh valle_d_aosta` (no
-redeploy); see the ship note below. The server serves a region only when its YAML is in the deployed
+**The stores are not on the server yet**: the agent's `deploy/rsync-region-data.sh valle_d_aosta`
+was blocked by its session's permission rules on 2026-09-29. Before the deploy, run from the repo
+root `DATA_DIR=/Users/coalpila/CloudStation/Coding/mushma/api/data deploy/rsync-region-data.sh
+valle_d_aosta` (no redeploy), or the gavin tool "Rsync region data". The server serves a region only when its YAML is in the deployed
 code and its stores are on disk, so they stay inert until `main` with
 `config/regions/valle_d_aosta.yaml` is deployed by the rail's "Deploy pulled main" step, with the
 daily job. The stores are scored through 2026-10-06 (the served window from the update of
