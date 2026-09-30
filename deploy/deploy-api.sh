@@ -62,12 +62,17 @@ fi
 
 # --- 3. The server: pull, units, rebuild ---------------------------------------------------------
 say "Server $DEPLOY_HOST"
+remote_log="$(mktemp)"
+trap 'rm -f "$remote_log"' EXIT
 # shellcheck disable=SC2087 # the heredoc is quoted: everything in it runs on the server
 ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new "$DEPLOY_HOST" \
-  bash -s -- "$sha" "$RUN_JOB" <<'REMOTE'
+  bash -s -- "$sha" "$RUN_JOB" <<'REMOTE' | tee "$remote_log"
 set -euo pipefail
 want="$1"
 run_job="$2"
+# bash reads this script from stdin as it runs it: a command here that reads stdin (docker compose
+# exec does, -T or not) swallows the rest, and bash exits 0 early. Give each one </dev/null or a
+# heredoc of its own; the last line below proves the script ran to the end.
 
 cd /opt/mushma
 git fetch -q origin main
@@ -97,7 +102,7 @@ docker image prune -f >/dev/null
 # also catches a missing REDIS_URL or a redis service that never joined the network.
 echo "waiting for redis"
 tries=30
-until docker compose exec -T redis redis-cli ping 2>/dev/null | grep -qx PONG; do
+until docker compose exec -T redis redis-cli ping </dev/null 2>/dev/null | grep -qx PONG; do
   tries=$((tries - 1))
   [ "$tries" -gt 0 ] || { echo "redis did not answer PING" >&2; docker compose ps redis >&2; exit 1; }
   sleep 1
@@ -126,7 +131,10 @@ if [ "$run_job" = 1 ]; then
 fi
 
 systemctl list-timers mushma-daily.timer --no-pager | sed -n 2p
+echo "server: done"
 REMOTE
+grep -qx "server: done" "$remote_log" ||
+  die "the server script stopped early (no 'server: done' above): the steps after its last line did not run"
 
 # --- 4. Is it serving? ---------------------------------------------------------------------------
 say "Waiting for $API_URL/health"
