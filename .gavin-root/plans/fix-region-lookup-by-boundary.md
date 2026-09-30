@@ -30,6 +30,40 @@ the hub or from `/umbria` a fix there is offered Tuscany, first in the registry;
 offered Umbria. Lazio's bbox in turn takes in Orvieto and Terni (Umbria), Pitigliano and Sorano
 (Tuscany), and the Abruzzo side of the Simbruini and the Marsica (Tagliacozzo, Avezzano).
 
+Veneto card (2026-09-29): the worst case yet. Veneto's bbox [10.62, 44.79, 13.11, 46.68] and its
+neighbours' overlap so much that no registry order works: 3,896 of Veneto's 4,025 woodland cells
+(97 %) lie inside Trentino-Alto Adige's (3,263), Lombardia's (943: the Lessinia and Monte Baldo) or
+Friuli-Venezia Giulia's (639: the Cansiglio, Alpago, Cadore) bboxes, and Veneto's own bbox holds
+5,625 of Trentino-Alto Adige's 7,698 woodland cells (Trento, Rovereto, the Garda shore), 1,767 of
+Friuli-Venezia Giulia's 3,304 (Pordenone, the Val Cellina, Piancavallo) and 145 of Lombardia's. So
+Veneto is registered last (no served region regresses), and from the hub a fix or a search in
+Belluno, Cortina, Asiago, Bassano, the Grappa or the Lessinia is offered Trentino-Alto Adige or
+Lombardia; inside `/veneto` the current-region-first rule serves it. The simplified boundaries this
+card needs already exist: `web/src/regions/boundaries.json` (every region, ISTAT 2025 simplified to
+~500 m, from `api.grid.web_boundaries`), loaded lazily by the hub map.
+
+Molise card (2026-09-30): Molise's bbox [13.94, 41.36, 15.17, 42.08] is small but sits among four
+neighbours. 857 of its 1,455 woodland cells (59 %) lie inside Abruzzo's bbox (507: Agnone,
+Vastogirardi, San Pietro Avellana, the whole Alto Molise), Campania's (300: the Matese side, Bojano,
+Guardiaregia, Sepino), Lazio's (76: the Mainarde, Pizzone, Venafro) or Puglia's (4); and Molise's own
+bbox holds 796 of Abruzzo's woodland cells (Castel di Sangro, Alfedena, Barrea, Palena), 349 of
+Campania's (the Campanian Matese, Piedimonte Matese), 85 of Puglia's (the Monti Dauni north of
+Celenza Valfortore) and 74 of Lazio's (Vallerotonda, San Biagio Saracinisco). So Molise is registered
+last, as Veneto is: from the hub a fix or a search in Agnone or Capracotta is offered Abruzzo, on the
+Molise Matese Campania; inside `/molise` the current-region-first rule serves it.
+
+Basilicata card (2026-09-30): Basilicata's bbox [15.33, 39.89, 16.87, 41.14] lies wholly inside
+Puglia's [14.93, 39.79, 18.53, 42.23], so registered last it would never be found from the hub. 800 of
+its 2,545 woodland cells also lie inside Campania's bbox (lon ≤ 15.81: Potenza itself, the Vulture,
+the Sellata, Muro Lucano) and 707 inside Calabria's (lat ≤ 40.15: the Lucanian Pollino, the Sirino,
+Lauria, Maratea); its own bbox holds 1,004 of Campania's woodland cells (Vallo di Diano, eastern
+Irpinia), 361 of Calabria's (the Calabrian Pollino, Rocca Imperiale) and 114 of Puglia's (the Murge
+round Altamura and Gravina in Puglia). Registered after Calabria and before Puglia, the hub finds
+Basilicata for 1,134 of its woodland cells (Matera, the Val d'Agri, Gallipoli Cognato, the Ionian
+coast) and Campania and Calabria keep all theirs; Puglia's Altamura and Gravina go to Basilicata. From
+the hub a fix in Potenza is offered Campania and one on the Lucanian Pollino Calabria; inside
+`/basilicata` the current-region-first rule serves all of it.
+
 - [ ] Ship each region's simplified boundary (ISTAT 2025 generalised, simplified to ~200–500 m, a few KB per region) where the web can read it: a static GeoJSON per region built from the grid build's boundary, or the `/overview` payload the hub already fetches
 - [ ] `findRegionAt` and `offerOrOpen` test point-in-polygon, with the bbox as a cheap pre-filter; keep the current-region-first rule
 - [ ] Tests: a point near Fabriano (43.33, 12.90) resolves to Marche from the hub, from `/toscana` and from `/umbria`; La Spezia to Liguria; Perugia to Umbria
