@@ -444,8 +444,8 @@ October.
 
 ## After the deploy: what to verify
 
-The stores are rsync'd to the server with `deploy/rsync-region-data.sh sardegna` (no redeploy;
-below). The server serves a region only when its YAML is in the deployed code and its stores are
+The stores were rsync'd to the server on 2026-09-30 (`deploy/rsync-region-data.sh sardegna`, 207
+files, 348 MB, no redeploy). The server serves a region only when its YAML is in the deployed code and its stores are
 on disk, so they stay inert until `main` with `config/regions/sardegna.yaml` is deployed by the
 rail's "Deploy pulled main" step (with the daily job, which brings the weather and scores up to
 that day). Then check:
