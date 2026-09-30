@@ -6,7 +6,8 @@ year of its stations' daily data on its ArcGIS Online organisation ("Rete meteo 
 station and day with the station's code, name, height and position, and the day's rain (PCG, mm)
 among other variables. The data are unvalidated, CC BY-NC-ND (the 2021 item and the SIRA portal
 that serves the same network say so), and the SIRA portal gives its times in UTC, so a day is a
-UTC day. A station without a rain gauge, or a day it missed, has no PCG: missing, not dry. The
+UTC day. A station without a rain gauge, or a day it missed, has no PCG: missing, not dry; a
+negative PCG is an error code (La Maddalena logs -8920.4 once) and is dropped too. The
 tables are CSV imports and repeat the header once per station block (a row whose date is
 "datam"). The 2021 table has upper-case field names.
 """
@@ -91,7 +92,8 @@ def parse_page(path: Path) -> pd.DataFrame:
         attributes = {
             FIELDS[k.lower()]: v for k, v in feature["attributes"].items() if k.lower() in FIELDS
         }
-        if attributes.get("mm") is None or attributes.get("date") == "datam":
+        mm = attributes.get("mm")
+        if mm is None or mm < 0 or attributes.get("date") == "datam":
             continue
         rows.append(
             (

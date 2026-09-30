@@ -56,6 +56,15 @@ def test_parse_page_drops_missing_rain_and_the_repeated_header_rows(tmp_path: Pa
     assert daily["mm"].tolist() == [0.0]
 
 
+def test_parse_page_drops_negative_rain(tmp_path: Path) -> None:
+    """La Maddalena's gauge logs -8920.4 mm one day: an error code, not rain."""
+    rows = [row("SS002B532", "02/11/2019", -8920.4), row("SS002B532", "03/11/2019", 4.0)]
+
+    daily = parse_page(page(tmp_path, rows))
+
+    assert daily["mm"].tolist() == [4.0]
+
+
 def test_parse_page_reads_the_2021_tables_upper_case_fields(tmp_path: Path) -> None:
     rows = [
         {
