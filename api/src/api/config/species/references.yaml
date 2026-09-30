@@ -2000,6 +2000,982 @@ references:
       400 m and above). The 7 woodland gauges (440-1,840 m) hold 0.94 raw and 0.92 scaled. The bias is spatial more
       than altitudinal: wet on the Tyrrhenian coast (Patti 2.03, Lascari 1.57), dry on the Iblei (Modica 0.63, Ragusa
       0.68).'
+  # ---------------------------------------------------------------------------------------------
+  # Sardegna (region card, 2026-09-30): sources for species/sardegna/ and
+  # .gavin-root/docs/species-ecology/sardegna.md. One block rather than sorted in, placed here right
+  # after the Sicilia entries (and so before the Calabria header) so it merges cleanly with the
+  # region branches that append at the end of the file. Keys carry a sar_ prefix, or a _sardegna_
+  # infix for our own analyses. Existing keys the Sardinian rules reuse (sardegna_foreste_aereus,
+  # sardegna_foreste_caesarea, fm_sicilia_2018_04_30, fm_sicilia_2018_05_09, fm_sicilia_2024_05_30,
+  # funghimagazine_nascite_2026_05_08) were opened again for this card.
+  # ---------------------------------------------------------------------------------------------
+  sar_ispra2021_raccolta_funghi:
+    citation: 'ISPRA (2021). Raccolta dei funghi epigei nel rispetto dell''ambiente e della biodiversità: Regione
+      Sardegna (last updated April 2021)'
+    url: https://www.isprambiente.gov.it/files/biodiversita/raccolta-dei-funghi-epigei-regione-sardegna.pdf
+    kind: institutional
+    region: Sardegna
+    verified: verified
+    supports: 'The one-page regional sheet lists only the national framework law, L. 23 agosto 1993, n. 352, and says
+      "La raccolta dei funghi epigei non è disciplinata da alcuna legge regionale."'
+  sar_consregsardegna_pl170_2020:
+    citation: 'Consiglio regionale della Sardegna, XVI legislatura. Proposta di legge n. 170 (Sechi, Oppi, Gallus et
+      al., presented 19 June 2020): Disciplina della raccolta, tutela, valorizzazione e commercializzazione dei funghi
+      epigei spontanei'
+    url: https://www.consregsardegna.it/wp-content/uploads/2022/05/PL170.pdf
+    kind: institutional
+    region: Sardegna
+    verified: verified
+    supports: 'A bill "in linea con la normativa quadro contenuta nella legge 23 agosto 1993, n. 352": amateur,
+      professional and scientific permits after a training course, "tre chilogrammi e dieci chilogrammi al giorno"; no
+      picking "durante le ore notturne"; "è vietata la raccolta di esemplari della specie Amanita caesarea allo stato di
+      ovolo chiuso"; no rakes. It was never passed and lapsed with the XVI legislature (2019-2024); no season or
+      altitude rule.'
+  sar_castedduonline_grig_funghi2024:
+    citation: 'Casteddu Online (2024-09-18). Con le prime piogge spuntano i funghi: "La Sardegna è l''unica regione
+      senza una regolamentazione della raccolta"'
+    url: https://www.castedduonline.it/con-le-prime-piogge-spuntano-i-funghi-la-sardegna-e-lunica-regione-senza-una-regolamentazione-della-raccolta/
+    kind: web
+    region: Sardegna
+    verified: verified
+    supports: '"le recenti prime piogge hanno portato alla presenza di funghi nei boschi"; the GrIG environmental group:
+      "in Sardegna, unica regione in Italia ... non esiste alcuna regolamentazione regionale", "Negli anni scorsi vi
+      sono state diverse proposte di legge regionale, ma finora nessuna è arrivata al momento del voto"; mayors of Scano
+      di Montiferro and Desulo protesting at unregulated picking.'
+  sar_comandini2018_mycovisions:
+    citation: 'Comandini O., Paulis S., Rinaldi A.C. (2018). Sardinia: Mycovisions from a charming land. Current
+      Research in Environmental & Applied Mycology (Journal of Fungal Biology) 8(5): 474-491'
+    doi: 10.5943/cream/8/5/1
+    url: https://www.creamjournal.org/pdf/CREAM_8_5_1-1.pdf
+    kind: peer_reviewed
+    region: Sardegna
+    verified: verified
+    supports: 'Review of Sardinian macrofungi (University of Cagliari). Voglino (1893) listed 74 species around Cagliari
+      "including Amanita caesarea, Cantharellus cibarius and Lactarius deliciosus"; the cork-oak surveys of 1966-1973
+      (Valsecchi & Corrias 1966, Corrias & Diana-Corrias 1972, Diana-Corrias & Corrias 1973) name among the edible
+      mycorrhizal fungi "associated to cork oak ... Amanita caesarea ... Boletus aereus, B. edulis and B. fragrans", and
+      "associated to pine woods ... Hydnum repandum, Lactarius sanguifluus and Suillus granulatus"; A. caesarea
+      photographed "from a xerophile mixed Quercus ilex–Q. suber forest in Santadi"; rain "from less than 500 mm in the
+      coastal areas to more than 900 mm in the inner mountainous regions"; sclerophyllous holm and cork oak forests that
+      "At higher elevations ... merge with broadleaved forests of Q. pubescens"; in the Limbara conifer plantations B.
+      edulis among 63 macromycetes of the "pure Abies cephalonica artificial forests" (Ruggero & Contu 2007); chestnut
+      and hazel introduced "in ancient times"; the traditional "mycophoby" of the Sardinians, who picked mainly
+      Pleurotus eryngii, Leccinellum corsicum (under Cistus) and Terfezia; "Sardinia is probably the only region in
+      Italy without guidance lists"; the unpassed bill PL 104 of 2010 listed about 30 marketable species including A.
+      caesarea, B. aereus, B. aestivalis, B. edulis and C. cibarius.'
+  sar_bacchetta2009_vegetazione:
+    citation: 'Bacchetta G., Bagella S., Biondi E., Farris E., Filigheddu R., Mossa L. (2009). Vegetazione forestale e
+      serie di vegetazione della Sardegna (con rappresentazione cartografica alla scala 1:350.000). Fitosociologia 46(1)
+      suppl. 1: 3-82'
+    url: https://www.scienzadellavegetazione.it/wp-content/uploads/2023/07/112.pdf
+    kind: peer_reviewed
+    region: Sardegna
+    verified: verified
+    supports: 'Climate "bistagionale": mean annual rain 764 mm (Fadda & Pala 1992), over 75 % of it in October-March,
+      maxima in November-December; rain rises "circa 90 mm ogni 100 m" of height, Cagliari 441 mm to Desulo 1,134 mm and
+      Genna Silana 1,119 mm; July 3-17 mm at the 26 stations (Alà dei Sardi 11, Desulo 16, Tempio Pausania 11). Forest
+      belts: in the Gallura and on the Buddusò, Alà and Bitti plateaus "le sugherete dominano ... da pochi metri sul
+      livello del mare fino a 800-1000 m"; cork-oak series at 200-550 m (granite, Gallura, Sarrabus, Sulcis-Iglesiente)
+      and 50- 700 m (volcanics, Logudoro, Monte Acuto, Montiferru, Alà, Bitti, Osidda); calcifuge holm-oak series at
+      500-1,000 m (Limbara, Alà, Montiferru, Marghine-Goceano, Barbagie, Ogliastra, Monte Arci, Sette Fratelli, Linas,
+      Monte Arcosu), montane holm oak with holly above 900 m (Limbara, Monte Lerno, Alà, Goceano, Montiferru) and
+      "leccete montane con agrifoglio, climaciche tra i 700 e i 1200 metri", with relict yew and holly; Q. ichnusae
+      woods at 300-950 m on basalt, andesite and trachyte (Logudoro, Marghine-Goceano, Barbagie, Mandrolisai,
+      Ogliastra), Q. congesta woods "tra 750 e 1400 m" on neutral-acid rock (Marghine, Monte Rasu, Barbagie,
+      Gennargentu); in the western Gennargentu, upper Ogliastra and the Barbagia di Belvì "sono molto frequenti i
+      castagneti in forma di boschi ceduati, alternati a boschi di querce caducifoglie e Corylus avellana"; native pines
+      only on the south-western coast (Aleppo pine, stone pine at Portixeddu) and maritime pine at Monte Pino-Monti
+      Ultana.'
+  sar_infc2015:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1, 1.2, 1.4 and 1.5 (Sardegna). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Sardegna
+    verified: verified
+    supports: 'Sardegna bosco 626,140 ha (relative standard error 2.1 %), other wooded land 674,851 ha, 2,408,989 ha of
+      land; tall-tree forest by category: holm oak 255,463 ha, cork oak 152,755, temperate oaks (downy oak) 87,780,
+      other evergreen broadleaves 38,004, Mediterranean pines 34,633, other conifers 13,055, other deciduous 7,743,
+      black pine 5,225, hygrophilous 3,359, chestnut 1,866; no beech, fir, spruce, larch, Scots pine, Turkey oak or
+      hop-hornbeam; plantations 25,885 ha (other broadleaves 24,392, conifers 1,493).'
+  sar_ispra_cnat_sardegna:
+    citation: 'Camarda I., Carta L., Brunu A., Brundu G. (Università di Sassari), Laureti L., Angelini P. (ISPRA)
+      (2011). Carta della Natura della Regione Sardegna: carta degli habitat alla scala 1:50.000. ISPRA and Regione
+      Autonoma della Sardegna'
+    url: https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/sardegna
+    kind: dataset
+    region: Sardegna
+    verified: verified
+    supports: 'The habitat map the Sardinian grid uses (config/regions/sardegna.yaml): ISPRA and the Region co-funded it
+      from October 2005, the Region entrusted it to the University of Sassari, and it was completed in 2010, with "93
+      tipi di habitat" mapped "secondo la nomenclatura CORINE Biotopes (con adattamenti ed integrazioni)" (the ISPRA
+      page). Whole-map areas as the region card reads them (not opened here): leccete sarde (45.317) 195,034 ha, leccete
+      supramediterranee (45.323) 22,574, sugherete (45.21) 103,597; querceti a roverella (41.72) 31,205 and querceti
+      mediterranei a roverella (41.732) 32,986; Castanea sativa woods (41.9) 971; wild olive and carob woods (45.1)
+      57,038; conifer plantations (83.31) 94,522, Aleppo, stone and maritime pine 2,169, wooded dunes (16.29) 3,489;
+      eucalyptus plantations (83.322) 21,991; riparian woods 6,759; yew woods (42.A7) 100; macchia classes including
+      silicicolous garrigue and macchia (32.3) 244,095, low olive and lentisk macchia (32.211) 126,833, evergreen-oak
+      matorral (32.11) 117,958, olive and lentisk matorral (32.12) 68,445, juniper matorral (32.13) 33,774, calcicolous
+      macchia (32.4) 29,890; wooded pasture (84.6) 112,668 ha, left out of the grid.'
+  mushma_sardegna_woodland_grid_2026:
+    citation: 'mushma Sardegna woodland grid: the 1 km grid in EPSG:3035 built 2026-09-30 from the Carta della Natura
+      habitat map with the class mapping of config/regions/sardegna.yaml, Copernicus DEM heights, SoilGrids pH and ISTAT
+      2025 comuni. See .gavin-root/docs/regions/sardegna.md'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/regions/sardegna.md
+    kind: analysis
+    region: Sardegna
+    verified: verified
+    supports: '25,026 cells, 5,141 woodland cells (20.5 %); forest 573,104 ha against INFC 2015 bosco 626,140 ha (-8.5
+      %). Woodland cells: elevation median 517 m (p5-p95 136-967 m), highest cell mean 1,384 m; slope median 16.9°, 9.5
+      % over 25°; soil pH median 6.56. Share of the wooded area / dominant cells / their median elevation (p5-p95):
+      evergreen_oak 53.7 % / 3,097 / 511 m (201-904); mediterranean_pine 15.5 % / 857 / 567 m (43-1,034; Alà dei Sardi,
+      Buddusò, Bitti, Alghero, Seui, Aritzo, Pattada, Orgosolo); macchia 11.5 % / 56 / 522 m; deciduous_oak 9.9 % / 585
+      / 726 m (321-1,138; Fonni, Bonorva, Desulo, Macomer, Bono, Aritzo, Bolotana, Tonara); mixed_broadleaf 7.2 % / 463
+      / 273 m (82-565; Paulilatino, Carbonia, Muravera); exotic_broadleaf 1.3 % / 76 / 138 m; riparian 0.4 %,
+      transitional 0.3 %, chestnut 0.2 % / 7 cells / 1,005 m (Desulo, Tonara, Santu Lussurgiu; the Aritzo cell reads
+      deciduous oak 0.94, chestnut 0.02). Monte Limbara reads mediterranean_pine 1.00 at 1,061 m, Monte Ortobene
+      evergreen_oak 1.00 at 765 m, Alà dei Sardi deciduous_oak 0.99 at 640 m.'
+  mushma_occurrence_check_sardegna_2026:
+    citation: 'mushma Sardegna occurrence check: iNaturalist API (place 13071, verifiable; month and year histograms;
+      elevations from the Open-Meteo elevation API for open, non-obscured records with positional accuracy of 1 km or
+      better; compared with Toscana, place 13073) and GBIF occurrence API (gadmGid ITA.14_1), queried 2026-09-30.
+      Aggregates, dates and place names only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations
+    kind: analysis
+    region: Sardegna
+    verified: verified
+    supports: 'iNaturalist verifiable records: B. edulis 3 (13 September 2024 Tempio Pausania, 17 October 2018 Orgosolo,
+      6 November 2018 Santu Lussurgiu; located 448 and 970 m), B. reticulatus 4 (2 October 2016 twice at Santu
+      Lussurgiu, 4 November 2022 Oschiri, 30 November 2002 San Leonardo; located 769 m), B. aereus 18 (April 1, May 3,
+      September 5, October 5, November 4; 5 April 2020 Palmas Arborea, 9 May 2025 Alghero, 25 May 2023, 28 May 2020
+      Siniscola, then 21 September-21 November; located 5-758 m, median 320 m, n=10), B. pinophilus 0, A. caesarea 16
+      (25 May 2020, then 27 September-19 November, 6 in November; located 0-938 m, median 439 m, p90 819 m, n=11),
+      Cantharellus 16 (C. alborufescens 5, C. pallens 5, C. ferruginascens 1; January 1, February 1, May 2, September 3,
+      November 6, December 3; located 25-691 m, n=7). All Sardinian fungi 5,934 (Tuscany 19,151), 69 % from 2021 on; by
+      month (%) January 8, February 5, March 5, April 7, May 9, June 4, July 3, August 4, September 6, October 13,
+      November 22, December 15 (Tuscany: September 13, October 24, November 13, December 8). GBIF (gadmGid ITA.14_1): B.
+      edulis 3, B. reticulatus 3, B. aereus 23 (6 soil-DNA samples from one Santa Giusta site), B. pinophilus 0, A.
+      caesarea 17, Cantharellus 16 (4 of them C. cinereus), mostly iNaturalist copies.'
+  sar_sardegna_foreste_reticulatus:
+    citation: 'Sardegna Foreste (Agenzia Forestas, Regione Sardegna). Boletus reticulatus (scheda fungo)'
+    url: https://www.sardegnaforeste.it/fungo/boletus-reticulatus
+    kind: institutional
+    region: Sardegna
+    verified: verified
+    supports: '"Porcino d'' estate", synonym B. aestivalis: "Boschi di latifoglie, specialmente castagno"; "Nasce in
+      estate, più raramente in autunno."'
+  sar_sardegna_foreste_catalogo_funghi:
+    citation: 'Sardegna Foreste (Agenzia Forestas, Regione Sardegna). Funghi: catalogue of the agency''s species pages,
+      with the habitat filters Latifoglie, Conifere, Macchia, Sabbie (consulted 2026-09-30)'
+    url: https://www.sardegnaforeste.it/flora_fauna/funghi
+    kind: institutional
+    region: Sardegna
+    verified: verified
+    supports: 'About 64 pages. The porcini are B. aereus ("Cordolinu reali", "abbondante nei boschi della Sardegna") and
+      B. reticulatus, both filed under Latifoglie; there is no page for B. edulis, B. pinophilus or any Cantharellus.
+      The Conifere list (12) is Suillus, Lactarius deliciosus and vinosus, Amanita gilberti, Clavulina, Clitocybe,
+      Hebeloma, Inocybe, Mycena and Stropharia; the Macchia list (6) is Cistus mycobionts (Hebeloma cistophilum,
+      Lactarius cistophilus and tesquorum, Leccinum corsicum, Russula cistoadelpha) and Omphalotus olearius.'
+  sar_sdl_porcino_nero_monte_nieddu:
+    citation: 'Chiaramida A. (photograph, Ente Foreste della Sardegna, deposited 2010). Porcino nero. Sardegna Digital
+      Library, collection Monte Nieddu'
+    url: https://www.sardegnadigitallibrary.it/detail/6499bc70e487374c8f808d73
+    kind: institutional
+    region: Sardegna (Monte Nieddu)
+    verified: verified
+    supports: '"Il Boletus aereus è uno dei primi porcini che cresce sotto le leccete dopo estati piovose."'
+  sar_ambrosio2015_limbara_abete:
+    citation: 'Ambrosio E., Lancellotti E., Brotzu R., Salch H., Franceschini A., Zotti M. (2015). Assessment of
+      macrofungal diversity in a Silver Fir plantation in Sardinia (Italy) using a standardized sampling procedure.
+      Italian Journal of Mycology 44: 1-17'
+    doi: 10.6092/issn.2465-311X/5587
+    url: https://italianmycology.unibo.it/article/view/5587
+    kind: peer_reviewed
+    region: Sardegna (Limbara)
+    verified: verified
+    supports: 'A 19th-century plantation of exotic conifers ("Abies alba Mill., A. cephalonica Loudon, Cedrus atlantica
+      ... and Pinus nigra") on the Limbara (Madonna della Neve, Tempio Pausania), "unique example in Sardinia, since no
+      other Silver Fir site can be found in the whole region"; mean annual temperature 14.2 °C, "mean annual rainfall is
+      1300 mm", leucogranite with pH near 5; 606 sporomata and 52 Basidiomycota in autumn 2013, 119 species over the
+      surveys of 2010-2013.'
+  sar_seddaiu2026_sugherete:
+    citation: 'Seddaiu S., Morittu C., Franceschini A., Iotti M., Scali E., Lancellotti E. (2026). Dynamics of
+      ectomycorrhizal communities in Sardinian cork oak forests: influence of management system, lithological substrate
+      and season. Mycorrhiza 36: 7'
+    doi: 10.1007/s00572-026-01252-9
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC12890973/
+    kind: peer_reviewed
+    region: Sardegna
+    verified: verified
+    supports: 'Nine cork-oak forests on trachyte (Monte Minerva, Villanova Monteleone), basalt (Su Monte, Santu
+      Lussurgiu) and granite (Sa Mudditta, Oschiri), natural, grazed and ploughed, sampled in spring and autumn: 82,345
+      root tips, 120 OTUs; ploughing cut richness; "Tricholoma and Boletus were confined to ploughed and natural forests
+      on granite"; shrub layer with Arbutus unedo, Erica arborea, Cistus, Calicotome and Phillyrea.'
+  sar_funghiemicologia_forum_assemini2009:
+    citation: 'Scano M. ("Ktenea", Assemini) (2009-10-20). Post in the thread "I funghi di novembre", Forum Funghi e
+      Micologia'
+    url: http://www.funghiemicologia.com/phpBB3/viewtopic.php?f=600&t=31877
+    kind: web
+    region: Sardegna (Cagliari)
+    verified: verified
+    supports: 'A forager near Cagliari: "da noi la stagione inizia quando al nord sta finendo"; "da noi Novembre è
+      ancora il mese dei porcini"; "le essenze più diffuse sotto le quali è possibile trovare i porcini sono il leccio,
+      la sughera ed il castagno"; "Il più comune è B. aereus, abbastanza diffuso è B. reticulatus. Da noi sono molto più
+      rari i ritrovamenti di edulis ed il pinophilus mi è sconosciuto"; "Per tutto il mese di novembre è facile trovare
+      ancora gli Ovoli" (folklore).'
+  sar_fishingmania_porcini2020:
+    citation: 'Fishingmania with the Natura & Funghi group (2020-03-10). Riconoscere i Porcini, parte 2'
+    url: https://www.fishingmania.it/riconoscere-i-porcini-parte-2/
+    kind: web
+    region: Italia
+    verified: verified
+    supports: 'On B. pinophilus: "al nord è abbastanza comune, scendendo verso il centro diventa meno presente ...
+      Diventa rarissimo nelle Marche, Lazio ed Abruzzo", "completamente assente sulle isole ed il sud, ad eccezione di
+      alcune zone della Sila" (folklore; Sicily has census records).'
+  sar_puddu2025_funghi_sardegna:
+    citation: 'Puddu D. (2025). Funghi di Sardegna: guida illustrata per il riconoscimento e la raccolta, volume I
+      (ResearchGate record and index)'
+    url: https://www.researchgate.net/publication/390398704_FUNGHI_DI_SARDEGNA_Guida_illustrata_per_il_riconoscimento_e_la_raccolta_VOLUME_I
+    kind: monograph
+    region: Sardegna
+    verified: snippet-only
+    supports: 'The index shown in search results lists "Boletus aereus (Bull.: Fr.) Fr. 213 · Boletus reticulatus
+      (Schae.) 214" with Xerocomellus cisalpinus on p. 215, i.e. no B. edulis or B. pinophilus between them in volume I;
+      the page itself refused the fetch (403).'
+  sar_chessa_delitala1997_clima:
+    citation: 'Chessa P.A., Delitala A. (1997). Il clima della Sardegna. Nota tecnica n. 2, Servizio Agrometeorologico
+      Regionale per la Sardegna (now ARPAS), chapters 3 (Il vento), 6 (La pioggia) and 7.3 (La neve nelle zone di alta
+      montagna)'
+    url: http://www.sar.sardegna.it/pubblicazioni/notetecniche/nota2/
+    kind: institutional
+    region: Sardegna
+    verified: verified
+    supports: 'Two rain seasons, "da ottobre ad aprile" and "da maggio a settembre"; "Il passaggio fra le due stagioni è
+      particolarmente marcato fra settembre ed ottobre", in the wet zones "da valori di 40-60 mm a valori di 80-160 mm";
+      "Il massimo cumulato di precipitazione si ha a dicembre"; "luglio ed agosto sono i mesi più secchi"; wet zones "le
+      aree a ridosso del Gennargentu (Barbagie, Ogliastra e zone limitrofe)", "la parte centrale della Gallura (a
+      ridosso del Limbara)", the Campeda and the Iglesiente, the Sarrabus in November-February; "La Nurra ed il
+      Campidano si presentano come zone secche". Winds: "i venti dominanti nella nostra Isola sono il Ponente e il
+      Maestrale", strong winds more frequent "nei mesi invernali (dicembre-marzo)". Snow at Vallicciola (Limbara, 1,040
+      m): 14.1 snowfall days and 21.0 days of lying snow a year, November-April, "a gennaio e febbraio si ha una media
+      di tre o quattro nevicate", lying on average one or two days.'
+  sar_lns_telti2016:
+    citation: 'La Nuova Sardegna, Olbia (2016-10-01). Telti, parte la caccia ai porcini giganti'
+    url: https://www.lanuovasardegna.it/olbia/cronaca/2016/10/01/news/telti-parte-la-caccia-ai-porcini-giganti-1.14186504
+    kind: web
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: '"Dopo le prime piogge ha fatto incetta di porcini giganti trovati nelle campagne alle porte di Telti"
+      (folklore).'
+  sar_castedduonline_settefratelli2016:
+    citation: 'Casteddu Online (2016-10-02; the page prints 28 June 2017, a site-migration date). Sette Fratelli, via
+      alla stagione dei funghi: il maxi bottino di Diego'
+    url: https://www.castedduonline.it/sette-fratelli-via-alla-stagione-dei-funghi-il-maxi-bottino-di-diego/
+    kind: web
+    region: Sardegna (Sette Fratelli)
+    verified: verified
+    supports: '"Inizia uffciialmente la stagione dei funghi, anche se con un po'' di anticipo. E grazie alla pioggia di
+      ieri ... i cesti di porcini e ovuli trovati nelle campagne dei Sette fratelli oggi" (folklore).'
+  sar_lns_montiferru2016:
+    citation: 'La Nuova Sardegna, Oristano (2016-10-07). Cercatori di funghi, frenare l''invasione con i divieti di
+      sosta'
+    url: https://www.lanuovasardegna.it/oristano/cronaca/2016/10/07/news/cercatori-di-funghi-frenare-l-invasione-con-i-divieti-di-sosta-1.14213159
+    kind: web
+    region: Sardegna (Montiferru)
+    verified: verified
+    supports: '"Da oltre una settimana i boschi del Montiferru sono letteralmente presi d''assalto dai cercatori di
+      funghi"; "la stagione dei porcini dura solo qualche settimana" (Scano di Montiferro; folklore).'
+  sar_olbiait_maggio2018:
+    citation: 'Olbia.it (2018-05-28). Olbia, raccolto porcino record da 1,550 kg'
+    url: https://www.olbia.it/olbia-raccolto-porcino-record-da-1550-kg
+    kind: web
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: 'Late May 2018: "nei boschi galluresi, infatti, qualche cercatore di funghi sta facendo raccolte
+      straordinarie", "nella zona di Olbia un raccolto da record di squisiti porcini" (folklore).'
+  sar_us_lanusei2018:
+    citation: 'L''Unione Sarda (2018-07-02). Sui monti di Lanusei spuntano maxi porcini fuori stagione'
+    url: https://www.unionesarda.it/news-sardegna/ogliastra/sui-monti-di-lanusei-spuntano-maxi-porcini-fuori-stagione-dt56m3f7
+    kind: web
+    region: Sardegna (Ogliastra)
+    verified: verified
+    supports: '"Grazie alle piogge abbondanti delle scorse settimane sulle montagne dell''Ogliastra spuntano maxi
+      porcini fuori stagione", at Monte Armidda (folklore).'
+  sar_castedduonline_agosto2018:
+    citation: 'Casteddu Online (2018-08-23). Funghi record ad agosto in tutta la Sardegna'
+    url: https://www.castedduonline.it/funghi-record-ad-agosto-in-tutta-la-sardegna-mandateci-i-vostri-selfie/
+    kind: web
+    region: Sardegna
+    verified: verified
+    supports: '"Temporali e piogge di questi giorni, con l''abbinata sole e 30 gradi, hanno infatti anticipato la
+      stagione di raccolta con una super produzione di funghi in varie zone dell''Isola" (folklore).'
+  sar_itenovas_annata2018:
+    citation: 'IteNovas (September 2018, relaying ANSA of 11 September 2018). Funghi in Sardegna, il 2018 è un''annata
+      eccezionale'
+    url: https://www.itenovas.com/in-tavola/3431-funghi-sardegna-2018-e-annata-eccezionale.html
+    kind: web
+    region: Sardegna (Gennargentu, Gallura)
+    verified: verified
+    supports: '"Le piogge numerose e il caldo umido hanno creato l''ambiente perfetto per i funghi che quest''anno
+      abbondano nei boschi della Sardegna. Porcini, ovuli"; "già i primi funghi cominciano a vedersi nelle zone di
+      montagna come Desulo, Tonara e Fonni e stanno spuntando anche nelle zone collinari della Gallura e del Nuorese"
+      (folklore).'
+  sar_olbiait_monti_berchidda2018:
+    citation: 'Olbia.it (2018-10-21). Passione funghi porcini: la stagione non è ancora finita'
+    url: https://www.olbia.it/passione-funghi-porcini-la-stagione-non-e-ancora-finita
+    kind: web
+    region: Sardegna (Monte Acuto)
+    verified: verified
+    supports: 'Porcini in one of the "boschi segreti", tra i comuni di Monti e Berchidda, "dove è ancora possibile
+      raccogliere i prelibati funghi porcini"; "La stagione dei funghi porcini volge al termine ... qualche fungo
+      infatti è già andato, però è possibile raccogliere degli ottimi ovuli" (folklore).'
+  sar_lns_castiadas_ovolo2018:
+    citation: 'La Nuova Sardegna, Cagliari (2018-10-30). Un ovulo da 820 grammi nelle campagne di Castiadas'
+    url: https://www.lanuovasardegna.it/cagliari/cronaca/2018/10/30/news/un-ovulo-da-820-grammi-nelle-campagne-di-castiadas-1.17409141
+    kind: web
+    region: Sardegna (Sarrabus)
+    verified: verified
+    supports: 'An ovolo "nelle montagne di Castiadas, in una radura ben esposta al sole, al limite di un bosco di lecci,
+      ad un''altezza di circa 500 metri" (folklore).'
+  sar_nalife_gonnosfanadiga2019:
+    citation: 'NAlife (blog, 2019-10-05). Gonnosfanadiga, parco comunale Perd''e Pibera, sentiero CAI 105 e 105B'
+    url: https://nalife.altervista.org/2019/10/05/gonnosfanadiga-parco-comunale-perde-pibera-sentiero-cai-105-e-105b/
+    kind: web
+    region: Sardegna (Linas)
+    verified: verified
+    supports: '"le felci hanno un''aria stanca, quasi smorta, i letti dei corsi d''acqua sono completamente asciutti e,
+      purtroppo, non c''è nemmeno traccia di qualche porcino" (folklore).'
+  sar_campagnamica_porcini2020:
+    citation: 'Campagna Amica, Coldiretti (2020-09-14). Funghi, scatta la corsa ai porcini e boom nei boschi'
+    url: https://www.campagnamica.it/attualita/funghi-scatta-la-corsa-ai-porcini-e-boom-nei-boschi/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Cestini vuoti per adesso anche in Sardegna anche se la recente pioggia fa ben sperare" (folklore).'
+  sar_lns_intossicazioni2020:
+    citation: 'La Nuova Sardegna (2020-10-21). Mangiano funghi velenosi, 6 intossicati in pochi giorni'
+    url: https://www.lanuovasardegna.it/regione/2020/10/21/news/mangiano-funghi-velenosi-6-intossicati-in-pochi-giorni-1.39446790
+    kind: web
+    region: Sardegna (Sassari)
+    verified: verified
+    supports: '"La stagione è cominciata da pochi giorni" (Sassari, 21 October 2020; folklore).'
+  sar_nalife_ottobre2020:
+    citation: 'NAlife (blog, 2020-10-31). Ottobre: breve guida pratica su come trovare i porcini (e altro)'
+    url: https://nalife.altervista.org/2020/10/31/ottobre-breve-guida-pratica-su-come-trovare-i-porcini-e-altro/
+    kind: web
+    region: Sardegna (Arburese)
+    verified: verified
+    supports: 'Montevecchio and the Arburese, October 2020: "alcune giornate di abbondanti piogge seguite da un drastico
+      calo della temperatura ... quest''anno è nuovamente annata di porcini!", woods overrun "per una buona metà del
+      mese" and on the weekends of 17 and 24 October, porcini "in mezzo alla macchia"; by 31 October "ormai la finestra
+      di raccolta del porcino per questo 2020 si è definitivamente chiusa" (folklore).'
+  sar_us_bolotana_aereus2020:
+    citation: 'L''Unione Sarda (2020-11-02). Bolotana, Mariapina trova un porcino da record'
+    url: https://www.unionesarda.it/news-sardegna/nuoro-provincia/bolotana-mariapina-trova-un-porcino-da-record-oqycla2a
+    kind: web
+    region: Sardegna (Marghine)
+    verified: verified
+    supports: 'At Badde e Salighe, Bolotana: "Si tratta del genere Boletus Aereus (anche se comunemente ed erroneamente
+      viene chiamato porcino reale) ed è il classico porcino autunnale" (folklore).'
+  sar_olbiait_calangianus2021:
+    citation: 'Olbia.it (2021-11-15). Gallura, tempo di funghi: da Calangianus un porcino record'
+    url: https://www.olbia.it/gallura-tempo-di-funghi-da-calangianus-un-porcino-record
+    kind: web
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: '"Autunno piovoso, tempo di funghi e di lunghe passeggiate alla ricerca degli esemplari più gustosi. Dai
+      boschi di Calangianus ... un porcino record" (folklore).'
+  sar_lns_calangianus2021:
+    citation: 'La Nuova Sardegna, Olbia (2021-11-22). Ecco la regina dei funghi porcini'
+    url: https://www.lanuovasardegna.it/olbia/cronaca/2021/11/22/news/ecco-la-regina-dei-funghi-porcini-1.40952189
+    kind: web
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: 'Two large porcini, "il primo di 1,8 kg a Calangianus, il secondo di 2,4 chilogrammi nei boschi di Priatu"
+      (folklore).'
+  sar_us_settefratelli2021:
+    citation: 'L''Unione Sarda (2021-11-20). Trova un porcino da un chilo sui Sette Fratelli: "In tanti anni mai visto
+      uno così"'
+    url: https://www.unionesarda.it/news-sardegna/provincia-cagliari/trova-un-porcino-da-un-chilo-sui-sette-fratelli-in-tanti-anni-mai-visto-uno-cosi-i9w0koet
+    kind: web
+    region: Sardegna (Sette Fratelli)
+    verified: verified
+    supports: 'A porcino nero on the Sette Fratelli; "Purtroppo ... la pioggia nel sud Sardegna è arrivata tardi e le
+      temperature per i porcini sono già critiche", so search "le zone con sugherete esposte al sole per gran parte del
+      giorno, le più calde" (folklore).'
+  sar_us_montiferru2022:
+    citation: 'L''Unione Sarda (2022-10-13). Scano Montiferro, invasione dei cercatori di funghi'
+    url: https://www.unionesarda.it/news-sardegna/oristano-provincia/scano-montiferro-invasione-dei-cercatori-di-funghi-il-sindaco-danneggiano-proprieta-pubbliche-e-private-u1ldwouw
+    kind: web
+    region: Sardegna (Montiferru)
+    verified: verified
+    supports: '"La stagione delle piogge è arrivata prorompente nel Montiferru, portando con sé la temuta invasione dei
+      cercatori di funghi", "dopo la proficua ricerca di buon porcino o antunna" in "i boschi di San Leonardo e di Scano
+      Montiferro" (folklore).'
+  sar_us_seulo2023:
+    citation: 'L''Unione Sarda (2023-06-01). Seulo, trovato un porcino da 1,3 kg'
+    url: https://www.unionesarda.it/news-sardegna/provincia-cagliari/seulo-trovato-un-porcino-da-1-3-kg-che-sia-di-buon-auspicio-per-tutti-i-cercatori-qqv6hmx2
+    kind: web
+    region: Sardegna (Barbagia di Seulo)
+    verified: verified
+    supports: '"Un bellissimo ritrovamento di inizio stagione" at Seulo, 1 June 2023 (folklore).'
+  sar_aslgallura_giugno2023:
+    citation: 'ASL Gallura (2023-06-09). Raccolta funghi: aperture straordinarie dell''ispettorato micologico'
+    url: https://www.aslgallura.it/raccolta-funghi-aperture-straordinarie-dellispettorato-micologico/
+    kind: institutional
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: 'The mycological inspectorate, "operativo solitamente da ottobre a marzo", reopened in June: "Le piogge
+      registrate con alta frequenza e intensità nel mese di maggio e nei primi giorni di giugno hanno, infatti,
+      alimentato la crescita dei funghi freschi e spontanei nel territorio gallurese".'
+  sar_aslgallura_novembre2023:
+    citation: 'ASL Gallura (2023-11-06). Raccolta funghi freschi spontanei: riapre l''ispettorato micologico'
+    url: https://www.aslgallura.it/raccolta-funghi-freschi-spontanei-riapre-lispettorato-micologico/
+    kind: institutional
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: '"La stagione dedicata alla raccolta dei funghi spontanei in Gallura sta lentamente ricominciando", the
+      inspectorate reopening from 8 November 2023.'
+  sar_aslgallura_proroga2023:
+    citation: 'ASL Gallura (2023-12-29). Ispettorato micologico: prorogato il servizio di controllo dei funghi'
+    url: https://www.aslgallura.it/ispettorato-micologico-prorogato-il-servizio-di-controllo-dei-funghi/
+    kind: institutional
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: 'The mushroom inspection service extended: "Anche a gennaio il servizio sarà usufruibile" (January 2024).'
+  sar_castedduonline_gonnosfanadiga2023:
+    citation: 'Casteddu Online (2023-11-09). Gonnosfanadiga, un porcino reale da mezzo chilo inaugura la stagione dei
+      funghi'
+    url: https://www.castedduonline.it/gonnosfanadiga-un-porcino-reale-da-mezzo-chilo-inaugura-la-stagione-dei-funghi/
+    kind: web
+    region: Sardegna (Linas)
+    verified: verified
+    supports: '"Le piogge ancora si fanno attendere ma quelle poche, già pervenute le settimane scorse, hanno permesso
+      al re della montagna di fare la sua comparsa" (folklore).'
+  sar_us_lodine2023:
+    citation: 'L''Unione Sarda (2023-11-13). Lodine, trovato un porcino quasi da record: pesa 1,6 chili'
+    url: https://www.unionesarda.it/news-sardegna/nuoro-provincia/lodine-trovato-un-porcino-quasi-da-record-pesa-1-6-chili-pd7cvau2
+    kind: web
+    region: Sardegna (Barbagia)
+    verified: verified
+    supports: '"Piogge e caldo degli ultimi tempi hanno reso molto felice l''uscita a caccia di qualche prelibatezza
+      della terra" (folklore).'
+  sar_us_tiana2023:
+    citation: 'L''Unione Sarda (2023-11-14). Tiana risponde a Lodine: raccolto un maxi porcino da 1,8 chili'
+    url: https://www.unionesarda.it/news-sardegna/nuoro-provincia/tiana-risponde-a-lodine-raccolto-un-maxi-porcino-da-1-8-chili-fq6uerov
+    kind: web
+    region: Sardegna (Barbagia)
+    verified: verified
+    supports: 'In Barbagia "porcino-mania"; a specimen "raccolto nei boschi del Gennargentu" (folklore).'
+  sar_cagliaripad_ulassai_arbus2023:
+    citation: 'Cagliaripad (2023-11-19). Autunno ricco di "grandi" porcini: ritrovamenti a Ulassai e Arbus'
+    url: https://www.cagliaripad.it/603472/autunno-ricco-di-grandi-porcini-ritrovamenti-a-ulassai-e-arbus/
+    kind: web
+    region: Sardegna
+    verified: verified
+    supports: '"In Sardegna è un autunno ricco di porcini, che stanno spuntando in tutti i territori in quantità
+      importanti", finds at Ulassai and Arbus (folklore).'
+  sar_cagliaripad_ulassai2023:
+    citation: 'Cagliaripad (2023-11-21). Ulassai, ancora porcini da record: il più grande sfiora i 3 kg'
+    url: https://www.cagliaripad.it/603602/ulassai-ancora-porcini-da-record-il-piu-grande-sfiora-i-3kg/
+    kind: web
+    region: Sardegna (Ogliastra)
+    verified: verified
+    supports: '"Autunno da record per i funghi a Ulassai"; "È evidente che questo autunno è molto ricco" (folklore).'
+  sar_castedduonline_gonnosfanadiga2024:
+    citation: 'Casteddu Online (2024-11-14). Spettacolare ritrovamento: un tappeto di porcini a Gonnosfanadiga'
+    url: https://www.castedduonline.it/spettacolare-ritrovamento-un-tappeto-di-porcini-a-gonnosfanadiga/
+    kind: web
+    region: Sardegna (Linas)
+    verified: verified
+    supports: '"Dopo le piogge cadute abbondanti il 26 ottobre, il sole ha fatto la sua comparsa ... Ed ecco ... una
+      distesa di porcini neri, Boletus aereus" (folklore).'
+  sar_cagliaripad_arci2024:
+    citation: 'Cagliaripad (2024-11-15). Autunno povero di grandi porcini: piccoli esemplari a Monte Arci'
+    url: https://www.cagliaripad.it/631022/autunno-povero-di-grandi-porcini-piccoli-esemplari-a-monte-arci/
+    kind: web
+    region: Sardegna (Monte Arci)
+    verified: verified
+    supports: '"Non è il grande autunno dei funghi porcini, come accaduto nel 2023"; "La stagione è iniziata molto in
+      ritardo per via della siccità. Ed ora inizierà il freddo, quindi le crescite andranno a calare" (folklore).'
+  sar_cagliaripad_gallura2024:
+    citation: 'Cagliaripad (2024-11-18). Che spettacolo in Gallura: trovato un porcino nero di quasi 2 kg'
+    url: https://www.cagliaripad.it/631233/che-spettacolo-in-gallura-trovato-un-porcino-nero-di-quasi-2-kg/
+    kind: web
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: '"questa non sembra una ottima annata per i porcini"; "È vero che al Sud non ci sono state grandi nascite
+      a causa della siccità al contrario del Nord che ha regalato molte nascite e di grandi dimensioni" (folklore).'
+  sar_galluraoggi_nero2024:
+    citation: 'Gallura Oggi (2024-11-23). Porcino nero record: la scoperta di Marco e Sara in Gallura'
+    url: https://www.galluraoggi.it/cronaca/porcino-nero-record-scoperta-marco-sara-gallura-23-novembre-2024/
+    kind: web
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: 'A Boletus aereus "tra le sugherete", the "conclusione ideale per la stagione dei porcini, che si è
+      rivelata particolarmente generosa quest''anno" (folklore).'
+  sar_nalife_austis2025:
+    citation: 'NAlife (blog, 2025-10-12). Austis, oasi di Assai: alla ricerca del porcino perduto'
+    url: https://nalife.altervista.org/2025/10/12/austis-oasi-di-assai-alla-ricerca-del-porcino-perduto/
+    kind: web
+    region: Sardegna (Mandrolisai)
+    verified: verified
+    supports: '"per la maggior parte il terreno è assolutamente arido"; porcini "non si sono ancora mostrati (e se
+      continua a non piovere, anche quest''annata dalle nostre parti non è affatto favorevole)" (folklore).'
+  sar_fm_2018_06_16:
+    citation: 'Funghi Magazine (2018-06-16). Aggiornamento funghi 16 Giugno 2018 (Wayback Machine capture of
+      2022-09-30)'
+    url: https://web.archive.org/web/20220930220913/https://funghimagazine.it/aggiornamento-funghi-16-giugno-2018/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Sardegna sempre protagonista con nascite ora non più soltanto nella macchia ma ora anche nei boschi di
+      collina e montagna"; "Qua è piovuto davvero tantissimo nelle ultime settimane"; reports of "insoliti ritrovamenti
+      di Galletti" (folklore).'
+  sar_fm_2018_07_01:
+    citation: 'Funghi Magazine (2018-07-01). Aggiornamento funghi 01 Luglio 2018 (Wayback Machine capture of
+      2024-04-17)'
+    url: https://web.archive.org/web/20240417091132/https://funghimagazine.it/aggiornamento-funghi-01-luglio-2018/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Infine, Sicilia e Sardegna con nascite abbondanti, non solo nelle zone interne ma anche lungo le macchie
+      costiere" (folklore).'
+  sar_fm_2018_08_31:
+    citation: 'Funghi Magazine (2018-08-31). Aggiornamento funghi 1 Settembre 2018 (Wayback Machine capture of
+      2024-06-14)'
+    url: https://web.archive.org/web/20240614045142/https://funghimagazine.it/aggiornamento-funghi-1-settembre-2018/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Sardegna e Sicilia ... hanno avuto piogge di gran lunga superiori alle attese e nascite di funghi
+      eccezionali" (folklore).'
+  sar_fm_2019_05_30:
+    citation: 'Funghi Magazine (2019-05-30). L''inizio della stagione dei Porcini e dei funghi estivi (Wayback Machine
+      capture of 2024-05-21)'
+    url: https://web.archive.org/web/20240521234509/https://funghimagazine.it/inizio-porcini-e-funghi-estivi/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Porcini Neri "Già ben presenti, anche se per ora in numero limitato, nel nostro estremo Sud e Sardegna";
+      "In Sardegna la presenza dei Porcini Neri è soggetta al vento che rimane ancora una costante sfavorevole"
+      (folklore).'
+  sar_fm_2019_07_03:
+    citation: 'Funghi Magazine (2019-07-03). Funghi Porcini di Luglio tra vampate di caldo africano e violenti temporali
+      (Wayback Machine capture of 2024-06-14)'
+    url: https://web.archive.org/web/20240614070033/https://funghimagazine.it/funghi-porcini-aggiornamento-inizio-luglio-2019/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Vento dominante in Sardegna con siccità ad oltranza e nascite di funghi praticamente nulle" (folklore).'
+  sar_fm_2019_07_08:
+    citation: 'Funghi Magazine (2019-07-08). Funghi Porcini: arriva aria più instabile. Al via nascite di Edulis e
+      Aereus? (Wayback Machine capture of 2024-07-21)'
+    url: https://web.archive.org/web/20240721225643/https://funghimagazine.it/funghi-porcini-arriva-aria-piu-instabile-al-via-nascite-di-edulis-e-aereus/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Eclatante la Sardegna con i suoi periodi lungamente ventosi e siccitosi e nascite di funghi quasi del
+      tutto assenti" (folklore).'
+  sar_fm_2019_09_12:
+    citation: 'Funghi Magazine (2019-09-12). La grande buttata di Funghi Porcini di Settembre. Dov''è piovuto in Italia
+      (Wayback Machine capture of 2024-05-27)'
+    url: https://web.archive.org/web/20240527073030/https://funghimagazine.it/la-grande-buttata-di-funghi-porcini-di-settembre-dove-piovuto-in-italia/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Porcini Estatini (B. reticulatus) e Porcini Neri (B. aereus) si registrano già nel Sud della Sardegna
+      sui colli attorno a Cagliari", good chances "nel Parco del Gennargentu e Lugodoro"; "E'' piovuto assai meno nel
+      Campidano e Sardegna Occidentale" (folklore).'
+  sar_fm_2019_09_20:
+    citation: 'Funghi Magazine (2019-09-20). Dove stanno nascendo i funghi Porcini. Le piogge cadute in Italia (Wayback
+      Machine capture of 2024-06-20)'
+    url: https://web.archive.org/web/20240620091722/https://funghimagazine.it/dove-stanno-nascendo-i-funghi-porcini-le-piogge-cadute-in-italia/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Sui monti attorno al Gennargentu non sono mancate le prime nascite di Ovoli, spesso abbondanti nei
+      boschi di Corbezzolo, più umidi rispetto ai boschi di Cerro"; "Ovoli sono ben presenti anche nella Sardegna
+      meridionale dopo le alluvioni di inizio Agosto. Per ora sporadici i Porcini Aereus"; the abundance "non riguarda
+      l''intera regione ma solo le zone in cui si sono avuti adeguati temporali ed assenza di vento" (folklore).'
+  sar_fm_2019_09_27:
+    citation: 'Funghi Magazine (2019-09-27). Dove cercare funghi Porcini nell''ultimo weekend di Settembre (Wayback
+      Machine capture of 2024-05-19)'
+    url: https://web.archive.org/web/20240519045618/https://funghimagazine.it/dove-cercare-funghi-porcini-nellultimo-weekend-di-settembre-i-funghi-di-ottobre-il-ritorno-delle-grandi-piogge/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Buone, ed in alcuni casi anche abbondanti, le nascite di Ovoli (Amanita cæsarea), soprattutto nei boschi
+      di Corbezzolo, questi presenti in particolar modo sulle coste marittime del Gennargentu e nei boschi del Sud
+      dell''isola"; "Molto scarse le nascite invece di funghi Porcini" (folklore).'
+  sar_fm_2020_06_25:
+    citation: 'Funghi Magazine (2020-06-25). Aggiornamento funghi 25 Giugno 2020 (Wayback Machine capture of
+      2024-07-21)'
+    url: https://web.archive.org/web/20240721014011/https://funghimagazine.it/aggiornamento-funghi-25-giugno-2020/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Anche in Sardegna le nascite di funghi vanno di pari passo con le piogge cadute ma soprattutto con
+      l''esposizione ai venti prevalenti. Discreti ritrovamenti in Gennargentu o vicino ai laghi interni e sul Nord,
+      molto meno altrove" (folklore).'
+  sar_fm_2020_08_20:
+    citation: 'Funghi Magazine (2020-08-20). Aggiornamento Meteofunghi 20-08-2020: Funghi Porcini e Temporali Estivi
+      (Wayback Machine capture of 2024-05-22)'
+    url: https://web.archive.org/web/20240522151747/https://funghimagazine.it/aggiornamento-meteofunghi-20-08-2020/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Births "nulle a Sud ed Ovest così come in tutta la Sardegna continuamente sferzata da venti caldi e
+      secchi" (folklore).'
+  sar_fm_2020_09_04:
+    citation: 'Funghi Magazine (2020-09-04). Aggiornamento Meteofunghi 04-09-2020: Dove nascono o nasceranno i Porcini
+      (Wayback Machine capture of 2023-10-04)'
+    url: https://web.archive.org/web/20231004061953/https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2020/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Insomma finalmente piove anche in Sardegna, anche se i 20/30 mm giunti dopo una lunghissima fase
+      siccitosa ed assai calda potranno avere effimeri effetti sulle nascite di funghi" (folklore).'
+  sar_fm_2020_10_08:
+    citation: 'Funghi Magazine (2020-10-08). Aggiornamento Meteofunghi 08-10-2020: Dove cercare i funghi Porcini
+      (Wayback Machine capture of 2022-12-01)'
+    url: https://web.archive.org/web/20221201195648/https://funghimagazine.it/aggiornamento-meteofunghi-08-10-2020/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"La Sardegna sta vivendo un periodo abbastanza positivo", rains "sufficienti ad aver fatto partire le
+      nascite anche di funghi Porcini su e giù per l''isola"; "i ritrovamenti migliori si possono fare nei settori Nord
+      ed Est ... i settori Centroccidentali hanno avuto spesso forti venti ma piogge leggermente più contenute"
+      (folklore).'
+  sar_fm_2020_10_23:
+    citation: 'Funghi Magazine (2020-10-23). Meteofunghi 23-10-2020: Funghi Porcini? Cercali dove non te li aspetti
+      (Wayback Machine capture of 2024-07-24)'
+    url: https://web.archive.org/web/20240724141409/https://funghimagazine.it/meteofunghi-23-10-2020/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Buone nascite si sono avute nelle prime due settimane di ottobre ma, con fungaie presenti solamente in
+      luoghi ben riparati dal vento", porcini "quasi esclusivamente in boschi fitti di Quercia-Leccio-Corbezzolo
+      presenti in conche ben riparate dal vento" (folklore).'
+  sar_fm_2021_05_30:
+    citation: 'Funghi Magazine (2021-05-30). I Funghi di Giugno (Wayback Machine capture of 2024-05-24)'
+    url: https://web.archive.org/web/20240524100405/https://funghimagazine.it/i-funghi-di-giugno/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"qualche timida nascita di funghi Porcini Neri (Boletus aereus) assai precoci di inizio Maggio"; "Maggio
+      2021 si è rivelato essere un mese disastroso, dal punto di vista delle nascite di Porcini e Leccini in Sardegna, a
+      causa del persistere del forte vento secco" (folklore).'
+  sar_fm_2021_06_24:
+    citation: 'Funghi Magazine (2021-06-24). Aggiornamento Meteofunghi 24.06.2021: Funghi Porcini, si inizia a fare sul
+      serio (Wayback Machine capture of 2024-04-16)'
+    url: https://web.archive.org/web/20240416202555/https://funghimagazine.it/aggiornamento-meteofunghi-24-06-2021-funghi-porcini-si-inizia-a-fare-sul-serio/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Sardinia "invischiata in una fase climatica semplicemente avversa per i funghi, non fosse altro per
+      insistenza e costanza del vento e scarsità di precipitazioni"; on B. pinophilus, granite "ovunque in Sardegna, ma
+      qua il clima caldo-ventoso ... impediscono ai Porcini Rossi di potersi insediare sull''isola" (folklore).'
+  sar_fm_2021_10_09:
+    citation: 'Funghi Magazine (2021-10-09). Funghi Porcini a volontà, si ma dove. Aggiornamento Meteofunghi 09-10-2021
+      (Wayback Machine capture of 2024-05-19)'
+    url: https://web.archive.org/web/20240519054411/https://funghimagazine.it/funghi-porcini-a-volonta-si-ma-dove/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Tolto il Triveneto e la Sardegna ... la seconda per il protrarsi della siccità"; "qualche timido spot a
+      breve nel Cagliaritano ed in Gallura, forse anche sul Gennargentu in poche conche umide-ombrose ... se finalmente
+      cesserà il nefasto Maestrale" (folklore).'
+  sar_fm_2021_10_24:
+    citation: 'Funghi Magazine (2021-10-24). Sorpresa: quando tutti tacciono. Aggiornamento Meteofunghi 24-10-2021
+      (Wayback Machine capture of 2026-07-15)'
+    url: https://web.archive.org/web/20260715201733/https://funghimagazine.it/sorpresa-quando-tutti-tacciono-e-perche-nei-boschi-e-pieno-di-funghi-porcini-aggiornamento-meteofunghi-24-10-2021/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"il vento ... sta distruggendo ogni tentativo di nascite anche nella vicina Sardegna dove, le poche
+      piogge cadute, avrebbero anche potuto innescare qualche timida nascita ma, il vento a seguire ne ha bloccato ogni
+      tentativo" (folklore).'
+  sar_fm_2021_11_19:
+    citation: 'Funghi Magazine (2021-11-19). Funghi Porcini Novembre 2021: non è finita finché non è finita (Wayback
+      Machine capture of 2024-06-20)'
+    url: https://web.archive.org/web/20240620084846/https://funghimagazine.it/funghi-porcini-novembre-2021/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"La Sardegna finalmente sta ottenendo la sua riscossa con nascite di Porcini attesi fino allo sfinimento,
+      ma non solo Porcini, anche funghi Leccini (Leccinellum lepidum e Leccinellum corsicum), Russule, Trombette dei
+      Morti, Galletti e molti altri" (folklore).'
+  sar_fm_2022_08_26:
+    citation: 'Funghi Magazine (2022-08-26). Nuovo boom di Porcini ma, quanti giorni dopo la pioggia bisogna iniziare a
+      cercarli? (Wayback Machine capture of 2024-05-21)'
+    url: https://web.archive.org/web/20240521221739/https://funghimagazine.it/nuovo-boom-di-porcini/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Sardinia "in ultima posizione ... quest''anno paga una siccità come non la si viveva da decenni"
+      (folklore).'
+  sar_fm_2022_09_15:
+    citation: 'Funghi Magazine (2022-09-15). Meteo Funghi 15-09-2022: Tantissimi Funghi Porcini in mezza Italia, ecco
+      dove (Wayback Machine capture of 2024-05-21)'
+    url: https://web.archive.org/web/20240521231012/https://funghimagazine.it/meteo-funghi-15-09-2022/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Putroppo la Sardegna dovrà ancora attendere per avere buone nascite, dal momento che piogge degne di
+      nota non si sono ancora avute" (folklore).'
+  sar_fm_2022_09_23:
+    citation: 'Funghi Magazine (2022-09-23). Aggiornamento meteo funghi 24-09-2022: Funghi, Funghi, Porcini per tutti
+      (Wayback Machine capture of 2024-05-22)'
+    url: https://web.archive.org/web/20240522133907/https://funghimagazine.it/aggiornamento-meteo-funghi-24-09-2022/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Storms over the whole peninsula in late August-mid September "ad eccezione delle isole maggiori"
+      (folklore).'
+  sar_fm_2022_10_13:
+    citation: 'Funghi Magazine (2022-10-13). Meteo Funghi 13-10-2022: Ancora spettacolari nascite di funghi in Italia
+      (Wayback Machine capture of 2024-04-21)'
+    url: https://web.archive.org/web/20240421083643/https://funghimagazine.it/meteo-funghi-13-10-2022/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"In Sardegna qualche timido fungo Porcino ha già fatto capolino nei boschi occidentali dell''isola che
+      ancora versa in un grave stato di siccità" (folklore).'
+  sar_fm_2022_11_05:
+    citation: 'Funghi Magazine (2022-11-05). Aggiornamento Porcini 06-11-2022: Stanno ancora nascendo, ecco dove
+      (Wayback Machine capture of 2024-06-21)'
+    url: https://web.archive.org/web/20240621071145/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"A inizio Novembre però si sono registrate nuove interessanti piogge sui settori occidentali, meno in
+      quelli centrali, assai scarse sui settori orientali"; the late-October births "già giunte al termine o quasi"
+      (folklore).'
+  sar_fm_2022_11_19:
+    citation: 'Funghi Magazine (2022-11-19). Aggiornamento Porcini 19-11-2022: Nuova buttata in arrivo (Wayback Machine
+      capture of 2024-07-24)'
+    url: https://web.archive.org/web/20240724144130/https://funghimagazine.it/aggiornamento-porcini-19-11-2022/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Forecast: porcini "su tutti i settori occidentali, in particolare sui settori di Sudovest ... ancora del
+      tutto assenti sui settori orientali" (folklore).'
+  sar_fm_2022_12_21:
+    citation: 'Funghi Magazine (2022-12-21). Natale con i Porcini: Aggiornamento Funghi 21-12-2022 (Wayback Machine
+      capture of 2024-07-21)'
+    url: https://web.archive.org/web/20240721232713/https://funghimagazine.it/natale-con-i-porcini-aggiornamento-funghi-21-12-2022/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"La Sardegna per esempio, ha vissuto una eterna estate torrida, con nascite di funghi praticamente
+      azzerate"; photograph "Porcini Neri di Sardegna – PH: Daniele / Cagliari" (folklore).'
+  sar_fm_2023_01_03:
+    citation: 'Funghi Magazine (2023-01-03). Funghi Porcini tutto l''anno? Forse sì (Wayback Machine capture of
+      2024-06-14)'
+    url: https://web.archive.org/web/20240614061006/https://funghimagazine.it/funghi-porcini-tutto-lanno/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'After the December 2022 rains the Sardinian woods "rinascere letteralmente": "A dicembre le prime
+      segnalazioni di ritrovamenti di Porcini Neri-Bronzini (Boletus aereus)"; "molti Galletti/Gallinacci"; "Le sorprese
+      più grandi però sono state ... Porcini Autunnali (Boletus edulis) ed i Rossi Porcini Pinicola (Boletus
+      pinophlilus)"; "il chimismo dei suoli granitici sardi è praticamente perfetto" (folklore).'
+  sar_fm_2023_05_25:
+    citation: 'Funghi Magazine (2023-05-25). Tanta pioggia, tanti funghi, anche Porcini. Aggiornamento 26-05-2023
+      (Wayback Machine capture of 2024-04-21)'
+    url: https://web.archive.org/web/20240421074205/https://funghimagazine.it/aggiornamento-26-05-2023/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Porcini Neri in quantità si trovano già in Sardegna, per lo più sui settori meridionali" (folklore).'
+  sar_fm_2023_06_15:
+    citation: 'Funghi Magazine (2023-06-15). Piogge, nubifragi e Anticiclone Africano in arrivo. Aggiornamento funghi
+      16-06-2023 (Wayback Machine capture of 2024-04-17)'
+    url: https://web.archive.org/web/20240417084120/https://funghimagazine.it/aggiornamento-funghi-16-06-2023/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"La Sardegna e la Sicilia, finalmente, dopo un lungo attendere, stanno registrando ottime nascite di
+      Porcini Neri" (folklore).'
+  sar_fm_2023_06_23:
+    citation: 'Funghi Magazine (2023-06-23). É arrivato il gran caldo, che ne sarà ora dei Porcini? Aggiornamento
+      Porcini 23-06-2023 (Wayback Machine capture of 2024-06-20)'
+    url: https://web.archive.org/web/20240620093405/https://funghimagazine.it/aggiornamento-porcini-23-06-2023/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Sicilia e Sardegna ... sono ormai giunte al capolinea ... Tolto l''Etna e l''alto Gennargentu, le
+      nascite cessano rapidamente" (folklore).'
+  sar_fm_2023_10_12:
+    citation: 'Funghi Magazine (2023-10-12). Funghi Porcini spaccati dalla siccità africana. Aggiornamento Porcini
+      12-10-2023 (Wayback Machine capture of 2024-05-21)'
+    url: https://web.archive.org/web/20240521230836/https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"stendiamo un velo pietoso sulla siccitosa Sardegna ... Tolto qualche timidissimo Porcino delle forre del
+      Gennargentu, sull''isola non ci risultano esserci nascite degne di nota" (folklore).'
+  sar_fm_2023_10_27:
+    citation: 'Funghi Magazine (2023-10-27). Ci sarà una nuova buttata di funghi Porcini? Aggiornamento Porcini
+      27-10-2023 (Wayback Machine capture of 2024-04-16)'
+    url: https://web.archive.org/web/20240416195849/https://funghimagazine.it/aggiornamento-porcini-27-10-2023/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Sardinia "perennemente interessata da forti venti e da temperature costantemente africane ... con nascite
+      di Porcini e altri funghi praticamente quasi assenti" (folklore).'
+  sar_fm_2023_11_09:
+    citation: 'Funghi Magazine (2023-11-09). Funghi Porcini? Ce n''è ancora a volontà. Ecco dove. Aggiornamento Porcini
+      09-11-2023 (Wayback Machine capture of 2024-04-21)'
+    url: https://web.archive.org/web/20240421085612/https://funghimagazine.it/aggiornamento-porcini-09-11-2023/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Quasi a sorpresa, finalmente, iniziano a nascere funghi Porcini anche in Sardegna ... con nascite
+      migliori ... sui settori Ovest dell''isola con nascite scarse o assenti man mano che ci si sposta verso Est,
+      soprattutto nel Cagliaritano" (folklore).'
+  sar_fm_2023_12_16:
+    citation: 'Funghi Magazine (2023-12-16). Un Dicembre strepitoso per i funghi: Aggiornamento funghi 16-12-2023
+      (Wayback Machine capture of 2024-06-14)'
+    url: https://web.archive.org/web/20240614100034/https://funghimagazine.it/aggiornamento-funghi-16-12-2023/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Lettori ci segnalano ancora, alcuni Porcini edulis tra la macchia e nei Corbezzoli in zone costiere
+      tirreniche e pure in Sardegna" (folklore).'
+  sar_fm_2024_05_17:
+    citation: 'Funghi Magazine (2024-05-17). Tanta pioggia ma arrivano i Porcini? Aggiornamento funghi 17-05-2024
+      (Wayback Machine capture of 2026-03-20)'
+    url: https://web.archive.org/web/20260320101813/https://funghimagazine.it/aggiornamento-funghi-17-05-2024/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"In Sardegna ... si sono già registrate le prime nascite importanti di funghi Leccini (Leccinellum
+      lepidum) e pure di Porcini Neri (Boletus aereus)" (folklore).'
+  sar_fm_2024_08_30:
+    citation: 'Funghi Magazine (2024-08-30). Porcini edulis è partita la prima buttata: Aggiornamento funghi e Porcini
+      30-08-2024 (Wayback Machine capture of 2024-11-21)'
+    url: https://web.archive.org/web/20241121212449/https://funghimagazine.it/aggioramento-funghi-e-porcini-30-08-2024/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'After Ferragosto repeated light rains: "dove le piogge sono state ripetute e non violente ... ora si
+      iniziano a raccogliere i primi frutti, per lo più Porcini Neri/Bronzini" (folklore).'
+  sar_fm_2024_09_27:
+    citation: 'Funghi Magazine (2024-09-27). Aggiornamento nascite funghi 27-09-2024 (Wayback Machine capture of
+      2024-09-28)'
+    url: https://web.archive.org/web/20240928144721/https://funghimagazine.it/aggiornamento-nascite-funghi-27-09-2024/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"buoni festeggiamenti iniziano anche in Sardegna" (folklore).'
+  sar_fm_2024_10_03:
+    citation: 'Funghi Magazine (2024-10-03). Funghi 04-10-2024: raccolte di Porcini ancora strepitose, ecco dove
+      (Wayback Machine capture of 2026-09-02)'
+    url: https://web.archive.org/web/20260902134949/https://funghimagazine.it/funghi-04-10-2024-raccolte-di-porcini-ancora-strepitose-ecco-dove/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Anche in Sardegna finalmente stanno nascendo funghi Porcini non solo sui monti ma anche nelle foreste di
+      collina e pure del piano, fin sulle coste"; "Per ora sull''isola si raccolgono prevalentemente Porcini Neri ma qua
+      e là iniziano a trovarsi anche gli Estatini/Aestivalis ... oltre a Galletti" (folklore).'
+  sar_fm_2025_05_09:
+    citation: 'Funghi Magazine (2025-05-09). Aggiornamento nascite funghi 09-05-2025: Porcini sì, ma attenzione ai
+      segnali del bosco (Wayback Machine capture of 2025-05-13)'
+    url: https://web.archive.org/web/20250513202418/https://funghimagazine.it/aggiornamento-nascite-funghi-09-05-2025/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'After the April rains, Porcini neri in sheltered interior "oasi riparate": "Instagram e le chat dei
+      fungaioli sono già pieni di foto di Porcini neri belli e carnosi" (folklore).'
+  sar_fm_2025_08_29:
+    citation: 'Funghi Magazine (2025-08-29). Scatta l''ora dei Porcini in mezza Italia: Aggiornamento nascite funghi
+      29-08-2025 (Wayback Machine capture of 2025-08-29)'
+    url: https://web.archive.org/web/20250829134646/https://funghimagazine.it/aggiornamento-nascite-funghi-29-08-2025/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Sardegna: qualche nascita sporadica nelle zone interne riparate dal vento, ma nulla di diffuso"
+      (folklore).'
+  sar_fm_2025_10_16:
+    citation: 'Funghi Magazine (2025-10-16). Che fine hanno fatto i Porcini? Aggiornamento Nascite Porcini 16-10-2025
+      (Wayback Machine capture of 2025-12-20)'
+    url: https://web.archive.org/web/20251220120103/https://funghimagazine.it/aggiornamento-nascite-porcini-16-10-2025/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: '"Dopo la magra estiva, è finita la lunga attesa per Sardegna e Sicilia"; porcini "un po'' meno in
+      Sardegna" than in Sicily (folklore).'
+  sar_fm_2024_05_30:
+    citation: 'Funghi Magazine (2024-05-30). Aggiornamento funghi 31-05-2024, Sardegna (Wayback Machine capture of
+      2024-06-24)'
+    url: https://web.archive.org/web/20240624072920/https://funghimagazine.it/aggiornamento-funghi-31-05-2024/
+    kind: web
+    region: Italia (Sardegna)
+    verified: verified
+    supports: 'Rains of 1-2, 7-10 and above all 20 May 2024 ("quasi ovunque oltre i 15/20 mm con punte fino a 30/40
+      mm"): "Dov''è piovuto dopo il 19 stanno già nascendo, sia Porcini Neri che Porcini Estivi"; "abbiamo visto
+      fotografie di Porcini Neri destinati ai mercati della penisola, provenienti proprio da Corsica e Sardegna"; "il
+      miglior potenziale per ottime nascite sui settori centro-orientali" (folklore).'
+  sar_fm_pinophilus_scheda:
+    citation: 'Funghi Magazine (2019-10-31, updated). Boletus pinophilus o pinicola, il Porcino rosso (Wayback Machine
+      capture of 2025-06-08)'
+    url: https://web.archive.org/web/20250608012542/https://funghimagazine.it/boletus-pinophilus-pinicola-il-porcino-rosso/
+    kind: web
+    region: Italia
+    verified: verified
+    supports: '"Nel Centro Italia è più raro, mentre nel Sud è quasi assente, fatta eccezione per alcune aree montane
+      ... come la Sila (Calabria) e l''Etna (Sicilia). Segnalazioni sporadiche provengono anche dal Gennargentu
+      (Sardegna), dove alcuni lettori di Funghimagazine hanno riferito la sua presenza in annate particolarmente fresche
+      e umide" (folklore).'
+  sar_us_desulo2024:
+    citation: 'L''Unione Sarda (2024-09-17). Desulo, Comune in campo contro cercatori indisciplinati di funghi'
+    url: https://www.unionesarda.it/news-sardegna/nuoro-provincia/desulo-comune-in-campo-contro-cercatori-indisciplinati-di-funghi-xiwqu9dt
+    kind: web
+    region: Sardegna (Gennargentu)
+    verified: verified
+    supports: 'Mid-September 2024: "cercatori indisciplinati di funghi che affollano i boschi del Gennargentu", some
+      arriving "persino con camion frigo" (folklore).'
+  sar_olbiait_nieddu2016:
+    citation: 'Olbia.it (2016-10-10). Gallura, funghi: raccolta e cestino record a Padru, Monte Nieddu'
+    url: https://www.olbia.it/gallura-funghi-raccolta-cestino-record-padru-monte-nieddu-10-10-2016/
+    kind: web
+    region: Sardegna (Gallura)
+    verified: verified
+    supports: 'On 7 October 2016 a family "ha raccolto a Monte Nieddu ben 5,6 kg di Amanitacaesarea" (folklore).'
+  sar_us_orroli2017:
+    citation: 'L''Unione Sarda (2017-09-26). Orroli, cercatore di funghi trova due porcini da record'
+    url: https://www.unionesarda.it/news-sardegna/provincia-cagliari/orroli-cercatore-di-funghi-trova-due-porcini-da-record-f5mpsbag
+    kind: web
+    region: Sardegna (Sarcidano)
+    verified: verified
+    supports: '"È bastata un po'' di pioggia, per poter iniziare la raccolta dei porcini" (folklore).'
+  sar_cronachenuoresi_macomer2017:
+    citation: 'Cronache Nuoresi (2017-11-21). Macomer, successo per la XX Sagra de Santunna e allarme per la raccolta non
+      regolamentata'
+    url: https://www.cronachenuoresi.it/2017/11/21/macomer-successo-per-la-xx-sagra-de-santunna-e-allarme-per-la-raccolta-non-regolamentata/
+    kind: web
+    region: Sardegna (Marghine)
+    verified: verified
+    supports: 'The Macomer mycological show of November 2017: "Quest''anno il clima ha influenzato pesantemente il numero
+      di esemplari esposti. Sono mancate le specie caratteristiche di questo periodo e il numero esposto ha toccato 153"
+      (folklore).'
+  mushma_sardegna_arpas_gauge_check_2026:
+    citation: 'mushma Sardegna rain check: raw ERA5-Land (CDS) daily precipitation, read bilinearly from the land nodes
+      of the 0.2° lattice and re-cut into UTC days, against the ARPAS stations'' daily rain 2018-2022 (272 stations at
+      0-1,372 m with 80 % of the days; ARPAS yearly tables on ArcGIS Online, CC BY-NC-ND), and downscaled to the 35
+      gauges inside woodland cells. See .gavin-root/docs/regions/sardegna.md, Weather'
+    url: https://dati-annuali-rete-arpas-2021-arpas.hub.arcgis.com/
+    kind: analysis
+    region: Sardegna
+    verified: verified
+    supports: 'Raw CDS holds 0.88 of the gauge rain pooled over 272 stations (0.95 below 200 m, 0.93 at 200-400 m, 0.81
+      at 400-800 m, 0.74 at 800 m and above; median daily correlation 0.71-0.73); a fit of gauge totals on model totals
+      x (a + b x elevation) gives 1.00 + 0.34 per km (leave-one-out slopes 0.33-0.35; 1.00 + 0.32 on the 141 stations
+      whole over 2016-2022). The 35 woodland gauges (9-1,261 m) hold 0.79 raw and 0.97 scaled. The bias is also spatial:
+      dry on the south-east''s mountains (Pula Is Cannoneris 0.48, Sinnai Serpeddì 0.51), wet on the north-west coast
+      (Sorso 1.45, Bosa 1.37).'
   altotronto_porcini2017:
     citation: Alto Tronto (2017-01-03). Funghi porcini (porcini of the Monti della Laga and Sibillini)
     url: https://www.altotronto.it/funghi-porcini/

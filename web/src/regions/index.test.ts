@@ -22,6 +22,13 @@ describe('the region registry', () => {
     expect(findRegionAt(41.41, 14.37)?.slug).toBe('campania') // Piedimonte Matese
   })
 
+  it('finds Sardinia for Cagliari, Nuoro and La Maddalena, and not for Corsica', () => {
+    expect(findRegionAt(39.22, 9.11)?.slug).toBe('sardegna') // Cagliari
+    expect(findRegionAt(40.32, 9.33)?.slug).toBe('sardegna') // Nuoro
+    expect(findRegionAt(41.21, 9.41)?.slug).toBe('sardegna') // La Maddalena
+    expect(findRegionAt(41.39, 9.16)).toBeUndefined() // Bonifacio
+  })
+
   it('keeps Trento and Pordenone in their regions now that Veneto, registered last, overlaps them', () => {
     expect(findRegionAt(46.07, 11.12)?.slug).toBe('trentino-alto-adige') // Trento
     expect(findRegionAt(45.96, 12.66)?.slug).toBe('friuli-venezia-giulia') // Pordenone

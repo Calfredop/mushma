@@ -1,0 +1,543 @@
+# Press-contrast sanity check for Sardegna (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names, all in Sardinia; Sardinia's provinces were redrawn in 2016 and
+# 2025, the comuni were not) or provinces ('*' is the whole region). Windows and source URLs written
+# down on 2026-09-30, before any Sardinia score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Sources: Funghi Magazine's national bulletins (read through Wayback Machine captures; the live site
+# shows a captcha), whose Sardinia paragraphs come from readers and name sectors of the island
+# ("settori occidentali", "Nord ed Est", "Cagliaritano") more often than comuni; and the island's
+# local press (L'Unione Sarda, La Nuova Sardegna, Cagliaripad, Casteddu Online, Olbia.it, Gallura
+# Oggi), the ASL Gallura's mycological inspectorate and a hiking blog of the Arburese (NAlife). Many
+# press items are giant-porcino stories; only those that also say how the season went were used.
+# ANSA, Rai TGR, Sardinia Post and the Today network block AI agents and were not fetched. Quotes,
+# second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/sardegna.md (Sanity
+# contrasts).
+areas:
+  sardegna:
+    provinces:
+    - '*'
+  gennargentu:
+    comuni:
+    - Fonni
+    - Desulo
+    - Tonara
+    - Aritzo
+    - Belvì
+    - Gadoni
+    - Seulo
+    - Seui
+    - Villagrande Strisaili
+    - Arzana
+    - Talana
+    - Urzulei
+    - Orgosolo
+    - Mamoiada
+    - Gavoi
+    - Ollolai
+    - Ovodda
+    - Sorgono
+    - Atzara
+    - Meana Sardo
+  gennargentu_ogliastra_sud:
+    comuni:
+    - Fonni
+    - Desulo
+    - Tonara
+    - Aritzo
+    - Belvì
+    - Gadoni
+    - Seulo
+    - Seui
+    - Villagrande Strisaili
+    - Arzana
+    - Talana
+    - Urzulei
+    - Orgosolo
+    - Mamoiada
+    - Gavoi
+    - Ollolai
+    - Ovodda
+    - Sorgono
+    - Atzara
+    - Meana Sardo
+    - Ulassai
+    - Jerzu
+    - Osini
+    - Gairo
+    - Lanusei
+    - Ussassai
+    - Iglesias
+    - Domusnovas
+    - Villamassargia
+    - Siliqua
+    - Santadi
+    - Nuxis
+    - Teulada
+    - Domus de Maria
+    - Pula
+    - Villa San Pietro
+    - Sarroch
+    - Capoterra
+    - Assemini
+    - Uta
+    - Burcei
+    - Sinnai
+    - Castiadas
+    - San Vito
+    - Villasalto
+    - Muravera
+    - Maracalagonis
+  gallura_limbara:
+    comuni:
+    - Tempio Pausania
+    - Calangianus
+    - Luras
+    - Aggius
+    - Luogosanto
+    - Bortigiadas
+    - Sant'Antonio di Gallura
+    - Telti
+  montiferru_marghine:
+    comuni:
+    - Santu Lussurgiu
+    - Seneghe
+    - Cuglieri
+    - Bonarcado
+    - Scano di Montiferro
+    - Bono
+    - Bolotana
+    - Macomer
+    - Silanus
+    - Burgos
+    - Anela
+    - Bultei
+    - Illorai
+    - Nughedu San Nicolò
+    - Bottidda
+    - Esporlatu
+  ovest:
+    comuni:
+    - Santu Lussurgiu
+    - Seneghe
+    - Cuglieri
+    - Bonarcado
+    - Scano di Montiferro
+    - Arbus
+    - Guspini
+    - Gonnosfanadiga
+    - Villacidro
+    - Fluminimaggiore
+  est:
+    comuni:
+    - Oliena
+    - Dorgali
+    - Urzulei
+    - Baunei
+    - Talana
+    - Villagrande Strisaili
+    - Arzana
+    - Lanusei
+    - Gairo
+    - Osini
+    - Ulassai
+    - Jerzu
+    - Siniscola
+    - Lodè
+    - Lula
+    - Orosei
+    - Irgoli
+    - Galtellì
+    - Onifai
+    - Torpè
+    - Posada
+  linas_arburese:
+    comuni:
+    - Arbus
+    - Guspini
+    - Gonnosfanadiga
+    - Villacidro
+    - Fluminimaggiore
+  sud:
+    comuni:
+    - Iglesias
+    - Domusnovas
+    - Villamassargia
+    - Siliqua
+    - Santadi
+    - Nuxis
+    - Teulada
+    - Domus de Maria
+    - Pula
+    - Villa San Pietro
+    - Sarroch
+    - Capoterra
+    - Assemini
+    - Uta
+    - Burcei
+    - Sinnai
+    - Castiadas
+    - San Vito
+    - Villasalto
+    - Muravera
+    - Maracalagonis
+    - Morgongiori
+    - Ales
+    - Pau
+    - Marrubiu
+    - Villa Verde
+    - Usellus
+    - Palmas Arborea
+    - Santa Giusta
+    - Siris
+    - Masullas
+  sette_fratelli:
+    comuni:
+    - Burcei
+    - Sinnai
+    - Castiadas
+    - San Vito
+    - Villasalto
+    - Muravera
+    - Maracalagonis
+  monte_arci:
+    comuni:
+    - Morgongiori
+    - Ales
+    - Pau
+    - Marrubiu
+    - Villa Verde
+    - Usellus
+    - Palmas Arborea
+    - Santa Giusta
+    - Siris
+    - Masullas
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: gennargentu_2018_2020_early_september
+  claim: 'Late summer 2018: ''Le piogge numerose e il caldo umido hanno creato l''ambiente perfetto per
+    i funghi che quest''anno abbondano nei boschi della Sardegna. Porcini, ovuli'', ''già i primi funghi
+    cominciano a vedersi nelle zone di montagna come Desulo, Tonara e Fonni'' (ANSA via IteNovas, September
+    2018); ''hanno infatti anticipato la stagione di raccolta con una super produzione di funghi in varie
+    zone dell''Isola'' (Casteddu Online, 2018-08-23); ''Sardegna e Sicilia ... hanno avuto piogge di gran
+    lunga superiori alle attese e nascite di funghi eccezionali'' (FM 2018-08-31). Late summer 2020: ''nascite
+    nulle ... in tutta la Sardegna continuamente sferzata da venti caldi e secchi'' (FM 2020-08-20), ''i
+    20/30 mm giunti dopo una lunghissima fase siccitosa ed assai calda potranno avere effimeri effetti''
+    (FM 2020-09-04), ''Cestini vuoti per adesso anche in Sardegna'' (Campagna Amica, 2020-09-14)'
+  source: https://www.itenovas.com/in-tavola/3431-funghi-sardegna-2018-e-annata-eccezionale.html
+  higher:
+    area: gennargentu
+    seasons:
+    - 2018
+    start: 08-25
+    end: 09-15
+  lower:
+    area: gennargentu
+    seasons:
+    - 2020
+    start: 08-25
+    end: 09-15
+- id: sardegna_2018_2019_june
+  claim: 'June 2018: ''Sardegna sempre protagonista con nascite ora non più soltanto nella macchia ma
+    ora anche nei boschi di collina e montagna. Qua è piovuto davvero tantissimo nelle ultime settimane''
+    (FM 2018-06-16), ''Sicilia e Sardegna con nascite abbondanti, non solo nelle zone interne ma anche
+    lungo le macchie costiere'' (FM 2018-07-01); June-July 2019: ''Vento dominante in Sardegna con siccità
+    ad oltranza e nascite di funghi praticamente nulle'' (FM 2019-07-03), ''Eclatante la Sardegna con
+    i suoi periodi lungamente ventosi e siccitosi e nascite di funghi quasi del tutto assenti'' (FM 2019-07-08)'
+  source: https://web.archive.org/web/20220930220913/https://funghimagazine.it/aggiornamento-funghi-16-giugno-2018/
+  higher:
+    area: sardegna
+    seasons:
+    - 2018
+    start: 06-05
+    end: 07-05
+  lower:
+    area: sardegna
+    seasons:
+    - 2019
+    start: 06-05
+    end: 07-05
+- id: sardegna_2023_2021_late_spring
+  claim: 'Late May-June 2023: ''Porcini Neri in quantità si trovano già in Sardegna, per lo più sui settori
+    meridionali'' (FM 2023-05-25), ''La Sardegna e la Sicilia, finalmente, dopo un lungo attendere, stanno
+    registrando ottime nascite di Porcini Neri'' (FM 2023-06-15), a porcino at Seulo ''di inizio stagione''
+    (L''Unione Sarda, 2023-06-01), the Gallura inspectorate reopened because ''Le piogge registrate con
+    alta frequenza e intensità nel mese di maggio e nei primi giorni di giugno hanno ... alimentato la
+    crescita dei funghi'' (ASL Gallura, 2023-06-09); 2021: ''Maggio 2021 si è rivelato essere un mese
+    disastroso, dal punto di vista delle nascite di Porcini e Leccini in Sardegna, a causa del persistere
+    del forte vento secco'' (FM 2021-05-30), ''una fase climatica semplicemente avversa per i funghi''
+    (FM 2021-06-24)'
+  source: https://web.archive.org/web/20240417084120/https://funghimagazine.it/aggiornamento-funghi-16-06-2023/
+  higher:
+    area: sardegna
+    seasons:
+    - 2023
+    start: 05-25
+    end: 06-20
+  lower:
+    area: sardegna
+    seasons:
+    - 2021
+    start: 05-25
+    end: 06-20
+- id: sardegna_2023_timing_spring_vs_october
+  claim: '2023: ''ottime nascite di Porcini Neri'' in late spring (FM 2023-05-25, 2023-06-15; ASL Gallura
+    2023-06-09); in October ''stendiamo un velo pietoso sulla siccitosa Sardegna ... Tolto qualche timidissimo
+    Porcino delle forre del Gennargentu, sull''isola non ci risultano esserci nascite degne di nota''
+    (FM 2023-10-12), ''nascite di Porcini e altri funghi praticamente quasi assenti'' (FM 2023-10-27),
+    ''La stagione ... in Gallura sta lentamente ricominciando'' (ASL Gallura, 2023-11-06)'
+  source: https://web.archive.org/web/20240521230836/https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: sardegna
+    seasons:
+    - 2023
+    start: 05-25
+    end: 06-20
+  lower:
+    area: sardegna
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-25
+- id: sardegna_2023_timing_november
+  claim: '2023: the October drought (FM 2023-10-12, 2023-10-27, above); then ''Quasi a sorpresa, finalmente,
+    iniziano a nascere funghi Porcini anche in Sardegna'' (FM 2023-11-09), ''In Barbagia è ormai "porcino-mania"''
+    (L''Unione Sarda, 2023-11-14), ''In Sardegna è un autunno ricco di porcini, che stanno spuntando in
+    tutti i territori in quantità importanti'' (Cagliaripad, 2023-11-19), ''Autunno da record per i funghi
+    a Ulassai'' (Cagliaripad, 2023-11-21)'
+  source: https://www.cagliaripad.it/603472/autunno-ricco-di-grandi-porcini-ritrovamenti-a-ulassai-e-arbus/
+  higher:
+    area: sardegna
+    seasons:
+    - 2023
+    start: 11-10
+    end: 11-25
+  lower:
+    area: sardegna
+    seasons:
+    - 2023
+    start: 10-01
+    end: 10-25
+- id: sardegna_2020_2021_october
+  claim: 'October 2020: ''La Sardegna sta vivendo un periodo abbastanza positivo ... sufficienti ad aver
+    fatto partire le nascite anche di funghi Porcini su e giù per l''isola'' (FM 2020-10-08), ''Buone
+    nascite si sono avute nelle prime due settimane di ottobre'' (FM 2020-10-23), ''quest''anno è nuovamente
+    annata di porcini!'' in the Arburese (NAlife, 2020-10-31); October 2021: ''Tolto il Triveneto e la
+    Sardegna ... la seconda per il protrarsi della siccità'' (FM 2021-10-09), the wind ''sta distruggendo
+    ogni tentativo di nascite anche nella vicina Sardegna'' (FM 2021-10-24)'
+  source: https://web.archive.org/web/20221201195648/https://funghimagazine.it/aggiornamento-meteofunghi-08-10-2020/
+  higher:
+    area: sardegna
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-20
+  lower:
+    area: sardegna
+    seasons:
+    - 2021
+    start: 10-01
+    end: 10-20
+- id: gallura_vs_montiferru_marghine_2020_early_october
+  claim: 'Early October 2020: ''i ritrovamenti migliori si possono fare nei settori Nord ed Est perché
+    più frequentemente interessati da temporali di passaggio ... i settori Centroccidentali hanno avuto
+    spesso forti venti ma piogge leggermente più contenute'' (FM 2020-10-08); births later only ''in luoghi
+    ben riparati dal vento'' (FM 2020-10-23)'
+  source: https://web.archive.org/web/20221201195648/https://funghimagazine.it/aggiornamento-meteofunghi-08-10-2020/
+  higher:
+    area: gallura_limbara
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-15
+  lower:
+    area: montiferru_marghine
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-15
+- id: linas_arburese_2020_vs_2019_2025_october
+  claim: 'Arburese, October 2020: ''alcune giornate di abbondanti piogge ... quest''anno è nuovamente
+    annata di porcini!'', the woods overrun ''per una buona metà del mese'' (NAlife, 2020-10-31); 5 October
+    2019 on the Linas: ''i letti dei corsi d''acqua sono completamente asciutti e, purtroppo, non c''è
+    nemmeno traccia di qualche porcino'' (NAlife); 12 October 2025, the same bloggers: ''se continua a
+    non piovere, anche quest''annata dalle nostre parti non è affatto favorevole'' (NAlife), ''un po''
+    meno in Sardegna'' (FM 2025-10-16)'
+  source: https://nalife.altervista.org/2020/10/31/ottobre-breve-guida-pratica-su-come-trovare-i-porcini-e-altro/
+  higher:
+    area: linas_arburese
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-15
+  lower:
+    area: linas_arburese
+    seasons:
+    - 2019
+    - 2025
+    start: 10-01
+    end: 10-15
+- id: gallura_vs_sette_fratelli_2021_november
+  claim: 'November 2021: ''Autunno piovoso, tempo di funghi'' at Calangianus (Olbia.it, 2021-11-15), porcini
+    of 1.8 and 2.4 kg at Calangianus and Priatu (La Nuova Sardegna, 2021-11-22); on the Sette Fratelli
+    ''la pioggia nel sud Sardegna è arrivata tardi e le temperature per i porcini sono già critiche''
+    (L''Unione Sarda, 2021-11-20); for the island ''La Sardegna finalmente sta ottenendo la sua riscossa
+    con nascite di Porcini'' (FM 2021-11-19)'
+  source: https://www.unionesarda.it/news-sardegna/provincia-cagliari/trova-un-porcino-da-un-chilo-sui-sette-fratelli-in-tanti-anni-mai-visto-uno-cosi-i9w0koet
+  higher:
+    area: gallura_limbara
+    seasons:
+    - 2021
+    start: 11-08
+    end: 11-25
+  lower:
+    area: sette_fratelli
+    seasons:
+    - 2021
+    start: 11-08
+    end: 11-25
+- id: ovest_vs_est_2022_autumn
+  claim: 'Autumn 2022, after the driest summer ''da decenni'' (FM 2022-08-26): ''qualche timido fungo
+    Porcino ha già fatto capolino nei boschi occidentali'' (FM 2022-10-13), ''La stagione delle piogge
+    è arrivata prorompente nel Montiferru ... dopo la proficua ricerca di buon porcino o antunna'' (L''Unione
+    Sarda, 2022-10-13); in November ''nuove interessanti piogge sui settori occidentali, meno in quelli
+    centrali, assai scarse sui settori orientali'' (FM 2022-11-05), porcini expected ''su tutti i settori
+    occidentali ... ancora del tutto assenti sui settori orientali'' (FM 2022-11-19)'
+  source: https://web.archive.org/web/20240621071145/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+  higher:
+    area: ovest
+    seasons:
+    - 2022
+    start: 10-10
+    end: 11-25
+  lower:
+    area: est
+    seasons:
+    - 2022
+    start: 10-10
+    end: 11-25
+- id: sardegna_2024_2025_late_september
+  claim: 'Late September 2024: ''buoni festeggiamenti iniziano anche in Sardegna'' (FM 2024-09-27), ''Anche
+    in Sardegna finalmente stanno nascendo funghi Porcini non solo sui monti ma anche nelle foreste di
+    collina e pure del piano, fin sulle coste'' (FM 2024-10-03), the Gennargentu woods of Desulo overrun
+    by pickers (L''Unione Sarda, 2024-09-17); 2025: ''Sardegna: qualche nascita sporadica nelle zone interne
+    riparate dal vento, ma nulla di diffuso'' (FM 2025-08-29), ''Dopo la magra estiva ... un po'' meno
+    in Sardegna'' (FM 2025-10-16), ''il terreno è assolutamente arido'' at Austis on 12 October (NAlife)'
+  source: https://web.archive.org/web/20260902134949/https://funghimagazine.it/funghi-04-10-2024-raccolte-di-porcini-ancora-strepitose-ecco-dove/
+  higher:
+    area: sardegna
+    seasons:
+    - 2024
+    start: 09-20
+    end: 10-10
+  lower:
+    area: sardegna
+    seasons:
+    - 2025
+    start: 09-20
+    end: 10-10
+- id: gallura_vs_sud_2024_november
+  claim: 'Autumn 2024: ''È vero che al Sud non ci sono state grandi nascite a causa della siccità al contrario
+    del Nord che ha regalato molte nascite e di grandi dimensioni'' (Cagliaripad, 2024-11-18), the Gallura''s
+    season ''particolarmente generosa quest''anno'' among the cork oak (Gallura Oggi, 2024-11-23); on
+    the Monte Arci ''La stagione è iniziata molto in ritardo per via della siccità'' (Cagliaripad, 2024-11-15)'
+  source: https://www.cagliaripad.it/631233/che-spettacolo-in-gallura-trovato-un-porcino-nero-di-quasi-2-kg/
+  higher:
+    area: gallura_limbara
+    seasons:
+    - 2024
+    start: 10-20
+    end: 11-20
+  lower:
+    area: sud
+    seasons:
+    - 2024
+    start: 10-20
+    end: 11-20
+- id: monte_arci_2023_2024_november
+  claim: 'Monte Arci, 15 November 2024: ''Non è il grande autunno dei funghi porcini, come accaduto nel
+    2023'', ''La stagione è iniziata molto in ritardo per via della siccità'' (Cagliaripad); November
+    2023: ''In Sardegna è un autunno ricco di porcini, che stanno spuntando in tutti i territori in quantità
+    importanti'' (Cagliaripad, 2023-11-19), births ''migliori ... sui settori Ovest dell''isola'' (FM
+    2023-11-09)'
+  source: https://www.cagliaripad.it/631022/autunno-povero-di-grandi-porcini-piccoli-esemplari-a-monte-arci/
+  higher:
+    area: monte_arci
+    seasons:
+    - 2023
+    start: 11-05
+    end: 11-25
+  lower:
+    area: monte_arci
+    seasons:
+    - 2024
+    start: 11-05
+    end: 11-25
+- id: ovoli_gennargentu_sud_2019_2022_september
+  claim: 'September 2019: ''Sui monti attorno al Gennargentu non sono mancate le prime nascite di Ovoli,
+    spesso abbondanti nei boschi di Corbezzolo'', ''Ovoli sono ben presenti anche nella Sardegna meridionale
+    dopo le alluvioni di inizio Agosto'' (FM 2019-09-20), ''Buone, ed in alcuni casi anche abbondanti,
+    le nascite di Ovoli (Amanita cæsarea), soprattutto nei boschi di Corbezzolo, questi presenti in particolar
+    modo sulle coste marittime del Gennargentu e nei boschi del Sud dell''isola'' (FM 2019-09-27); September
+    2022: ''Putroppo la Sardegna dovrà ancora attendere per avere buone nascite, dal momento che piogge
+    degne di nota non si sono ancora avute'' (FM 2022-09-15), storms over the whole peninsula ''ad eccezione
+    delle isole maggiori'' (FM 2022-09-23)'
+  source: https://web.archive.org/web/20240519045618/https://funghimagazine.it/dove-cercare-funghi-porcini-nellultimo-weekend-di-settembre-i-funghi-di-ottobre-il-ritorno-delle-grandi-piogge/
+  higher:
+    area: gennargentu_ogliastra_sud
+    seasons:
+    - 2019
+    start: 09-15
+    end: 09-30
+  lower:
+    area: gennargentu_ogliastra_sud
+    seasons:
+    - 2022
+    start: 09-15
+    end: 09-30
+- id: gallinacci_sardegna_2021_timing_november
+  claim: '2021: through October the drought and the maestrale blocked the island''s births (FM 2021-10-09,
+    2021-10-24); on 19 November ''La Sardegna finalmente sta ottenendo la sua riscossa con nascite di
+    Porcini ... ma non solo Porcini, anche funghi Leccini ..., Russule, Trombette dei Morti, Galletti
+    e molti altri'' (FM 2021-11-19)'
+  source: https://web.archive.org/web/20240620084846/https://funghimagazine.it/funghi-porcini-novembre-2021/
+  higher:
+    area: sardegna
+    seasons:
+    - 2021
+    start: 11-10
+    end: 11-30
+  lower:
+    area: sardegna
+    seasons:
+    - 2021
+    start: 10-01
+    end: 10-25
+- id: gallinacci_sardegna_2022_timing_december
+  claim: '2022: ''La Sardegna per esempio, ha vissuto una eterna estate torrida, con nascite di funghi
+    praticamente azzerate'' (FM 2022-12-21) through the autumn, the woods ''in un grave stato di siccità''
+    in mid-October (FM 2022-10-13); after the December rains ''Aereus ma non solo, molti Galletti/Gallinacci
+    ... che hanno approfittato del clima ideale per poter fruttificare anche nel cuore dell''inverno''
+    (FM 2023-01-03)'
+  source: https://web.archive.org/web/20240614061006/https://funghimagazine.it/funghi-porcini-tutto-lanno/
+  higher:
+    area: sardegna
+    seasons:
+    - 2022
+    start: 12-10
+    end: 12-31
+  lower:
+    area: sardegna
+    seasons:
+    - 2022
+    start: 10-01
+    end: 10-31
