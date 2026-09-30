@@ -1,11 +1,13 @@
 """LiveRepository.get_factors (analysis mode): every factor's 0-1 value per woodland cell, from the
 rule file that wins the cell that day -- the one "why this score" explains."""
 
+import shutil
 from datetime import timedelta
 from pathlib import Path
 
 import pytest
 
+from api.live.factors import factor_chips
 from api.live.repository import LiveRepository
 from api.model.rules import RuleSet
 from api.repository import DateOutOfRange
@@ -15,6 +17,8 @@ from tests.live.helpers import (
     CELL_B,
     CELL_C,
     CELL_D_NON_WOODLAND,
+    REGION,
+    edit_factors,
     factor,
     ruleset,
     species_rules,
@@ -215,3 +219,44 @@ class TestNoFactorRows:
     def test_a_group_with_nothing_stored_raises(self, repo: LiveRepository) -> None:
         with pytest.raises(DateOutOfRange):
             repo.get_factors("ovoli", DAY)
+
+
+class TestInconsistentStore:
+    # A store the pipeline left inconsistent must not 500 analysis mode
+    # (bug-factors-porcini-500.md): a winner's missing or unusable values read as null, and the
+    # chips stay as they are.
+
+    def test_a_winner_without_its_factor_row_reads_null(self, tmp_path: Path) -> None:
+        rules = _build(tmp_path)
+        edit_factors(tmp_path, "porcini_b", lambda rows: rows[rows["cell_id"] != B])
+
+        response = LiveRepository(tmp_path, rules=rules).get_factors("porcini", DAY)
+
+        assert response.factors == factor_chips(rules, "porcini")
+        values = _values(response)
+        assert set(values[B].values()) == {None}
+        assert values[A]["rain_a"] == pytest.approx(0.123)
+
+    def test_a_winning_rule_file_with_no_factors_stored_reads_null(self, tmp_path: Path) -> None:
+        rules = _build(tmp_path)
+        shutil.rmtree(tmp_path / "scores" / REGION / "factors" / "species=porcini_b")
+
+        values = _values(LiveRepository(tmp_path, rules=rules).get_factors("porcini", DAY))
+
+        assert set(values[B].values()) == {None}
+        assert values[A]["frost"] == pytest.approx(0.9)
+
+    @pytest.mark.parametrize("bad", [float("nan"), 1.5, -0.2])
+    def test_a_value_outside_0_1_reads_null(self, tmp_path: Path, bad: float) -> None:
+        rules = _build(tmp_path)
+
+        def corrupt(rows):
+            hit = (rows["cell_id"] == A) & (rows["date"] == DAY)
+            return rows.assign(frost=rows["frost"].where(~hit, bad))
+
+        edit_factors(tmp_path, "porcini_a", corrupt)
+
+        values = _values(LiveRepository(tmp_path, rules=rules).get_factors("porcini", DAY))
+
+        assert values[A]["frost"] is None
+        assert values[A]["rain_a"] == pytest.approx(0.123)

@@ -2,7 +2,7 @@
 order: 17408
 kind: task
 title: [bug] /factors must not 500 when a porcini leaf has no factor rows
-status: To Do
+status: In Progress
 priority: low
 complexity: moderate
 ---
@@ -24,3 +24,10 @@ Steps:
 3. Make `get_factors` degrade instead: leave those cells' values null, or drop the cells, rather than raising. Keep the chips (the factor columns) unchanged.
 4. If step 1 shows a partial write, have the daily job fail loudly (or retry) instead of leaving a store the API can't read.
 5. Ship with `deploy/deploy-api.sh` and check the URL above. Until [bug-deploy-run-job-skipped.md](bug-deploy-run-job-skipped.md) is fixed, re-score by hand if the stores should be rewritten.
+
+## Findings (2026-09-30)
+
+Done together with [bug-cell-forecast-500-puglia.md](bug-cell-forecast-500-puglia.md); its Findings section has the evidence.
+- Step 1: the 03:00 run logged no errors, and every region stored all its tables. No partial write, so step 4 (fail the job on one) doesn't apply.
+- Step 2: a winner with no factor rows (for some cells, or with no factor files at all) does **not** 500 `get_factors`: `winner_values` left-merges and those cells read null. What does 500 is a value outside 0-1 (`CellFactors` validation). NaN was already served as null.
+- Step 3: `get_factors` serves a value outside 0-1 as null and logs `factors <region> <species> <date>: N values outside 0-1 served as null, in [<leaf keys>]`. The chips are unchanged.

@@ -140,6 +140,7 @@
     "holdsBackValue": "frena del {{percent}}%",
     "blocked": "L'indice è zero a causa di: {{factors}}",
     "nothingHolding": "Nessun fattore frena l'indice in questo giorno.",
+    "unavailable": "Il dettaglio dei fattori non è disponibile per questo giorno.",
     "forecastNote": "Questo giorno deve ancora arrivare: l'indice si basa in parte sulle previsioni del tempo, e più il giorno è lontano, meno è sicuro. Conta soprattutto la pioggia già caduta, che è già misurata.",
     "explain": "Ogni barra dà un voto a un fattore, da 0 (sfavorevole) a 1 (ideale). Le percentuali a destra dicono quali fattori tengono basso l'indice: più è alta la percentuale, più quel fattore pesa.",
     "unknownFactor": "Altro fattore ({{key}})",

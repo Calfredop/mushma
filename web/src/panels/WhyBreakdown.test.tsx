@@ -77,6 +77,23 @@ describe('WhyBreakdown', () => {
     expect(screen.getByText(/Questo giorno deve ancora arrivare/)).toBeInTheDocument()
   })
 
+  it('says the breakdown is missing when the API sent the score without one', () => {
+    render(<WhyBreakdown species="porcini" isForecast={false} day={day([], 0.42)} />)
+    const section = screen.getByRole('region', { name: 'Perché questo indice' })
+    expect(
+      within(section).getByRole('img', { name: 'Indice delle condizioni 0,42 su 1' }),
+    ).toBeInTheDocument()
+    expect(
+      within(section).getByText(
+        'Il dettaglio dei fattori non è disponibile per questo giorno.',
+      ),
+    ).toBeInTheDocument()
+    // Not "nothing holds it back", which an empty list would otherwise read as.
+    expect(within(section).queryByText(/Nessun fattore frena/)).not.toBeInTheDocument()
+    expect(within(section).queryByRole('list')).not.toBeInTheDocument()
+    expect(within(section).queryByRole('switch')).not.toBeInTheDocument()
+  })
+
   it('falls back to a readable label for a factor it has no translation for', () => {
     render(
       <WhyBreakdown

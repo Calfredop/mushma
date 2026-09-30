@@ -140,6 +140,7 @@
     "holdsBackValue": "holds back {{percent}}%",
     "blocked": "The score is zero because of: {{factors}}",
     "nothingHolding": "Nothing is holding the score back on this day.",
+    "unavailable": "The factor breakdown is not available for this day.",
     "forecastNote": "This day is still to come: the score partly rests on the weather forecast, and the further ahead the day, the less certain it is. Rain that has already fallen counts the most, and that is already measured.",
     "explain": "Each bar rates one factor, from 0 (unfavourable) to 1 (ideal). The percentages on the right show which factors keep the score down: the higher the percentage, the more that factor weighs.",
     "unknownFactor": "Other factor ({{key}})",

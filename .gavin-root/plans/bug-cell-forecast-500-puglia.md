@@ -2,7 +2,7 @@
 order: 16384
 kind: task
 title: [bug] Spot and cell forecasts must not 500 when a cell has no factor row
-status: To Do
+status: In Progress
 priority: medium
 complexity: moderate
 ---
@@ -21,3 +21,11 @@ Steps:
 1. Test-first (AGENTS.md: TDD for model and data code): a live-repository test where a cell's daily winner names a leaf key with no factor row for that day. Confirm it raises today.
 2. Make `_forecast` degrade: serve that species' day without a breakdown, or leave the day out, instead of raising. Check that the web `SpotPanel` handles whichever you choose, and keep the `why` breakdown unchanged where rows exist.
 3. Ship with `deploy/deploy-api.sh`. Then check a slow sample of every region's cells (about 1 request a second, so the rate limiter doesn't answer 429).
+
+## Findings (2026-09-30)
+
+- The 2026-09-29 03:00 UTC daily run logged no error for any region (`journalctl -u mushma-daily`): every region stored all its tables (Puglia 14, because it has no pinophilus rules; the others 16). So it was not a partial write.
+- The API was redeployed at 10:31 and 10:51 UTC that day (0e815f9 trend line, ce32536 Valle d'Aosta), so the 500s seen around 11:30 came from code newer than the code that wrote the stores. Neither change touches how factor rows are read.
+- Today's prod stores and the local stores are consistent: every group winner in the factor window has its leaf's factor row, and every stored factor value is inside 0-1 (read-only scan in the API container).
+- Tests reproduce two ways `_forecast` 500s: a winner with no factor row (`KeyError` at `.loc[row.date]`, as the card guessed), and a factor value that is NaN or outside 0-1 (pydantic `ValidationError` in `FactorBreakdown`). `get_factors` already survives a missing row (the left merge nulls it) and only 500s on a value outside 0-1. **So the one cause that fits both endpoints failing together is a porcini factor value outside 0-1 in the 03:00 stores.** No code path that could produce one was found (trapezoids clip; the `where` fade stays in 0-1).
+- Fix: `_forecast` serves a day whose breakdown can't be rebuilt with its score and `factors: []`, and logs `forecast <region> <cell> <date>: no breakdown from <leaf> (<error>)`. It also drops duplicate factor rows, which would otherwise make `.loc` return a frame. The web "why this score" says "Il dettaglio dei fattori non è disponibile per questo giorno." rather than "nothing holds it back". If that log line ever shows up, it names the region, cell, day and leaf to look at.

@@ -137,55 +137,66 @@ export function WhyBreakdown({ species, day, isForecast, habitats }: Props) {
         <ScoreChip score={day.score} size="large" />
       </header>
 
-      {explanation.blockedBy.length > 0 && (
-        <p className={styles.summary}>{t('why.blocked', { factors: blockedLabels })}</p>
-      )}
-      {explanation.nothingHolding && (
-        <p className={styles.summary}>{t('why.nothingHolding')}</p>
-      )}
+      {/* The API serves a day's score without its breakdown when the store has none for it. */}
+      {day.factors.length === 0 ? (
+        <p className={styles.summary}>{t('why.unavailable')}</p>
+      ) : (
+        <>
+          {explanation.blockedBy.length > 0 && (
+            <p className={styles.summary}>
+              {t('why.blocked', { factors: blockedLabels })}
+            </p>
+          )}
+          {explanation.nothingHolding && (
+            <p className={styles.summary}>{t('why.nothingHolding')}</p>
+          )}
 
-      <div className={styles.tools}>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={showAll}
-          className={styles.switch}
-          onClick={toggleAll}
-        >
-          <span className={styles.switchTrack} aria-hidden="true">
-            <span className={styles.switchThumb} />
-          </span>
-          {t('why.detail.showAll')}
-        </button>
-      </div>
-
-      {/* One grid for every row, so the bars, values and brakes line up down the list. */}
-      <ul className={styles.factors}>
-        <li role="presentation" className={styles.columns} aria-hidden="true">
-          <span>{t('why.favourable')}</span>
-          <span>{t('why.holdsBack')}</span>
-        </li>
-        {shown.map((factor) => row(factor))}
-        {folding && (
-          <li role="presentation" className={styles.foldRow}>
+          <div className={styles.tools}>
             <button
               type="button"
-              className={styles.fold}
-              aria-expanded={foldOpen}
-              aria-controls={idle.map((f) => `${detailIds}-row-${f.key}`).join(' ')}
-              onClick={() => setFoldOpen((open) => !open)}
+              role="switch"
+              aria-checked={showAll}
+              className={styles.switch}
+              onClick={toggleAll}
             >
-              {t('why.fold', { count: idle.length, value: number.format(1) })}
-              <ChevronIcon direction={foldOpen ? 'up' : 'down'} />
+              <span className={styles.switchTrack} aria-hidden="true">
+                <span className={styles.switchThumb} />
+              </span>
+              {t('why.detail.showAll')}
             </button>
-          </li>
-        )}
-        {folding && idle.map((factor) => row(factor, !foldOpen))}
-      </ul>
+          </div>
 
-      {rainDetailOpen && <p className={panel.note}>{t('why.detail.rainNote')}</p>}
-      {terrainDetailOpen && <p className={panel.note}>{t('why.detail.terrainNote')}</p>}
-      <p className={panel.note}>{t('why.explain')}</p>
+          {/* One grid for every row, so the bars, values and brakes line up down the list. */}
+          <ul className={styles.factors}>
+            <li role="presentation" className={styles.columns} aria-hidden="true">
+              <span>{t('why.favourable')}</span>
+              <span>{t('why.holdsBack')}</span>
+            </li>
+            {shown.map((factor) => row(factor))}
+            {folding && (
+              <li role="presentation" className={styles.foldRow}>
+                <button
+                  type="button"
+                  className={styles.fold}
+                  aria-expanded={foldOpen}
+                  aria-controls={idle.map((f) => `${detailIds}-row-${f.key}`).join(' ')}
+                  onClick={() => setFoldOpen((open) => !open)}
+                >
+                  {t('why.fold', { count: idle.length, value: number.format(1) })}
+                  <ChevronIcon direction={foldOpen ? 'up' : 'down'} />
+                </button>
+              </li>
+            )}
+            {folding && idle.map((factor) => row(factor, !foldOpen))}
+          </ul>
+
+          {rainDetailOpen && <p className={panel.note}>{t('why.detail.rainNote')}</p>}
+          {terrainDetailOpen && (
+            <p className={panel.note}>{t('why.detail.terrainNote')}</p>
+          )}
+          <p className={panel.note}>{t('why.explain')}</p>
+        </>
+      )}
       {isForecast && (
         <p className={styles.forecast}>
           <span className={styles.hatch} aria-hidden="true" />

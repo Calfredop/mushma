@@ -443,7 +443,10 @@ export interface components {
        * Format: date
        */
       date: string
-      /** Factors */
+      /**
+       * Factors
+       * @description the "why this score" breakdown; empty when the store has none for the day (the score is still served)
+       */
       factors: components['schemas']['FactorBreakdown'][]
       /**
        * Score
