@@ -1,5 +1,5 @@
 ---
-order: 15360
+order: 10240
 labels: memory
 kind: note
 title: Open-Meteo's free quota is shared by every lane on this machine

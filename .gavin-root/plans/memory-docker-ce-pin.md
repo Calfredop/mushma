@@ -1,5 +1,5 @@
 ---
-order: 19456
+order: 14336
 kind: note
 title: Hetzner Docker CE pin
 labels: memory

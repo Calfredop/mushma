@@ -1,5 +1,5 @@
 ---
-order: 12288
+order: 7168
 kind: note
 labels: memory
 title: Run `uv sync --group cds` in a region checkout before the CDS backfill
