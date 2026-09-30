@@ -2,7 +2,7 @@
 order: 17408
 kind: task
 title: [bug] /factors must not 500 when a porcini leaf has no factor rows
-status: In Progress
+status: Done
 priority: low
 complexity: moderate
 ---

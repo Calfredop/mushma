@@ -2,7 +2,7 @@
 order: 16384
 kind: task
 title: [bug] Spot and cell forecasts must not 500 when a cell has no factor row
-status: In Progress
+status: Done
 priority: medium
 complexity: moderate
 ---
