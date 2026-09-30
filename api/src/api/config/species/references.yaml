@@ -5884,3 +5884,320 @@ references:
       (14); a gauge-total fit of scale = 0.82 + 0.23 per km of elevation brings them to 1.00, 1.03 and 0.94, and averages
       0.99 over the woodland cells. The five woodland-cell gauges (165-1,176 m) read 0.98 raw. Above 800 m the slope rests
       on one gauge (Accumoli) and is extrapolated.'
+  # ---------------------------------------------------------------------------------------------
+  # Basilicata (region card, 2026-09-30): sources for species/basilicata/ and
+  # .gavin-root/docs/species-ecology/basilicata.md. Appended as one block; new keys carry a bas_
+  # prefix (or a _basilicata_ infix for our own analyses) so merges with other region branches do
+  # not collide. It also cites the Calabria block's ISPRA record tables (ispra2018_mlg180_*,
+  # ispra2018_mlg179_*), the Puglia block's ispra2019_mlg187_flora_micologica and Funghi Magazine
+  # bulletins, and the Campania block's funghimagazine_nascite_2026_07_10, all opened again.
+  # ---------------------------------------------------------------------------------------------
+  bas_lr_48_1998:
+    citation: 'Regione Basilicata (1998). Legge regionale 14 dicembre 1998, n. 48. Disciplina sulla raccolta,
+      l''incremento e la commercializzazione dei funghi epigei spontanei freschi e conservati (B.U. Basilicata 21
+      dicembre 1998, n. 73), text with the amendments of L.R. 26 novembre 2001, n. 43 (Leggi Regionali d''Italia
+      print of 2014-05-08, on the Region''s site)'
+    url: https://www.regione.basilicata.it/wp-content/uploads/giunta/docs/DOCUMENT_FILE_2979386.pdf
+    kind: institutional
+    region: Basilicata
+    verified: verified
+    supports: 'Picking "consentita su tutto il territorio regionale tutti i giorni della settimana da un''ora prima
+      della levata del sole ad un''ora dopo il tramonto" (art. 4 c. 1); "non più di 2 Kg. di funghi", 10 kg with the
+      special permit (c. 3, as amended by L.R. 43/2001, art. 2); "Per le specie Amanita cesarea (ovulo buono) e
+      Calocybe gambosa (prugnolo) è permessa la raccolta per un quantitativo non superiore a Kg. 1" (c. 4); "È
+      vietata la raccolta dell''ovulo buono (Amanita cesarea) allo stadio di ovulo chiuso, di porcini con cappello
+      inferiore a 4 cm. di diametro e di prugnolo (Calocybe gambosa) e di gallinaccio (Cantharellus cibarius) con
+      cappello inferiore a 2 cm. di diametro" (c. 5); banned in integral reserves, in areas of national and regional
+      parks "individuate dagli organismi di gestione" and in areas the Giunta closes (art. 6); the Giunta "può
+      ulteriormente limitare o vietare la raccolta" (art. 6 c. 3). No season calendar, no altitude rule. Art. 3
+      (permits) was replaced by L.R. 43/2001, art. 1.'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_ispra_raccolta_funghi2021:
+    citation: 'ISPRA (2021). Raccolta dei funghi epigei nel rispetto dell''ambiente e della biodiversità. Regione
+      Basilicata (updated April 2021)'
+    url: https://www.isprambiente.gov.it/files/biodiversita/raccolta-dei-funghi-epigei-regione-basilicata.pdf
+    kind: institutional
+    region: Basilicata
+    verified: verified
+    supports: 'ISPRA''s side-by-side of L. 352/1993 and L.R. 48/1998, "Ultimo aggiornamento: aprile 2021"; its
+      reference list names L.R. 48/1998 and, among the amending acts, only "Legge regionale 26 novembre 2001, n. 43.
+      Modifiche ed integrazioni alla legge regionale 14 dicembre 1998, n. 48"; the text in force as in the Region''s
+      print (2 kg a day, 1 kg of ovoli, closed ovolo banned).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_pn_pollino_dpr1993:
+    citation: 'D.P.R. 15 novembre 1993. Istituzione dell''Ente parco nazionale del Pollino (G.U. Serie Generale 13
+      gennaio 1994, n. 9), Allegato A, misure di salvaguardia'
+    url: https://www.mase.gov.it/portale/documents/d/guest/dpr_15_11_1993_pn_pollino-pdf
+    kind: institutional
+    region: Basilicata, Calabria
+    verified: verified
+    supports: 'Art. 3 c. 1 b (all of the park): picking wild flora is banned, but "sono peraltro consentiti, anche in
+      attuazione dell''art. 6, comma 1, lettera b), della legge 23 agosto 1993, n. 352, il pascolo e la raccolta di
+      funghi, tartufi ed altri prodotti del bosco, nel rispetto delle vigenti normative, degli usi civici e
+      consuetudini locali"; the zone 1 bans (art. 4) do not include mushroom picking.'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_infc2015:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1, 1.4 and 1.5 (Basilicata). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Basilicata
+    verified: verified
+    supports: 'Basilicata bosco 288,020 ha (relative standard error 2.7 %), other wooded land 104,392 ha, of a territory
+      of 999,461 ha; categories: Turkey oak, farnetto, fragno and vallonea 130,692 ha, sessile, downy and pedunculate
+      oak 43,077, other deciduous 29,872, beech 26,820, hygrophilous 12,975, holm oak 10,371, Mediterranean pines
+      8,933, hop-hornbeam and hornbeam 7,084, chestnut 5,955, other conifers 5,150, black, laricio and loricato pine
+      2,610, other evergreen broadleaves 1,864, silver fir 746, not classified 347; no spruce, larch, Scots pine or
+      cork oak; broadleaf plantations 1,522 ha.'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_linee_forestali2013:
+    citation: 'Regione Basilicata, Dipartimento Ambiente Territorio e Politiche della Sostenibilità, Ufficio Foreste e
+      Tutela del Territorio (2013). Linee programmatiche del settore forestale per il decennio 2013-2022 & Piano
+      operativo annuale 2013'
+    url: https://www.regione.basilicata.it/wp-content/uploads/2026/05/Linee-programmatiche-del-settore-forestale-per-il-decennio-2013-2022-e-Piano-operativo-annuale-2013.pdf
+    kind: institutional
+    region: Basilicata
+    verified: verified
+    supports: 'Climate (p. 28): eastern hills "piovosità annua oscillante tra 550 e 700 millimetri", wettest in
+      November-December, driest in August; the Apennine 650-1,000 mm in the east and "tra 780 e 1700 mm nel settore
+      centro-occidentale ove possono raggiungere anche valori intorno ai 2000 mm sulle quote più alte (oltre 1200
+      m.)"; the Ionian foothills 500 mm in the north, 850 mm in the south-west, rain "concentrate prevalentemente nel
+      periodo invernale ed autunnale". Pavari zones (p. 29): Lauretum 71 % of the region; "Castanetum ... da 800-900
+      m fino a 1200-1300 m"; "Al di sopra di questi limiti e fino a 1800-1900 metri, si ha la zona del Fagetum",
+      largest on the Vulturino, the Lagonegrese and the Pollino; the Picetum above 1,900 m on the Sirino and Pollino
+      summits. Forest types (pp. 32-36): beech "soprattutto al di sopra dei 1000 m di quota", the commonest type the
+      Aquifolio-Fagetum, in "adeguata umidità atmosferica ed edafica, assicurata sia da buoni livelli di piovosità
+      che da fenomeni di precipitazioni occulte"; relict beech on Monte Li Foi, Brienza and the Vulture; silver fir
+      mostly mixed with beech and Turkey oak (Laurenzana, Ruoti, Terranova del Pollino); Turkey oak "Nel piano
+      sub-montano, ad altitudini fra 500 e 1200 m", the typical mesophilous Turkey oak "fino alla quota di circa 1000
+      m", a submontane variant "a quote superiori a 1000 m"; other broadleaves "di poco superiore ... al 5%",
+      mostly "ontano napoletano (soprattutto nel Lagonegrese)" and orno-ostrieti; downy oak in the Materano hills;
+      chestnut "un''aliquota modesta (2,4%)", notably Monticchio on the Vulture; pino loricato on the Pollino and
+      Monte La Spina; Aleppo pine natural and planted "dell''Arco jonico, in provincia di Matera, fra i fiumi Bradano
+      e Sinni", reforestation "oltre il 90%" Aleppo pine, hill plantations "con il pino d''Aleppo ma anche con il
+      cipresso, il cedro dell''atlante, pino nero", small stands "di douglasia, pini, cipressi, abeti, larici";
+      regional forests with "Rimboschimenti (pino nero, douglasia, abete bianco)" at Fossa Cupa (Abriola) and
+      "(pino nero, abete bianco)" at Rifreddo (Pignola) (Tab. 7.1, p. 159). Mushroom permits 2000-2008 (Tab. 3.5,
+      p. 62).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_borghetti2024_boschi:
+    citation: 'Borghetti M., Ferrara A., Moretti N., Nolè A., Pierangeli D., Ripullone F., Todaro L. (2024). Prendersi
+      cura dei boschi di un''area interna nell''era del cambiamento climatico: il caso della Basilicata. Forest@ 21:
+      10-36'
+    doi: 10.3832/efor0042-021
+    url: https://foresta.sisef.org/contents/?id=efor0042-021
+    kind: peer_reviewed
+    region: Basilicata
+    verified: verified
+    supports: 'INFC-2015 categories for Basilicata (Tab. 3; thermophilous and meso-thermophilous oaks 60 % of the
+      forest, beech 9 %); from the 2006 forest map to the 2023 one beech and chestnut woods +5 %, oro-Mediterranean
+      pines and other montane conifers +29.2 %, exotic plantations -38 %; Turkey oak "fra i 500 e 1200 m di quota" as
+      the submontane forest, beech with holly in the montane belt and with Campanula above; silver fir with beech on
+      the Pollino (Terranova di Pollino, Bosco Rubbio; Francavilla, Bosco Vaccarizzo; Carbone) and with beech and
+      Turkey oak in the Abetina di Laurenzana (Laurenzana, Viggiano) and at Ruoti; spring frost damage in beech
+      (Nolè et al. 2018) and the 2017 drought; the Ionian side "più vulnerabile" than the western Apennine, where
+      "l''esposizione alle correnti tirreniche umide garantisce regimi di precipitazioni in grado di mitigare gli
+      effetti delle ondate di calore".'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_discoverpollino_porcini:
+    citation: 'De Marco A. (undated). I Porcini (Boletus). DiscoverPollino'
+    url: https://www.discoverpollino.it/index.php/attivita/esperienze-menu/porcini-boletus/218.html
+    kind: web
+    region: Basilicata, Calabria
+    verified: verified
+    supports: 'The Pollino park''s porcini: B. aereus, B. reticulatus, B. edulis and B. pinophilus; B. aereus
+      "maggiormente presente nel sud Italia", with a "presenza massiccia nel nostro Parco Nazionale del Pollino",
+      locally "Capu niviru" (testa nera), and it "non cresce solo sotto quercia come molti pensano" but also "sotto
+      una moltitudine di latifoglie quali castagno e faggio" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  mushma_basilicata_forest_composition_2026:
+    citation: 'mushma Basilicata woodland composition: area and median height of every CORINE Biotopes code of the ISPRA
+      Carta della Natura della Regione Basilicata (1:50,000, 2012-2013; the GeoPackage of config/sources.yaml, read by
+      the class mapping of config/regions/basilicata.yaml), heights from Copernicus DEM GLO-30 at each polygon''s
+      representative point, area-weighted; and the woodland grid built from it on 2026-09-30 (2,545 woodland cells).
+      See .gavin-root/docs/regions/basilicata.md'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/regions/basilicata.md
+    kind: analysis
+    region: Basilicata
+    verified: verified
+    supports: 'Whole map (ha, median height): Turkey oak 41.7511 113,397 (913 m), downy oak 41.732 36,184 (673 m),
+      southern white oak 41.737B 19,129 (568 m), Turkey oak with farnetto 41.7512 16,614 (847 m), fragno 249; beech
+      41.18 28,494 (1,259 m, p10-p90 982-1,468 m); holm oak 45.324 11,975 (607 m) and 45.31A 3,501 (277 m); Alnus
+      cordata 41.C1 9,656 (1,028 m), hop-hornbeam 41.81 5,413 (805 m); riparian 13,421; chestnut 41.9 4,253 (867 m);
+      conifer plantations 83.31 18,676 (474 m; 56 % below 600 m, p10 141 m, p90 1,225 m: Aleppo pine low, black pine
+      high); Aleppo pine 42.84 1,407 (196 m) and wooded dunes 16.29 1,148; pino loricato 42.711 320 (1,211 m); silver
+      fir 42.15 177 (1,129 m); macchia 34,934 ha (32.211 wild olive and lentisk 29,316); transitional scrub 54,875 ha.
+      Grid: forest 284,433 ha (INFC -1.2 %); wooded-area shares deciduous_oak 63.4 %, beech 12.7 %,
+      transitional_woodland_shrub 5.6 %, mixed_broadleaf 5.5 %, evergreen_oak 4.7 %, other_conifer 3.9 %, chestnut
+      1.6 %, riparian 0.9 %, macchia 0.9 %, mediterranean_pine 0.5 %, mountain_pine 0.1 %, fir_spruce 0.1 %; woodland
+      elevation median 816 m (p5-p95 400-1,396 m), highest cell 1,926 m (beech, Chiaromonte); dominant-habitat cells:
+      deciduous oak 1,838 (median 785 m), beech 308 (1,334 m), mixed broadleaf 116 (973 m), evergreen oak 128 (550
+      m), conifer plantations 84 (742 m; black pine at Marsico Nuovo and Viggiano, Aleppo pine in the Materano),
+      chestnut 33 (880 m).'
+    cited_as:
+    - species-ecology/basilicata.md
+  mushma_occurrence_check_basilicata_2026:
+    citation: 'mushma Basilicata occurrence check: iNaturalist API (place 8763, verifiable; the six taxa and all fungi,
+      month and year histograms; EU-DEM 25 m elevations from the OpenTopoData API for open, non-obscured records with
+      positional accuracy of 1 km or better) and GBIF occurrence API (gadmGid ITA.3_1), queried 2026-09-30.
+      Aggregates only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/observations
+    kind: analysis
+    region: Basilicata
+    verified: verified
+    supports: 'iNaturalist verifiable records in Basilicata: B. edulis 1 (5 December 2023, Pietrapertosa, 827 m), B.
+      reticulatus 1 (7 September 2022, Chiaromonte; not located, needs ID), B. aereus 1 (18 May 2024, Fardella, 946
+      m), B. pinophilus 0, A. caesarea 1 (16 September 2024, San Severino Lucano; not located), Cantharellus 0; 757
+      fungi records from 198 observers, 88 % since 2020 (by month, %: J 3, F 4, M 3, A 5, M 8, J 8, J 8, A 24, S 6, O
+      14, N 11, D 6). GBIF holds only the B. edulis and B. aereus records, both iNaturalist copies. Too few to tune.'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_alsia_sal2021:
+    citation: 'ALSIA (2021-04-15). Servizio Agrometeorologico Lucano, un data-base continuo di oltre 20 anni.
+      Agrifoglio 102'
+    url: https://alsia.it/opencms/opencms/agrifoglio/agrifoglio_online/dettaglio/articolo/Servizio-Agrometeorologico-Lucano-un-data-base-continuo-di-oltre-20-anni
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: 'The Lucanian agrometeorological network: "Attualmente la rete conta 44 stazioni elettroniche" measuring
+      air and soil temperature, humidity, wind, "pioggia", radiation and leaf wetness; "Il data base possiede dati
+      pressoché continui dal 2000 ad oggi"; "previa registrazione, gli utenti possono accedere ai dati orari,
+      giornalieri, decadali e/o mensili", and "oltre 100 richieste di forniture dati" a year are served. A candidate
+      gauge set for the rain-scale check.'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_pn_appennino_lucano_dpr2007:
+    citation: 'D.P.R. 8 dicembre 2007. Istituzione del Parco nazionale dell''Appennino Lucano - Val d''Agri-Lagonegrese
+      (G.U. 5 marzo 2008, n. 55), Allegato A (ISPRA legal documentation copy)'
+    url: https://www.isprambiente.gov.it/files/normativa-parchi/pn-val-d-agri/dpr-08-12-2007-ispra.pdf
+    kind: institutional
+    region: Basilicata
+    verified: verified
+    supports: 'Art. 3 c. 1 b (the whole park, from the Val d''Agri to the Sirino): banned "la raccolta e il
+      danneggiamento della flora spontanea, fatte salve le attività agro-silvo-pastorali, nonché la raccolta di
+      funghi, tartufi e degli altri prodotti del bosco nel rispetto delle vigenti normative e degli usi civici".'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2020_10_23:
+    citation: 'Funghi Magazine (2020-10-23). Meteofunghi 23-10-2020 (Wayback Machine capture of 2020-12-04)'
+    url: https://web.archive.org/web/20201204163307/https://funghimagazine.it/meteofunghi-23-10-2020/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: '"La Basilicata vede buone o ottime nascite di funghi, soprattutto Porcini, nei settori Ovest e Sud della
+      regione, soprattutto al confine con la Campania e la Calabria"; in the Basentana and towards the Murge "Discreti
+      ritrovamenti di funghi autunnali, presenti anche Porcini ma soprattutto Cardoncelli" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2022_08_26:
+    citation: 'Funghi Magazine (2022-08-26). Nuovo boom di Porcini (Wayback Machine capture of the AMP page,
+      2022-09-02)'
+    url: https://web.archive.org/web/20220902074404/https://funghimagazine.it/nuovo-boom-di-porcini/amp/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: 'Late August 2022, "3) In terza posizione la BASILICATA": "Dapprima i Porcini Neri (B. aereus) delle
+      basse quote, tra pianori vallivi e colli interni, successivamente Porcini Neri e Porcini Estatini degli alti
+      colli e monti, decisamente più rari i Porcini edulis, soprattutto sul Pollino, Sirino e quote montane più
+      elevate"; important flushes "sulle Dolomiti Lucane, nel Vulture e boschi prossimi al Bosco Grande-confine
+      Campano ma soprattutto all''interno del Parco Nazionale dell''Appennino Lucano-Val d''Agri-Lagonegrese, inclusi
+      gli alti monti del Sinni e Pollino con ottime nascite in particolar modo tra Lauria e Golfo di Maratea"; "Meno
+      favorite dalle piogge e dalle nascite i settori orientali della regione, in particolar modo la provincia di
+      Matera e Metapontino" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2022_09_05:
+    citation: 'Funghi Magazine (2022-09-05). Perché nascono tanti funghi tutti insieme (Wayback Machine capture of
+      2022-09-05)'
+    url: https://web.archive.org/web/20220905122706/https://funghimagazine.it/perche-nascono-tanti-funghi-tutti-insieme/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: '"la Basilicata sta vivendo una delle migliori stagioni fungine degli ultimi decenni. Ora entrano in
+      produzione i boschi caldi di collina con Estatini e Neri, ora i boschi montani con Estatini e persino Edulis,
+      mai così abbondanti come quest''anno"; "i settori Est della regione non hanno avuto buone piogge e infatti le
+      nascite risultano pressoché assenti in provincia di Matera, abbondanti invece nel Potentino fin sul Tirreno"
+      (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2022_11_05:
+    citation: 'Funghi Magazine (2022-11-05). Aggiornamento Porcini 06-11-2022 (Wayback Machine capture of 2022-11-29)'
+    url: https://web.archive.org/web/20221129141843/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: '"In Basilicata i soliti settori Est rimangono all''asciutto e quindi anche senza funghi. Più fortunati
+      i settori Ovest dove a Ottobre si sono registrate nascite davvero importanti, diffuse e talvolta persino
+      massicce"; "Qua dopo una tregua che in alcune zone è già iniziata, le nascite dovrebbero riprendere
+      massicciamente dopo la metà del mese" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2023_06_23:
+    citation: 'Funghi Magazine (2023-06-23). Aggiornamento Porcini 23-06-2023 (Wayback Machine capture of 2023-06-27)'
+    url: https://web.archive.org/web/20230627192839/https://funghimagazine.it/aggiornamento-porcini-23-06-2023/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: '"Puglia e Basilicata sono al momento fuori dai giochi. Entrambe le regioni hanno già dato. Dopo i
+      grandi raccolti di Finferli della Lucania, nei giorni scorsi si sono trovati moltissimi Porcini Aereus,
+      soprattutto in collina in boschi misti. Ora rimangono per lo più vecchi Porcini qua e là" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2023_07_13:
+    citation: 'Funghi Magazine (2023-07-13). Aggiornamento meteo funghi 13-07-2023 (Wayback Machine capture of
+      2023-07-13)'
+    url: https://web.archive.org/web/20230713101316/https://funghimagazine.it/aggiornamento-meteo-funghi-13-07-2023/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: 'The summer gap: "Troppo caldo sul Vulture dove non si registrano nascite. Nascite scarsissime o assenti
+      in Lucania, salvo in alta quota sul Sirino e vicine cime di Lauria-Lagonegro" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2023_12_16:
+    citation: 'Funghi Magazine (2023-12-16). Aggiornamento funghi 16-12-2023 (Wayback Machine capture of 2023-12-16)'
+    url: https://web.archive.org/web/20231216111000/https://funghimagazine.it/aggiornamento-funghi-16-12-2023/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: 'December 2023, of Cantharellus: "si potranno fare ancora ottimi raccolti di questi funghi in ... Puglia
+      tutta e parte di Basilicata, sia tirrenica che di confine con la Puglia, Sicilia e Sardegna" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  bas_fm_2025_05_16:
+    citation: 'Funghi Magazine (2025-05-16). Aggiornamento nascite funghi 16-05-2025 (live page, last modified in 2026;
+      no Wayback capture)'
+    url: https://funghimagazine.it/aggiornamento-nascite-funghi-16-05-2025/
+    kind: web
+    region: Basilicata
+    verified: verified
+    supports: '"il boom è arrivato all''improvviso anche in Calabria, Basilicata e Campania"; "In Basilicata, pur con
+      piogge meno abbondanti rispetto alla Calabria, le temperature miti, non eccessivamente calde, hanno giocato un
+      ruolo chiave. Il bilancio? Nascite abbondanti di Porcini Neri"; "La Lucania tirrenica ha visto una insolita
+      quanto inaspettata nascita di Boletus aereus in tutti i boschi a prevalenza di querce" (folklore).'
+    cited_as:
+    - species-ecology/basilicata.md
+  mushma_basilicata_alsia_rain_check_2026:
+    citation: 'mushma Basilicata rain check: raw ERA5-Land (CDS) annual precipitation 2016-2023, read bilinearly from
+      the land nodes of the 0.2° lattice at each station (weights renormalised), against the annual totals of the 27
+      ALSIA agrometeo stations in Scalcione E., Dichio P., Lanfredi M., Coluzzi R., Imbrenda V. (2024), Caratterizzazione
+      agroclimatologica della Basilicata (2000-2023), ALSIA and IMAA-CNR, Tables 1 and 14; station heights from
+      Copernicus GLO-30. See .gavin-root/docs/regions/basilicata.md, Weather'
+    url: https://www.alsia.it/opencms/export/sites/alsia/.allegati/Report_Climatici/Caratterizzazione-agroclimatologica-della-Basilicata-2020_2023.pdf
+    kind: analysis
+    region: Basilicata
+    verified: verified
+    supports: 'Over the 20 stations within 5 km of a woodland cell (11-919 m, 160 station-years) raw CDS holds 0.92 of
+      station rain (0.97 below 200 m, 0.86-0.98 above); all 27 give 0.94. A fit of station totals on model totals x
+      (a + b x elevation) through the origin on the 20 gives a = 1.038, b = 0.136 per km (leave-one-out 1.02-1.06 and
+      0.06-0.18); all 27 give 1.01 + 0.17. The wet south-west stays short after scaling: Nemoli (530 m) 0.72, Rotonda
+      (549 m) 0.97.'
+    cited_as:
+    - regions/basilicata.md
