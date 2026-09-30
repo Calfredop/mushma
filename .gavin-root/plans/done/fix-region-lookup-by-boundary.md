@@ -1,7 +1,7 @@
 ---
 order: 4096
 title: [web] Find a point's region by its boundary, not its bbox
-status: To Do
+status: Done
 priority: medium
 complexity: moderate
 ---
@@ -64,7 +64,13 @@ coast) and Campania and Calabria keep all theirs; Puglia's Altamura and Gravina 
 the hub a fix in Potenza is offered Campania and one on the Lucanian Pollino Calabria; inside
 `/basilicata` the current-region-first rule serves all of it.
 
-- [ ] Ship each region's simplified boundary (ISTAT 2025 generalised, simplified to ~200–500 m, a few KB per region) where the web can read it: a static GeoJSON per region built from the grid build's boundary, or the `/overview` payload the hub already fetches
-- [ ] `findRegionAt` and `offerOrOpen` test point-in-polygon, with the bbox as a cheap pre-filter; keep the current-region-first rule
-- [ ] Tests: a point near Fabriano (43.33, 12.90) resolves to Marche from the hub, from `/toscana` and from `/umbria`; La Spezia to Liguria; Perugia to Umbria
-- [ ] Place search restricted to served regions uses the same test
+- [x] Ship each region's simplified boundary (ISTAT 2025 generalised, simplified to ~200–500 m, a few KB per region) where the web can read it: a static GeoJSON per region built from the grid build's boundary, or the `/overview` payload the hub already fetches
+  - Already shipped by the hub map: `web/src/regions/boundaries.json` (all 20 regions, coverage-simplified to ~500 m so neighbours share one border, ~50 KB gzipped, its own lazy chunk). The lookup loads it once through `servedBoundaries()` in `web/src/regions/lookup.ts`.
+- [x] `findRegionAt` and `offerOrOpen` test point-in-polygon, with the bbox as a cheap pre-filter; keep the current-region-first rule
+  - `web/src/regions/lookup.ts` (`regionAt`, async `findRegionAt`) over `web/src/geo/polygon.ts`. The current region wins while the point is within 1 km of its boundary, then the region holding it, then the nearest within 1 km (a beach fix just off the ~500 m coast). Falls back to the old bbox rule if the chunk can't load. `offerOrOpen`, both `useLocate`s and the map tap in `App.tsx` use it; the app prefetches the chunk on mount.
+- [x] Tests: a point near Fabriano (43.33, 12.90) resolves to Marche from the hub, from `/toscana` and from `/umbria`; La Spezia to Liguria; Perugia to Umbria
+  - `web/src/regions/index.test.ts`, `web/src/geo/polygon.test.ts`, `web/src/hooks/useLocate.test.tsx`, and an `App.test.tsx` case (GPS in Fabriano from `/umbria` offers Marche).
+- [x] Place search restricted to served regions uses the same test
+  - `PlaceSearch` drops Photon results outside every served region (Corsica, Slovenia, Switzerland sit inside its search rectangle).
+
+Left on bbox, deliberately: a shared link's `?at=` check in `web/src/state/urlState.ts` (synchronous parse, and the spot's own forecast says when a point is off the grid). The region docs' "Known limitations" still describe the bbox lookup.
