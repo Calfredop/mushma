@@ -108,6 +108,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'ISPRA — Carta della Natura della Regione Basilicata 1:50.000',
+    url: 'https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/basilicata',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Regione Piemonte — Carta forestale regionale 2025',
     url: 'https://www.geoportale.piemonte.it/geonetwork/srv/api/records/r_piemon:130b499f-3e2d-4388-8cf0-66892cd7ee25',
     use: 'landcover',
