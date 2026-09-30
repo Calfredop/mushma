@@ -1,0 +1,440 @@
+# Press-contrast sanity check for Basilicata (api.model.sanity).
+# Areas by comuni (ISTAT 2025 names, all in Basilicata) or provinces (ISTAT sigle PZ, MT; '*' is the
+# whole region). Windows and source URLs written down on 2026-09-30, before any Basilicata score
+# existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Basilicata's local press almost never says how a season went: 12 of the 14 contrasts rest on
+# Funghi Magazine's national bulletins alone, read through Wayback Machine captures (live pages where
+# no capture exists), whose Basilicata lines come from readers' reports; most draw on 2-4 bulletins.
+# A La Siritide piece (2020) seconds one 2020 side, and a Coldiretti note on SassiLive gives the only
+# 2017 verdict. The bulletins start in 2018: no source covers 2016. Quotes, second sources and
+# weaknesses per contrast:
+# .gavin-root/docs/species-ecology/basilicata.md (Sanity contrasts).
+areas:
+  basilicata:
+    provinces:
+    - '*'
+  potenza:
+    provinces:
+    - PZ
+  materano:
+    provinces:
+    - MT
+    excluding:
+    - Accettura
+    - Calciano
+    - Oliveto Lucano
+  ovest_sud:
+    comuni:
+    - Maratea
+    - Trecchina
+    - Rivello
+    - Nemoli
+    - Lagonegro
+    - Lauria
+    - Castelluccio Inferiore
+    - Castelluccio Superiore
+    - Latronico
+    - Castelsaraceno
+    - Moliterno
+    - Tramutola
+    - San Chirico Raparo
+    - Marsico Nuovo
+    - Marsicovetere
+    - Paterno
+    - Viggiano
+    - Grumento Nova
+    - Sarconi
+    - Montemurro
+    - Spinoso
+    - "San Martino d'Agri"
+    - Abriola
+    - Calvello
+    - Anzi
+    - Laurenzana
+    - Pignola
+    - Brienza
+    - Sasso di Castalda
+    - Satriano di Lucania
+    - "Sant'Angelo Le Fratte"
+    - Savoia di Lucania
+    - Vietri di Potenza
+    - Tito
+    - Balvano
+    - Baragiano
+    - Picerno
+    - Ruoti
+    - Bella
+    - Muro Lucano
+    - Castelgrande
+    - Pescopagano
+    - San Fele
+    - Rapone
+    - Ruvo del Monte
+    - Terranova di Pollino
+    - Viggianello
+    - Rotonda
+    - San Severino Lucano
+    - Chiaromonte
+    - Francavilla in Sinni
+    - Episcopia
+    - Fardella
+    - Teana
+    - Calvera
+    - Carbone
+    - Noepoli
+    - Cersosimo
+    - San Costantino Albanese
+    - San Paolo Albanese
+  lucania_tirrenica:
+    comuni:
+    - Maratea
+    - Trecchina
+    - Rivello
+    - Nemoli
+    - Lagonegro
+    - Lauria
+    - Castelluccio Inferiore
+    - Castelluccio Superiore
+    - Latronico
+  non_tirrenica:
+    provinces:
+    - PZ
+    - MT
+    excluding:
+    - Maratea
+    - Trecchina
+    - Rivello
+    - Nemoli
+    - Lagonegro
+    - Lauria
+    - Castelluccio Inferiore
+    - Castelluccio Superiore
+    - Latronico
+    - Terranova di Pollino
+    - Viggianello
+    - Rotonda
+    - San Severino Lucano
+    - Chiaromonte
+    - Francavilla in Sinni
+    - Episcopia
+    - Fardella
+    - Teana
+    - Calvera
+    - Carbone
+    - Castelsaraceno
+    - Noepoli
+    - Cersosimo
+    - San Costantino Albanese
+    - San Paolo Albanese
+  basentana_bradano:
+    comuni:
+    - Matera
+    - Miglionico
+    - Montescaglioso
+    - Pomarico
+    - Ferrandina
+    - Grottole
+    - Grassano
+    - Bernalda
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: basilicata_ovest_sud_late_august_2022_vs_2024
+  claim: 'Late August 2022: ''3) In terza posizione la BASILICATA''; ''Nascite importanti si sono
+    registrate e, localmente sono ancora in atto sulle Dolomiti Lucane, nel Vulture ... ma
+    soprattutto all''interno del Parco Nazionale dell''Appennino Lucano-Val d''Agri-Lagonegrese,
+    inclusi gli alti monti del Sinni e Pollino con ottime nascite in particolar modo tra Lauria e
+    Golfo di Maratea'' (FM 2022-08-26); ''Ottime nascite in Cilento e Potentino'' (FM 2022-08-18);
+    ''abbondanti invece nel Potentino fin sul Tirreno'' (FM 2022-09-05). Late August 2024: ''Poco è
+    nato tra Sinni e Pollino, per via del gran caldo'' (FM 2024-08-16); in Puglia and Basilicata
+    storms ''non sufficienti a scatenare nascite porcine'', readers report ''ore per poter trovare
+    un paio di Porcini al massimo'' in western Lucania (FM 2024-08-30)'
+  source: https://web.archive.org/web/20220902074404/https://funghimagazine.it/nuovo-boom-di-porcini/amp/
+  higher:
+    area: ovest_sud
+    seasons:
+    - 2022
+    start: 08-15
+    end: 09-10
+  lower:
+    area: ovest_sud
+    seasons:
+    - 2024
+    start: 08-15
+    end: 09-10
+- id: potenza_vs_materano_late_summer_2022
+  claim: 'Early September 2022: ''la Basilicata sta vivendo una delle migliori stagioni fungine degli
+    ultimi decenni ... Purtroppo i settori Est della regione non hanno avuto buone piogge e infatti
+    le nascite risultano pressoché assenti in provincia di Matera, abbondanti invece nel Potentino
+    fin sul Tirreno'' (FM 2022-09-05); ''Meno favorite dalle piogge e dalle nascite i settori
+    orientali della regione, in particolar modo la provincia di Matera e Metapontino'' (FM
+    2022-08-26), which names the Dolomiti Lucane among the productive areas, hence the Gallipoli
+    Cognato comuni are left out of the lower side'
+  source: https://web.archive.org/web/20220905122706/https://funghimagazine.it/perche-nascono-tanti-funghi-tutti-insieme/
+  higher:
+    area: potenza
+    seasons:
+    - 2022
+    start: 08-20
+    end: 09-08
+  lower:
+    area: materano
+    seasons:
+    - 2022
+    start: 08-20
+    end: 09-08
+- id: lucania_tirrenica_vs_non_tirrenica_late_august_2023
+  claim: 'Late August 2023: ''buone nascite si stanno ancora registrando ed aumenteranno in Cilento e
+    nella Lucania tirrenica''; ''Assenza di nascite tra Molise-Puglia e Basilicata non tirrenica''
+    (FM 2023-08-24); ''Buttata ancora buona sulla Lucania tirrenica'' (FM 2023-09-06); rain on 4-5
+    August ''con assenza però di piogge degne di nota da Potenza verso Est e Sud'', concentrated
+    ''tra l''alta valle del fiume Sinni ed il Golfo di Maratea'' (FM 2023-08-17)'
+  source: https://web.archive.org/web/20230824101516/https://funghimagazine.it/aggiornamento-nascite-porcini-24-08-2023/
+  higher:
+    area: lucania_tirrenica
+    seasons:
+    - 2023
+    start: 08-18
+    end: 09-10
+  lower:
+    area: non_tirrenica
+    seasons:
+    - 2023
+    start: 08-18
+    end: 09-10
+- id: basentana_bradano_early_september_2021_vs_2022_2023
+  claim: 'Early September 2021: ''Ancora in Basilicata per una ottima buttata di Porcini estivi appena
+    iniziata nella bassa Basentana tra Basento-Bradano e confine pugliese'' (FM 2021-09-04);
+    ''Ancora per qualche giorno dovrebbero esserci le condizioni ideali per nascite al confine tra
+    Bradano–Basilicata e Tarantino'' (FM 2021-09-10). 2022: ''le nascite risultano pressoché assenti
+    in provincia di Matera'' (FM 2022-09-05). 2023: ''Assenza di nascite tra Molise-Puglia e
+    Basilicata non tirrenica'' (FM 2023-08-24)'
+  source: https://web.archive.org/web/20210922081914/https://funghimagazine.it/aggiornamento-meteofunghi-04-09-2021-porcini-giganti/
+  higher:
+    area: basentana_bradano
+    seasons:
+    - 2021
+    start: 08-30
+    end: 09-15
+  lower:
+    area: basentana_bradano
+    seasons:
+    - 2022
+    - 2023
+    start: 08-30
+    end: 09-15
+- id: ovest_sud_october_2020_2022_vs_2023
+  claim: 'October 2020: ''La Basilicata vede buone o ottime nascite di funghi, soprattutto Porcini, nei
+    settori Ovest e Sud della regione, soprattutto al confine con la Campania e la Calabria'' (FM
+    2020-10-23). October 2022: ''Più fortunati i settori Ovest dove a Ottobre si sono registrate
+    nascite davvero importanti, diffuse e talvolta persino massicce'' (FM 2022-11-05); ''Basilicata
+    occidentale ancora con buone nascite'' (FM 2022-10-13). October 2023: ''In Basilicata, tutta,
+    non si registrano nascite di funghi degne di nota, a causa del persistere della siccità, ivi
+    incluso alto Sinni e Pollino'' (FM 2023-10-12); ''nascite modeste'' (FM 2023-10-04); ''nascite
+    quasi non pervenute'' (FM 2023-10-27). Second outlet for 2020: at San Severino Lucano ''un mese
+    di ottobre umido e non freddo che ha permesso di prolungare la stagione dei funghi'' (La
+    Siritide 2020-10-21)'
+  source: https://web.archive.org/web/20231012124159/https://funghimagazine.it/aggiornamento-porcini-12-10-2023/
+  higher:
+    area: ovest_sud
+    seasons:
+    - 2020
+    - 2022
+    start: 10-05
+    end: 10-31
+  lower:
+    area: ovest_sud
+    seasons:
+    - 2023
+    start: 10-05
+    end: 10-31
+- id: ovest_sud_vs_materano_autumn_2022
+  claim: 'Early November 2022, looking back on October: ''In Basilicata i soliti settori Est rimangono
+    all''asciutto e quindi anche senza funghi. Più fortunati i settori Ovest dove a Ottobre si sono
+    registrate nascite davvero importanti, diffuse e talvolta persino massicce'' (FM 2022-11-05);
+    ''Basilicata occidentale ancora con buone nascite'' (FM 2022-10-13)'
+  source: https://web.archive.org/web/20221129141843/https://funghimagazine.it/aggiornamento-porcini-06-11-2022/
+  higher:
+    area: ovest_sud
+    seasons:
+    - 2022
+    start: 10-10
+    end: 11-05
+  lower:
+    area: materano
+    seasons:
+    - 2022
+    start: 10-10
+    end: 11-05
+- id: basilicata_late_october_2018_vs_2023
+  claim: 'Late October 2018: ''Le nascite di Neri e moltissimi altri funghi autunnali non si contano tra
+    Sardegna, Sicilia, Calabria, Basilicata e Puglia'' (FM 2018-10-22). October 2023: ''In
+    Basilicata, tutta, non si registrano nascite di funghi degne di nota'' (FM 2023-10-12); ''Tra
+    Puglia e Basilicata nascite quasi non pervenute'' (FM 2023-10-27)'
+  source: https://web.archive.org/web/20190723060659/https://funghimagazine.it/aggiornamento-funghi-22-ottobre-2018/
+  higher:
+    area: basilicata
+    seasons:
+    - 2018
+    start: 10-12
+    end: 10-31
+  lower:
+    area: basilicata
+    seasons:
+    - 2023
+    start: 10-12
+    end: 10-31
+- id: basilicata_october_2018_vs_2017
+  claim: 'October 2018: ''Le nascite di Neri e moltissimi altri funghi autunnali non si contano tra
+    Sardegna, Sicilia, Calabria, Basilicata e Puglia'' (FM 2018-10-22). 2017: Coldiretti
+    Basilicata''s president in September 2018, ''dopo l''annata nera dello scorso anno provocata
+    dalla siccità dello scorso anno'', ''Dopo un 2017 particolarmente negativo per gli effetti della
+    siccità che ha lasciato a mani vuote molti appassionati ricercatori'' (SassiLive 2018-09-23)'
+  source: https://www.sassilive.it/economia/lavoro/con-lautunno-si-prevede-boom-di-funghi-e-tartufi-anche-in-basilicata/
+  higher:
+    area: basilicata
+    seasons:
+    - 2018
+    start: 10-12
+    end: 10-31
+  lower:
+    area: basilicata
+    seasons:
+    - 2017
+    start: 10-12
+    end: 10-31
+- id: basilicata_spring_2024_2025_vs_2023
+  claim: 'Late May 2024: ''Exlpoit a sorpresa per la Basilicata che, zitta-zitta, mette a frutto le poche
+    piogge avute'', ''sufficienti a scatenare una piccola apoteosi porcina'', ''Porcini estivi e
+    rari Neri Lucani'', ''Nascono ancora attorno al Golfo di Maratea e nel Potentino, oltre che sul
+    pre-Pollino'', after the rains of 18-19 May (FM 2024-05-30). May 2025: ''il boom è arrivato
+    all''improvviso anche in Calabria, Basilicata e Campania'', ''Nascite abbondanti di Porcini
+    Neri'' (FM 2025-05-16, live page); ''La Basilicata ha già avuto un primo exploit'' (FM
+    2025-05-30, live page). May 2023: ''Gargano, Molise, Abruzzo, Basilicata e Vibonese ... sembrano
+    fermi al palo'' (FM 2023-05-18); ''presto arriveranno anche i primi Porcini così come in
+    Basilicata'' (FM 2023-05-25); ''per i funghi Porcini ci sarà da attendere'' (FM 2023-06-01)'
+  source: https://web.archive.org/web/20240624072920/https://funghimagazine.it/aggiornamento-funghi-31-05-2024/
+  higher:
+    area: basilicata
+    seasons:
+    - 2024
+    - 2025
+    start: 05-12
+    end: 06-02
+  lower:
+    area: basilicata
+    seasons:
+    - 2023
+    start: 05-12
+    end: 06-02
+- id: basilicata_2024_timing_late_may_vs_june
+  claim: '2024: the late-May flush (''piccola apoteosi porcina ... Nascono ancora attorno al Golfo di
+    Maratea e nel Potentino, oltre che sul pre-Pollino'', FM 2024-05-30) was over by mid-June: ''I
+    bei raccolti della Basilicata sono oramai terminati da diversi giorni, resiste qualcosa tra
+    Sirino e Pollino'' (FM 2024-06-14); ''L''eccesso di calore ha mandato in letargo i miceli
+    fungini di Campania, Molise, Puglia, Basilicata e Sardegna'' (FM 2024-06-28)'
+  source: https://web.archive.org/web/20240624072920/https://funghimagazine.it/aggiornamento-funghi-31-05-2024/
+  higher:
+    area: basilicata
+    seasons:
+    - 2024
+    start: 05-20
+    end: 06-02
+  lower:
+    area: basilicata
+    seasons:
+    - 2024
+    start: 06-08
+    end: 06-30
+- id: basilicata_late_june_2022_vs_2018_2024
+  claim: 'Late June 2022: ''Basilicata temporaneamente protagonista, a sorpresa persino più della
+    Calabria dove si registrano ottime nascite, anche e soprattutto di Porcini Bronzini (Boletus
+    aereus). Tolta l''area litoranea jonica, il resto della regione sta vivendo un piccolo exploit
+    di nascite'' (FM 2022-06-24); ''ottime nascite ... tra Basilicata e Calabria, dopo le piogge del
+    17 giugno'' (FM 2022-07-01). 2018: ''Basilicata ferma al palo.'' (FM 2018-06-16), ''ferma al
+    palo con buone piogge ma nascite contenute e per ora relegate ai soli boschi caldi Mediterranei
+    di bassa quota'' (FM 2018-07-01). 2024: ''I bei raccolti della Basilicata sono oramai terminati
+    da diversi giorni'' (FM 2024-06-14), ''letargo'' (FM 2024-06-28)'
+  source: https://web.archive.org/web/20220629220257/https://funghimagazine.it/siccita-e-funghi/
+  higher:
+    area: basilicata
+    seasons:
+    - 2022
+    start: 06-14
+    end: 06-30
+  lower:
+    area: basilicata
+    seasons:
+    - 2018
+    - 2024
+    start: 06-14
+    end: 06-30
+- id: ovest_sud_september_2021_vs_2019_2020
+  claim: 'September 2021: ''Nascite ancora ottime si registrano in Basilicata occidentale e sud
+    occidentale fin sul Sinni-Pollino'' (FM 2021-09-10), after storms on ''Maratea ed immediato
+    entroterra di Lauria-Lagonegro e la valle del Sinni in Basilicata'' (FM 2021-09-04). 2019:
+    ''Campania-Basilicata-Puglia con nascite ancora modeste o del tutto assenti'' (FM 2019-09-20);
+    ''Nascite scarse attorno al Vulture e nella provincia interna di Potenza'' (FM 2019-09-27).
+    2020: ''Cessano sulla Basilicata'' (FM 2020-09-04); ''Situazione pessima tra Molise, Campania,
+    Puglia e Basilicata con nascite ridottissime'' (FM 2020-09-21)'
+  source: https://web.archive.org/web/20210922080423/https://funghimagazine.it/aggiornamento-meteofunghi-10-09-2021-tanti-funghi-porcini/
+  higher:
+    area: ovest_sud
+    seasons:
+    - 2021
+    start: 09-04
+    end: 09-20
+  lower:
+    area: ovest_sud
+    seasons:
+    - 2019
+    - 2020
+    start: 09-04
+    end: 09-20
+- id: basilicata_late_august_2025_vs_2024
+  claim: 'Late August 2025: ''Basilicata: piccole buttate mordi-e-fuggi già osservate dopo Ferragosto''
+    (FM 2025-08-29); ''Molise, Basilicata e Calabria travolte da un''esplosione nera e marrone che
+    ha riempito i cesti in pochi giorni'' (FM 2025-09-04). Late August 2024: storms ''non
+    sufficienti a scatenare nascite porcine'' in Puglia and Basilicata (FM 2024-08-30); ''Poco è
+    nato tra Sinni e Pollino, per via del gran caldo'' (FM 2024-08-16)'
+  source: https://web.archive.org/web/20251220154140/https://funghimagazine.it/buttata-record-2025-annata-eccezionale-per-i-porcini/
+  higher:
+    area: basilicata
+    seasons:
+    - 2025
+    start: 08-18
+    end: 09-05
+  lower:
+    area: basilicata
+    seasons:
+    - 2024
+    start: 08-18
+    end: 09-05
+- id: gallinacci_basilicata_spring_2023_normal
+  claim: 'Late May to June 2023: ''Mai come quest''anno in Basilicata si sono travati, e si stanno ancora
+    trovando, così tanti Finferli in primavera'', ''Insomma, tempi d''oro per i Galletti Lucani''
+    (FM 2023-06-01); ''Puglia-Basilicata dove, però di contro abbondano più che mai
+    Finferli/Galletti'' (FM 2023-06-15); ''Dopo i grandi raccolti di Finferli della Lucania'' (FM
+    2023-06-23)'
+  source: https://web.archive.org/web/20230601201646/https://funghimagazine.it/aggiornamento-funghi-02-06-2023/
+  higher:
+    area: basilicata
+    seasons:
+    - 2023
+    start: 05-28
+    end: 06-20
+  lower:
+    area: basilicata
+    seasons: normal
+    start: 05-28
+    end: 06-20
