@@ -1,7 +1,7 @@
 ---
 order: 7168
 title: [region] Sardegna
-status: To Do
+status: In Progress
 complexity: complex
 ---
 Region #19 of `feat-full-italy-coverage.md`; the parent plan holds the decisions.
@@ -14,9 +14,9 @@ Strong porcini and ovoli tradition (Sardegna Foreste is already in the bibliogra
 and holm oak, with *B. aereus* likely the leading porcini taxon.
 Forest map candidate, to verify: Carta dell'uso del suolo 2008 (Regione Sardegna).
 
-- [ ] Sources: the region's own land-use or forest map with an open licence (regional geoportale; CC BY, IODL 2.0 or equivalent), recorded in `sources.yaml` with attribution; if none is usable, CLC IV alone, and the region doc says why
-- [ ] Config: `api/src/api/config/regions/sardegna.yaml` (bbox from the ISTAT boundary, COD_REG 20, forest source and class mapping, iNaturalist place id resolved by name, `model:` overrides only if the gauge check asks); `checks lattice` run for the region, national lapse rates kept unless the fit differs by more than 1 °C/km, either way recorded
-- [ ] Species research → `.gavin-root/docs/species-ecology/sardegna.md` and `api/src/api/config/species/sardegna/` (start from Tuscany's files): season windows, host trees and habitat affinities, altitude bands, weather rules where regional literature exists; every rule cited with a confidence; regional references added to the shared bibliography; groups the region lacks dropped and said so; `sanity.yaml` with press or blog contrasts for this region's areas and years
+- [x] Sources: the region's own land-use or forest map with an open licence (regional geoportale; CC BY, IODL 2.0 or equivalent), recorded in `sources.yaml` with attribution; if none is usable, CLC IV alone, and the region doc says why
+- [x] Config: `api/src/api/config/regions/sardegna.yaml` (bbox from the ISTAT boundary, COD_REG 20, forest source and class mapping, iNaturalist place id resolved by name, `model:` overrides only if the gauge check asks); `checks lattice` run for the region, national lapse rates kept unless the fit differs by more than 1 °C/km, either way recorded
+- [ ] [Species research](./region-sardegna-species.md) → `.gavin-root/docs/species-ecology/sardegna.md` and `api/src/api/config/species/sardegna/` (start from Tuscany's files): season windows, host trees and habitat affinities, altitude bands, weather rules where regional literature exists; every rule cited with a confidence; regional references added to the shared bibliography; groups the region lacks dropped and said so; `sanity.yaml` with press or blog contrasts for this region's areas and years
 - [ ] Data: `api.regions.onboard sardegna` through history build; forest area within ±10 % of INFC 2015 or explained; counts recorded in `.gavin-root/docs/regions/sardegna.md`
 - [ ] Validation: backtest report and sanity check in the region doc; tune only if the train seasons hold at least 50 usable presences (record the count), else the priors ship and the doc says so; a gauge check if the regional ARPA publishes open daily rain
 - [ ] Copy and registry: `web/src/regions/sardegna.ts` (bounds including the small islands, species offered, wikidata id verified, seo title and description on Tuscany's pattern, intro it + en of 2–3 sentences naming the region's known areas and seasons, no probability or edibility wording), one line in `web/src/regions/index.ts`, og image generated and committed, credits show the new sources
