@@ -1,6 +1,6 @@
 import { useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { listRegions, type RegionDefinition } from '../regions'
+import { listRegions, matchesRegionName, type RegionDefinition } from '../regions'
 import { currentLanguage, type Language } from '../i18n'
 import { ChevronIcon } from './icons'
 import styles from './RegionSwitcher.module.css'
@@ -10,11 +10,6 @@ interface Props {
   onChange: (slug: string) => void
   /** Leave the region map for the national hub. */
   onShowAll: () => void
-}
-
-function matches(name: string, query: string): boolean {
-  const norm = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
-  return norm(name).includes(norm(query.trim()))
 }
 
 /** Keep focus in the field so a container blur doesn't unmount the menu before click. */
@@ -31,7 +26,9 @@ export function RegionSwitcher({ value, onChange, onShowAll }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
   const regions = listRegions()
-  const filtered = regions.filter((region) => matches(region.name[language], query))
+  const filtered = regions.filter((region) =>
+    matchesRegionName(region.name[language], query),
+  )
 
   const close = () => {
     setOpen(false)

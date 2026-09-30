@@ -2,7 +2,7 @@ import { LazyMotion } from 'motion/react'
 import { type MouseEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { RegionOverview, RegionTrend, TrendPoint } from '../api/queries'
-import { ChevronIcon, GitHubIcon } from '../components/icons'
+import { ChevronIcon, CloseIcon, GitHubIcon, SearchIcon } from '../components/icons'
 import { InfoMenu } from '../components/InfoMenu'
 import { MapLoading } from '../components/MapLoading'
 import { ScoreChip } from '../components/ScoreChip'
@@ -13,6 +13,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery'
 import { intlLocale, type Language } from '../i18n'
 import { HubMap } from '../map/HubMap'
 import type { MapPadding } from '../map/padding'
+import { matchesRegionName } from '../regions'
 import { regionPath } from '../routes'
 import { SCORE_CLASSES } from '../score/scale'
 import { type Snap, visibleAt } from '../sheet/snaps'
@@ -81,9 +82,14 @@ export function HubPage({
   const [highlighted, setHighlighted] = useState<string | null>(null)
   /** A region tapped on the map that the app doesn't serve yet. */
   const [uncovered, setUncovered] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
   const mapAreaRef = useRef<HTMLElement>(null)
 
   const regions = useMemo(() => hubRegions(overview, language), [overview, language])
+  // The search narrows the list only: the map keeps every region.
+  const listed = regions.filter((entry) =>
+    matchesRegionName(entry.region.name[language], query),
+  )
   const trendRows = trend?.regions
   const trends = useMemo(
     () => new Map(trendRows?.map((row) => [row.region, row.days])),
@@ -174,22 +180,48 @@ export function HubPage({
                 {trend && <TrendKey />}
               </div>
             </div>
-            <ul className={styles.regionList}>
-              {regions.map((entry) => (
-                <li key={entry.region.slug}>
-                  <RegionRow
-                    entry={entry}
-                    trend={trends.get(entry.region.apiRegionId)}
-                    today={trend?.today}
-                    language={language}
-                    pending={overviewPending}
-                    highlighted={highlighted === entry.region.slug}
-                    onHighlight={setHighlighted}
-                    onSelect={select}
-                  />
-                </li>
-              ))}
-            </ul>
+            <div className={styles.search}>
+              <SearchIcon />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={t('regions.searchPlaceholder')}
+                aria-label={t('regions.search')}
+                autoComplete="off"
+                enterKeyHint="search"
+              />
+              {query && (
+                <button
+                  type="button"
+                  className={styles.clear}
+                  aria-label={t('search.clear')}
+                  onClick={() => setQuery('')}
+                >
+                  <CloseIcon />
+                </button>
+              )}
+            </div>
+            {listed.length === 0 ? (
+              <p className={styles.empty}>{t('regions.noResults')}</p>
+            ) : (
+              <ul className={styles.regionList}>
+                {listed.map((entry) => (
+                  <li key={entry.region.slug}>
+                    <RegionRow
+                      entry={entry}
+                      trend={trends.get(entry.region.apiRegionId)}
+                      today={trend?.today}
+                      language={language}
+                      pending={overviewPending}
+                      highlighted={highlighted === entry.region.slug}
+                      onHighlight={setHighlighted}
+                      onSelect={select}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
             <p className={styles.more}>{t('hub.more')}</p>
           </section>
           <footer className={styles.footer}>

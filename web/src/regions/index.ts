@@ -84,6 +84,12 @@ export function listRegions(): RegionDefinition[] {
   return Object.values(REGIONS)
 }
 
+/** Whether a region's name holds the typed query, ignoring case and accents. */
+export function matchesRegionName(name: string, query: string): boolean {
+  const norm = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+  return norm(name).includes(norm(query.trim()))
+}
+
 /** The first served region whose bbox contains the point, or undefined. */
 export function findRegionAt(lat: number, lon: number): RegionDefinition | undefined {
   return listRegions().find((region) => inBounds(lat, lon, region.bounds))
