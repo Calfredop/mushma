@@ -156,6 +156,12 @@ export const DATA_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'ISPRA — Carta della Natura della Regione Molise 1:25.000',
+    url: 'https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/molise',
+    use: 'landcover',
+    license: 'CC BY 4.0',
+  },
+  {
     name: 'Copernicus DEM GLO-30',
     url: 'https://registry.opendata.aws/copernicus-dem/',
     use: 'elevation',
