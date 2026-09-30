@@ -1,0 +1,335 @@
+# Species rules for one key in BASILICATA, loaded and validated by api.model.rules (see README.md here).
+# Copied from tuscany/ and retuned from Basilicata sources: .gavin-root/docs/species-ecology/basilicata.md.
+# Tuscan evidence and rule ids (POR-*): .gavin-root/docs/species-ecology.md and species-ecology/porcini.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
+schema_version: 1
+key: porcini_aereus
+group: porcini
+taxon: Boletus aereus
+synonyms: []
+status: draft
+i18n_key: species.porcini_aereus
+records:
+  gbif_taxon_keys: [8733688]
+  inat_taxon_ids: [333772]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    The best-sampled porcini taxon in Tuscany (61 iNaturalist records, 2026-09-17), but often confused
+    with B. reticulatus in the field. Basilicata: 1 iNaturalist record (18 May 2024, Fardella, the Val
+    Sinni below the Pollino, 946 m; its GBIF copy is the only other; 2026-09-30). Validate the porcini
+    group score.
+notes: >-
+  The most xerothermophilous porcino, and Basilicata's main one: the black porcino of the Turkey-oak
+  country, which is nearly two thirds of the region's woods. On the Calabrian side of the Pollino it is
+  "la specie micologica più frequente" of the Turkey-oak records (3.1 %) and 2.6 % of the Turkey oak
+  with farnetto ones (ISPRA MLG 180/2018); the Pollino's forager mycologist calls it a "presenza
+  massiccia" in the park, "Capu niviru", under oak, chestnut and beech (DiscoverPollino, folklore); the
+  bulletins report "Porcini Neri" in Basilicata from mid-May to November (Funghi Magazine, folklore).
+  Changed for Basilicata: both windows open on 1 May and run later, and the altitude band climbs to the
+  Turkey oak, whose median here is 913 m. No quantitative weather study exists for this taxon: the rain
+  logic is borrowed from B. edulis, and temperature and frost rules are shifted using qualitative
+  sources.
+
+# Growth clock (README, "Growth clock"): how fast fruit bodies develop after the rain, day by day.
+# The rain_event lag below is counted in growth days, the sum of these daily paces.
+growth:
+  temperature:
+    variable: soil_temperature_0_to_7cm_mean
+    cardinal_c: [2, 21, 32]
+    reference_c: 17
+  humidity:
+    variable: vapour_pressure_deficit_max
+    trapezoid: [null, null, 1.5, 3.0]
+    floor: 0.5
+  max_lag_days: 40
+  confidence: folklore
+  source: [yan_hunt1999, moore2008_fruit_bodies, kasparavicius2001, bmeteo_funghi_luglio, funghimagazine_giorni_pioggia]
+  derived: true
+  notes: >-
+    POR-R3 for the thermophilic porcino. The pace is 1 at 17 °C of topsoil, the weather the lag
+    window was drawn from. Fruit bodies develop at a lower optimum than mycelium grows in
+    culture (B. edulis 25-28 °C; Moore et al. 2008), hence t_opt 21 °C. Thermophilic porcini
+    appear 8-11 days after warm summer storms (lore); a 12 °C stretch runs at about 65 % pace.
+    Caps stop growing when the day's minimum humidity falls under 40 % and grow well from about
+    60 % (Kasparavičius 2001, B. edulis): open-air daily maximum VPD of 1.5 kPa keeps full pace
+    and 3.0 kPa halves it; the floor stands for the moister air under the canopy. No peer-
+    reviewed days-per-°C figure exists for these species: every number is a prior. The humidity
+    ramp is set higher than for the autumn porcini because it fruits from summer, when open-air
+    VPD is 2 kPa on a median July day.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: upland_summer
+          dates: ["01-05", "01-07", "31-10", "30-11"]
+          elevation_weight: [600, 800, null, null]
+        - label: lowland_long
+          dates: ["01-05", "01-06", "30-11", "10-01"]
+          elevation_weight: [null, null, 600, 800]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, gm_siena_boletus, museo_porcino_borgotaro, mushma_occurrence_check_2026, funghimagazine_boletus_gallery2019, funghimagazine_giugno2019, fm_sicilia_2019_05_30, fm_sicilia_2024_05_30, bas_fm_2025_05_16, bas_fm_2023_06_23, bas_fm_2022_08_26, funghimagazine_aggiornamento_2018_10_22, bas_fm_2020_10_23, bas_fm_2022_11_05, funghimagazine_calendario_autunno2019, bmeteo_boletus_aereus, mushma_occurrence_check_basilicata_2026, mushma_basilicata_forest_composition_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-S2, split by elevation to resolve a disagreement. The IGP (Apennine uplands) says
+      July–September; Lucca and Siena sources and the records put the lowland peak in autumn.
+      Central-Italy iNaturalist records: 0-300 m peak Sep–Nov, 300-600 m peak October, 600-900 m peak
+      September; no July records at all (n=77, about 3 expected from observer effort), so the upland
+      window reaches full only on 1 August instead of the IGP's July. The 400-600 m handover is derived.
+      Basilicata: both windows open on 1 May, a fortnight before Calabria's, and run late. The black
+      porcino is Basilicata's spring porcino: "Nascite abbondanti di Porcini Neri" by 16 May 2025, when
+      "La Lucania tirrenica ha visto una insolita quanto inaspettata nascita di Boletus aereus in tutti
+      i boschi a prevalenza di querce"; "Porcini estivi e rari Neri Lucani" in late May 2024 around the
+      Golfo di Maratea, in the Potentino and on the pre-Pollino; B. aereus "segnalati ... in Basilicata"
+      by 30 May 2019 (Funghi Magazine, folklore); the one Basilicata record is an upland one, on 18 May
+      2024 at 946 m. The lowland window is full from 1 June, the upland one (above 800 m, where most of
+      the Turkey oak is: median 913 m) from 1 July, since the May finds are mostly low and on the
+      Tyrrhenian side, and in summer the black porcini come "Dapprima ... delle basse quote, tra pianori
+      vallivi e colli interni, successivamente ... degli alti colli e monti" (August 2022); in June 2023
+      "moltissimi Porcini Aereus, soprattutto in collina in boschi misti" (folklore). Both run late, as
+      in Calabria: black porcini "non si contano tra ... Basilicata e Puglia" in late October 2018,
+      "buone o ottime nascite di funghi, soprattutto Porcini, nei settori Ovest e Sud" in late October
+      2020, and in 2022 the western sectors had "nascite davvero importanti, diffuse e talvolta persino
+      massicce" in October with more expected after mid-November (folklore); the upland window is full
+      to 31 October and ends on 30 November, the lowland one is full to 30 November and ends on 10
+      January, as in Campania, Calabria and Puglia. The handover moves to 600-800 m, as in the three
+      southern neighbours. Frost and snow end the season on the cold Potentino uplands whatever the
+      window.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        deciduous_oak: 1.0
+        chestnut: 1.0
+        evergreen_oak: 1.0
+        macchia: 0.3
+        transitional_woodland_shrub: 0.3
+        mixed_broadleaf: 0.3
+        mixed_broadleaf_conifer: 0.3
+        beech: 0.1
+        mediterranean_pine: 0.1
+        other_conifer: 0.0
+        mountain_pine: 0.0
+        fir_spruce: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
+      default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, sardegna_foreste_aereus, beugelsdijk2008, oria_de_rueda2008, mushma_habitat_share_2026, ispra2018_mlg180_calabria_foreste, ispra2018_mlg180_pino_aleppo, ispra2018_mlg179_pino_aleppo, ispra2019_mlg187_flora_micologica, bas_discoverpollino_porcini, bas_linee_forestali2013, mushma_basilicata_forest_composition_2026]
+    derived: true
+    data: available
+    notes: >-
+      Basilicata (2026-09-30, the Carta della Natura habitat map as the grid reads it). Deciduous oak
+      (63.4 % of the wooded area: Turkey oak, Turkey oak with farnetto, downy and southern white oak),
+      chestnut and holm oak stay hosts: in the Calabrian record tables B. aereus is 3.1 % of the
+      Turkey-oak records, 2.6 % of the farnetto ones, 2.4 % of the downy-oak ones, 1.1 % of the holm-oak
+      ones and 0.8 % of the chestnut ones (ISPRA MLG 180/2018). `macchia` moves from host 1.0 to
+      marginal 0.3, as in Calabria and Puglia: 84 % of it is the low macchia of wild olive and lentisk
+      (32.211), not the Cistus, Arbutus and Erica scrub it fruits in. `transitional_woodland_shrub`
+      (bramble, deciduous thickets, broom) moves to 0.3. `mediterranean_pine` (Aleppo pine and the
+      Ionian dune pine woods) moves to non-host 0.1: no porcino in 802 records of Calabrian Aleppo-pine
+      plantations or 20 of natural stands (MLG 179 and 180/2018). `other_conifer` (the Aleppo and
+      black-pine plantations) stays 0. `beech` stays 0.1: the Pollino beech records hold no B. aereus
+      (MLG 180), although the Pollino lore names beech too. `mixed_broadleaf` (Alnus cordata 63 %,
+      hop-hornbeam 36 %) stays marginal 0.3. Otherwise Tuscany's POR-H4. Four levels (2026-09-24,
+      mushma_habitat_share_2026): oak, chestnut and holm oak are named hosts. Macchia is host too, not
+      just dilution: this thermophilic taxon fruits directly in Cistus, Arbutus and Erica scrub in
+      several sources, with Spanish yield data (22.5 kg/ha), and macchia is not one of the three classes
+      design keeps below 1 (mixed broadleaf, mixed broadleaf+conifer, transitional woodland/shrub).
+      Transitional woodland/shrub (oak/chestnut/macchia regrowth) and Mediterranean pine (documented
+      pine-with-Erica-scoparia understorey) are secondary. Mixed broadleaf and mixed broadleaf+conifer
+      are marginal: hornbeam/hazel/ash and conifer components are not this taxon's hosts. Beech, other
+      conifer, mountain pine, fir/spruce, riparian and exotic broadleaf are non-host: cool or wet ground
+      this warm, dry taxon avoids. Saturated to full credit from a host-weighted share of 0.30.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [null, null, 1000, 1350]}
+    confidence: plausible
+    source: [matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, arrigoni_viciani_castagneti, mushma_occurrence_check_2026, bas_linee_forestali2013, bas_borghetti2024_boschi, mushma_basilicata_forest_composition_2026, mushma_occurrence_check_basilicata_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-A4. Coast to mid-hill; sunny mid-mountain chestnut is the upper limit. Tuscan iNaturalist
+      records: median 352 m, p90 629 m, max 789 m (n=50). Basilicata: full to 1,000 m (Tuscany 800 m)
+      and 0 at 1,350 m, as in Calabria, because its hosts sit higher. The Turkey oak is the forest of
+      the submontane belt "fra 500 e 1200 m" (Linee programmatiche forestali 2013; Borghetti et al.
+      2024), with a submontane variant "a quote superiori a 1000 m"; on the map it sits at a median 913
+      m (Turkey oak with farnetto 847 m) and the chestnut at 867 m, and the oak-dominated woodland cells
+      at a median 785 m. With the Tuscan band half of the Turkey oak would lose a quarter or more of its
+      credit. The one Basilicata record is at 946 m.
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: plausible
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-R1 + POR-R2, transferred from B. edulis.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 30}
+    response: {trapezoid: [50, 125, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, mushma_rain_tuning_2026]
+    derived: true
+    data: derived
+    notes: >-
+      POR-M1, transferred from B. edulis and community studies.
+      Tuned (2026-09-22): the absolute 20->80 mm ramp was full in an ordinary September, so the 30
+      days are scored as a percentage of the cell's own normal for those days (2016-2025 reanalysis,
+      downscaled and rain-scaled like the rain): 0 at 50 %, full from 125 %. It raised the porcini
+      train objective by 0.03 with or without the rain scale, and the hold-out one by 0.013.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [10, 14, 22, 26]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, beugelsdijk2008, matteucci2008_micoponte, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: >-
+      POR-T4. The warmest band: "la specie più xerotermofila". Low confidence within plausible.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d; compare in the backtest.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.75
+    confidence: plausible
+    source: [salerni2023_amiata, andrew2025]
+    derived: true
+    data: derived
+    notes: POR-X1. Milder than for B. edulis (x0.75).
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.4
+    confidence: folklore
+    source: [funghimagazine_fino_quando, muse_censimento_boletus]
+    derived: true
+    data: available
+    notes: POR-X3. Hardier in mild winters without constant frost (x0.4). NE Italy records run to early December.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [borgotaro_igp_rt, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 5, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-X6. ET0 threshold 5 mm/day for a low-altitude summer taxon. All numbers are guesses.
+
+  - id: sun_exposure
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.sun_exposure
+    input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
+    response: {trapezoid: [80, 95, null, null]}
+    floor: 0.9
+    confidence: folklore
+    source: [matteucci2008_micoponte]
+    derived: true
+    data: derived
+    notes: >-
+      POR-A6. Tolerates or prefers sunny exposures (S x1.0, E/W x1.0, N x0.9): x0.9 at 80 % of
+      flat ground's sun or less, x1 from 95 %. Read on the day's sun ratio, the cell's sun as
+      a percentage of flat ground's (api.model.terrain), so it bites hardest in autumn, when
+      the sun is low. The terrain microclimate already makes sunny slopes warmer and drier for
+      every rule; this line is the species' own preference on top of that, kept soft.
+
+  - id: slope
+    role: stopper
+    kind: static_band
+    i18n_key: factor.slope
+    input: {attribute: slope_deg}
+    response: {trapezoid: [null, null, 25, 40]}
+    floor: 0.8
+    confidence: plausible
+    source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
+    derived: true
+    data: available
+    notes: >-
+      Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
+      1979), but a 1 km cell's mean slope is not the slope of the exact spot the mushrooms
+      grow on: normal terrain for Tuscan woodland scores full credit, and only clearly
+      steep cells lose it. Woodland cells on the Tuscan grid run p10 10.2°, p25 12.6°, median
+      16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up to 25°, about the p90, x0.8 from 40°.
+      Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B. edulis
+      yield was highest under about 11° on plots in north-east Turkey (Mumcu Küçüker 2019);
+      two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts on
+      the score only, never on the rain, so the same water is not counted twice.
+
+known_gaps:
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive.
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: soil
+    description: POR-N1. "Heavy loamy, often somewhat calcareous soil" (Dutch sampling); acid loams under Cistus in Spain.
+    needs: [soil_texture, soil_ph]
+    confidence: plausible
+    source: [beugelsdijk2008, alonso_ponce2011]

@@ -93,6 +93,26 @@ describe('HubPage', () => {
     expect(onSelectRegion).toHaveBeenLastCalledWith('umbria')
   })
 
+  it('filters the list by name, ignoring case and accents, until the search is cleared', async () => {
+    renderHub()
+    const search = screen.getByRole('searchbox', { name: 'Cerca una regione' })
+    await userEvent.type(search, 'TOSC')
+    const list = screen.getByRole('list')
+    expect(within(list).getAllByRole('link')).toHaveLength(1)
+    expect(within(list).getByRole('link', { name: /^Toscana/ })).toBeInTheDocument()
+
+    await userEvent.clear(search)
+    await userEvent.type(search, 'xyz')
+    expect(screen.queryByRole('list')).not.toBeInTheDocument()
+    expect(screen.getByText('Nessuna regione trovata')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cancella la ricerca' }))
+    expect(search).toHaveValue('')
+    expect(
+      within(screen.getByRole('list')).getByRole('link', { name: /^Umbria/ }),
+    ).toBeInTheDocument()
+  })
+
   it('lights up a region on the map while its row is hovered', async () => {
     renderHub()
     await userEvent.hover(screen.getByRole('link', { name: /^Umbria/ }))

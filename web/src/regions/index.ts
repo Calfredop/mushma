@@ -4,6 +4,7 @@
  */
 import { inBounds } from '../geo/distance.js'
 import { abruzzo } from './abruzzo.js'
+import { basilicata } from './basilicata.js'
 import { calabria } from './calabria.js'
 import { campania } from './campania.js'
 import { emiliaRomagna } from './emilia-romagna.js'
@@ -42,6 +43,11 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [campania.slug]: campania,
   [abruzzo.slug]: abruzzo,
   [calabria.slug]: calabria,
+  // After Campania and Calabria, before Puglia: Puglia's bbox holds all of Basilicata, so later it
+  // would never be found; earlier it would take Campania's Vallo di Diano and Calabria's Pollino.
+  // Here the hub finds it for 45 % of its woods (Matera, the Val d'Agri, the Ionian coast) and
+  // Puglia's Altamura and Gravina go to it (fix-region-lookup-by-boundary.md).
+  [basilicata.slug]: basilicata,
   [puglia.slug]: puglia,
   [lazio.slug]: lazio,
   [sicilia.slug]: sicilia,
@@ -78,6 +84,12 @@ export function regionLocative(
 /** Every served region, in registry order. */
 export function listRegions(): RegionDefinition[] {
   return Object.values(REGIONS)
+}
+
+/** Whether a region's name holds the typed query, ignoring case and accents. */
+export function matchesRegionName(name: string, query: string): boolean {
+  const norm = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+  return norm(name).includes(norm(query.trim()))
 }
 
 /** The first served region whose bbox contains the point, or undefined. */

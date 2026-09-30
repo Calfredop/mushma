@@ -316,6 +316,30 @@ ispra_cnat_calabria:
     layer: cartadeglihabi_calabria
     field: codice
 
+ispra_cnat_basilicata:
+  name: ISPRA — Carta della Natura della Regione Basilicata, carta degli habitat 1:50.000 (2013)
+  homepage: https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/basilicata
+  license: CC BY 4.0
+  attribution: "Carta della Natura della Regione Basilicata © ISPRA, CC BY 4.0"
+  notes: >-
+    Papallo O., Bianco P.M. 2012, Carta della Natura della Regione Basilicata: Carta degli habitat
+    alla scala 1:50.000 (ISPRA, with ARPA Basilicata; RNDT record ispra_rm:0003CNATHB_DT, created
+    2012-01-31, revised 2013-01-31). Mapped from Landsat IMAGE2000, the IT2000 (1998-99) and AGEA
+    2008 orthophotos and field surveys: 40,411 polygons over the whole region, 86 habitats, each
+    with its CORINE Biotopes code (codice_corine: 41.18 southern beech woods, 41.7511 Turkey-oak
+    woods, 41.C1 Alnus cordata woods, 83.31 conifer plantations…), so one layer gives both the broad
+    groups and the forest types. The record declares CC BY 4.0 ("Dato concesso con licenza
+    CC-BY-4.0") and also asks that reproduction for research, teaching, dissemination, study and
+    leisure be requested and credited ("previa richiesta"). The GeoPackage's name misspells the
+    region ("Baslicata"), as the record's download link does. The Region's Carta forestale (INEA,
+    2006) is not published as data and its Uso del suolo 2013 (1:5,000, IODL 2.0) has no forest
+    types: .gavin-root/docs/regions/basilicata.md, Sources.
+  download:
+    url: https://sdi.isprambiente.it/download_ogc/cnat/CNAT_Habitat_Baslicata.gpkg
+    geopackage: true
+    layer: CNAT_Habitat_Baslicata
+    field: codice_corine
+
 rp_carta_forestale:
   name: Regione Piemonte — Carta forestale regionale, edizione 2025 (1:10.000)
   homepage: https://www.geoportale.piemonte.it/geonetwork/srv/api/records/r_piemon:130b499f-3e2d-4388-8cf0-66892cd7ee25
