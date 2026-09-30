@@ -290,6 +290,8 @@ uv run python -m api.weather.checks gauges --start 2025-01-01 --end 2025-12-31
 uv run python -m api.weather.checks gauges --region emilia_romagna
 # Lombardia: ARPA Lombardia's CC0 open data, days summed on dati.lombardia.it:
 uv run python -m api.weather.checks gauges --region lombardia --start 2019-01-01 --end 2025-12-31
+# Sardinia: ARPAS's yearly tables of daily station data on ArcGIS Online, 2016-2022 (CC BY-NC-ND):
+uv run python -m api.weather.checks gauges --region sardegna --start 2018-01-01 --end 2022-12-31
 uv run python -m api.weather.checks lattice
 ```
 

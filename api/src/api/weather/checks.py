@@ -27,7 +27,16 @@ from pyproj import Transformer
 
 from api.grid.region import load_region
 from api.grid.sources import fetch
-from api.weather import arpa_lombardia, arpa_piemonte, arpal, bolzano_meteo, siarl, sias, umbria_sir
+from api.weather import (
+    arpa_lombardia,
+    arpa_piemonte,
+    arpal,
+    arpas,
+    bolzano_meteo,
+    siarl,
+    sias,
+    umbria_sir,
+)
 from api.weather.config import load_weather_config
 from api.weather.downscale import cell_weather
 from api.weather.ingest import (
@@ -367,6 +376,26 @@ def sias_sicilia(raw: Path, start: date, end: date) -> GaugeNetwork:
     return GaugeNetwork(stations, lambda gauge: sias.series_of(daily, gauge.code), calendar_days)
 
 
+def arpas_sardegna(raw: Path, start: date, end: date) -> GaugeNetwork:
+    """ARPAS (Sardinia): one ArcGIS table of daily station data a year, 2016-2022, with each
+    station's height and position, UTC days (api.weather.arpas)."""
+    folder = raw / "arpas"
+    daily = pd.concat(
+        [
+            arpas.parse_page(page)
+            for year, url in arpas.year_services(start, end).items()
+            for page in arpas.fetch_year(url, folder / str(year))
+        ],
+        ignore_index=True,
+    )
+    daily = daily[(daily["date"] >= start) & (daily["date"] <= end)]
+    return GaugeNetwork(
+        arpas.stations_of(daily),
+        lambda gauge: arpas.series_of(daily, gauge.code),
+        arpal.utc_day_totals,
+    )
+
+
 GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "emilia_romagna": arpae_emilia_romagna,
     "tuscany": sir_toscana,
@@ -377,6 +406,7 @@ GAUGE_NETWORKS: dict[str, Callable[[Path, date, date], GaugeNetwork]] = {
     "lombardia": arpa_lombardia_network,
     "lazio": siarl_lazio,
     "sicilia": sias_sicilia,
+    "sardegna": arpas_sardegna,
 }
 
 
