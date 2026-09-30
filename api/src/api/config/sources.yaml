@@ -444,6 +444,32 @@ ispra_cnat_molise:
     layer: CNAT_Habitat_Molise
     field: codice_corine
 
+ispra_cnat_sardegna:
+  name: ISPRA, Regione Sardegna — Carta della Natura della Regione Sardegna, carta degli habitat 1:50.000 (2011)
+  homepage: https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/sardegna
+  license: CC BY 4.0
+  attribution: "Carta della Natura della Regione Sardegna © ISPRA, Regione Sardegna, CC BY 4.0"
+  notes: >-
+    Camarda I., Carta L., Laureti L., Angelini P., Brunu A., Brundu G. 2011, Carta della Natura
+    della Regione Sardegna: Carta degli habitat alla scala 1:50.000 (ISPRA; report ISPRA Rapporti
+    222/2015). Co-funded by ISPRA and the Region, which gave the work to the University of Sassari;
+    finished in 2010, photo-interpreted on the IT2000 orthophotos (1998-99) and Landsat IMAGE2000,
+    with field checks. 27,261 polygons over the whole region, 93 habitats, each with its CORINE
+    Biotopes code (codice_corine: 45.317 Sardinian holm-oak woods, 45.21 cork-oak woods, 41.72
+    Sardinian downy-oak woods, 83.31 conifer plantations, 84.6 wooded pasture…), so one layer gives
+    both the broad groups and the forest types. ISPRA's data sheet (RNDT record
+    ispra_rm:0017CNATHB_DT) grants CC BY 4.0 and also asks that use for teaching, research,
+    dissemination, study and leisure be requested and credited ("previa richiesta"). The GeoPackage
+    also holds a second layer (Valle d'Aosta), hence `layer`. The Region's own Carta dell'uso del
+    suolo 2008 (1:25,000, CC BY 4.0) has no forest types beyond cork oak and chestnut orchards, and
+    its woods need 20 % tree cover: the forest-area cross-check in
+    .gavin-root/docs/regions/sardegna.md, Sources.
+  download:
+    url: https://sdi.isprambiente.it/download_ogc/cnat/CNAT_Habitat_Sardegna.gpkg
+    geopackage: true
+    layer: CNAT_Habitat_Sardegna
+    field: codice_corine
+
 copernicus_dem_glo30:
   name: Copernicus DEM GLO-30
   homepage: https://registry.opendata.aws/copernicus-dem/

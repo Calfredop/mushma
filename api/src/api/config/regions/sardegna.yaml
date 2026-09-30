@@ -1,0 +1,145 @@
+# Sardegna: region #19 of the full-Italy rollout (.gavin-root/docs/regions/sardegna.md).
+id: sardegna
+name: {it: Sardegna, en: Sardinia}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°:
+# Sant'Antioco and San Pietro to the south-west, Asinara to the north-west, La Maddalena to the
+# north-east. It stops short of Corsica (Bonifacio, 41.39° N).
+bbox_wgs84: [8.13, 38.85, 9.83, 41.32]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 20
+
+# Woodland: one map gives both layers. ISPRA and the Region's Carta della Natura habitat map
+# (1:50,000, 2011, by the University of Sassari on the 1998-99 orthophotos) gives every polygon its
+# CORINE Biotopes habitat, which says both which broad group it is and which kind. There is no mixed
+# class, no beech and no fir. The Region's own Carta dell'uso del suolo 2008 has no forest types
+# beyond cork oak and chestnut orchards and counts woods from 20 % tree cover (INFC from 10 %), so it
+# holds 19 % less forest than INFC 2015 where this map holds 8 % less. Conifer plantations (83.31)
+# are the post-war reforestation, mostly maritime, Aleppo and stone pine, which CLC IV files as
+# Mediterranean pines (3121) in Sardinia: mediterranean_pine. The wild-olive and carob woods (45.1)
+# count as woods, as INFC counts them, under mixed_broadleaf: they are not oak. Wooded pasture
+# (84.6, the dehesa of cork and downy oak) stays out, as CLC's agroforestry (244) does everywhere;
+# broadleaf plantations, Ampelodesmos steppe, bracken, the montane spiny heath of the Gennargentu
+# (31.75), coastal garighe, phrygana, grassland and rock are left out too. See
+# .gavin-root/docs/woodland-grid.md and .gavin-root/docs/regions/sardegna.md (Sources).
+forest:
+  groups:
+    source: ispra_cnat_sardegna
+    class_column: codice_corine
+    classes:
+      "45.317": broadleaf    # leccete sarde
+      "45.323": broadleaf    # leccete supramediterranee della Sardegna
+      "45.21": broadleaf     # sugherete
+      "45.1": broadleaf      # boschi e boscaglie a olivastro e carrubo
+      "41.72": broadleaf     # querceti a roverella della Sardegna
+      "41.732": broadleaf    # querceti mediterranei a roverella
+      "41.9": broadleaf      # boschi a Castanea sativa
+      "41.81": broadleaf     # boschi di Ostrya carpinifolia
+      "41.D1": broadleaf     # formazioni a pioppo tremulo e betulla
+      "45.8": broadleaf      # boschi di Ilex aquifolium
+      "44.13": broadleaf     # boschi ripariali temperati di salici
+      "44.61": broadleaf     # boschi ripariali a pioppi
+      "44.63": broadleaf     # boschi ripariali a Fraxinus angustifolia
+      "44.91": broadleaf     # boschi palustri di ontano nero e salice cinerino
+      "83.322": broadleaf    # piantagioni di eucalipti
+      "42.82": conifer       # pinete a pino marittimo
+      "42.83": conifer       # pinete a pino domestico
+      "42.84": conifer       # pinete a pino d'Aleppo
+      "16.29": conifer       # dune alberate (coastal stone and Aleppo pine)
+      "83.31": conifer       # piantagioni di conifere
+      "42.A7": conifer       # boschi di Taxus baccata
+      "16.27": macchia       # dune stabili a ginepri
+      "16.28": macchia       # dune stabili con macchia a sclerofille
+      "32.11": macchia       # matorral a querce sempreverdi
+      "32.12": macchia       # matorral a olivastro e lentisco
+      "32.13": macchia       # matorral a ginepri
+      "32.14": macchia       # matorral a pini
+      "32.18": macchia       # matorral a Laurus nobilis
+      "32.211": macchia      # macchia bassa a olivastro e lentisco
+      "32.212": macchia      # macchia a eriche termomediterranee
+      "32.215": macchia      # macchia a Cytisus
+      "32.218": macchia      # macchia a Myrtus communis
+      "32.219": macchia      # macchia a Quercus coccifera
+      "32.22": macchia       # macchia a Euphorbia dendroides
+      "32.24": macchia       # macchia con Chamaerops humilis
+      "32.3": macchia        # garighe e macchie mesomediterranee silicicole
+      "32.4": macchia        # garighe e macchie mesomediterranee calcicole
+      "31.81": transitional  # cespuglieti temperati a latifoglie decidue
+      "31.844": transitional # ginestreti collinari e montani
+      "31.845": transitional # ginestreti a Genista aetnensis
+      "31.8A": transitional  # roveti
+      "32.26": transitional  # ginestreti termomediterranei
+      "44.12": transitional  # saliceti arbustivi ripariali mediterranei
+      "44.81": transitional  # boscaglie ripariali a tamerici, oleandri e agnocasti
+  types:
+    source: ispra_cnat_sardegna
+    classes:
+      "45.317": evergreen_oak
+      "45.323": evergreen_oak
+      "45.21": evergreen_oak        # cork oak
+      "41.72": deciduous_oak        # Quercus pubescens s.l. (Q. ichnusae, Q. congesta, Q. virgiliana)
+      "41.732": deciduous_oak
+      "41.9": chestnut
+      "45.1": mixed_broadleaf       # wild olive and carob
+      "41.81": mixed_broadleaf      # hop-hornbeam
+      "41.D1": mixed_broadleaf
+      "45.8": mixed_broadleaf       # holly
+      "44.13": riparian
+      "44.61": riparian
+      "44.63": riparian
+      "44.91": riparian
+      "83.322": exotic_broadleaf    # eucalyptus
+      "42.82": mediterranean_pine
+      "42.83": mediterranean_pine
+      "42.84": mediterranean_pine
+      "16.29": mediterranean_pine
+      "83.31": mediterranean_pine   # reforestation, filed as CLC IV files it in Sardinia (3121)
+      "42.A7": other_conifer        # yew
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Sardegna, IT", admin level
+# 10) on 2026-09-30. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 13071
+
+# Lapse rates (°C per km) in place of weather.yaml's national ones where the fit differs by more than
+# 1 °C/km. Across the 242 ERA5-Land land nodes at 0.1° (lattice check, three 14-day windows of 2024)
+# the minimum and the topsoil cool faster with height than the national 4.2 and 3.7: median daily
+# fits 5.26 and 4.72, as steep in July and October as in January. The fitted rates cut the leave-out
+# RMSE of the 0.2° lattice from 0.374 to 0.351 °C (min) and 0.620 to 0.616 (soil), and at 0.3° from
+# 0.456 to 0.452 and 0.751 to 0.730. The maximum (3.77) and the mean (4.75) are within 1 °C/km of
+# the national 4.5 and keep it. .gavin-root/docs/regions/sardegna.md, Weather.
+weather:
+  lapse_rates:
+    temperature_2m_min: 5.3
+    soil_temperature_0_to_7cm_mean: 4.7
+
+# Rain scale (merged onto config/model.yaml), fitted on the ARPAS gauges (Sardinia's daily station
+# tables, 2018-2022). Sardinia's history is CDS, so the scale names that source too: the national
+# one scales era5_seamless only, while the rain normals are scaled whatever their source.
+# .gavin-root/docs/regions/sardegna.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 1.00
+    per_km: 0.34
+    source: [mushma_sardegna_arpas_gauge_check_2026]
+    notes: >-
+      Least squares through the origin of gauge totals on raw CDS era5_land_cds totals (read
+      bilinearly from the land nodes at each station, re-cut into UTC days) x (a + b x elevation) over
+      the 272 ARPAS stations at 0-1,372 m with whole days on 80 % of 2018-2022 gave a = 1.002, b =
+      0.342 per km: raw CDS holds 0.95 of the gauge rain below 200 m, 0.81 at 400-800 m and 0.74 at
+      800 m and above. Leave-one-out slopes run 0.33-0.35; the 141 stations whole over 2016-2022 give
+      1.00 + 0.32. It gives 1.07 at 200 m, 1.17 at 500 m, 1.27 at 800 m and 1.41 at 1,200 m. The
+      reanalysis's error is also spatial: dry on the south-east's mountains (Sette Fratelli, Pula's
+      Is Cannoneris 0.46-0.58), wet on the north-west coast (Sorso, Bosa, Castelsardo 1.3-1.45).
