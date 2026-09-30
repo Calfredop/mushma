@@ -235,6 +235,99 @@ def test_read_vector_fetches_a_wfs_layer(tmp_path: Path) -> None:
     assert list(frames["code"]) == ["3231"]
 
 
+class _FakeFilteredWFS(BaseHTTPRequestHandler):
+    """A GeoServer WFS that answers a CQL_FILTER and refuses one sent with a BBOX, as GeoServer
+    does ("BBOX and CQL_FILTER are mutually exclusive")."""
+
+    requests: list[dict[str, list[str]]] = []
+
+    def do_GET(self) -> None:  # noqa: N802
+        query = parse_qs(urlparse(self.path).query)
+        type(self).requests.append(query)
+        if "BBOX" in query and "CQL_FILTER" in query:
+            self.send_response(400)
+            self.end_headers()
+            return
+        features = [
+            {
+                "type": "Feature",
+                "properties": {"code": code, "flag": flag},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [11.0 + i, 43.0],
+                            [11.1 + i, 43.0],
+                            [11.1 + i, 43.1],
+                            [11.0 + i, 43.1],
+                            [11.0 + i, 43.0],
+                        ]
+                    ],
+                },
+            }
+            for i, (code, flag) in enumerate([("31142", "-99994"), ("31249", "01")])
+        ]
+        payload = json.dumps({"type": "FeatureCollection", "features": features}).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def log_message(self, *args: object) -> None:
+        pass
+
+
+def test_read_vector_sends_a_wfs_cql_filter_in_place_of_the_bbox(tmp_path: Path) -> None:
+    _FakeFilteredWFS.requests = []
+    server = HTTPServer(("127.0.0.1", 0), _FakeFilteredWFS)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    download = {
+        "wfs": f"http://127.0.0.1:{server.server_port}/wfs",
+        "type_name": "rv:ccs",
+        "cql_filter": "clc_lvl_2 = '31'",
+    }
+    other = {**download, "cql_filter": "clc_lvl_2 = '32'"}
+    try:
+        frames = read_vector(download, tmp_path / "cache", bbox_wgs84=(10.9, 42.9, 12.2, 43.2))
+        read_vector(download, tmp_path / "cache", bbox_wgs84=(10.9, 42.9, 12.2, 43.2))
+        read_vector(other, tmp_path / "cache", bbox_wgs84=(10.9, 42.9, 12.2, 43.2))
+    finally:
+        server.shutdown()
+
+    assert sorted(frames["code"]) == ["31142", "31249"]
+    # The filter replaces the bbox, and each filter is cached on its own: the second read of the
+    # first filter comes from the cache, the other filter is fetched.
+    assert len(_FakeFilteredWFS.requests) == 2
+    assert [q["CQL_FILTER"] for q in _FakeFilteredWFS.requests] == [
+        ["clc_lvl_2 = '31'"],
+        ["clc_lvl_2 = '32'"],
+    ]
+    assert all("BBOX" not in q for q in _FakeFilteredWFS.requests)
+
+
+def test_read_vector_applies_where_and_columns_to_a_wfs_layer(tmp_path: Path) -> None:
+    server = HTTPServer(("127.0.0.1", 0), _FakeFilteredWFS)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    download = {
+        "wfs": f"http://127.0.0.1:{server.server_port}/wfs",
+        "type_name": "rv:ccs",
+        "cql_filter": "clc_lvl_2 = '31'",
+    }
+    try:
+        frames = read_vector(
+            download,
+            tmp_path / "cache",
+            bbox_wgs84=(10.9, 42.9, 12.2, 43.2),
+            columns=["code"],
+            where="flag = '-99994'",
+        )
+    finally:
+        server.shutdown()
+
+    assert list(frames["code"]) == ["31142"]
+    assert "flag" not in frames.columns
+
+
 class _FakePagedWFS(BaseHTTPRequestHandler):
     """A WFS 2.0 server that caps every response at two features, like GeoServer's maxFeatures."""
 

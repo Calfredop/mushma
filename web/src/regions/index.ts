@@ -21,6 +21,7 @@ import { trentinoAltoAdige } from './trentino-alto-adige.js'
 import type { Bounds, RegionDefinition } from './types.js'
 import { umbria } from './umbria.js'
 import { valleDAosta } from './valle-d-aosta.js'
+import { veneto } from './veneto.js'
 
 export type { Bounds, RegionDefinition, RegionLocaleCopy } from './types.js'
 
@@ -46,6 +47,10 @@ export const REGIONS: Record<string, RegionDefinition> = {
   // Last: 59 % of Molise's woodland cells lie inside Abruzzo's, Campania's, Lazio's or Puglia's
   // bbox and Molise's holds theirs, so no earlier place would leave every served region as it was.
   [molise.slug]: molise,
+  // Last: Veneto's bbox overlaps Trentino-Alto Adige's, Lombardia's and Friuli-Venezia Giulia's so
+  // much that findRegionAt, which takes the first bbox holding the point, would hand most of their
+  // woods to Veneto if it came first (fix-region-lookup-by-boundary.md).
+  [veneto.slug]: veneto,
 }
 
 export const DEFAULT_REGION_SLUG = toscana.slug
