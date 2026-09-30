@@ -600,7 +600,10 @@ deploy/deploy-api.sh --skip-tests # when CI has just run them
 It refuses anything the server can't pull (another branch, uncommitted `api/` or `deploy/`
 changes, a `main` that isn't pushed). It also installs the daily job's systemd units when they
 changed, then smoke-tests the live routes. It warns when the served scores predate the deployed
-rules. Only `deploy/.env` stays a manual edit on the server.
+rules. The server half ends with a `server: done` line and the script fails if that line never
+shows up, so a run cut short can't pass as a deploy. `--run-job` waits for the whole daily job
+(883 s for the 19 regions on 2026-09-30), not a couple of minutes. Only `deploy/.env` stays a
+manual edit on the server.
 
 `deploy/deploy-api.sh` brings the whole compose stack up (api, redis, caddy, umami), waits until
 the API container can PING Redis, then smoke-tests the live routes. Caddy doesn't reload
