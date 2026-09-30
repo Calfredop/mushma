@@ -316,6 +316,9 @@ rules. Ovoli mean 0.11, gallinacci 0.20, with 8.5 % of cells at 0.6 or more on t
 
 ## After the deploy: what to verify
 
+**The stores are not on the server yet.** The agent's `deploy/rsync-region-data.sh molise` was
+refused by its permission mode on 2026-09-30; run it (or the gavin tool "Rsync region data" with
+region `molise`, redeploy `no`) with `DATA_DIR` at the shared data root before main is deployed.
 The server serves a region only when its YAML is in the deployed code and its stores are on disk,
 so the stores stay inert until `main` with `config/regions/molise.yaml` is deployed by the rail's
 "Deploy pulled main" step (with the daily job, which brings the weather and scores up to that day).
