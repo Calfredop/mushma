@@ -12,6 +12,7 @@ import { lazio } from './lazio.js'
 import { liguria } from './liguria.js'
 import { lombardia } from './lombardia.js'
 import { marche } from './marche.js'
+import { molise } from './molise.js'
 import { piemonte } from './piemonte.js'
 import { puglia } from './puglia.js'
 import { sicilia } from './sicilia.js'
@@ -42,6 +43,9 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [puglia.slug]: puglia,
   [lazio.slug]: lazio,
   [sicilia.slug]: sicilia,
+  // Last: 59 % of Molise's woodland cells lie inside Abruzzo's, Campania's, Lazio's or Puglia's
+  // bbox and Molise's holds theirs, so no earlier place would leave every served region as it was.
+  [molise.slug]: molise,
 }
 
 export const DEFAULT_REGION_SLUG = toscana.slug

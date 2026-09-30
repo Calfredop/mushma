@@ -5884,3 +5884,248 @@ references:
       (14); a gauge-total fit of scale = 0.82 + 0.23 per km of elevation brings them to 1.00, 1.03 and 0.94, and averages
       0.99 over the woodland cells. The five woodland-cell gauges (165-1,176 m) read 0.98 raw. Above 800 m the slope rests
       on one gauge (Accumoli) and is extrapolated.'
+  # ---------------------------------------------------------------------------------------------
+  # Molise (region card, 2026-09-30): sources for species/molise/ and
+  # .gavin-root/docs/species-ecology/molise.md. Appended as one block at the end of the file; keys
+  # carry a molise infix. Neighbours' sources the Molise rules lean on (the Campania Laceno pages and
+  # checklist, the Matese society, the Abruzzo Laga blog, the ISPRA record manuals, Funghi Magazine's
+  # calendar and August 2025 bulletin) are reused under their existing keys.
+  # ---------------------------------------------------------------------------------------------
+  lr_molise_4_2008:
+    citation: 'Regione Molise. L.R. 19 febbraio 2008, n. 4, Nuova disciplina in materia di raccolta e commercializzazione
+      dei funghi epigei (BUR Molise n. 5 del 1 marzo 2008), text with the amendments of L.R. 17/2010, 8/2016, 1/2017,
+      25/2017, 1/2018, 1/2020 and art. 12 of L.R. 7/2026. Consiglio regionale del Molise'
+    url: https://consiglio.regione.molise.it/node/8451
+    kind: institutional
+    region: Molise
+    verified: verified
+    supports: 'the regional picking law in force (it repealed L.R. 11/2000 and its amendments, art. 24): a regional
+      permit after a course and exam for residents (art. 2-4); picking "dall''alba al tramonto" (art. 5.1.a); "tre
+      chilogrammi più un carpoforo" per person per day (art. 6.1); no picking in "riserve naturali integrali", in
+      national parks, nature reserves and regional parks unless their bodies allow it, and "nelle aree oggetto di
+      rimboschimento e fino a quindici anni dall''impianto" (art. 7.4); banned: "Boletus edulis (Porcino) e relativo
+      gruppo con diametro del cappello inferiore a cm. 3", "Cantharellus cibarius (Gallinaccio) con diametro del
+      cappello inferiore a cm. 2", "Amanita caesarea allo stato di ovolo chiuso" (art. 7.5); temporary limits or bans
+      by the Region (art. 7.6). No closed days, season dates or altitude limits. Confirms the porcini group, the
+      chanterelle and the ovolo as regional species.'
+    cited_as:
+    - species-ecology/molise.md
+  regione_molise_ctf2009:
+    citation: 'Regione Molise, Servizio tutela e valorizzazione patrimonio forestale (2009). Carta delle Tipologie
+      Forestali della Regione Molise: Relazione (43 pp.), approved with DGR n. 252 of 16 March 2009'
+    url: https://www.regione.molise.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/737
+    kind: institutional
+    region: Molise
+    verified: verified
+    supports: 'Molise''s forest types, areas and belts: 157,609 ha of woods and shrubland, 53 % coppice "con prevalenza di
+      cerro e roverella"; Turkey oak "quasi il 40%" of the woods (Cerreta mesoxerofila 31,094 ha, Cerreta mesofila
+      29,336 ha, with farnetto and silver-fir variants), the three downy-oak types 33,688 ha; beech 14,885 ha (9.45 %): Faggeta
+      submontana "tra gli 800 e i 1200 metri" (Matese, Alto Molise), Faggeta montana "da 1000 a 1500 metri" (10,500
+      ha), Faggeta altomontana "tra gli 800 e il limite superiore della vegetazione"; silver fir 343 ha "a quote comprese
+      tra gli 800 m ed i 1400 m" (Abeti Soprani of Pescopennataro, Bosco Canale, Montecastellare, Collemeluccio);
+      chestnut under 360 ha, "nella regione Molise raramente si riscontrano terreni adatti"; hop-hornbeam 500-1,200 m;
+      conifer reforestation: basal, Aleppo pine with cypress, "non si spingono altre i 700 metri", round the Occhito
+      and Guardialfiera reservoirs (1,800 ha); submontane, 650-1,000 m, mostly black pine, also Aleppo pine in the
+      province of Campobasso and some silver fir in the north of Isernia (2,434 ha); montane, black pine in the beech
+      belt (650 ha); Latifoglie di invasione on abandoned land 13,650 ha. Climate: the coast "tre mesi estivi con
+      presenza di aridità"; Guardiaregia and Roccamandolfi rain "molto abbondanti anche nel periodo estivo";
+      Capracotta about 1,000 mm with "piogge estive abbondanti" and two months below 0 °C.'
+    cited_as:
+    - species-ecology/molise.md
+  ispra348_2021_cnat_molise:
+    citation: 'Ceralli D., Laureti L. (2021). Carta della Natura della Regione Molise: cartografia e valutazione degli
+      habitat alla scala 1:25.000. ISPRA, Rapporti 348/2021'
+    url: https://www.isprambiente.gov.it/files2021/pubblicazioni/rapporti/rapporto_348_2021.pdf
+    kind: institutional
+    region: Molise
+    verified: verified
+    supports: 'the habitat map the Molise grid reads (103 CORINE Biotopes habitats on the 2018 orthophotos) and what
+      each forest class holds: 41.18 southern beech "da quote massime attorno ai 1900 metri" down to about 700 m, mainly
+      on the Matese, the Mainarde and the Alto Molise (16,557 ha); 41.741 closed Turkey-oak woods, Isernia, the northern
+      Mainarde, the eastern Matese, central Campobasso (49,094 ha); 42.15 silver fir at 800-1,400 m, Abeti Soprani of
+      Pescopennataro, Bosco Canale, Rosello, Montecastellare, Collemeluccio (397 ha); 42.G_n planted conifers (5,097
+      ha): Mediterranean pines and cypress round the two reservoirs, "Generalmente ... non si spingono altre i 700
+      metri", and above 700 m "popolamenti dominati dal pino nero", with broadleaves coming in; 4D_n synanthropic woods
+      (3,456 ha) on abandoned fields, orchards and pastures, with cherry, chestnut, walnut, hazel, willow, poplar, lime,
+      maple, ash, Ostrya and some robinia and ailanthus.'
+    cited_as:
+    - species-ecology/molise.md
+  infc2015_molise:
+    citation: 'Gasparini P., Di Cosmo L., Floris A., De Laurentis D. (eds.) (2022). Italian National Forest Inventory
+      INFC2015, tables 1.1 and 1.4 (Molise). Arma dei Carabinieri, CREA'
+    url: https://www.inventarioforestale.org/en/superficie-e-composizione-area-and-composition/
+    kind: dataset
+    region: Molise
+    verified: verified
+    supports: 'Molise bosco 153,248 ha (relative standard error 3 %), other wooded land 20,025 ha, of 443,765 ha; tall
+      forest by category: Turkey oak, Hungarian oak and other Mediterranean oaks 51,975 ha (ES 8.4 %), downy, sessile
+      and pedunculate oak 48,198 (ES 9.4 %), beech 14,839 (ES 15.5 %), other deciduous 10,225, hygrophilous 9,054,
+      hop-hornbeam and hornbeam 8,982, black and laricio pine 2,343 (ES 40.5 %), Mediterranean pines 2,184 (ES
+      68.9 %), silver fir 1,172 (ES 57.5 %), holm oak 1,172, chestnut 391 (ES 99.8 %); no spruce, larch or Scots pine.'
+    cited_as:
+    - species-ecology/molise.md
+  mushma_molise_forest_composition_2026:
+    citation: 'mushma Molise woodland composition: area of each CORINE Biotopes forest and scrub class of ISPRA''s Carta
+      della Natura del Molise (27,661 polygons, the GeoPackage of config/sources.yaml, read by the class mapping of
+      config/regions/molise.yaml), elevations from Copernicus DEM GLO-30 on a 100 m lattice, and the Molise woodland
+      grid of 2026-09-30 (cells.parquet, cell_habitats.parquet), computed 2026-09-30'
+    url: https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/molise
+    kind: analysis
+    region: Molise
+    verified: verified
+    supports: 'The map holds 181,300 ha under a habitat key, 159,400 ha of it broadleaf or conifer wood. Shares of the
+      wood and elevations (p10 / median / p90, max): deciduous_oak 70.8 % (378 / 654 / 955 m, max 1,399; Turkey oak
+      41.741 43.6 % of the class, 546 / 795 / 1,046 m; 41.7511 17.9 %; downy oak 41.731 and 41.732 37.5 %, medians 624
+      and 447 m), beech 10.4 % (1,035 / 1,249 / 1,540 m, max 1,916; 5.6 % above 1,600 m), mixed_broadleaf 7.5 %
+      (hop-hornbeam 44 %, synanthropic 4D_n 29 %, ash-maple-hornbeam 22 %, field elm 5 %; median 725 m), riparian 5.5 %,
+      mountain_pine 3.2 % (42.G_n, 217 / 743 / 1,167 m), evergreen_oak 1.2 % (median 470 m; 45.32 at Monteroduni,
+      Sant''Agapito, Colli a Volturno, Isernia; 45.31 at Mafalda), exotic_broadleaf 0.8 %, chestnut 0.2 % (median 739
+      m; San Massimo, Bojano, Campochiaro), fir_spruce 0.2 % (1,017 / 1,270 / 1,366 m; Pescopennataro, Agnone,
+      Sant''Angelo del Pesco); outside the wood, transitional_woodland_shrub 21,155 ha (median 715 m) and macchia 800
+      ha (median 231 m). On the grid: 1,455 woodland cells, elevation p10 433 m, median 728 m, p90 1,146 m, max 1,781 m
+      (7 above 1,600 m); wooded area deciduous_oak 67.3 %, beech 12.8 %, mixed_broadleaf 7.4 %, transitional 5.8 %,
+      mountain_pine 2.2 %, riparian 2.1 %, evergreen_oak 1.4 %; slope p10 9.7°, median 14.8°, p90 21.9°; topsoil pH
+      p5 6.19, median 6.81, p95 7.32. See species-ecology/molise.md.'
+    cited_as:
+    - species-ecology/molise.md
+  mushma_occurrence_check_molise_2026:
+    citation: 'mushma Molise occurrence check: iNaturalist observations and histogram APIs (place 10871, verifiable;
+      locations used only for open records accurate to 1 km), GBIF occurrence API (gadmGid ITA.12_1), elevations from
+      the Copernicus GLO-30 DEM and the comune, elevation and habitats of the record''s cell on the Molise grid of
+      2026-09-30, queried 2026-09-30. Aggregates only; no coordinates are stored or published'
+    url: https://api.inaturalist.org/v1/docs/
+    kind: analysis
+    region: Molise
+    verified: verified
+    supports: 'Molise has 400 verifiable iNaturalist fungi records (October 23 %, November 13 %, July 12 %, August 11 %),
+      186 of them from 2024-2025, and 4 of the six keys: B. edulis 1 (27 June 2009, about 890 m, Sant''Angelo del
+      Pesco, a scrub cell outside the woodland mask), B. reticulatus 1 (10 August 2025, pure beech, Campitello Matese
+      in San Massimo, cell at 1,595 m), Cantharellus cibarius 2 (2 July 2009 in the same Sant''Angelo del Pesco cell; 6
+      June 2023, Turkey-oak cell at 690 m, Busso); none of B. aereus, B. pinophilus or A. caesarea. GBIF (763 fungi
+      records in Molise) adds only the iNaturalist copies. See species-ecology/molise.md.'
+    cited_as:
+    - species-ecology/molise.md
+  cacciatoridifunghi_molise2023:
+    citation: 'Cacciatori di funghi (2023-06-16). Periodo funghi porcini - Molise'
+    url: https://www.cacciatoridifunghi.it/blog/altro/periodo-funghi-porcini-molise/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'A generic forager page (folklore): four porcini in Molise, "da maggio fino alla fine di ottobre"; the
+      estatino first, "ai margini dei boschi di querce nelle zone esposte a sud", "già a maggio" in sunny spots, usually
+      "fino ad agosto"; the black porcino "da metà estate (luglio) all''inizio dell''autunno (fine settembre)"; a
+      mountain "porcino rosso" "da settembre ai primi giorni di novembre"; B. edulis when the temperature falls, low
+      down "verso la fine di settembre fino alla fine di ottobre", earlier in the mountains. Names no place or tree
+      beyond oaks.'
+    cited_as:
+    - species-ecology/molise.md
+  blog_tartufi_funghi_molise2025:
+    citation: 'Radice (2025-09-08). È tempo di porcini. Ma. Attenzione alle false credenze. Blog dei Tartufi e Funghi del
+      Molise'
+    url: https://ilblogdeitartufiefunghimolisani.it/2025/09/08/e-tempo-di-porcini-ma-attenzione-alle-false-credenze/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'A Molise forager blog (folklore): "Dopo un lungo periodi di siccità, finalmente è arrivata a fine estate
+      la pioggia", bringing "il re dei funghi: il Boletus edulis"; "Da giorni sia nei boschi molisani, sia in quelli dei
+      paesi limitrofi si stanno raccogliendo i funghi", porcini above all (early September 2025). No place, tree or
+      height.'
+    cited_as:
+    - species-ecology/molise.md
+  funghimagazine_molise_2018_07_01:
+    citation: 'Funghi Magazine (2018-07-01). Aggiornamento funghi 01 luglio 2018 (Wayback Machine capture of 2024-04-17)'
+    url: https://web.archive.org/web/20240417091132/https://funghimagazine.it/aggiornamento-funghi-01-luglio-2018/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'Late June 2018: "Lazio, Abruzzo e Molise con ottime nascite in faggete appenniniche ma nascite contenute o
+      assenti in boschi termofili o di collina" (folklore): the early-summer porcini of the Molise mountains are in the
+      beech.'
+    cited_as:
+    - species-ecology/molise.md
+  funghimagazine_molise_2019_09_12:
+    citation: 'Funghi Magazine (2019-09-12). La grande buttata di funghi Porcini di settembre: dove è piovuto in Italia
+      (Wayback Machine capture of 2024-05-27)'
+    url: https://web.archive.org/web/20240527073030/https://funghimagazine.it/la-grande-buttata-di-funghi-porcini-di-settembre-dove-piovuto-in-italia/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'September 2019: "Il Molise è superstar. Sia in provincia di Campobasso che di Isernia, le piogge giungono
+      puntuali quasi ogni giorno"; "Nel Molise collinare abbondano gli Aereus ed breve arriveranno anche gli Ovoli. In
+      quello montano invece abbondano maggiormente Galletti ed Estatini" (folklore): the black porcino in the hill oak,
+      the summer porcino and the chanterelles in the mountains, the ovolo after the black porcino.'
+    cited_as:
+    - species-ecology/molise.md
+  funghimagazine_molise_2022_10_13:
+    citation: 'Funghi Magazine (2022-10-13). Meteo funghi 13-10-2022 (Wayback Machine capture of 2024-04-21)'
+    url: https://web.archive.org/web/20240421083643/https://funghimagazine.it/meteo-funghi-13-10-2022/
+    kind: web
+    verified: verified
+    supports: 'Mid-October 2022: "le grandi nascite in atto al momento in Toscana, Umbria, Marche, Abruzzo, Molise,
+      Campania ... proprio perché in gran parte si tratta di Porcini Neri"; the black porcini run from the coast to the
+      hills and low mountains in about a week, then "gli Ovoli (che di solito chiudono la buttata di Porcini Neri)";
+      B. edulis wants cold rain and "suoli acidi e non i suoli calcarei tipici delle aree a Sud dell''Appennino
+      Settentrionale" (folklore).'
+    cited_as:
+    - species-ecology/molise.md
+  funghimagazine_semaforo_abruzzo_molise_2024:
+    citation: 'Funghi Magazine. Il semaforo dei funghi di Abruzzo e Molise, update of 2024-06-01 (Wayback Machine capture
+      of 2024-06-20)'
+    url: https://web.archive.org/web/20240620084613/https://funghimagazine.it/semaforo-dei-funghi-2/abruzzo-e-molise/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'Early June 2024, per province of Molise: "Sottovento in boschi caldi mediterranei si trovano già Porcini
+      Estivi e Finferli oltre ad altri funghi di stagione. In Appennino nascite di soli Finferli e poco altro"
+      (folklore): chanterelles already in the mountains by the start of June.'
+    cited_as:
+    - species-ecology/molise.md
+  blog_tartufi_funghi_molise_ovolo2024:
+    citation: 'Radice (2024-10-05). Amanita Caesarea. Blog dei Tartufi e Funghi del Molise'
+    url: https://ilblogdeitartufiefunghimolisani.it/2024/10/05/amanita-caesarea/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'A Molise forager blog (folklore): "L''Amanita Caesarea, si trova dal mese di luglio fino a
+      settembre/ottobre nei boschi assolati, predilige i boschi di querce e castagno fino a oltre 1000 m".'
+    cited_as:
+    - species-ecology/molise.md
+  blog_tartufi_funghi_molise_stagione2024:
+    citation: 'Radice (2024-10-10). La stagione della crescita dei funghi. Blog dei Tartufi e Funghi del Molise'
+    url: https://ilblogdeitartufiefunghimolisani.it/2024/10/10/la-stagione-della-crescita-dei-funghi/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'A Molise forager blog (folklore): the summer fungi, porcini, black porcini, galletti and the ovolo, are
+      frequent "nei territori dell''alto Molise,la zona del Matese e nella zona del PNALM"; "Dal mese di ottobre alla
+      fine dell''anno/inizio anno nuovo, oltre a trovare ancora i funghi settembrini, troviamo in grande quantità il
+      gallinaccio".'
+    cited_as:
+    - species-ecology/molise.md
+  isnews_guardiaregia_campochiaro2016:
+    citation: 'isNews (2016-12-18). La Riserva Regionale Guardiaregia-Campochiaro e i suoi siti naturalistici'
+    url: https://www.isnews.it/2016/12/18/la-riserva-regionale-guardiaregia-campochiaro-e-i-suoi-siti-naturalistici/
+    kind: web
+    region: Molise
+    verified: verified
+    supports: 'On the Molise Matese (Guardiaregia, Campochiaro) Turkey oak, hop-hornbeam and chestnut in the submontane
+      belt, then "dai circa 1000 mt. slm" the beech of Monte Mutria and the Montagna di Campochiaro, whose "sottobosco
+      è ricco di Funghi (particolarmente Porcini)" (folklore, a local news feature).'
+    cited_as:
+    - species-ecology/molise.md
+  mushma_molise_rain_prior_2026:
+    citation: 'mushma rain scale for Molise, borrowed: Molise has no open daily rain gauges (the Centro Funzionale
+      releases its gauge data on a PEC request and for a fee; ARSARP on request; the Meteo Hub archive of the
+      dpcn-molise network needs a login), so its scale is the mean of the three neighbouring least-squares fits of
+      gauge totals on CDS era5_land_cds totals x (a + b x elevation): Lazio (92 ARSIAL agrometeo gauges), Campania
+      (33 agrometeo gauges) and Puglia (42 Protezione Civile gauges). See .gavin-root/docs/regions/molise.md, Weather'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/regions/molise.md
+    kind: analysis
+    region: Molise
+    verified: verified
+    supports: 'Lazio 0.82 + 0.23 per km, Campania 0.77 + 0.52 per km and Puglia 0.93 + 0.34 per km find the CDS
+      reanalysis a little wet in the low hills and dry higher up; their mean, 0.84 + 0.36 per km clamped at 1,200 m
+      (the highest gauge of the three fits), is 0.91 at 200 m, 1.02 at 500 m, 1.13 at 800 m and 1.27 from 1,200 m,
+      1.11 on average over Molise''s woodland against 1.50 for the national scale. A prior, not a Molise fit.'
+    cited_as:
+    - regions/molise.md

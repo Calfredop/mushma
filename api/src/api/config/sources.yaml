@@ -394,6 +394,30 @@ ispra_cnat_campania:
     layer: CNAT_Habitat_Campania
     field: codice_corine
 
+ispra_cnat_molise:
+  name: ISPRA — Carta della Natura della Regione Molise, carta degli habitat 1:25.000 (2021)
+  homepage: https://www.isprambiente.gov.it/it/servizi/sistema-carta-della-natura/cartografia/carta-della-natura-alla-scala-1-50.000/molise
+  license: CC BY 4.0
+  attribution: "Carta della Natura della Regione Molise © ISPRA, CC BY 4.0"
+  notes: >-
+    Ceralli D. 2021, Carta della Natura della Regione Molise: Carta degli habitat alla scala
+    1:25.000 (ISPRA; report Ceralli D., Laureti L., ISPRA Rapporti 348/2021): a full revision, on the
+    2018 orthophotos and the new national legend, of the 2015 1:25,000 edition, whose lineage
+    names the Region's 1:10,000 Carta forestale su basi tipologiche. 27,661 polygons over the whole
+    region, 103 habitats, each with its CORINE Biotopes code (codice_corine: 41.18 southern beech
+    woods, 41.741 temperate Turkey-oak woods, 42.15 southern Apennine silver fir, 42.G_n conifers
+    planted outside their range…), so one layer gives both the broad groups and the forest types.
+    The GeoPackage (dated 2022-08-01) is the one the RNDT record ispra_rm:CNAT_MOL_2015_v1 links; the
+    record declares CC BY 4.0 and also asks that use for research, teaching, dissemination, study
+    and leisure be requested and credited ("previa richiesta"). The Region's own forest map (Carta
+    delle Tipologie Forestali, DGR 252/2009) is published only as a PDF, and its geoportal
+    (geo.regione.molise.it) no longer resolves: .gavin-root/docs/regions/molise.md, Sources.
+  download:
+    url: https://sdi.isprambiente.it/download_ogc/cnat/CNAT_Habitat_Molise.gpkg
+    geopackage: true
+    layer: CNAT_Habitat_Molise
+    field: codice_corine
+
 copernicus_dem_glo30:
   name: Copernicus DEM GLO-30
   homepage: https://registry.opendata.aws/copernicus-dem/

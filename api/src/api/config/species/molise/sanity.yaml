@@ -1,0 +1,440 @@
+# Press-contrast sanity check for Molise (api.model.sanity).
+# Areas by comuni (ISTAT names, 2025) or provinces; windows and source URLs written down on
+# 2026-09-30, before any Molise score existed. `seasons: normal` expands to `normal_seasons`.
+# The schema has no group field: contrasts are porcini unless the id starts with the group
+# (`ovoli_...`, `gallinacci_...`); read those with `--group ovoli` / `--group gallinacci`.
+# Evidence, second sources and weaknesses per contrast: .gavin-root/docs/species-ecology/molise.md.
+# Molise local press almost never says how a mushroom season went (it reports lost foragers,
+# permits and recipes). Sixteen of the seventeen contrasts rest mainly on Funghi Magazine's national
+# bulletins (read through Wayback Machine captures, or the live site where robots.txt allows),
+# whose Molise lines are one or two sentences; the others on a Campobasso mushroom show (2017) and,
+# as second sources, Il Giornale del Molise, L'Eco dell'Alto Molise, Coldiretti and a Molise forager
+# blog. Areas: the region, its two provinces, the Alto Molise, the mountain belt (Alto Molise tops,
+# Matese, Montagnola di Frosolone, Mainarde), the hills of the Basso Molise and Fortore, and the
+# Isernia comuni on the L'Aquila border.
+areas:
+  molise:
+    provinces:
+    - '*'
+  cb:
+    provinces:
+    - CB
+  is:
+    provinces:
+    - IS
+  alto_molise:
+    comuni:
+    - Agnone
+    - Capracotta
+    - Vastogirardi
+    - San Pietro Avellana
+    - Carovilli
+    - Pescopennataro
+    - Castel del Giudice
+    - Sant'Angelo del Pesco
+    - Rionero Sannitico
+    - Belmonte del Sannio
+    - Pietrabbondante
+    - Pescolanciano
+    - Roccasicura
+    - Forlì del Sannio
+    - Poggio Sannita
+    - Castelverrino
+  molise_montano:
+    comuni:
+    - Capracotta
+    - Vastogirardi
+    - San Pietro Avellana
+    - Pescopennataro
+    - Castel del Giudice
+    - Sant'Angelo del Pesco
+    - Rionero Sannitico
+    - Carovilli
+    - Roccamandolfi
+    - Cantalupo nel Sannio
+    - San Massimo
+    - San Polo Matese
+    - Campochiaro
+    - Guardiaregia
+    - Sepino
+    - Bojano
+    - Frosolone
+    - Macchiagodena
+    - Sant'Elena Sannita
+    - Pizzone
+    - Castel San Vincenzo
+    - Scapoli
+    - Rocchetta a Volturno
+    - Filignano
+    - Montenero Val Cocchiara
+  basso_molise_colline:
+    comuni:
+    - San Felice del Molise
+    - Montemitro
+    - Montefalcone nel Sannio
+    - Guardialfiera
+    - Casacalenda
+    - Castelmauro
+    - Roccavivara
+    - Trivento
+    - Lucito
+    - Salcito
+    - Petrella Tifernina
+    - Morrone del Sannio
+    - Ripabottoni
+    - Castellino del Biferno
+    - Lupara
+    - Civitacampomarano
+    - Riccia
+    - Gambatesa
+    - Tufara
+    - Sant'Elia a Pianisi
+    - Pietracatella
+    - San Giovanni in Galdo
+    - Campolieto
+    - Toro
+  confine_aq_is:
+    comuni:
+    - Pizzone
+    - Castel San Vincenzo
+    - Montenero Val Cocchiara
+    - Rionero Sannitico
+    - San Pietro Avellana
+    - Castel del Giudice
+normal_seasons:
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+- 2025
+contrasts:
+- id: montano_june_2018_timing
+  claim: 'Molise mountains, June 2018: at mid-month "Molise ed Abruzzo fermi al palo per via del freddo
+    o del vento di Levante-Tramontana con poche nascite relegate ai boschi costieri o comunque termofili"
+    (Funghi Magazine, 2018-06-16); by the end of the month "Lazio, Abruzzo e Molise con ottime nascite
+    in faggete appenniniche" (Funghi Magazine, 2018-07-01)'
+  source: https://web.archive.org/web/20240417091132/https://funghimagazine.it/aggiornamento-funghi-01-luglio-2018/
+  higher:
+    area: molise_montano
+    seasons:
+    - 2018
+    start: 06-18
+    end: 07-01
+  lower:
+    area: molise_montano
+    seasons:
+    - 2018
+    start: 06-03
+    end: 06-16
+- id: montano_vs_colline_late_june
+  claim: 'Late June, mountains against hills: 2018 "Lazio, Abruzzo e Molise con ottime nascite in faggete
+    appenniniche ma nascite contenute o assenti in boschi termofili o di collina" (Funghi Magazine, 2018-07-01);
+    2022 "alcune discrete o buone nascite di funghi si stanno realizzando nel Lazio di confine, in Abruzzo,
+    in Molise, tranne che nei settori costieri o basso collinari" (Funghi Magazine, 2022-06-24)'
+  source: https://web.archive.org/web/20240417091132/https://funghimagazine.it/aggiornamento-funghi-01-luglio-2018/
+  higher:
+    area: molise_montano
+    seasons:
+    - 2018
+    - 2022
+    start: 06-18
+    end: 06-30
+  lower:
+    area: basso_molise_colline
+    seasons:
+    - 2018
+    - 2022
+    start: 06-18
+    end: 06-30
+- id: molise_june_2022_2024
+  claim: 'Second half of June: in 2022 "ottime nascite di funghi, in particolar modo di Porcini, così
+    com’è accaduto dalle Marche-Abruzzo-Molise alla Campania e Calabria dopo le piogge del 9/10 giugno"
+    (Funghi Magazine, 2022-07-01); in 2024 "Anche in Campania, Molise e Basilicata stessa situazione,
+    vento frequente, spesso assai caldo e boschi che hanno già dato quel poco che potevano" (2024-06-14)
+    and "L’eccesso di calore ha mandato in letargo i miceli fungini di Campania, Molise, Puglia, Basilicata
+    e Sardegna" (Funghi Magazine, 2024-06-28)'
+  source: https://web.archive.org/web/20240524103838/https://funghimagazine.it/molti-porcini-a-breve-vediamo-dove-01-07-2022/
+  higher:
+    area: molise
+    seasons:
+    - 2022
+    start: 06-16
+    end: 06-30
+  lower:
+    area: molise
+    seasons:
+    - 2024
+    start: 06-16
+    end: 06-30
+- id: molise_september_vs_august_2019
+  claim: 'August against September 2019: "Abruzzo e Molise hanno avuto piogge frequenti e spesso abbondanti,
+    ma nascite al momento scarse" (2019-08-01), "Poche nascite in Appennino Meridionale, in zone interne
+    di Campania-Molise-Puglia-Basilicata" (2019-08-16); then "Il Molise è superstar. Sia in provincia
+    di Campobasso che di Isernia, le piogge giungono puntuali quasi ogni giorno, ormai da alcune settimane"
+    and "Nel Molise collinare abbondano gli Aereus" (2019-09-12), "Abruzzo e Molise vedono ancora discrete
+    nascite di funghi" (Funghi Magazine, 2019-09-27)'
+  source: https://web.archive.org/web/20240527073030/https://funghimagazine.it/la-grande-buttata-di-funghi-porcini-di-settembre-dove-piovuto-in-italia/
+  higher:
+    area: molise
+    seasons:
+    - 2019
+    start: 09-04
+    end: 09-19
+  lower:
+    area: molise
+    seasons:
+    - 2019
+    start: 08-02
+    end: 08-17
+- id: molise_september_2019_2020
+  claim: 'September: 2019 "Il Molise è superstar", "Nel Molise collinare abbondano gli Aereus", "In quello
+    montano invece abbondano maggiormente Galletti ed Estatini" (Funghi Magazine, 2019-09-12); 2020 "Il
+    caldo Africano in crescendo ha fatto cessare le nascite tra Marche-Abruzzo-Molise" (2020-09-04), "Situazione
+    pessima tra Molise, Campania, Puglia e Basilicata con nascite ridottissime" (Funghi Magazine, 2020-09-21);
+    Coldiretti: "Raccolta ancora al palo soprattutto al Sud, dove la nascita dei funghi è ancora ferma",
+    "dal Molise all’Abruzzo" (Campagna Amica, 2020-09-14)'
+  source: https://web.archive.org/web/20240527073030/https://funghimagazine.it/la-grande-buttata-di-funghi-porcini-di-settembre-dove-piovuto-in-italia/
+  higher:
+    area: molise
+    seasons:
+    - 2019
+    start: 09-04
+    end: 09-19
+  lower:
+    area: molise
+    seasons:
+    - 2020
+    start: 09-04
+    end: 09-19
+- id: molise_2017_below_normal
+  claim: 'Autumn 2017: at the mushroom show held in Campobasso on 7-8 October "Le varietà esposte, nonostante
+    la pessima annata dovuta alla scarsa piovosità, sono cinquanta" (ugodugo.it, 2017-10-09)'
+  source: https://www.ugodugo.it/tradizioni-e-prodotti/338-molise-terra-di-funghi
+  higher:
+    area: molise
+    seasons: normal
+    start: 09-16
+    end: 10-07
+  lower:
+    area: molise
+    seasons:
+    - 2017
+    start: 09-16
+    end: 10-07
+- id: molise_2020_summer_vs_september
+  claim: 'Summer against September 2020: "Ottime piogge in Molise, soprattutto nella provincia di Campobasso
+    con ottime nascite già in atto o a breve tanto in collina-piano, quanto in montagna" (2020-07-23),
+    "Ancora buona nascite nel Molise e nel vicino Matese campano" (2020-08-07); then "Il caldo Africano
+    in crescendo ha fatto cessare le nascite tra Marche-Abruzzo-Molise" (2020-09-04) and "Situazione pessima
+    tra Molise, Campania, Puglia e Basilicata con nascite ridottissime" (Funghi Magazine, 2020-09-21)'
+  source: https://web.archive.org/web/20240522153936/https://funghimagazine.it/aggiornamento-meteofunghi-23-07-2020/
+  higher:
+    area: molise
+    seasons:
+    - 2020
+    start: 07-24
+    end: 08-10
+  lower:
+    area: molise
+    seasons:
+    - 2020
+    start: 09-01
+    end: 09-18
+- id: cb_august_2020_2023
+  claim: 'Early to mid August, Campobasso province: 2020 "Ottime piogge in Molise, soprattutto nella provincia
+    di Campobasso con ottime nascite già in atto o a breve" (2020-07-23), "Ancora buona nascite nel Molise"
+    (2020-08-07), births "soprattutto in provincia di Campobasso" (2020-08-20); 2023 "Di certo non stanno
+    nascendo sulle nostre isole maggiori e nel resto del Sud Italia" (2023-07-28), "Il Molise dovrà attendere
+    giorni migliori" (2023-08-17), "Assenza di nascite tra Molise-Puglia e Basilicata non tirrenica" (Funghi
+    Magazine, 2023-08-24)'
+  source: https://web.archive.org/web/20240303091449/https://funghimagazine.it/aggiornamento-meteofunghi-07-08-2020/
+  higher:
+    area: cb
+    seasons:
+    - 2020
+    start: 08-01
+    end: 08-18
+  lower:
+    area: cb
+    seasons:
+    - 2023
+    start: 08-01
+    end: 08-18
+- id: cb_vs_is_august_2020
+  claim: 'Mid-August 2020: "Va meglio al confine tra Lazio-Campania-Molise con nascite non certo importanti
+    ma presenti nel Matese ed alto Beneventano, ma soprattutto in provincia di Campobasso, molto meno,
+    o nulla tra le province di Isernia e Chieti" (Funghi Magazine, 2020-08-20)'
+  source: https://web.archive.org/web/20240522151747/https://funghimagazine.it/aggiornamento-meteofunghi-20-08-2020/
+  higher:
+    area: cb
+    seasons:
+    - 2020
+    start: 08-08
+    end: 08-20
+  lower:
+    area: is
+    seasons:
+    - 2020
+    start: 08-08
+    end: 08-20
+- id: confine_aq_is_vs_cb_august_2023
+  claim: 'Late August 2023: "La buttata eccezionale si sta registrando anche in territorio molisano tra
+    la valle dell’Inferno ed i boschi di Barretta, quindi a cavallo tra le province di l’Aquila e Isernia",
+    a flush that is "frutto delle importanti piogge del 16 di Agosto"; elsewhere "Qualche isolato Porcino
+    qua e là sul Matese" and "Assenza di nascite tra Molise-Puglia e Basilicata non tirrenica" (Funghi
+    Magazine, 2023-08-24)'
+  source: https://web.archive.org/web/20240722000446/https://funghimagazine.it/aggiornamento-nascite-porcini-24-08-2023/
+  higher:
+    area: confine_aq_is
+    seasons:
+    - 2023
+    start: 08-18
+    end: 08-30
+  lower:
+    area: cb
+    seasons:
+    - 2023
+    start: 08-18
+    end: 08-30
+- id: alto_molise_august_2024_2023
+  claim: 'Turn of July and August, Alto Molise: in 2024 "Provincia di Isernia ben bagnata" (24 July),
+    "Ottimi a cavallo tra Abruzzo-Molise-Campania con nascite di Porcini Estivi-Neri a inizio Agosto",
+    "Le piogge ripeture nella provincia di Isernia stanno dando locali nascite di Porcini" (Funghi Magazine,
+    2024-08-06), later "le magiche nascite di Neri avvenute a cavallo tra Chietino e Isernino" (2024-08-16);
+    in 2023 "Di certo non stanno nascendo sulle nostre isole maggiori e nel resto del Sud Italia" (2023-07-28)
+    and "Il Molise dovrà attendere giorni migliori" (Funghi Magazine, 2023-08-17)'
+  source: https://web.archive.org/web/20260318214447/https://funghimagazine.it/aggiornamento-nascite-funghi-06-08-2024/
+  higher:
+    area: alto_molise
+    seasons:
+    - 2024
+    start: 07-30
+    end: 08-12
+  lower:
+    area: alto_molise
+    seasons:
+    - 2023
+    start: 07-30
+    end: 08-12
+- id: cb_late_august_2025_2023
+  claim: 'Late August: in 2025 "Porcini neri e Ovoli reali spuntati in Puglia, Molise e Sicilia interna"
+    (2025-08-21), "Abruzzo e Molise: già si registrano nascite grazie alle piogge sui monti di confine"
+    (2025-08-29), "Il Molise è già saltato in aria sotto una pioggia di Porcini neri" (Funghi Magazine,
+    2025-09-04); a Molise blog: "Da giorni sia nei boschi molisani, sia in quelli dei paesi limitrofi
+    si stanno raccogliendo i funghi e in special modo i funghi porcini" (2025-09-08); in 2023 "Assenza
+    di nascite tra Molise-Puglia e Basilicata non tirrenica" (Funghi Magazine, 2023-08-24)'
+  source: https://web.archive.org/web/20251220154140/https://funghimagazine.it/buttata-record-2025-annata-eccezionale-per-i-porcini/
+  higher:
+    area: cb
+    seasons:
+    - 2025
+    start: 08-18
+    end: 09-03
+  lower:
+    area: cb
+    seasons:
+    - 2023
+    start: 08-18
+    end: 09-03
+- id: ovoli_cb_august_2025_2023
+  claim: 'Ovoli, mid-August: 2025 "negli ultimi giorni sono arrivate segnalazioni sorprendenti: Porcini
+    neri e Ovoli reali spuntati in Puglia, Molise e Sicilia interna" (Funghi Magazine, 2025-08-21); 2023
+    "Il Molise dovrà attendere giorni migliori" (2023-08-17) and "Assenza di nascite tra Molise-Puglia
+    e Basilicata non tirrenica" (Funghi Magazine, 2023-08-24)'
+  source: https://web.archive.org/web/20250822194753/https://funghimagazine.it/aggiornamento-nascite-funghi-22-08-2025/
+  higher:
+    area: cb
+    seasons:
+    - 2025
+    start: 08-12
+    end: 08-24
+  lower:
+    area: cb
+    seasons:
+    - 2023
+    start: 08-12
+    end: 08-24
+- id: molise_october_2022_2023
+  claim: 'First half of October: in 2022 "le grandi nascite in atto al momento in Toscana, Umbria, Marche,
+    Abruzzo, Molise, Campania" (mostly black porcini; Funghi Magazine, 2022-10-13), and a 750 g porcino
+    near Sant’Elia a Pianisi with "gli altri raccolti che sono comunque notevoli per dimensioni" (Il Giornale
+    del Molise, 2022-10-20); in 2023 "Anche nel Molise ci sono state buone piogge ma, come in Abruzzo,
+    il vento di Tramontana ha di fatto bloccato ogni velleità porcina" (2023-10-12), and looking back
+    "ogni pioggia è stata seguita o caratterizzata da forte vento che, di fatto ha inibito le nascite
+    con pochi cenni e nessuna vera buttata" (Funghi Magazine, 2023-10-27)'
+  source: https://web.archive.org/web/20240421083643/https://funghimagazine.it/meteo-funghi-13-10-2022/
+  higher:
+    area: molise
+    seasons:
+    - 2022
+    start: 10-03
+    end: 10-14
+  lower:
+    area: molise
+    seasons:
+    - 2023
+    start: 10-03
+    end: 10-14
+- id: molise_early_october_2024_2020
+  claim: 'Early October: 2024 "Nascite di Porcini senza sosta in alcune zone della Lucania occidentale,
+    Campania, Molise" and "Porcini edulis stanno infatti fruttificando ad esempio sui monti dell’Appennino
+    più meridionale tra Molise-Campania-Lucania" (Funghi Magazine, 2024-10-03); the ASReM mycologist of
+    Alto Molise: "quest’anno il bosco appare particolarmente florido" (L’Eco dell’Alto Molise, 2024-10-17);
+    a Molise blog: "Potremmo chiamarlo l’anno della raccolta di funghi straordinario 1l 2024" (2024-11-01);
+    2020 "Quanto al Molise, non ci sono notizie di ritrovamenti, anche se di piogge non ne sono mancate"
+    (Funghi Magazine, 2020-10-08)'
+  source: https://funghimagazine.it/funghi-04-10-2024-raccolte-di-porcini-ancora-strepitose-ecco-dove/
+  higher:
+    area: molise
+    seasons:
+    - 2024
+    start: 10-01
+    end: 10-12
+  lower:
+    area: molise
+    seasons:
+    - 2020
+    start: 10-01
+    end: 10-12
+- id: gallinacci_molise_june_2023_2024
+  claim: 'Gallinacci, mid-June: 2023 "i Finferli/Galletti risultano ben presenti anche in Molise ma non
+    i Porcini" (2023-06-02) and "in Campania, Molise, Puglia-Basilicata dove, però di contro abbondano
+    più che mai Finferli/Galletti" (Funghi Magazine, 2023-06-16); 2024 "Anche i Finferli sono spariti
+    sotto l’incalzare del gran caldo" (2024-06-14) and "L’eccesso di calore ha mandato in letargo i miceli
+    fungini di Campania, Molise" (Funghi Magazine, 2024-06-28)'
+  source: https://web.archive.org/web/20240417084120/https://funghimagazine.it/aggiornamento-funghi-16-06-2023/
+  higher:
+    area: molise
+    seasons:
+    - 2023
+    start: 06-08
+    end: 06-20
+  lower:
+    area: molise
+    seasons:
+    - 2024
+    start: 06-08
+    end: 06-20
+- id: gallinacci_molise_late_june_2022_2024
+  claim: 'Gallinacci, last ten days of June: in 2022 Cantharellus pallens "si sono già diffusamente raccolti
+    dalle Marche al Molise, dalla Campania alla Calabria nell’ultima decade di giugno" (Funghi Magazine,
+    2022-07-01); in 2024 "L’eccesso di calore ha mandato in letargo i miceli fungini di Campania, Molise,
+    Puglia, Basilicata e Sardegna" (Funghi Magazine, 2024-06-28), after "Anche i Finferli sono spariti"
+    (2024-06-14)'
+  source: https://web.archive.org/web/20240524103838/https://funghimagazine.it/molti-porcini-a-breve-vediamo-dove-01-07-2022/
+  higher:
+    area: molise
+    seasons:
+    - 2022
+    start: 06-20
+    end: 06-30
+  lower:
+    area: molise
+    seasons:
+    - 2024
+    start: 06-20
+    end: 06-30
