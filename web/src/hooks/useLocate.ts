@@ -1,26 +1,26 @@
 import { useCallback, useState } from 'react'
-import { DEFAULT_REGION_SLUG, REGIONS } from '../config'
-import { inBounds } from '../geo/distance'
+import { DEFAULT_REGION_SLUG } from '../config'
+import { findRegionAt } from '../regions/lookup'
 
 export type LocateError = 'denied' | 'unavailable' | 'outside'
 
 interface Options {
   onLocated: (lat: number, lon: number) => void
   onError: (error: LocateError) => void
+  /** The region the user is in (its slug); defaults to the default region. */
+  region?: string
   /**
-   * When set, a fix outside this box still succeeds if it lands in another served region
-   * (the caller offers a switch). Defaults to the default region's bounds with no cross-region.
+   * Called when the fix is outside `region` but inside another served region (the caller offers
+   * a switch). Without it, such a fix is outside.
    */
-  bounds?: [[number, number], [number, number]]
-  /** Called when the fix is outside `bounds` but inside another served region. */
   onOtherRegion?: (slug: string, lat: number, lon: number) => void
 }
 
-/** One-shot GPS fix. Inside `bounds` → onLocated; other served region → onOtherRegion; else outside. */
+/** One-shot GPS fix. In `region` → onLocated; other served region → onOtherRegion; else outside. */
 export function useLocate({
   onLocated,
   onError,
-  bounds = REGIONS[DEFAULT_REGION_SLUG].bounds,
+  region = DEFAULT_REGION_SLUG,
   onOtherRegion,
 }: Options) {
   const [locating, setLocating] = useState(false)
@@ -33,22 +33,13 @@ export function useLocate({
     setLocating(true)
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        setLocating(false)
         const { latitude: lat, longitude: lon } = coords
-        if (inBounds(lat, lon, bounds)) {
-          onLocated(lat, lon)
-          return
-        }
-        if (onOtherRegion) {
-          const other = Object.values(REGIONS).find(
-            (region) => !inBounds(lat, lon, bounds) && inBounds(lat, lon, region.bounds),
-          )
-          if (other) {
-            onOtherRegion(other.slug, lat, lon)
-            return
-          }
-        }
-        onError('outside')
+        void findRegionAt(lat, lon, region).then((found) => {
+          setLocating(false)
+          if (found?.slug === region) onLocated(lat, lon)
+          else if (found && onOtherRegion) onOtherRegion(found.slug, lat, lon)
+          else onError('outside')
+        })
       },
       (error) => {
         setLocating(false)
@@ -56,7 +47,7 @@ export function useLocate({
       },
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 5 * 60_000 },
     )
-  }, [onLocated, onError, bounds, onOtherRegion])
+  }, [onLocated, onError, region, onOtherRegion])
 
   return { locate, locating }
 }

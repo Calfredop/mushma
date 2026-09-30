@@ -68,14 +68,13 @@ import {
   REPLAY_SIGHTINGS_DAYS,
   REPO_URL,
   SIGHTINGS_WINDOW_DAYS,
-  findRegionAt,
   listRegions,
   regionLocative,
   rememberRegion,
   servedBounds,
 } from './config'
 import { getConsent } from './consent'
-import { distanceKm, inBounds, OUTSIDE_CELL_KM } from './geo/distance'
+import { distanceKm, OUTSIDE_CELL_KM } from './geo/distance'
 import type { Place } from './geo/photon'
 import { useCellStyle } from './hooks/useCellStyle'
 import { type LocateError, useLocate } from './hooks/useLocate'
@@ -95,6 +94,7 @@ import { HotPlaces } from './panels/HotPlaces'
 import { OutlookPanel } from './panels/OutlookPanel'
 import { SeasonsPanel } from './panels/SeasonsPanel'
 import { SpotPanel } from './panels/SpotPanel'
+import { findRegionAt, servedBoundaries } from './regions/lookup'
 import { regionPath, SITE_URL, siteRouteFor } from './routes'
 import { indicatorOf } from './score/indicators'
 import {
@@ -393,22 +393,25 @@ function MapScreen() {
     [selectSpot, setPanelCollapsed],
   )
 
+  // The boundaries every lookup below tests: fetched now, so the first tap or search doesn't wait.
+  useEffect(() => {
+    servedBoundaries().catch(() => undefined)
+  }, [])
+
   const offerOrOpen = useCallback(
-    (lat: number, lon: number, method: 'map' | 'search' | 'gps' | 'hotspot') => {
-      if (inBounds(lat, lon, app.region.bounds)) {
+    async (lat: number, lon: number, method: 'map' | 'search' | 'gps' | 'hotspot') => {
+      const found = await findRegionAt(lat, lon, app.region.slug)
+      if (found?.slug === app.region.slug) {
         openSpot({ kind: 'point', lat, lon }, method, { lat, lon, zoom: SPOT_ZOOM })
-        return
-      }
-      const other = findRegionAt(lat, lon)
-      if (other && other.slug !== app.region.slug) {
+      } else if (found) {
         setUserPosition({ lat, lon })
-        setSwitchOffer({ slug: other.slug, lat, lon })
+        setSwitchOffer({ slug: found.slug, lat, lon })
         setLocateError(null)
-        return
+      } else {
+        setLocateError('outside')
       }
-      setLocateError('outside')
     },
-    [app.region.bounds, app.region.slug, openSpot],
+    [app.region.slug, openSpot],
   )
 
   const acceptSwitch = useCallback(() => {
@@ -438,7 +441,7 @@ function MapScreen() {
       [openSpot],
     ),
     onError: setLocateError,
-    bounds: app.region.bounds,
+    region: app.region.slug,
     onOtherRegion,
   })
   const centerLocate = useLocate({
@@ -452,7 +455,7 @@ function MapScreen() {
       [flyTo],
     ),
     onError: setLocateError,
-    bounds: app.region.bounds,
+    region: app.region.slug,
     onOtherRegion,
   })
   const locating = spotLocate.locating || centerLocate.locating
@@ -486,7 +489,7 @@ function MapScreen() {
       lon: hotspot.lon,
       zoom: HOTSPOT_ZOOM,
     })
-  const onPlace = (place: Place) => offerOrOpen(place.lat, place.lon, 'search')
+  const onPlace = (place: Place) => void offerOrOpen(place.lat, place.lon, 'search')
 
   // On a phone the map runs under the sheet: camera moves keep a place clear of it, as it is
   // or at half, where a chosen spot opens (full leaves too little map to aim at).
@@ -597,9 +600,13 @@ function MapScreen() {
             onCellClick={(cellId, lat, lon) =>
               openSpot({ kind: 'cell', cellId }, 'map', { lat, lon })
             }
+            // A tap outside the region's boundary opens nothing: its grid ends there.
             onPointClick={(lat, lon) => {
-              if (!inBounds(lat, lon, app.region.bounds)) return
-              openSpot({ kind: 'point', lat, lon }, 'map', { lat, lon })
+              void findRegionAt(lat, lon, app.region.slug).then((found) => {
+                if (found?.slug === app.region.slug) {
+                  openSpot({ kind: 'point', lat, lon }, 'map', { lat, lon })
+                }
+              })
             }}
             onHotspotClick={onHotspot}
           />
