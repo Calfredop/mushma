@@ -377,9 +377,13 @@ rules should give.
 
 ## After the deploy: what to verify
 
-The server serves a region only when its YAML is in the deployed code and its stores are on disk, so
-the stores stay inert until `main` with `config/regions/basilicata.yaml` is deployed by the rail's
-"Deploy pulled main" step (with the daily job, which brings the weather and scores up to that day).
+The stores are on the server: `deploy/rsync-region-data.sh basilicata` ran on 2026-09-30 with
+`DATA_DIR` at the shared data root and copied 202 files (203 MB) of grid, weather, scores, sightings
+(its meta only: no sighting was stored), climatology, history and outlook into `/srv/mushma-data`,
+file counts matching local. The server serves a region only when its YAML is in the deployed code
+and its stores are on disk, so the stores stay inert until `main` with
+`config/regions/basilicata.yaml` is deployed by the rail's "Deploy pulled main" step (with the daily
+job, which brings the weather and scores up to that day).
 Then check:
 
 - [ ] `https://mappafunghi.app/basilicata` and `/basilicata/porcini`, `/basilicata/ovoli`,
