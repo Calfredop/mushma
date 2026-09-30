@@ -1,7 +1,8 @@
 ---
+order: -1024
 kind: task
 title: [bug] deploy-api.sh --run-job never runs the job, and still exits 0
-status: In Progress
+status: Done
 priority: high
 complexity: simple
 ---
@@ -16,3 +17,25 @@ Fix:
 2. Make a cut-short remote script fail instead of passing: end the REMOTE block with a sentinel line (e.g. `echo "remote: done"`) and have the local side die unless it saw it.
 3. Check it on a real deploy: `deploy/deploy-api.sh --skip-tests --run-job` must print `redis ok`, `running the daily job now`, the job's events and the timer line, and the closing `/status` must show the deployed rules version.
 4. Update the README's Deploying section if the output it describes changes.
+
+## Progress (2026-09-30)
+
+- Steps 1 and 2 are in main as d7e7225 (`</dev/null` on the ping, `server: done` sentinel and the
+  local check). No other stdin reader in the REMOTE block: the rest are git, systemctl, journalctl,
+  `docker compose up -d`, `docker image prune -f` and the `exec … python -` heredoc.
+- Step 3, real `deploy/deploy-api.sh --skip-tests --run-job` of 3d0a236: `redis ok` and `running the
+  daily job now` printed for the first time. Then the ssh session dropped (`Read from remote host …
+  Connection reset by peer`, exit 255) while the job ran, so the job's events and the timer line
+  did not print. The job kept going under systemd and finished fine: `job_done`, 19 regions, 883 s.
+  `/status` then showed `rules_version` 5d30420db389 = the code's, and `/regions` lists all 19
+  regions, Lazio, Sicilia and Valle d'Aosta included. So the fix works, but this is not a clean
+  single run of the script.
+- Why it dropped is not known. The job now takes ~15 min (the script header says "about two
+  minutes") and the ssh session is silent for all of it: the events print only after
+  `systemctl start` returns. sshd has `ClientAliveInterval 300`, `ClientAliveCountMax 2`; the
+  local ssh config has no `ServerAliveInterval`.
+- README's Deploying section updated (sentinel, job duration), not committed.
+- Open: add `-o ServerAliveInterval=15` to the script's ssh and fix the "about two minutes" header,
+  commit and push, then rerun `--skip-tests --run-job` (another ~15 min) to get the clean run.
+- Separate: the first `/regions` after the job took ~45 s (cold response cache after the per-region
+  generation bumps); one try timed out at 60 s.
