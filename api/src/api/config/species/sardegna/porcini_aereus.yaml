@@ -1,0 +1,376 @@
+# Species rules for one key in SARDEGNA, loaded and validated by api.model.rules (see README.md here).
+# Copied from tuscany/ and retuned from Sardinian sources: .gavin-root/docs/species-ecology/sardegna.md.
+# Tuscan evidence and rule ids (POR-*): .gavin-root/docs/species-ecology.md and species-ecology/porcini.md.
+# Parameters are priors for the M3 backtest unless `status` says tuned.
+schema_version: 1
+key: porcini_aereus
+group: porcini
+taxon: Boletus aereus
+synonyms: []
+status: draft
+i18n_key: species.porcini_aereus
+records:
+  gbif_taxon_keys: [8733688]
+  inat_taxon_ids: [333772]
+  exclude_basis_of_record: [MATERIAL_SAMPLE]
+  notes: >-
+    The best-sampled porcini taxon in Tuscany (61 iNaturalist records, 2026-09-17), but often confused
+    with B. reticulatus in the field. Sardegna: 18 iNaturalist records (1997-2025; April 1, May 3,
+    September 5, October 5, November 4), 10 located at 5-758 m, median 320 m (2026-09-30); 23 GBIF
+    records, 14 of them iNaturalist copies and 6 soil-DNA samples from one Santa Giusta site (exclude).
+    The most recorded porcino of the island. Validate the porcini group score.
+notes: >-
+  The most xerothermophilous porcino, and Sardinia's leading one: "È un fungo tipicamente meridionale,
+  abbondante nei boschi della Sardegna", "sotto latifoglie, soprattutto leccio e castagno e in
+  associazione con macchia mediterranea (corbezzolo, erica)" (Sardegna Foreste, the regional forestry
+  agency, "Cordolinu reali"); among the edible mycorrhizal fungi of the island's cork-oak surveys of
+  1966-1973 (Comandini et al. 2018); "Il più comune è B. aereus" for a Cagliari forager, under "il
+  leccio, la sughera ed il castagno" (folklore). Changed for Sardinia: the lower window opens on 1 April
+  and runs into early January, the handover and the altitude band follow the Sardinian oak belt, the
+  macchia becomes secondary, and three classes that hold no host here (the wild-olive and carob woods,
+  the conifer reforestation, the tamarisk and oleander thickets) move to non-host. No quantitative
+  weather study exists for this taxon: the rain logic is borrowed from B. edulis, and temperature and
+  frost rules are shifted using qualitative sources.
+
+# Growth clock (README, "Growth clock"): how fast fruit bodies develop after the rain, day by day.
+# The rain_event lag below is counted in growth days, the sum of these daily paces.
+growth:
+  temperature:
+    variable: soil_temperature_0_to_7cm_mean
+    cardinal_c: [2, 21, 32]
+    reference_c: 17
+  humidity:
+    variable: vapour_pressure_deficit_max
+    trapezoid: [null, null, 1.5, 3.0]
+    floor: 0.5
+  max_lag_days: 40
+  confidence: folklore
+  source: [yan_hunt1999, moore2008_fruit_bodies, kasparavicius2001, bmeteo_funghi_luglio, funghimagazine_giorni_pioggia]
+  derived: true
+  notes: >-
+    POR-R3 for the thermophilic porcino. The pace is 1 at 17 °C of topsoil, the weather the lag
+    window was drawn from. Fruit bodies develop at a lower optimum than mycelium grows in
+    culture (B. edulis 25-28 °C; Moore et al. 2008), hence t_opt 21 °C. Thermophilic porcini
+    appear 8-11 days after warm summer storms (lore); a 12 °C stretch runs at about 65 % pace.
+    Caps stop growing when the day's minimum humidity falls under 40 % and grow well from about
+    60 % (Kasparavičius 2001, B. edulis): open-air daily maximum VPD of 1.5 kPa keeps full pace
+    and 3.0 kPa halves it; the floor stands for the moister air under the canopy. No peer-
+    reviewed days-per-°C figure exists for these species: every number is a prior. The humidity
+    ramp is set higher than for the autumn porcini because it fruits from summer, when open-air
+    VPD is 2 kPa on a median July day.
+
+factors:
+  - id: season
+    role: gate
+    kind: season_window
+    i18n_key: factor.season
+    input:
+      windows:
+        - label: upland_summer
+          dates: ["15-05", "01-07", "31-10", "30-11"]
+          elevation_weight: [800, 1000, null, null]
+        - label: lowland_long
+          dates: ["01-04", "01-05", "30-11", "10-01"]
+          elevation_weight: [null, null, 800, 1000]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, gm_siena_boletus, museo_porcino_borgotaro, mushma_occurrence_check_2026, mushma_occurrence_check_sardegna_2026, sar_sdl_porcino_nero_monte_nieddu, sar_funghiemicologia_forum_assemini2009, sar_bacchetta2009_vegetazione, sar_chessa_delitala1997_clima, fm_sicilia_2018_04_30, fm_sicilia_2018_05_09, funghimagazine_nascite_2026_05_08, sar_fm_2019_05_30, sar_fm_2021_05_30, sar_fm_2023_05_25, sar_fm_2023_06_15, sar_fm_2023_06_23, sar_fm_2024_05_17, sar_fm_2024_05_30, sar_fm_2025_05_09, sar_fm_2022_12_21, sar_fm_2023_01_03, sar_us_bolotana_aereus2020, sar_us_settefratelli2021]
+    derived: true
+    data: available
+    notes: >-
+      POR-S2, split by elevation to resolve a disagreement. The IGP (Apennine uplands) says July–September;
+      Lucca and Siena sources and the records put the lowland peak in autumn. Central-Italy iNaturalist
+      records: 0-300 m peak Sep–Nov, 300-600 m peak October, 600-900 m peak September; no July records
+      at all (n=77, about 3 expected from observer effort), so the upland window reaches full only on
+      1 August instead of the IGP's July. Sardegna: the lower window opens on 1 April (Tuscany 1 July), is
+      full from 1 May to 30 November and ends on 10 January (15 December); the upper one opens on 15 May,
+      is full from 1 July to 31 October and ends on 30 November; the handover moves up to 800-1,000 m
+      (Tuscany 400-600 m), where the montane holm oak with holly and the Q. congesta woods begin. Most
+      Sardinian woods lie below 1,000 m (grid woodland median 517 m, p95 967 m), so the lower window
+      governs. Spring: 4 of the 18 Sardinian iNaturalist records are from April-May (5 April 2020,
+      Palmas Arborea; 9-28 May at Alghero, Siniscola and in 2023; the located May ones at a median 152
+      m), and the forager lore agrees (folklore): "Tanto in Sardegna quanto in Corsica, Elba e Sicilia ... Porcini aereus sono più
+      presenti ormai da qualche settimana" (Funghi Magazine, 30 April 2018), "Estatini o aereus per ora
+      sono sempre ben presenti nella macchia mediterranea, quindi in Sardegna" (8 May 2018), "buone
+      possibilità di trovare i primi Boletus aereus in ... Sardegna meridionale" (8 May 2026). Funghi
+      Magazine's bulletins report Porcini Neri in Sardinia in April-June of every year it covers: in the
+      macchia from April 2018; "in numero limitato" and held back by the wind in late May 2019; "assai
+      precoci di inizio Maggio" 2021 before a "disastroso" May; "Porcini Neri in quantità ... per lo più
+      sui settori meridionali" on 25 May 2023 and "ottime nascite di Porcini Neri" in mid-June 2023, over
+      by 23 June except on the high Gennargentu; "prime nascite importanti" on 17 May 2024 and "sia
+      Porcini Neri che Porcini Estivi" after the rains of 19-20 May 2024; "Porcini neri belli e carnosi"
+      in sheltered oases on 9 May 2025. Autumn: the
+      other 14 records run from 21 September to 21 November; a Cagliari forager has "da noi la stagione
+      inizia quando al nord sta finendo ... Novembre è ancora il mese dei porcini" (2009); the forestry
+      agency has B. aereus "uno dei primi porcini che cresce sotto le leccete dopo estati piovose". Among
+      all Sardinian fungi on iNaturalist, October holds 13 % of the records, November 22 %, December 15 %
+      and January 8 % (Tuscany 24, 13, 8 and 4 %): the island's season peaks a month later. B. aereus
+      runs into the winter in mild years: "A dicembre le prime segnalazioni di ritrovamenti di Porcini
+      Neri-Bronzini" in December 2022 after an autumn drought (Funghi Magazine, 21 December 2022 and 3
+      January 2023); "il classico porcino autunnale" at Bolotana on 2 November 2020; on the Sette
+      Fratelli on 20 November 2021 "le temperature per i porcini sono già critiche", so search "le zone
+      con sugherete esposte al sole" (L'Unione Sarda). Over 75 % of
+      the rain falls from October to March, with maxima in November-December and 3-16 mm in July
+      (Bacchetta et al. 2009), and "Il passaggio fra le due stagioni è particolarmente marcato fra
+      settembre ed ottobre" (ARPAS): the summer heat and drought, not the calendar, keep the lower window
+      empty in July and August through the temperature band and the heat and drying stoppers, and the
+      first autumn rain, from late August (2018, 2024) to early November (2021, 2023), starts it.
+
+  - id: habitat
+    role: gate
+    kind: habitat
+    i18n_key: factor.habitat
+    input:
+      affinity:
+        deciduous_oak: 1.0
+        chestnut: 1.0
+        evergreen_oak: 1.0
+        macchia: 0.6
+        mixed_broadleaf_conifer: 0.3
+        transitional_woodland_shrub: 0.1
+        mixed_broadleaf: 0.1
+        mediterranean_pine: 0.1
+        beech: 0.1
+        other_conifer: 0.0
+        mountain_pine: 0.0
+        fir_spruce: 0.0
+        riparian: 0.0
+        exotic_broadleaf: 0.0
+      default: 0.0
+    response: {trapezoid: [0, 0.3, null, null]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014, matteucci2008_micoponte, museo_porcino_borgotaro, gm_siena_boletus, sardegna_foreste_aereus, beugelsdijk2008, oria_de_rueda2008, mushma_habitat_share_2026, sar_comandini2018_mycovisions, sar_sardegna_foreste_catalogo_funghi, sar_sdl_porcino_nero_monte_nieddu, sar_funghiemicologia_forum_assemini2009, sar_seddaiu2026_sugherete, sar_bacchetta2009_vegetazione, sar_ispra_cnat_sardegna, mushma_sardegna_woodland_grid_2026]
+    derived: true
+    data: available
+    notes: >-
+      Sardegna (2026-09-30). The grid maps the woods from the ISPRA-Regione Carta della Natura
+      (1:50,000). Holm and cork oak (`evergreen_oak`, 54 % of the wooded area), downy oak s.l. (Q.
+      ichnusae, Q. congesta, Q. virgiliana; `deciduous_oak`, 10 %, which also holds most of the
+      Barbagia's chestnut orchards, too small for the map) and the 971 ha of mapped chestnut stay hosts:
+      the Sardegna Foreste page names holm oak and chestnut, the cork-oak surveys of 1966-1973 list B.
+      aereus (Comandini et al. 2018), a Cagliari forager names "il leccio, la sughera ed il castagno", and
+      Boletus mycorrhizas were found in natural cork-oak stands on granite (Seddaiu et al. 2026).
+      `macchia` moves from 1.0 to secondary 0.6: a fifth of the Sardinian class is evergreen-oak matorral
+      (32.11, about 118,000 ha) and two fifths silicicolous Cistus, Erica and Arbutus macchia (32.3,
+      about 244,000 ha), both porcini ground (the agency's "macchia mediterranea (corbezzolo, erica)";
+      Cistus scrub yields B. aereus in Spain, Oria-de-Rueda et al. 2008), but a third is wild olive,
+      lentisk and juniper macchia (32.211, 32.12, 32.13), which hosts no porcino; 0.6 still gives a cell
+      whose woods are all macchia full credit. `mixed_broadleaf` moves from 0.3 to non-host 0.1: in
+      Sardinia it is almost all wild olive and carob woods (45.1, about 57,000 ha), arbuscular hosts,
+      with a few hundred hectares of hop-hornbeam and holly. `transitional_woodland_shrub` moves from 0.6
+      to 0.1: tamarisk, oleander and shrub-willow thickets here. `mediterranean_pine` (the post-war
+      conifer reforestation, 83.31, about 94,500 ha of maritime, Aleppo, stone and some black pine and
+      cypress, and the coastal dune pinewoods) moves from 0.6 to non-host 0.1: the Sardinian pine fungi
+      on record are Suillus, Lactarius and Hydnum (Comandini et al. 2018), the agency's conifer list has
+      no porcino, and a plantation cell over holm-oak regrowth keeps its credit through the oak share.
+      `exotic_broadleaf` (22,000 ha of eucalyptus) stays 0: no Sardinian report of porcini under it.
+      Beech, fir, mountain pine and the mixed broadleaf-conifer class do not exist in Sardinia; their
+      values are Tuscany's and score no cell. Otherwise Tuscany's POR-H4. Four levels (2026-09-24,
+      mushma_habitat_share_2026): oak, chestnut and holm oak are named hosts. Macchia is host too, not
+      just dilution: this thermophilic taxon fruits directly in Cistus, Arbutus and Erica scrub in
+      several sources, with Spanish yield data (22.5 kg/ha). Saturated to full credit from a
+      host-weighted share of 0.30.
+
+  - id: altitude
+    role: gate
+    kind: static_band
+    i18n_key: factor.altitude
+    input: {attribute: elevation_m}
+    response: {trapezoid: [null, null, 1100, 1450]}
+    confidence: plausible
+    source: [matteucci2008_micoponte, muse_censimento_boletus, museo_porcino_borgotaro, arrigoni_viciani_castagneti, mushma_occurrence_check_2026, sar_bacchetta2009_vegetazione, mushma_occurrence_check_sardegna_2026, mushma_sardegna_woodland_grid_2026]
+    derived: true
+    data: available
+    notes: >-
+      POR-A4. Coast to mid-hill; sunny mid-mountain chestnut is the upper limit. Tuscan iNaturalist records:
+      median 352 m, p90 629 m, max 789 m (n=50). Sardegna: full credit now runs to 1,100 m (Tuscany 800 m)
+      and reaches 0 at 1,450 m (1,250 m). The Sardinian oaks run from the coast to about 1,400 m: cork
+      oak "da pochi metri sul livello del mare fino a 800-1000 m" in Gallura and on the Buddusò, Alà and
+      Bitti plateaus, montane holm oak with holly "climaciche tra i 700 e i 1200 metri", the Q. congesta
+      woods of the Gennargentu, Marghine and Goceano "tra 750 e 1400 m" (Bacchetta et al. 2009). On the
+      grid the evergreen-oak cells sit at a median 511 m (p5-p95 201-904 m) and the deciduous-oak cells at
+      726 m (321-1,138 m); the woodland tops out near 1,550 m. The 10 located iNaturalist records sit at
+      5-758 m, median 320 m (Tuscany 352 m): observer effort pulls them to the coast, as in Tuscany.
+
+  - id: rain_trigger
+    role: driver
+    weight: 2
+    kind: rain_event
+    i18n_key: factor.rain_trigger
+    input: {variable: precipitation_sum, accumulation_days: 3}
+    response:
+      amount_mm: [10, 30, null, null]
+      lag_days: [6, 10, 16, 24]
+    confidence: plausible
+    source: [salerni2023_amiata, salerni2002_oak, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-R1 + POR-R2, transferred from B. edulis.
+
+  - id: rain_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.rain_30d
+    input: {variable: precipitation_sum, aggregate: percent_of_normal, window_days: 30}
+    response: {trapezoid: [50, 125, null, null]}
+    confidence: plausible
+    source: [salerni2002_oak, brejon_hoffman2026_preprint, karavani2018, mushma_rain_tuning_2026]
+    derived: true
+    data: derived
+    notes: >-
+      POR-M1, transferred from B. edulis and community studies.
+      Tuned (2026-09-22): the absolute 20->80 mm ramp was full in an ordinary September, so the 30
+      days are scored as a percentage of the cell's own normal for those days (2016-2025 reanalysis,
+      downscaled and rain-scaled like the rain): 0 at 50 %, full from 125 %. It raised the porcini
+      train objective by 0.03 with or without the rain scale, and the hold-out one by 0.013.
+
+  - id: air_temperature
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.air_temperature
+    input: {variable: temperature_2m_mean, aggregate: mean, window_days: 20}
+    response: {trapezoid: [10, 14, 22, 26]}
+    confidence: plausible
+    source: [borgotaro_igp_rt, beugelsdijk2008, matteucci2008_micoponte, brejon_hoffman2026_preprint]
+    derived: true
+    data: available
+    notes: >-
+      POR-T4. The warmest band: "la specie più xerotermofila". Low confidence within plausible.
+
+  - id: water_balance_30d
+    role: driver
+    weight: 1
+    kind: window_aggregate
+    i18n_key: factor.water_balance
+    input: {variable: water_balance, aggregate: sum, window_days: 30}
+    response: {trapezoid: [-80, 0, null, null]}
+    confidence: plausible
+    source: [agreda2015, boddy2014]
+    derived: true
+    data: derived
+    enabled: false
+    notes: POR-M3. Alternative to rain_30d; compare in the backtest.
+
+  - id: heat_spike
+    role: stopper
+    kind: count_days
+    i18n_key: factor.heat_spike
+    input: {variable: temperature_2m_max_anomaly_30d, op: gte, threshold: 8, window_days: 14}
+    response: {trapezoid: [null, null, 0, 1]}
+    floor: 0.75
+    confidence: plausible
+    source: [salerni2023_amiata, andrew2025]
+    derived: true
+    data: derived
+    notes: POR-X1. Milder than for B. edulis (x0.75).
+
+  - id: frost
+    role: stopper
+    kind: count_days
+    i18n_key: factor.frost
+    input: {variable: temperature_2m_min, op: lte, threshold: 0, window_days: 7}
+    response: {trapezoid: [null, null, 1, 2]}
+    floor: 0.4
+    confidence: folklore
+    source: [funghimagazine_fino_quando, muse_censimento_boletus]
+    derived: true
+    data: available
+    notes: POR-X3. Hardier in mild winters without constant frost (x0.4). NE Italy records run to early December.
+
+  - id: snow
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.snow
+    input: {variable: snowfall_sum, aggregate: sum, window_days: 3}
+    response: {trapezoid: [null, null, 0, 1]}
+    confidence: folklore
+    source: [borgotaro_igp_rt, funghimagazine_fino_quando]
+    derived: true
+    data: available
+    notes: POR-X4.
+
+  - id: drying
+    role: stopper
+    kind: count_days
+    i18n_key: factor.drying
+    input: {variable: et0_fao_evapotranspiration, op: gte, threshold: 5, window_days: 7}
+    response: {trapezoid: [null, null, 1, 3]}
+    floor: 0.6
+    confidence: folklore
+    source: [forager_wind_pages, funghimagazine_giorni_pioggia]
+    derived: true
+    data: available
+    notes: POR-X6. ET0 threshold 5 mm/day for a low-altitude summer taxon. All numbers are guesses.
+
+  - id: sun_exposure
+    role: stopper
+    kind: window_aggregate
+    i18n_key: factor.sun_exposure
+    input: {variable: sun_exposure_pct, aggregate: mean, window_days: 1}
+    response: {trapezoid: [80, 95, null, null]}
+    floor: 0.9
+    confidence: folklore
+    source: [matteucci2008_micoponte]
+    derived: true
+    data: derived
+    notes: >-
+      POR-A6. Tolerates or prefers sunny exposures (S x1.0, E/W x1.0, N x0.9): x0.9 at 80 % of
+      flat ground's sun or less, x1 from 95 %. Read on the day's sun ratio, the cell's sun as
+      a percentage of flat ground's (api.model.terrain), so it bites hardest in autumn, when
+      the sun is low. The terrain microclimate already makes sunny slopes warmer and drier for
+      every rule; this line is the species' own preference on top of that, kept soft.
+
+  - id: slope
+    role: stopper
+    kind: static_band
+    i18n_key: factor.slope
+    input: {attribute: slope_deg}
+    response: {trapezoid: [null, null, 25, 40]}
+    floor: 0.8
+    confidence: plausible
+    source: [bonet2008, mumcu_kucuker2019, beven_kirkby1979]
+    derived: true
+    data: available
+    notes: >-
+      Steep ground drains fast and holds thinner soil (topographic wetness, Beven & Kirkby
+      1979), but a 1 km cell's mean slope is not the slope of the exact spot the mushrooms
+      grow on: normal terrain for Tuscan woodland scores full credit, and only clearly
+      steep cells lose it. Woodland cells on the Tuscan grid run p10 10.2°, p25 12.6°, median
+      16.6°, p75 21.6°, p90 26.2° (2026-09-24): x1 up to 25°, about the p90, x0.8 from 40°.
+      Mushroom production fell with slope in Pyrenean Scots pine (Bonet 2008), and B. edulis
+      yield was highest under about 11° on plots in north-east Turkey (Mumcu Küçüker 2019);
+      two Spanish studies found no slope effect (Martínez-Peña 2012, Taye 2016). It acts on
+      the score only, never on the rain, so the same water is not counted twice. Sardegna: the
+      woodland cells run a median 16.9° with 9.5 % above 25° (grid of 2026-09-30), the Tuscan
+      picture, so the band is kept.
+
+known_gaps:
+  - id: wood_edge
+    description: POR-H5. Shrub, meadow and pasture within 100 m of a qualifying wood is productive.
+    needs: [M2 grid, a woodland edge buffer when building habitat fractions]
+    confidence: plausible
+    source: [borgotaro_igp_rt, borgotaro_igp_2014]
+  - id: wooded_pasture
+    description: >-
+      Sardegna: the Carta della Natura's wooded pasture (84.6, the open cork- and downy-oak dehesa,
+      about 112,700 ha) is left out of the grid as CLC's agroforestry is everywhere, although its oaks
+      are the same hosts; porcini fruiting there is not scored.
+    needs: [a wooded-pasture habitat class in the grid]
+    confidence: plausible
+    source: [sar_ispra_cnat_sardegna, sar_bacchetta2009_vegetazione]
+  - id: wind_after_rain
+    description: >-
+      Sardegna: the bulletins tie failed flushes to wind after the rain ("In Sardegna la presenza dei
+      Porcini Neri è soggetta al vento", May 2019; the wind "sta distruggendo ogni tentativo di nascite
+      anche nella vicina Sardegna", October 2021) and the good ones to sheltered woods ("quasi
+      esclusivamente in boschi fitti di Quercia-Leccio-Corbezzolo presenti in conche ben riparate dal
+      vento", October 2020). The drying stopper's ET0 stands for the wind only in part.
+    needs: [wind speed in the ingest, a compound condition in count_days, a wind-exposure cell attribute]
+    confidence: folklore
+    source: [sar_fm_2019_05_30, sar_fm_2021_10_24, sar_fm_2020_10_23]
+  - id: soil
+    description: POR-N1. "Heavy loamy, often somewhat calcareous soil" (Dutch sampling); acid loams under Cistus in Spain.
+    needs: [soil_texture, soil_ph]
+    confidence: plausible
+    source: [beugelsdijk2008, alonso_ponce2011]
