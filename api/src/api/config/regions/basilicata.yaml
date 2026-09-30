@@ -1,0 +1,127 @@
+# Basilicata: region #16 of the full-Italy rollout (.gavin-root/docs/regions/basilicata.md).
+id: basilicata
+name: {it: Basilicata, en: Basilicata}
+timezone: Europe/Rome
+
+# [lon_min, lat_min, lon_max, lat_max], the ISTAT boundary's extent rounded outward to 0.01°.
+bbox_wgs84: [15.33, 39.89, 16.87, 41.14]
+
+grid:
+  crs: "EPSG:3035"
+  cell_size_m: 1000
+
+# ISTAT region code (COD_REG) in the national boundaries file.
+boundary:
+  source: istat_boundaries
+  region_code: 17
+
+# Woodland: one map gives both layers. ISPRA's Carta della Natura habitat map of Basilicata
+# (1:50,000, 2012-2013) gives every polygon its CORINE Biotopes habitat, which says both which broad
+# group it is and which kind. There is no mixed class. The Region's Carta forestale (INEA, 2006) is
+# not published as data (its update is due in 2027); its land-use map (Uso del suolo 2013, 1:5,000,
+# CORINE level 3) has no forest types and its geoportal did not answer. Conifer plantations (83.31)
+# are Aleppo pine on the clay hills and black pine in the mountains (median 474 m, 56 % below 600 m):
+# one code, one habitat, so they go to other_conifer, as Emilia-Romagna and Liguria file their
+# reforestation. Broadleaf and eucalyptus plantations stay farmland; Ampelodesmos steppe, bracken,
+# garighe, the prostrate-juniper and thorny-cushion heaths, grassland and rock are left out, as UCS
+# and CLC leave 321/322 out in Tuscany. See .gavin-root/docs/woodland-grid.md and
+# .gavin-root/docs/regions/basilicata.md (Sources).
+forest:
+  groups:
+    source: ispra_cnat_basilicata
+    class_column: codice_corine
+    classes:
+      "41.18": broadleaf     # faggete dell'Italia meridionale
+      "41.41": broadleaf     # boschi misti di forre e scarpate
+      "41.732": broadleaf    # querceti mediterranei a roverella
+      "41.737B": broadleaf   # boschi submediterranei orientali di quercia bianca dell'Italia meridionale
+      "41.7511": broadleaf   # querceti mediterranei a cerro
+      "41.7512": broadleaf   # querceti a cerro e farnetto
+      "41.782": broadleaf    # querceti a Quercus trojana
+      "41.81": broadleaf     # boschi di Ostrya carpinifolia
+      "41.9": broadleaf      # boschi a Castanea sativa
+      "41.C1": broadleaf     # boschi a Alnus cordata
+      "44.13": broadleaf     # boschi ripariali temperati di salici
+      "44.14": broadleaf     # boschi ripariali mediterranei di salici
+      "44.513": broadleaf    # boschi ripariali mediterranei a Alnus glutinosa
+      "44.61": broadleaf     # boschi ripariali a pioppi
+      "44.63": broadleaf     # boschi ripariali a Fraxinus angustifolia
+      "45.31A": broadleaf    # leccete sud-italiane e siciliane
+      "45.324": broadleaf    # leccete supramediterranee dell'Italia
+      "83.324": broadleaf    # robinieti
+      "42.15": conifer       # abetine dell'Appennino meridionale
+      "42.711": conifer      # pinete di pino loricato (Pollino)
+      "42.84": conifer       # pinete a pino d'Aleppo
+      "83.31": conifer       # piantagioni di conifere (Aleppo pine low, black pine high)
+      "16.29": conifer       # dune alberate (the Ionian coast's planted pine woods)
+      "16.27": macchia       # dune stabili a ginepri
+      "16.28": macchia       # dune stabili con macchia a sclerofille
+      "32.11": macchia       # matorral a querce sempreverdi
+      "32.13": macchia       # matorral a ginepri
+      "32.211": macchia      # macchia bassa a olivastro e lentisco
+      "32.215": macchia      # macchia a Cytisus
+      "32.3": macchia        # garighe e macchie mesomediterranee silicicole
+      "32.4": macchia        # garighe e macchie mesomediterranee calcicole
+      "45.1": macchia        # boschi e boscaglie a olivastro e carrubo
+      "31.81": transitional  # cespuglieti temperati a latifoglie decidue
+      "31.844": transitional # ginestreti collinari e montani
+      "31.88": transitional  # formazioni a Juniperus communis
+      "31.8A": transitional  # roveti
+      "44.12": transitional  # saliceti arbustivi ripariali mediterranei
+      "44.81": transitional  # cespuglieti e boscaglie ripariali a tamerici, oleandri e agnocasti
+  types:
+    source: ispra_cnat_basilicata
+    classes:
+      "41.18": beech
+      "41.732": deciduous_oak
+      "41.737B": deciduous_oak
+      "41.7511": deciduous_oak
+      "41.7512": deciduous_oak
+      "41.782": deciduous_oak     # Macedonian oak (fragno)
+      "41.9": chestnut
+      "41.41": mixed_broadleaf
+      "41.81": mixed_broadleaf    # hop-hornbeam
+      "41.C1": mixed_broadleaf    # Alnus cordata, the southern Apennine alder
+      "45.31A": evergreen_oak
+      "45.324": evergreen_oak
+      "44.13": riparian
+      "44.14": riparian
+      "44.513": riparian
+      "44.61": riparian
+      "44.63": riparian
+      "83.324": exotic_broadleaf
+      "42.711": mountain_pine     # pino loricato
+      "42.84": mediterranean_pine
+      "16.29": mediterranean_pine
+      "83.31": other_conifer      # conifer plantations (see above)
+      "42.15": fir_spruce
+
+soil:
+  source: soilgrids
+
+# iNaturalist place for the recent-observations fetch, resolved by name ("Basilicata, IT", admin
+# level 10) on 2026-09-30. GBIF history is paged over bbox_wgs84 and clipped to the grid afterwards.
+sightings:
+  inaturalist_place_id: 8763
+
+# Rain scale (merged onto config/model.yaml), fitted on ALSIA's agrometeo station totals: Basilicata's
+# open daily rain (the Centro Funzionale's historical download) did not answer, and ALSIA's daily data
+# need registration, so the check reads the raw CDS rain of 2016-2023 at the 27 stations whose annual
+# totals ALSIA's 2000-2023 climate report publishes. Basilicata's history is CDS, so the scale names
+# that source too: the national one scales era5_seamless only, while the rain normals are scaled
+# whatever their source. .gavin-root/docs/regions/basilicata.md, Weather.
+model:
+  precipitation_scale:
+    sources: [era5_land_cds, era5_seamless]
+    intercept: 1.04
+    per_km: 0.14
+    max_elevation_m: 920  # the highest station (Laurenzana, 919 m): no extrapolation above it
+    source: [mushma_basilicata_alsia_rain_check_2026]
+    notes: >-
+      Least squares through the origin of station totals on raw CDS era5_land_cds annual totals (2016-2023,
+      read bilinearly from the land nodes at each station) x (a + b x elevation) over the 20 ALSIA stations
+      within 5 km of a woodland cell (11-919 m) gave a = 1.038, b = 0.136 per km (leave-one-out 1.02-1.06
+      and 0.06-0.18; all 27 stations 1.01 + 0.17): raw CDS holds 0.97 of station rain below 200 m and
+      0.86-0.98 above. It gives 1.07 at 200 m, 1.11 at 500 m, 1.15 at 800 m and 1.16 from 920 m up, 1.14
+      on average over the woodland cells. The farm stations are few in the wet south-west: Nemoli below
+      the Sirino stays at 0.72 of its 1,657 mm after scaling.
