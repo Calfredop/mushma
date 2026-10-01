@@ -5,6 +5,7 @@ import { DEFAULT_REGION_SLUG, REGIONS } from '../config'
 import { type Place, searchPlaces } from '../geo/photon'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import type { Language } from '../i18n'
+import { findRegionAt } from '../regions/lookup'
 import { CloseIcon, LocateIcon, SearchIcon } from './icons'
 import styles from './PlaceSearch.module.css'
 
@@ -42,7 +43,14 @@ export function PlaceSearch({
 
   const results = useQuery({
     queryKey: ['places', language, query],
-    queryFn: ({ signal }) => searchPlaces(query, language, bounds, signal),
+    // The search box is a rectangle round Italy: only places in a served region are listed.
+    queryFn: async ({ signal }) => {
+      const places = await searchPlaces(query, language, bounds, signal)
+      const regions = await Promise.all(
+        places.map((place) => findRegionAt(place.lat, place.lon)),
+      )
+      return places.filter((_, index) => regions[index] !== undefined)
+    },
     enabled,
     staleTime: Infinity,
     retry: 1,

@@ -154,24 +154,5 @@ soil:
 sightings:
   inaturalist_place_id: 13069
 
-# Rain scale (merged onto config/model.yaml), fitted on the Protezione Civile's gauge totals: the
-# Region's Centro Funzionale publishes each gauge's monthly and annual rain to 2020 (Annali
-# idrologici, Parte I, dati storici), not daily series, so the check compares totals. Puglia's history
-# is CDS, so the scale names that source too: the national one scales era5_seamless only.
-# .gavin-root/docs/regions/puglia.md, Weather.
-model:
-  precipitation_scale:
-    sources: [era5_land_cds, era5_seamless]
-    intercept: 0.93
-    per_km: 0.34
-    max_elevation_m: 900  # about the highest gauge of the fit (Orto di Zolfo, 914 m)
-    source: [mushma_puglia_gauge_check_2026]
-    notes: >-
-      Least squares through the origin of gauge totals on raw CDS era5_land_cds totals (read
-      bilinearly from the land nodes at each gauge, weights renormalised) x (a + b x elevation) over
-      the 42 Protezione Civile gauges within 5 km of a woodland cell with at least three complete
-      years in 2016-2020 (201 gauge-years, 27-914 m, heights from the DEM) gave a = 0.933,
-      b = 0.340 per km (leave-one-out 0.91-0.95 and 0.28-0.39). Raw CDS holds 1.06 of those gauges'
-      rain below 200 m and 0.80-0.87 above 400 m; scaled, 0.97-1.04 in every band. All 139 gauges
-      give 0.93 + 0.23 (raw pooled ratio 1.00). It gives 1.00 at 200 m, 1.10 at 500 m and 1.20 at
-      800 m.
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

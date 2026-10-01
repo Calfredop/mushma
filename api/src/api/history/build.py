@@ -154,7 +154,12 @@ class _AreaWeather:
         temperature_var = weather_config.variables[TEMPERATURE]
         scale = model_config.precipitation_scale
         factor = pd.Series(
-            scale.factor(cells["elevation_m"].to_numpy(dtype=float)), index=cells["cell_id"]
+            scale.factor(
+                cells["elevation_m"].to_numpy(dtype=float),
+                cells["lon"].to_numpy(dtype=float),
+                cells["lat"].to_numpy(dtype=float),
+            ),
+            index=cells["cell_id"],
         )
         self.rain = area_point_weights(members, weights, rain_var.downscale)
         self.rain_scaled = area_point_weights(

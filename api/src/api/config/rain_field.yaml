@@ -1,0 +1,43 @@
+# Inputs to the national rain calibration field (api.weather.rain_field; the fitted field is
+# rain_scale_field.csv, read by model.yaml precipitation_scale). See
+# .gavin-root/docs/rain-scale-field.md.
+
+# Networks with a parser in api.weather.checks.GAUGE_NETWORKS, and the years whose April-November
+# season each is compared over: three recent complete years where the open data has them (one
+# season's height slope is noisy: Sardinia's 2021-22 fit gave 0.09 per km, 2022 alone 0.27).
+networks:
+  tuscany: [2023, 2024, 2025]
+  liguria: [2023, 2024, 2025]
+  umbria: [2023, 2024, 2025]
+  emilia_romagna: [2023, 2024, 2025]
+  piemonte: [2023, 2024, 2025]
+  lombardia: [2023, 2024, 2025]
+  trentino_alto_adige: [2022, 2023, 2024]  # South Tyrol only (Trento has no open history)
+  lazio: [2016, 2018, 2020]  # SIARL skips some years
+  sicilia: [2019]  # api.weather.sias reads June 2019 to June 2020 only: June-November 2019
+  sardegna: [2020, 2021, 2022]  # ARPAS publishes 2016-2022
+
+# Networks whose gauges have no parser here join as pseudo-gauges: `count` points at the region's
+# own woodland cells between low_m and high_m, each carrying the published fit's ratio at its
+# height (intercept + per_km x km). `count` is the number of gauges behind that fit. All were fitted
+# against ERA5-Land (CDS). The borrowed fits (Abruzzo, Marche, Molise) and Friuli (none) are left
+# out: those regions take the field's value.
+pseudo:
+  basilicata: {intercept: 1.04, per_km: 0.14, low_m: 11, high_m: 919, count: 20, source: mushma_basilicata_alsia_rain_check_2026}
+  calabria: {intercept: 0.85, per_km: 0.82, low_m: 10, high_m: 1300, count: 15, source: mushma_calabria_rain_normals_check_2026}
+  campania: {intercept: 0.77, per_km: 0.52, low_m: 11, high_m: 769, count: 33, source: mushma_campania_agrometeo_rain_check_2026}
+  puglia: {intercept: 0.93, per_km: 0.34, low_m: 27, high_m: 914, count: 42, source: mushma_puglia_gauge_check_2026}
+  valle_d_aosta: {intercept: 0.58, per_km: 0.04, low_m: 318, high_m: 2045, count: 15, source: mushma_vda_yearbook_gauge_check_2026}
+  veneto: {intercept: 0.85, per_km: -0.04, low_m: 0, high_m: 2235, count: 153, source: mushma_veneto_arpav_gauge_check_2026}
+
+# A gauge counts when it reports at least this share of the season's days; its season ratio must
+# be plausible (a blocked or misplaced gauge reads far off).
+min_coverage: 0.8
+min_coverage_by_network: {sicilia: 0.7}
+ratio_range: [0.33, 3.0]
+
+# Kernel widths tried by spatial-block cross-validation, the block size, and the ridge toward the
+# national fit (in gauges at distance zero).
+bandwidths_km: [15, 25, 40, 60, 100, 200, 10000]
+block_km: 50
+ridge: 2.0

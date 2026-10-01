@@ -324,6 +324,7 @@
             "type": "string"
           },
           "factors": {
+            "description": "the \"why this score\" breakdown; empty when the store has none for the day (the score is still served)",
             "items": {
               "$ref": "#/components/schemas/FactorBreakdown"
             },

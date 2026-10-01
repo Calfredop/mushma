@@ -97,22 +97,5 @@ soil:
 sightings:
   inaturalist_place_id: 10867
 
-# Rain scale (merged onto config/model.yaml), borrowed: Abruzzo publishes no open daily rain that a
-# script can read (the Idrografico's POLARIS WEB portal needs SPID or CIE login; the Annali are
-# PDF tables), so there is no Abruzzo gauge check. Abruzzo's history is CDS, which the national
-# scale does not name, so both reanalysis sources are listed. The two nearest woodland-gauge fits on
-# the same CDS rain find it about right at mid elevation and dry in the mountains; this is their
-# mean. .gavin-root/docs/regions/abruzzo.md, Weather.
-model:
-  precipitation_scale:
-    sources: [era5_land_cds, era5_seamless]
-    intercept: 0.83
-    per_km: 0.43
-    source: [mushma_abruzzo_rain_prior_2026]
-    notes: >-
-      Abruzzo: no gauge fit. Mean of the two nearest least-squares fits of gauge totals on CDS
-      era5_land_cds totals x (a + b x elevation), 2019-2025: Umbria 0.89 + 0.33 per km (8 Servizio
-      Idrografico woodland gauges, 402-1,053 m) and Campania 0.77 + 0.52 per km (33 agrometeo gauges,
-      11-769 m). It gives 0.92 at 200 m, 1.05 at 500 m, 1.17 at 800 m, 1.35 at 1,200 m and 1.52 at
-      1,600 m; Marche's borrowed 0.76 + 0.57 per km is within 0.15 of it up to 1,600 m. Abruzzo's
-      woodland reaches 1,900 m, so its upper half is extrapolated.
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

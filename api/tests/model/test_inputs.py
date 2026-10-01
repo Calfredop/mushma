@@ -59,6 +59,12 @@ def test_load_cells_keeps_woodland_cells_with_attributes_and_habitat_fractions(
     assert cells.attributes["lat"].tolist() == [43.5, 43.5]  # for the sun ratio
 
 
+def _rain_factors() -> np.ndarray:
+    """The rain field's factor at the two woodland cells of ``write_grid`` (1000 m and 0 m)."""
+    scale = load_model_config().precipitation_scale
+    return scale.factor(np.array([1000.0, 0.0]), np.array([11.0, 11.01]), np.array([43.5, 43.5]))
+
+
 def _without_microclimate() -> ModelConfig:
     config = load_model_config()
     return config.model_copy(
@@ -101,7 +107,8 @@ def test_load_weather_scales_reanalysis_rain_by_cell_height_and_flags_forecast_d
     )
 
     rain = weather.values["precipitation_sum"]
-    assert rain[:, 0] == pytest.approx([10.0 * 1.57, 10.0 * 1.28])
+    assert rain[:, 0] == pytest.approx(10.0 * _rain_factors())
+    assert rain[0, 0] > rain[1, 0]  # wetter with height
     assert rain[:, 1].tolist() == [10.0, 10.0]  # forecast rain is not scaled
     assert weather.values["temperature_2m_mean"][1, 0] == pytest.approx(12.0 + 0.0045 * 500)
     assert weather.forecast.tolist() == [[False, True], [False, True]]
@@ -181,7 +188,7 @@ def test_load_weather_downscales_the_rain_normals_and_scales_them_like_the_rain(
     )
 
     normal = weather.normals["precipitation_sum"]
-    assert normal[:, 0] == pytest.approx([3.0 * 1.57, 3.0 * 1.28])
+    assert normal[:, 0] == pytest.approx(3.0 * _rain_factors())
     rain = weather.values["precipitation_sum"]
     assert (rain / normal)[:, 0] == pytest.approx([2.0, 2.0])  # the ratio ignores the scale
     assert set(weather.normals) == {"precipitation_sum"}

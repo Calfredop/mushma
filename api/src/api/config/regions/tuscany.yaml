@@ -49,9 +49,5 @@ forest:
 soil:
   source: soilgrids
 
-# Optional model overrides (merged onto config/model.yaml). Omit to keep national defaults —
-# Tuscany's precipitation_scale was fitted on SIR Toscana gauges, so it is the national default.
-# model:
-#   precipitation_scale:
-#     intercept: 1.28
-#     per_km: 0.29
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

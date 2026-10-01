@@ -7,12 +7,21 @@ from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from api.live.repository import LiveRepository
 from api.repository import CellNotFound, DateOutOfRange, ScoresUnavailable
 from api.timeutil import today_rome
-from tests.live.helpers import CELL_A, CELL_B, CELL_C, REGION, SCORES_DATE, build_dataset
+from tests.live.helpers import (
+    CELL_A,
+    CELL_B,
+    CELL_C,
+    REGION,
+    SCORES_DATE,
+    build_dataset,
+    edit_factors,
+)
 
 
 @pytest.fixture
@@ -179,6 +188,77 @@ class TestGetCellDetailAndSpot:
                     assert len(day.factors) > 0
                     product = math.prod(f.contribution for f in day.factors)
                     assert product == pytest.approx(day.score, abs=1e-6)
+
+    # get_spot's contract is to always succeed, even on a store the pipeline left inconsistent
+    # (bug-cell-forecast-500-puglia.md): a day whose winner's factor row is missing or unusable is
+    # served with its score and no breakdown, and every other day keeps its breakdown.
+
+    def _porcini_days(self, repo: LiveRepository) -> list:
+        for detail in (
+            repo.get_cell_detail(CELL_A["cell_id"]),
+            repo.get_spot(lat=CELL_A["lat"] + 0.0001, lon=CELL_A["lon"] + 0.0001),
+        ):
+            porcini = next(f for f in detail.species if f.species == "porcini")
+            assert len(porcini.days) == 8
+        return porcini.days
+
+    def test_a_winner_without_its_factor_row_serves_the_day_without_a_breakdown(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        # Cell A is won by porcini_b from day 4 on; drop its porcini_b row for day 5.
+        rules = build_dataset(tmp_path)
+        day_5 = today_rome() + timedelta(days=5)
+        edit_factors(
+            tmp_path,
+            "porcini_b",
+            lambda rows: rows[~((rows["cell_id"] == CELL_A["cell_id"]) & (rows["date"] == day_5))],
+        )
+
+        days = self._porcini_days(LiveRepository(tmp_path, rules=rules))
+
+        assert days[5].date == day_5
+        assert days[5].score == pytest.approx(0.55)
+        assert days[5].factors == []
+        assert all(day.factors for i, day in enumerate(days) if i != 5)
+        # The log names what was missing, to find the store's fault later.
+        assert f"{REGION} {CELL_A['cell_id']} {day_5}: no breakdown from porcini_b" in caplog.text
+
+    def test_a_winner_with_no_factors_stored_at_all_serves_its_days_without_a_breakdown(
+        self, tmp_path: Path
+    ) -> None:
+        rules = build_dataset(tmp_path)
+        shutil.rmtree(tmp_path / "scores" / REGION / "factors" / "species=porcini_b")
+
+        days = self._porcini_days(LiveRepository(tmp_path, rules=rules))
+
+        assert [bool(day.factors) for day in days] == [True] * 4 + [False] * 4
+        assert days[0].factors[0].key == "rain_a"
+
+    def test_a_factor_row_stored_twice_still_gives_the_breakdown(self, tmp_path: Path) -> None:
+        rules = build_dataset(tmp_path)
+        edit_factors(tmp_path, "porcini_a", lambda rows: pd.concat([rows, rows.iloc[:1]]))
+
+        days = self._porcini_days(LiveRepository(tmp_path, rules=rules))
+
+        assert all(day.factors for day in days)
+
+    @pytest.mark.parametrize("bad", [float("nan"), 1.5, -0.2])
+    def test_a_factor_value_outside_0_1_serves_the_day_without_a_breakdown(
+        self, tmp_path: Path, bad: float
+    ) -> None:
+        rules = build_dataset(tmp_path)
+        day_2 = today_rome() + timedelta(days=2)
+
+        def corrupt(rows):
+            hit = (rows["cell_id"] == CELL_A["cell_id"]) & (rows["date"] == day_2)
+            return rows.assign(rain_a=rows["rain_a"].where(~hit, bad))
+
+        edit_factors(tmp_path, "porcini_a", corrupt)
+
+        days = self._porcini_days(LiveRepository(tmp_path, rules=rules))
+
+        assert days[2].factors == []
+        assert all(day.factors for i, day in enumerate(days) if i != 2)
 
 
 class TestGetStatus:

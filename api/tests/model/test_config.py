@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import yaml
 
-from api.model.config import MODEL_FILE, load_model_config
+from api.model.config import MODEL_FILE, REGIONS_DIR, load_model_config
 from api.model.rules import RuleConfigError, load_rules
 
 
@@ -25,9 +25,11 @@ def test_a_region_model_block_overrides_precipitation_scale(tmp_path: Path) -> N
                 "boundary": {"source": "istat_boundaries", "region_code": 1},
                 "model": {
                     "precipitation_scale": {
+                        "field": None,
                         "intercept": 1.0,
                         "per_km": 0.0,
-                        "notes": "national rain is fine here; no Tuscan gauge fit.",
+                        "max_elevation_m": 2000,
+                        "notes": "national rain is fine here; no gauge field.",
                     }
                 },
             }
@@ -40,7 +42,7 @@ def test_a_region_model_block_overrides_precipitation_scale(tmp_path: Path) -> N
     assert scale.factor(np.array([0.0, 1500.0])).tolist() == pytest.approx([1.0, 1.0])
     # National defaults unchanged without a region override.
     national = load_model_config(model_path, regions_dir=regions).precipitation_scale
-    assert national.intercept == pytest.approx(1.28)
+    assert national.field == "rain_scale_field.csv"
 
 
 def test_groups_list_the_keys_in_tie_break_order() -> None:
@@ -50,14 +52,45 @@ def test_groups_list_the_keys_in_tie_break_order() -> None:
     assert config.groups["porcini"][0] == "porcini_edulis"
 
 
-def test_the_precipitation_scale_grows_with_elevation_and_stops_at_the_cap() -> None:
+def test_the_precipitation_scale_is_one_national_field_on_every_reanalysis_source() -> None:
     scale = load_model_config().precipitation_scale
 
-    factors = scale.factor(np.array([-50.0, 0.0, 1000.0, 1700.0, 2500.0, np.nan]))
+    assert scale.field == "rain_scale_field.csv"
+    assert scale.sources == ["era5_land_cds", "era5_seamless"]
+    for region in sorted(p.stem for p in REGIONS_DIR.glob("*.yaml")):
+        assert load_model_config(region=region).precipitation_scale == scale, region
 
-    assert factors[:5] == pytest.approx([1.28, 1.28, 1.57, 1.773, 1.773])
-    assert factors[5] == pytest.approx(1.28)  # no DEM height: treated as sea level
-    assert scale.sources == ["era5_seamless"]
+
+def test_the_rain_field_grows_with_elevation_and_stops_at_its_cap() -> None:
+    scale = load_model_config().precipitation_scale
+    # Near Cortona, on the Tuscan-Umbrian border.
+    lon, lat = np.full(5, 12.0), np.full(5, 43.3)
+
+    factors = scale.factor(np.array([-50.0, 0.0, 800.0, 5000.0, np.nan]), lon, lat)
+
+    assert factors[0] == factors[1] == factors[4]  # below sea level or no DEM height: sea level
+    assert factors[3] >= factors[2] >= factors[1]
+    assert 0.5 < factors[1] < 2.0 and factors[3] < 2.5
+
+
+def test_the_rain_field_has_no_step_at_a_region_border() -> None:
+    scale = load_model_config().precipitation_scale
+    # Cortona (Tuscany) and Lisciano Niccone (Umbria), 12 km apart, at the same height.
+    lon, lat = np.array([11.99, 12.14]), np.array([43.28, 43.25])
+
+    tuscan, umbrian = scale.factor(np.array([400.0, 400.0]), lon, lat)
+
+    assert tuscan / umbrian == pytest.approx(1.0, abs=0.05)
+
+
+def test_a_scale_takes_a_field_or_a_constant_fit_not_both() -> None:
+    from api.model.config import PrecipitationScale
+
+    common = {"enabled": True, "sources": ["x"], "confidence": "c", "source": ["s"], "notes": ""}
+    with pytest.raises(ValueError, match="not both"):
+        PrecipitationScale(**common, field="f.csv", intercept=1.0, per_km=0.0, max_elevation_m=1)
+    with pytest.raises(ValueError, match="needs a field"):
+        PrecipitationScale(**common, intercept=1.0)
 
 
 def test_the_precipitation_scale_cites_a_known_reference() -> None:
@@ -163,11 +196,3 @@ def test_a_microclimate_on_a_variable_the_ingest_lacks_is_refused(tmp_path: Path
 
     with pytest.raises(RuleConfigError, match="dew_point_2m_mean"):
         load_rules(model_file=path)
-
-
-def test_umbria_scales_its_cds_history_with_its_own_gauge_fit() -> None:
-    scale = load_model_config(region="umbria").precipitation_scale
-
-    assert scale.sources == ["era5_land_cds", "era5_seamless"]
-    assert (scale.intercept, scale.per_km) == (0.89, 0.33)
-    assert set(scale.source) <= set(load_rules("umbria").references)

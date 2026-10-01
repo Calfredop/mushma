@@ -131,6 +131,10 @@ only those inside woodland cells count, and only **8** do with 80 % of days over
   above), own fit 0.85 + 0.31 per km, and the woodland fit above lands at 1.04 on them. The national
   scale would be 1.42 there.
 
+**Resolved 2026-10-01: one national rain field** (`../rain-scale-field.md`) replaces the regional
+fits. The two sides of this border read the same factor at the same point, ×0.92–1.03, where they
+read ×1.37 and ×1.00 before. The original note follows.
+
 **Known issue: a step at the Tuscan border.** CDS and `era5_seamless` rain agree in amount (pooled
 0.995 over Tuscany's 103 nodes in 2024), but Tuscany's SIR gauges read the reanalysis at 0.63–0.79
 of gauge rain and Umbria's at about 0.9–1.1, so each region's own region-wide fit scales the same

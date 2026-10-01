@@ -206,29 +206,5 @@ soil:
 sightings:
   inaturalist_place_id: 13074
 
-# Rain scale (merged onto config/model.yaml) from ARPAV's monthly gauge totals (Principali variabili
-# meteorologiche 1994-2025, CC BY 4.0): least squares through the origin of May-October gauge totals
-# on raw CDS totals x (a + b x elevation), read bilinearly from the 0.2° land nodes at each gauge,
-# over the 153 gauges with at least six complete seasons in 2016-2025 (1,287 gauge-seasons, -3 to
-# 2,235 m, months with a missing day left out): a = 0.847, b = -0.037 per km, a factor alone 0.820.
-# Raw CDS holds 1.20 of the gauges' rain below 500 m, 1.23 at 500-1,000 m, 1.18 at 1,000-1,500 m,
-# 1.33 above; scaled, 1.01, 1.01, 0.94 and 1.03. Leaving one gauge out moves a within 0.84-0.85 and
-# b within -0.04 to -0.03; the gauges above 300 m alone give 0.89 - 0.07 per km. Fitted on 2016-2021
-# it leaves 2022-2025 at 0.96 of the gauges. It scales totals: the reanalysis stays too dry on the
-# wettest Prealps (Recoaro, Posina, the Cansiglio: 0.72-0.77 of the gauges raw) and too wet in the
-# Dolomites' inner valleys (Agordo, Caprile, Borca di Cadore: 1.7-1.8). .gavin-root/docs/regions/veneto.md,
-# Validation.
-model:
-  precipitation_scale:
-    sources: [era5_land_cds, era5_seamless]
-    intercept: 0.85
-    per_km: -0.04
-    max_elevation_m: 2200  # about the highest gauge of the fit (Faloria, Cortina d'Ampezzo, 2,235 m)
-    confidence: plausible
-    source: [mushma_veneto_arpav_gauge_check_2026]
-    notes: >-
-      Veneto: May-October ARPAV gauge totals (153 gauges, 2016-2025) against raw ERA5-Land (CDS)
-      rain at the gauges; a = 0.847, b = -0.037 per km (0.820 alone), stable when leaving one gauge
-      out (0.84-0.85, -0.04 to -0.03) and out of sample (fit on 2016-2021, 2022-2025 at 0.96 of the
-      gauges). Monthly totals only: ARPAV's daily data come by e-mail request, so wet-day timing is
-      not checked.
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

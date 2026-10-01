@@ -1033,6 +1033,23 @@ references:
       hold-out (0.507 -> 0.463, 6 sightings) and was not adopted.
     cited_as:
     - model-v1-validation.md
+  mushma_rain_field_2026:
+    citation: 'mushma national rain calibration field: April-November gauge totals of 1,980 open rain gauges in 10
+      regional networks (SIR Toscana, ARPAL, Regione Umbria Servizio Idrografico, ARPAE, ARPA Piemonte, ARPA
+      Lombardia, Provincia di Bolzano, ARSIAL SIARL, SIAS, ARPAS; 2016-2025) against Open-Meteo era5_seamless rain
+      downscaled to each gauge, plus pseudo-gauges for six regions whose fits came from yearbooks or farm networks,
+      fitted as one kernel-weighted field. See .gavin-root/docs/rain-scale-field.md'
+    url: https://github.com/Calfredop/mushma/blob/main/.gavin-root/docs/rain-scale-field.md
+    kind: analysis
+    region: Italy
+    verified: verified
+    supports: 'Gauge/reanalysis season ratios differ more between networks than within one (pooled: Piemonte 0.77,
+      South Tyrol 0.79, Lazio 0.91, Emilia-Romagna 0.93, Lombardia 0.94, Umbria 1.02, Liguria 1.02, Tuscany 1.05,
+      Sicily 1.15, Sardinia 1.17). A field of local a + b x height with a 25 km Gaussian kernel and a ridge toward
+      the national fit predicts gauges in held-out 50 km blocks with log error 0.186, against 0.252 for one
+      national fit and 0.190 for 15 km; it has no step at region borders.'
+    cited_as:
+    - rain-scale-field.md
   mushma_umbria_gauge_check_2026:
     citation: 'mushma Umbria rain check: downscaled ERA5-Land (CDS) daily precipitation against the Regione Umbria
       Servizio Idrografico rain gauges inside woodland cells, 2019-2025 (8 gauges with 80 % of days, 402-1,053 m) and

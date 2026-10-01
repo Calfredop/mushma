@@ -1,6 +1,7 @@
 """Builders for a tiny synthetic on-disk $DATA_DIR tree, shaped exactly like the real M2/M3/M4
 stores (api.grid.store, api.model.store, api.sightings.store) but small enough for fast tests."""
 
+from collections.abc import Callable
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -111,6 +112,13 @@ def write_factors(root: Path, key: str, rows: list[dict]) -> None:
     """``rows``: dicts of cell_id/date plus one column per enabled factor id. Merges like
     :func:`write_daily`."""
     _write_partitioned(root, "factors", key, rows)
+
+
+def edit_factors(root: Path, key: str, edit: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
+    """Rewrite ``key``'s factor-tier partitions through ``edit``, to simulate a store the pipeline
+    left inconsistent (a winner's rows missing, a value out of range)."""
+    for path in (root / "scores" / REGION / "factors" / f"species={key}").glob("*/data.parquet"):
+        edit(pd.read_parquet(path)).to_parquet(path, index=False)
 
 
 def write_sightings(root: Path, records: list[dict]) -> None:

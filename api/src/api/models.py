@@ -144,7 +144,10 @@ class FactorBreakdown(BaseModel):
 class DayScore(BaseModel):
     date: date
     score: float = Field(ge=0, le=1, description="0-1 conditions index, never a probability")
-    factors: list[FactorBreakdown]
+    factors: list[FactorBreakdown] = Field(
+        description='the "why this score" breakdown; empty when the store has none for the day '
+        "(the score is still served)"
+    )
 
 
 class TrendPoint(BaseModel):

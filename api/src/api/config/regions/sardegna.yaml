@@ -124,22 +124,5 @@ weather:
     temperature_2m_min: 5.3
     soil_temperature_0_to_7cm_mean: 4.7
 
-# Rain scale (merged onto config/model.yaml), fitted on the ARPAS gauges (Sardinia's daily station
-# tables, 2018-2022). Sardinia's history is CDS, so the scale names that source too: the national
-# one scales era5_seamless only, while the rain normals are scaled whatever their source.
-# .gavin-root/docs/regions/sardegna.md, Weather.
-model:
-  precipitation_scale:
-    sources: [era5_land_cds, era5_seamless]
-    intercept: 1.00
-    per_km: 0.34
-    source: [mushma_sardegna_arpas_gauge_check_2026]
-    notes: >-
-      Least squares through the origin of gauge totals on raw CDS era5_land_cds totals (read
-      bilinearly from the land nodes at each station, re-cut into UTC days) x (a + b x elevation) over
-      the 272 ARPAS stations at 0-1,372 m with whole days on 80 % of 2018-2022 gave a = 1.002, b =
-      0.342 per km: raw CDS holds 0.95 of the gauge rain below 200 m, 0.81 at 400-800 m and 0.74 at
-      800 m and above. Leave-one-out slopes run 0.33-0.35; the 141 stations whole over 2016-2022 give
-      1.00 + 0.32. It gives 1.07 at 200 m, 1.17 at 500 m, 1.27 at 800 m and 1.41 at 1,200 m. The
-      reanalysis's error is also spatial: dry on the south-east's mountains (Sette Fratelli, Pula's
-      Is Cannoneris 0.46-0.58), wet on the north-west coast (Sorso, Bosa, Castelsardo 1.3-1.45).
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

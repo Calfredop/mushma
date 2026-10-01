@@ -356,6 +356,17 @@ describe('routing', () => {
     expect(await screen.findByText(/Sei nelle Marche\./)).toBeInTheDocument()
   })
 
+  it('offers Marche for a fix in Fabriano from Umbria, whose bbox holds it', async () => {
+    mockGeolocation(43.33, 12.9) // Fabriano
+    window.history.replaceState(null, '', '/umbria')
+    render(<App />)
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Centra sulla mia posizione' }),
+    )
+    expect(await screen.findByText(/Sei nelle Marche\./)).toBeInTheDocument()
+    expect(mapProp('camera')).toBeNull()
+  })
+
   it('navigates to the species path when the switcher is used, and tracks the switch', async () => {
     window.history.replaceState(null, '', '/toscana')
     render(<App />)

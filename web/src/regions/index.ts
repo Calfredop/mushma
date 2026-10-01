@@ -2,7 +2,6 @@
  * Region registry: one import line per region. Pure data — no `import.meta.env`.
  * Adding a region means adding its file and one line here.
  */
-import { inBounds } from '../geo/distance.js'
 import { abruzzo } from './abruzzo.js'
 import { basilicata } from './basilicata.js'
 import { calabria } from './calabria.js'
@@ -27,14 +26,17 @@ import { veneto } from './veneto.js'
 
 export type { Bounds, RegionDefinition, RegionLocaleCopy } from './types.js'
 
+/**
+ * findRegionAt (lookup.ts) tests each region's boundary, so the order below only matters when the boundaries
+ * can't load and it falls back to the first bbox holding the point.
+ */
 export const REGIONS: Record<string, RegionDefinition> = {
   [toscana.slug]: toscana,
   [umbria.slug]: umbria,
   [liguria.slug]: liguria,
   [emiliaRomagna.slug]: emiliaRomagna,
   [marche.slug]: marche,
-  // Before Piemonte: findRegionAt takes the first bbox that holds the point, and Piemonte's holds
-  // all of Valle d'Aosta's.
+  // Before Piemonte, whose bbox holds all of Valle d'Aosta's.
   [valleDAosta.slug]: valleDAosta,
   [piemonte.slug]: piemonte,
   [trentinoAltoAdige.slug]: trentinoAltoAdige,
@@ -43,21 +45,17 @@ export const REGIONS: Record<string, RegionDefinition> = {
   [campania.slug]: campania,
   [abruzzo.slug]: abruzzo,
   [calabria.slug]: calabria,
-  // After Campania and Calabria, before Puglia: Puglia's bbox holds all of Basilicata, so later it
-  // would never be found; earlier it would take Campania's Vallo di Diano and Calabria's Pollino.
-  // Here the hub finds it for 45 % of its woods (Matera, the Val d'Agri, the Ionian coast) and
-  // Puglia's Altamura and Gravina go to it (fix-region-lookup-by-boundary.md).
+  // After Campania and Calabria, before Puglia: Puglia's bbox holds all of Basilicata's, and
+  // Basilicata's holds Campania's Vallo di Diano and Calabria's Pollino.
   [basilicata.slug]: basilicata,
   [puglia.slug]: puglia,
   [lazio.slug]: lazio,
   [sicilia.slug]: sicilia,
   [sardegna.slug]: sardegna,
-  // Last: 59 % of Molise's woodland cells lie inside Abruzzo's, Campania's, Lazio's or Puglia's
-  // bbox and Molise's holds theirs, so no earlier place would leave every served region as it was.
+  // Last: Molise's bbox and its neighbours' hold much of each other's woods.
   [molise.slug]: molise,
-  // Last: Veneto's bbox overlaps Trentino-Alto Adige's, Lombardia's and Friuli-Venezia Giulia's so
-  // much that findRegionAt, which takes the first bbox holding the point, would hand most of their
-  // woods to Veneto if it came first (fix-region-lookup-by-boundary.md).
+  // Last: Veneto's bbox and Trentino-Alto Adige's, Lombardia's and Friuli-Venezia Giulia's hold most
+  // of each other's woods.
   [veneto.slug]: veneto,
 }
 
@@ -90,11 +88,6 @@ export function listRegions(): RegionDefinition[] {
 export function matchesRegionName(name: string, query: string): boolean {
   const norm = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
   return norm(name).includes(norm(query.trim()))
-}
-
-/** The first served region whose bbox contains the point, or undefined. */
-export function findRegionAt(lat: number, lon: number): RegionDefinition | undefined {
-  return listRegions().find((region) => inBounds(lat, lon, region.bounds))
 }
 
 /** Union of every served region's bounds, for place search across regions. */

@@ -1,7 +1,7 @@
 """Model config (``config/model.yaml``): species groups and weather preparation.
 
-National defaults live in ``model.yaml``. A region may override parts (today:
-``precipitation_scale``) via a ``model:`` block in ``config/regions/<id>.yaml``.
+National defaults live in ``model.yaml``. A region may override parts via a ``model:`` block in
+``config/regions/<id>.yaml`` (none does for ``precipitation_scale`` since the national field).
 """
 
 from pathlib import Path
@@ -10,6 +10,8 @@ from typing import Annotated, Any, Literal
 import numpy as np
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from api.model.rain_field import load_rain_field
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 MODEL_FILE = CONFIG_DIR / "model.yaml"
@@ -32,22 +34,49 @@ class _Strict(BaseModel):
 
 
 class PrecipitationScale(_Strict):
-    """Multiply daily rain from ``sources`` by ``intercept + per_km x elevation_km``."""
+    """Multiply daily rain from ``sources`` by a factor that grows with the cell's height.
+
+    With ``field`` (a CSV under ``config/``, ``api.model.rain_field``) the factor's intercept,
+    slope and height clamp are read at the cell's position; without it they are the constant
+    ``intercept + per_km x elevation_km`` up to ``max_elevation_m``.
+    """
 
     enabled: bool
     sources: list[str]
-    intercept: Annotated[float, Field(gt=0)]
-    per_km: float
-    max_elevation_m: Annotated[float, Field(gt=0)]
+    field: str | None = None
+    intercept: Annotated[float, Field(gt=0)] | None = None
+    per_km: float | None = None
+    max_elevation_m: Annotated[float, Field(gt=0)] | None = None
     confidence: str
     source: Annotated[list[str], Field(min_length=1)]
     notes: str
 
-    def factor(self, elevation_m: np.ndarray) -> np.ndarray:
-        """The multiplier for cells at ``elevation_m`` (unknown heights count as sea level)."""
+    @model_validator(mode="after")
+    def _one_shape(self) -> "PrecipitationScale":
+        constant = (self.intercept, self.per_km, self.max_elevation_m)
+        if self.field is None and any(value is None for value in constant):
+            raise ValueError(
+                "precipitation_scale needs a field or intercept, per_km and max_elevation_m"
+            )
+        if self.field is not None and any(value is not None for value in constant):
+            raise ValueError("precipitation_scale takes a field or a constant fit, not both")
+        return self
+
+    def factor(
+        self,
+        elevation_m: np.ndarray,
+        lon: np.ndarray | None = None,
+        lat: np.ndarray | None = None,
+    ) -> np.ndarray:
+        """The multiplier for cells at ``elevation_m`` (unknown heights count as sea level) and,
+        for a field, at ``lon``/``lat``."""
         elevation = np.clip(np.nan_to_num(np.asarray(elevation_m, dtype=float)), 0, None)
         if not self.enabled:
             return np.ones_like(elevation)
+        if self.field is not None:
+            if lon is None or lat is None:
+                raise ValueError("a precipitation_scale field needs each cell's lon and lat")
+            return load_rain_field(CONFIG_DIR / self.field).factor(elevation, lon, lat)
         return self.intercept + self.per_km * np.minimum(elevation, self.max_elevation_m) / 1000
 
 

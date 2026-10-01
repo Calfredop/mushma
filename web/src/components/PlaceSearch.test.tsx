@@ -6,6 +6,13 @@ import type { Place } from '../geo/photon'
 import { PlaceSearch } from './PlaceSearch'
 
 const PISA: Place = { id: 'n1', name: 'Pisa', detail: 'PI', lat: 43.72, lon: 10.4 }
+const BASTIA: Place = {
+  id: 'n2',
+  name: 'Bastia',
+  detail: 'Haute-Corse',
+  lat: 42.7,
+  lon: 9.45,
+}
 const searchPlaces = vi.fn(() => Promise.resolve([PISA]))
 vi.mock('../geo/photon', () => ({ searchPlaces: () => searchPlaces() }))
 
@@ -80,6 +87,14 @@ describe('PlaceSearch', () => {
     const { input } = setup({ onLocate: undefined })
     await userEvent.click(input)
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+  })
+
+  it('lists only places inside a served region, though the search box takes in Corsica', async () => {
+    searchPlaces.mockResolvedValueOnce([BASTIA, PISA])
+    const { input } = setup({ onLocate: undefined })
+    await userEvent.type(input, 'Bas')
+    await screen.findByRole('option', { name: /^Pisa/ })
+    expect(options()).toEqual(['PisaPI'])
   })
 
   it('tells its parent when it takes focus', async () => {

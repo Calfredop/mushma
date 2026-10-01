@@ -6,6 +6,7 @@ One instance per region id; ``api.routes`` keeps a lazy registry keyed by region
 """
 
 import json
+import logging
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -25,6 +26,7 @@ from api.models import (
     CellForestType,
     ComuniResponse,
     DayScore,
+    FactorBreakdown,
     FactorsResponse,
     ForestTypesResponse,
     GridCellScore,
@@ -48,6 +50,8 @@ from api.repository import TREND_DAYS, CellNotFound, DateOutOfRange, ScoresUnava
 from api.sightings.store import SightingsStore
 from api.species import SPECIES, Species, SpeciesOrCombined
 from api.timeutil import today_rome
+
+logger = logging.getLogger(__name__)
 
 FORECAST_OFFSETS = range(0, 8)  # today + 7-day outlook, PRD -> Features 2
 HOTSPOT_SIGHTINGS_WINDOW_DAYS = 90
@@ -173,9 +177,22 @@ class LiveRepository:
             raise DateOutOfRange(target_date, lo, hi)
 
         chips = factor_chips(self.rules, species)
-        values = winner_values(winners[["cell_id", "source_key"]], factor_rows, chips)
-        merged = values.merge(self.cells[["cell_id", "lon", "lat"]], on="cell_id", how="inner")
         ids = [chip.id for chip in chips]
+        values = winner_values(winners[["cell_id", "source_key"]], factor_rows, chips)
+        # A value outside 0-1 is a store the pipeline got wrong: serve it as missing rather than
+        # fail the whole map (bug-factors-porcini-500.md). A winner with no row is already null.
+        out_of_range = values[ids].lt(0) | values[ids].gt(1)
+        if out_of_range.to_numpy().any():
+            logger.warning(
+                "factors %s %s %s: %d values outside 0-1 served as null, in %s",
+                self.region,
+                species,
+                target_date,
+                int(out_of_range.to_numpy().sum()),
+                sorted(values.loc[out_of_range.any(axis=1), "source_key"].unique()),
+            )
+            values[ids] = values[ids].mask(out_of_range)
+        merged = values.merge(self.cells[["cell_id", "lon", "lat"]], on="cell_id", how="inner")
         matrix = merged[ids].astype(object).where(merged[ids].notna(), None).to_numpy().tolist()
         cells = [
             CellFactors(cell_id=cell_id, lon=float(lon), lat=float(lat), values=row)
@@ -208,14 +225,18 @@ class LiveRepository:
                     con, leaf_key, start, end, cell_ids=[cell_id], tier="factors"
                 ).df()
                 factors["date"] = pd.to_datetime(factors["date"]).dt.date
-                factor_frames[leaf_key] = factors.set_index("date")
+                factor_frames[leaf_key] = factors.drop_duplicates("date", keep="last").set_index(
+                    "date"
+                )
 
-            days = []
-            for row in daily.itertuples():
-                factor_row = factor_frames[row.source_key].loc[row.date].to_dict()
-                rules = self.rules.species[row.source_key]
-                breakdown = reconstruct_breakdown(rules.enabled_factors, factor_row, rules.clock)
-                days.append(DayScore(date=row.date, score=float(row.score), factors=breakdown))
+            days = [
+                DayScore(
+                    date=row.date,
+                    score=float(row.score),
+                    factors=self._day_breakdown(cell_id, row, factor_frames),
+                )
+                for row in daily.itertuples()
+            ]
             past = self._daily_means(
                 con,
                 group,
@@ -233,6 +254,28 @@ class LiveRepository:
             habitats=self._habitat_shares(cell_id),
             species=species_forecasts,
         )
+
+    def _day_breakdown(
+        self, cell_id: str, row, factor_frames: dict[str, pd.DataFrame]
+    ) -> list[FactorBreakdown]:
+        """The day's "why this score", from the factor row of the leaf key that won it; empty when
+        the store can't give one (the row is missing, or a value is outside 0-1), so the day's
+        score is still served -- get_spot's contract (bug-cell-forecast-500-puglia.md)."""
+        try:
+            factor_row = factor_frames[row.source_key].loc[row.date].to_dict()
+            rules = self.rules.species[row.source_key]
+            return reconstruct_breakdown(rules.enabled_factors, factor_row, rules.clock)
+        except (KeyError, ValueError) as error:  # pydantic's ValidationError is a ValueError
+            logger.warning(
+                "forecast %s %s %s: no breakdown from %s (%s: %s)",
+                self.region,
+                cell_id,
+                row.date,
+                row.source_key,
+                type(error).__name__,
+                str(error).replace("\n", " "),
+            )
+            return []
 
     def get_cell_detail(self, cell_id: str) -> CellDetailResponse:
         return self._forecast(self._cell_row(cell_id))
