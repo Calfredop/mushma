@@ -118,9 +118,12 @@ All seven milestones below are v1; there is no smaller cut.
   woodland (2025) it holds about 70 % of the measured rain (79 % below 400 m,
   63 % above 800 m). Rain thresholds taken from gauge-based studies must be
   tuned on it or the rain rescaled (see `.gavin-root/docs/weather-ingest.md`).
-  Model v1 rescales it before scoring, by 1.28 + 0.29 per km of cell height
-  (fitted to the 2025 gauges, 0.99 of gauge rain on 2026), and the backtest
-  compares that with the raw rain.
+  Model v1 rescales it before scoring by a factor that grows with cell
+  height. Since 2026-10-01 that factor comes from one national field fitted
+  on about 2,000 open gauges in 10 regional networks, so there is no step at
+  region borders (`.gavin-root/docs/rain-scale-field.md`). It replaces the
+  per-region fits, which began as 1.28 + 0.29 per km on the 2025 Tuscan
+  gauges.
 - **Known gaps (v1).** Soil chemistry (gallinacci prefer acidic soils) is not
   modelled; SoilGrids (ISRIC) or the Regione Toscana pedological map are
   candidates if the backtest shows it matters. Terrain shade cast by

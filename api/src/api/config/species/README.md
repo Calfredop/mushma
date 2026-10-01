@@ -31,8 +31,8 @@ species/
 `../model.yaml` stays shared: which keys make up each group (tie-break order), national
 `precipitation_scale` and microclimate. A region may omit a whole group (no ovoli in an Alpine
 region): the groups list the keys that *can* exist; the region's files say which do; the API's
-species list follows. To override the rain scale (fitted on Tuscan gauges), put a `model:` block
-in `../regions/<id>.yaml` — national values apply by default.
+species list follows. The rain scale is one national field fitted on every region's open gauges
+(`.gavin-root/docs/rain-scale-field.md`): a new region needs no rain block of its own.
 
 ### Starting a new region card
 
@@ -42,7 +42,9 @@ in `../regions/<id>.yaml` — national values apply by default.
    `source` id resolving in `references.yaml` (add citations there when you need new ones).
 4. Replace `sanity.yaml` with local press contrasts (or omit the file until the backtest has
    scores to check).
-5. Only if gauge checks say so, override `precipitation_scale` under `model:` in the region YAML.
+5. If the region has open daily gauges, add its network to `GAUGE_NETWORKS` and
+   `../rain_field.yaml`, re-run `api.weather.rain_field collect` and `fit`, and check the border
+   table (`rain_field borders`). Do not override `precipitation_scale` in the region YAML.
 
 ## Files (Tuscany)
 

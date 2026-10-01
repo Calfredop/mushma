@@ -19,14 +19,15 @@ from api.weather.config import WeatherConfig
 from api.weather.downscale import cell_weather_arrays
 from api.weather.store import WeatherStore
 
-# Carried with the rule attributes for the sun ratio, but not a rule input itself.
+# Carried with the rule attributes for the sun ratio and the rain field, not rule inputs themselves.
 LATITUDE = "lat"
+LONGITUDE = "lon"
 
 
 def load_cells(grid_dir: Path) -> Cells:
-    """Woodland cells, ordered by cell id, with their attributes (and latitude) and habitat
+    """Woodland cells, ordered by cell id, with their attributes (and position) and habitat
     fractions."""
-    attributes = [*sorted(GRID_ATTRIBUTES), LATITUDE]
+    attributes = [*sorted(GRID_ATTRIBUTES), LATITUDE, LONGITUDE]
     columns = ["cell_id", "woodland", *attributes]
     cells = pd.read_parquet(grid_dir / "cells.parquet", columns=columns)
     cells = cells[cells["woodland"]].sort_values("cell_id").reset_index(drop=True)
@@ -134,7 +135,8 @@ def load_weather(
     if scale.enabled and "precipitation_sum" in values:
         rank = arrays.source_rank["precipitation_sum"]
         scaled_ranks = [order.index(s) for s in scale.sources if s in order]
-        factor = scale.factor(cells.attributes["elevation_m"])[:, np.newaxis]
+        a = cells.attributes
+        factor = scale.factor(a["elevation_m"], a.get(LONGITUDE), a.get(LATITUDE))[:, np.newaxis]
         values["precipitation_sum"] = np.where(
             np.isin(rank, scaled_ranks),
             values["precipitation_sum"] * factor,

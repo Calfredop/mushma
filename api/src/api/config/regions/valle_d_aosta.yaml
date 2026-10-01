@@ -84,26 +84,5 @@ weather:
     temperature_2m_mean: 5.6
     temperature_2m_max: 5.9
 
-# Rain scale (merged onto config/model.yaml). The Region's daily gauge data are served only through a
-# request form, so the fit uses the monthly station totals of its statistical yearbook, as Puglia's
-# used its Annali: the reanalysis holds 1.67 of the gauges' rain, the wettest excess of any region
-# so far, and most in the dry central valley (Aosta 2.31, Saint-Vincent 2.15; Donnas 1.30). The
-# national scale, fitted on Tuscan era5_seamless rain, would add to it. Valle d'Aosta's history is
-# CDS, so the scale names that source too: the national one scales era5_seamless only, while the
-# rain normals are scaled whatever their source. .gavin-root/docs/regions/valle_d_aosta.md, Weather.
-model:
-  precipitation_scale:
-    sources: [era5_land_cds, era5_seamless]
-    intercept: 0.58
-    per_km: 0.04
-    max_elevation_m: 2000  # about the highest gauges of the fit (Ollomont By 2,017 m, Alpe Aventine 2,045 m)
-    source: [mushma_vda_yearbook_gauge_check_2026]
-    notes: >-
-      Valle d'Aosta: least squares through the origin of May-October gauge totals on raw CDS totals x
-      (a + b x elevation) over the 15 yearbook stations with at least six complete years in 2016-2024
-      (318-2,045 m) gave a = 0.584, b = 0.036 per km (a alone 0.633; leaving one gauge out 0.58-0.63 and
-      0.01-0.05, 0.46 and 0.11 without Donnas). Raw CDS holds 1.73 of the gauges' May-October rain below
-      1,000 m, 1.65 at 1,000-1,600 m and 1.51 above; scaled, 1.04, 1.04 and 0.98. Fitted on 2016-2021 the
-      factor alone leaves 2022-2024 at 0.89 of the gauges (wet 2024 has the reanalysis at 1.28 of them).
-      It scales totals: the rain shadow of the central valley, which the reanalysis spreads over the
-      whole region, stays (scaled, Aosta still holds about 1.4 of its gauge and Champorcher 0.78).
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

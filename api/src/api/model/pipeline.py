@@ -21,6 +21,7 @@ from pathlib import Path
 import duckdb
 import numpy as np
 import pandas as pd
+import yaml
 
 from api.grid.sources import data_dir, load_sources
 from api.model.arrays import Cells, Weather
@@ -52,13 +53,18 @@ def rules_version(
     species_dir: Path = SPECIES_DIR,
     model_file: Path = MODEL_FILE,
 ) -> str:
-    """A short hash of the region's rule files, the shared bibliography and the model config."""
+    """A short hash of the region's rule files, the shared bibliography and the model config,
+    with the rain field it points at (a refit changes the scores as much as a rule does)."""
     digest = hashlib.sha256()
     region_dir = region_rules_dir(region, species_dir)
+    rain_field = (yaml.safe_load(model_file.read_text()).get("precipitation_scale") or {}).get(
+        "field"
+    )
     paths = [
         species_dir / "references.yaml",
         *sorted(p for p in region_dir.glob("*.yaml") if p.name != "sanity.yaml"),
         model_file,
+        *([model_file.parent / rain_field] if rain_field else []),
     ]
     for path in paths:
         digest.update(path.name.encode())

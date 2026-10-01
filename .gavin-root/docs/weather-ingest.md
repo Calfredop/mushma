@@ -254,6 +254,10 @@ these gauges** (fitted on 2025: about ×1.25 below 400 m, ×1.45 at 400–800 m 
 scoring.
 `checks gauges` writes one row per gauge to `checks/gauges_<start>_<end>.csv` for that fit.
 
+**Superseded 2026-10-01:** the rain scale is now one national field fitted on every region's
+gauges, Tuscany's 361 SIR stations included (`rain-scale-field.md`); over April-November 2023-2025
+the Tuscan gauges read the reanalysis at about 1.0, not 0.7. The paragraph below is the history.
+
 **For M3: the 2025 rain scale over-corrects the backtest seasons.** Model v1 multiplies rain by
 `1.28 + 0.29 × elevation (km)`, a least-squares fit of gauge totals on model totals over the 2025
 gauges (`model-v1-validation.md` → "Rain scale"). The same fit on the 131 gauges of 2019–2025 gives

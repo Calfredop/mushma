@@ -328,7 +328,8 @@ A score is gates (season, habitat, altitude) × stoppers (frost, snow, heat spik
 exposure, slope) × a weighted geometric mean of the weather drivers (rain, temperature, moisture),
 so out of season means 0 and heat cannot make up for missing rain.
 `api/src/api/config/model.yaml` holds what applies to every species: the group roll-up, the rain
-rescale (reanalysis rain × 1.28 + 0.29 per km of elevation, fitted to the SIR Toscana gauges), the
+rescale (reanalysis rain × a factor that grows with elevation, read from one national field fitted
+on every region's open gauges, `.gavin-root/docs/rain-scale-field.md`), the
 terrain microclimate (each cell's temperatures and ET0 shifted by its clear-sky sun ratio, computed
 from slope and aspect in `api.model.terrain`) and the frozen backtest split. Each species file adds
 its growth clock: a cardinal-temperature curve on topsoil temperature, slowed by dry air, that

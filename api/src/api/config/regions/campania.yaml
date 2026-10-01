@@ -111,24 +111,5 @@ soil:
 sightings:
   inaturalist_place_id: 9703
 
-# Rain scale (merged onto config/model.yaml), fitted on Campania's own open gauges but not in woodland:
-# the Region's agrometeo stations (Assessorato Agricoltura, daily Excel archives) are all farm stations
-# at 11-769 m, none in a woodland cell; the Centro Funzionale's mountain gauges give daily data only
-# after registration. Campania's history is CDS, so the scale names that source too: the national one
-# scales era5_seamless only, while the rain normals are scaled whatever their source.
-# .gavin-root/docs/regions/campania.md, Weather.
-model:
-  precipitation_scale:
-    sources: [era5_land_cds, era5_seamless]
-    intercept: 0.77
-    per_km: 0.52
-    source: [mushma_campania_agrometeo_rain_check_2026]
-    notes: >-
-      Least squares through the origin of gauge totals on model totals x (a + b x elevation) over 33
-      Regione Campania agrometeo gauges with 1,000 or more days of 2019-2025 (11-769 m, calendar days,
-      the CDS rain read bilinearly at each gauge) gave a = 0.765, b = 0.520 per km: raw pooled ratio
-      1.21 below 200 m, 1.10 at 200-400 m and 0.96 at 400-800 m. A 34th gauge (Capaccio-Gromola,
-      2,550 mm a year on the Paestum plain) was left out as faulty; with it the fit is 0.86 + 0.30
-      per km. Above 800 m the slope is extrapolated; it matches the Apennine woodland fits on the same
-      CDS rain (Umbria 0.89 + 0.33, Emilia-Romagna 0.62 + 0.80, Marche's borrowed 0.76 + 0.57). It
-      gives 0.87 at 200 m, 1.03 at 500 m, 1.18 at 800 m and 1.39 at 1,200 m.
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

@@ -100,6 +100,9 @@ objective is their mean.
 
 ## Rain scale
 
+**Superseded 2026-10-01** by one national field (`rain-scale-field.md`). The backtests below ran
+with the 1.28 + 0.29 per km scale and need re-running on the field.
+
 The reanalysis rain is too dry in the hills against the SIR Toscana gauges (`weather-ingest.md`). The
 rules' rain thresholds come from gauge-based studies, so before scoring, reanalysis rain is multiplied
 by `1.28 + 0.29 × elevation (km)`: a least-squares fit of gauge totals on model totals over the 133

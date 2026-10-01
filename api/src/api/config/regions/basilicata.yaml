@@ -104,24 +104,5 @@ soil:
 sightings:
   inaturalist_place_id: 8763
 
-# Rain scale (merged onto config/model.yaml), fitted on ALSIA's agrometeo station totals: Basilicata's
-# open daily rain (the Centro Funzionale's historical download) did not answer, and ALSIA's daily data
-# need registration, so the check reads the raw CDS rain of 2016-2023 at the 27 stations whose annual
-# totals ALSIA's 2000-2023 climate report publishes. Basilicata's history is CDS, so the scale names
-# that source too: the national one scales era5_seamless only, while the rain normals are scaled
-# whatever their source. .gavin-root/docs/regions/basilicata.md, Weather.
-model:
-  precipitation_scale:
-    sources: [era5_land_cds, era5_seamless]
-    intercept: 1.04
-    per_km: 0.14
-    max_elevation_m: 920  # the highest station (Laurenzana, 919 m): no extrapolation above it
-    source: [mushma_basilicata_alsia_rain_check_2026]
-    notes: >-
-      Least squares through the origin of station totals on raw CDS era5_land_cds annual totals (2016-2023,
-      read bilinearly from the land nodes at each station) x (a + b x elevation) over the 20 ALSIA stations
-      within 5 km of a woodland cell (11-919 m) gave a = 1.038, b = 0.136 per km (leave-one-out 1.02-1.06
-      and 0.06-0.18; all 27 stations 1.01 + 0.17): raw CDS holds 0.97 of station rain below 200 m and
-      0.86-0.98 above. It gives 1.07 at 200 m, 1.11 at 500 m, 1.15 at 800 m and 1.16 from 920 m up, 1.14
-      on average over the woodland cells. The farm stations are few in the wet south-west: Nemoli below
-      the Sirino stays at 0.72 of its 1,657 mm after scaling.
+# Rain scale: the national field in config/model.yaml (fitted on every region's open gauges at
+# once, api.weather.rain_field), so there is no step at the region's borders.

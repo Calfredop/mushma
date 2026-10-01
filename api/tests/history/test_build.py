@@ -59,8 +59,11 @@ def root(tmp_path: Path) -> Path:
     return tmp_path
 
 
-def _cell_rain(elevation: float, point_rain: float) -> float:
-    return point_rain * float(load_model_config().precipitation_scale.factor([elevation])[0])
+def _cell_rain(elevation: float, point_rain: float, x: float, y: float) -> float:
+    """``point_rain`` scaled for the fixture cell at ``x``, ``y`` (helpers.write_grid)."""
+    lon, lat = [11.0 + x / 100_000], [43.0 + y / 100_000]
+    scale = load_model_config().precipitation_scale
+    return point_rain * float(scale.factor([elevation], lon, lat)[0])
 
 
 def _cell_temperature(point_temperature: float, point_height: float, elevation: float) -> float:
@@ -102,7 +105,7 @@ def test_update_writes_season_stats_per_area(root: Path) -> None:
     window_days = (
         porcini.loc["048001", "window_end"] - porcini.loc["048001", "window_start"]
     ).days + 1
-    alpha_daily = (_cell_rain(500.0, 3.0) + _cell_rain(700.0, 4.0)) / 2
+    alpha_daily = (_cell_rain(500.0, 3.0, 0, 0) + _cell_rain(700.0, 4.0, 1000, 0)) / 2
     assert porcini.loc["048001", "rain_mm"] == pytest.approx(window_days * alpha_daily)
     assert porcini.loc["048001", "rain_normal_mm"] == pytest.approx(window_days * alpha_daily)
     alpha_temperature = (
@@ -199,7 +202,9 @@ def test_area_days_and_weather_are_kept_per_year(root: Path) -> None:
     assert len(days) == 365
     assert set(days["good_cells"]) == {0, 1}
     assert len(weather) == 365
-    assert weather["precipitation_normal"].iloc[0] == pytest.approx(_cell_rain(300.0, 2.0))
+    assert weather["precipitation_normal"].iloc[0] == pytest.approx(
+        _cell_rain(300.0, 2.0, 9000, 9000)
+    )
     assert not weather["forecast"].any()
 
 
