@@ -143,6 +143,18 @@ re-scored here.
 The remaining differences come from each region's own rules (season windows, habitats), not from
 rain.
 
+**Served, after the deploy** (live `/scores`, woodland within 10 km of the border, 25 Sep 2026, the
+day `regions/umbria.md` measured the step; all 20 regions re-scored with the field on 1 Oct 2026):
+
+| border | combined, before | combined, field | porcini, before | porcini, field |
+|---|---|---|---|---|
+| Tuscany / Umbria | 0.86 / 0.47 | 0.60 / 0.47 | 0.47 / 0.07 | 0.39 / 0.10 |
+| Tuscany / Liguria | not measured | 0.91 / 0.99 | not measured | 0.56 / 0.86 |
+
+The rain factor is now the same on both sides, so the gaps that remain come from elsewhere: each
+region's own rules, and normals built from a different reanalysis (Tuscany's from `era5_seamless`,
+Umbria's and Liguria's from CDS).
+
 **Per region.** The table gives the mean factor over each region's woodland cells, or over its
 gauges where its grid is not on this laptop: the old fit, the field, and the change.
 

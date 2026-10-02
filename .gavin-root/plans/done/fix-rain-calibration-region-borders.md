@@ -1,7 +1,7 @@
 ---
 order: 3072
 title: [model] Rain calibration without steps at region borders
-status: In Progress
+status: Done
 priority: medium
 complexity: moderate
 ---
@@ -23,16 +23,17 @@ Each region scales the reanalysis rain with its own region-wide gauge fit (`mode
   - Limit, filed as `fix-rain-field-cds-vs-seamless.md`: the field is fitted on `era5_seamless`, but most regions score CDS, which is up to 11 % wetter (Sicily) and 3 % drier in Friuli.
 - [x] Also: Tuscany's local store holds CDS rows for 2024 that outrank `era5_seamless` and are not in the national `precipitation_scale.sources`, so they go unscaled (check whether the server has them)
   - Resolved by config, not by checking the server: the national scale now lists `sources: [era5_land_cds, era5_seamless]`, so CDS rows are scaled in every region's store, whether the server has any or not. Reading the server was not permitted from this session.
-- [ ] [Re-score the affected regions; record before/after at the Tuscany–Umbria and Tuscany–Liguria borders](./re-score-the-affected-regions-record-before-after-at-the-tuscany-umbria-and-tuscany-liguria-borders.md)
+- [x] [Re-score the affected regions; record before/after at the Tuscany–Umbria and Tuscany–Liguria borders](./re-score-the-affected-regions-record-before-after-at-the-tuscany-umbria-and-tuscany-liguria-borders.md)
   - Factors before/after, at points every 5 km along every border (`rain_field borders`; `rain-scale-field.md` → Before and after):
     - Tuscany–Umbria: ×1.37 vs ×1.00 before, ×0.92–1.03 with the field.
     - Liguria–Tuscany: ×1.09 vs ×1.35 before, ×0.89–1.23 with the field.
   - Scores re-scored locally in the 10 km border band (in memory; the stores are untouched):
     - Lazio–Abruzzo, 20 Oct 2025: combined 0.71 vs 0.78 before, 0.70 vs 0.73 after.
     - Basilicata–Calabria, 20 Oct 2025: 0.68 vs 0.82 before, 0.68 vs 0.66 after.
-  - Still to do, on the server (Tuscany, Umbria and Liguria have no stores on the laptop):
-    1. Re-run the Tuscan backtest first (rain −27 %, and the rain-driver tuning was done on the old scale).
-    2. Rebuild the normals and history and re-score every region (rain moves −27 % to +21 % per region).
-    3. Re-score the Tuscany–Umbria and Tuscany–Liguria border bands, then deploy.
+  - Done 2026-10-01 on the server; details on the task card:
+    - Tuscan backtest on the field: no drop. Porcini hold-out 0.512 / 0.606 against 0.477 / 0.601 before; no re-tuning needed.
+    - All 20 regions re-scored, the served window and 2016-03-18 to 2026-09-24, with their history tables.
+    - Live border scores on 25 Sep: Tuscany / Umbria combined 0.60 / 0.47 (was 0.86 / 0.47), porcini 0.39 / 0.10 (was 0.47 / 0.07); Tuscany / Liguria combined 0.91 / 0.99, porcini 0.56 / 0.86.
+    - The remaining gap is not the rain factor: it is region rules and normals from different reanalyses (`fix-rain-field-cds-vs-seamless.md`).
 - [x] Regions without open daily gauges get their factor from the fit too: Marche (`marche.yaml`) borrows the mean of Umbria's and Emilia-Romagna's CDS fits, 0.76 + 0.57/km, until then (`.gavin-root/docs/regions/marche.md` → Weather); Campania (`campania.yaml`) fits 0.77 + 0.52/km on its 33 open agrometeo farm gauges (11–769 m, none in woodland), so its mountain factor is extrapolated (`.gavin-root/docs/regions/campania.md` → Weather)
   - Done: Marche, Abruzzo, Molise and Friuli add no gauges and read the field fitted on their neighbours'. Campania (with Basilicata, Calabria, Puglia, Valle d'Aosta and Veneto) joins as pseudo-gauges carrying its own fit, at its woodland cells within its gauge heights (11–769 m), so above them it follows the field, not an extrapolation.
