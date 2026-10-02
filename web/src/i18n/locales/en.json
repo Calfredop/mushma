@@ -97,7 +97,8 @@
     "marker": "Map marker",
     "userPosition": "Your position",
     "styleCloud": "Cloud view",
-    "styleSquircle": "Cell view"
+    "styleSquircle": "Cell view",
+    "satellite": "Satellite view"
   },
   "search": {
     "label": "Search a place",
@@ -394,6 +395,7 @@
       "basemapData": "Basemap data",
       "basemapTiles": "Basemap style and tiles",
       "terrain": "Basemap hillshade",
+      "satellite": "Satellite imagery",
       "geocoding": "Place search",
       "mapLibrary": "Map rendering",
       "fonts": "Typefaces",

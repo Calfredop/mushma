@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { buildMapStyle, DATA_LAYERS_BEFORE, hillshade, sourceUrl } from './basemap'
+import {
+  buildMapStyle,
+  DATA_LAYERS_BEFORE,
+  hillshade,
+  satelliteImagery,
+  sourceUrl,
+} from './basemap'
 
 describe('sourceUrl', () => {
   it('reads .pmtiles files through the pmtiles protocol with an absolute URL', () => {
@@ -49,5 +55,13 @@ describe('buildMapStyle', () => {
       url: 'pmtiles://http://h/t.pmtiles',
     })
     expect(layer).toMatchObject({ id: 'hillshade', type: 'hillshade', source: 'terrain' })
+  })
+
+  it('describes the satellite imagery as a credited raster source and layer', () => {
+    const { source, layer } = satelliteImagery()
+    expect(source).toMatchObject({ type: 'raster', tileSize: 256 })
+    expect(source.type === 'raster' && source.tiles?.[0]).toContain('{z}/{y}/{x}')
+    expect(source.type === 'raster' && source.attribution).toContain('Esri')
+    expect(layer).toMatchObject({ id: 'satellite', type: 'raster', source: 'satellite' })
   })
 })

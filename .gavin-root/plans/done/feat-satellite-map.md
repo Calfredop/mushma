@@ -2,7 +2,7 @@
 order: 15360
 kind: task
 title: [feat] satellite map
-status: To Do
+status: Done
 ---
 Allow the user to switch to a satellite images map, if available by osm
 

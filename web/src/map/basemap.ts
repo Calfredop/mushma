@@ -1,7 +1,8 @@
 /**
  * The basemap style (PRD → Architecture → Basemap): self-hosted Protomaps
  * vector tiles with a cool, desaturated flavor so the warm score scale is the
- * only warm thing on screen, plus Mapterhorn hillshade.
+ * only warm thing on screen, plus Mapterhorn hillshade. Esri World Imagery is
+ * the optional satellite view: OpenStreetMap publishes no imagery of its own.
  * See .gavin-root/docs/visual-direction.md.
  */
 import { type Flavor, layers, namedFlavor } from '@protomaps/basemaps'
@@ -94,6 +95,12 @@ const PROTOMAPS_ATTRIBUTION =
   '<a href="https://protomaps.com">Protomaps</a> © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
 const MAPTERHORN_ATTRIBUTION =
   '<a href="https://mapterhorn.com/attribution">© Mapterhorn</a>'
+// Esri's attribution guidelines: "Powered by Esri" plus the service's own copyright text.
+const ESRI_ATTRIBUTION =
+  'Powered by <a href="https://www.esri.com">Esri</a> | Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community'
+// Streamed from Esri, never cached by the service worker: Esri's terms don't allow offline copies.
+const SATELLITE_TILES =
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
 
 /** `.pmtiles` files are read with range requests via the pmtiles protocol; anything else is TileJSON. */
 export function sourceUrl(url: string, origin: string): string {
@@ -173,5 +180,26 @@ export function hillshade(
       attribution: MAPTERHORN_ATTRIBUTION,
     },
     layer: HILLSHADE,
+  }
+}
+
+/**
+ * The satellite view: imagery that covers the basemap's fills and relief but stays under the
+ * score cells, the roads and the labels. Added only when first switched on, so the map view never
+ * downloads it.
+ */
+export function satelliteImagery(): {
+  source: SourceSpecification
+  layer: LayerSpecification
+} {
+  return {
+    source: {
+      type: 'raster',
+      tiles: [SATELLITE_TILES],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: ESRI_ATTRIBUTION,
+    },
+    layer: { id: 'satellite', type: 'raster', source: 'satellite' },
   }
 }
