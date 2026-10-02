@@ -6,10 +6,11 @@
 # The server builds from GitHub, not from this checkout, so only a main that is already pushed can
 # be deployed. Then: API lint and tests here; on the server, pull, install the daily job's systemd
 # units if they changed, rebuild the compose stack (api + redis + caddy + umami) behind Caddy,
-# prune old images. It waits for Redis to answer PING from the API container, then for /health,
-# smoke-tests the main routes and prints /status. --run-job also runs the daily pipeline
-# straight away (about two minutes) instead of waiting for 05:00 Europe/Rome — that job bumps the
-# Redis response-cache generation after each successful region.
+# prune old images. It waits for Redis to answer PING and checks that the grid tooling (rasterio)
+# imports in the API container, then waits for /health, smoke-tests the main routes and prints
+# /status. --run-job also runs the daily pipeline straight away (about two minutes) instead of
+# waiting for 05:00 Europe/Rome — that job bumps the Redis response-cache generation after each
+# successful region.
 #
 # DEPLOY_HOST (default root@api.mappafunghi.app) and API_URL (default https://api.mappafunghi.app)
 # point it somewhere else. The gavin tool "Deploy API" runs this script.
@@ -20,7 +21,7 @@ API_URL="${API_URL:-https://api.mappafunghi.app}"
 TESTS=1
 RUN_JOB=0
 
-usage() { sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; }
 for arg in "$@"; do
   case "$arg" in
     --skip-tests) TESTS=0 ;;
@@ -119,6 +120,13 @@ if not url:
 redis.Redis.from_url(url).ping()
 print("redis ok")
 PY
+
+# The grid tooling (api.regions.onboard, history re-scoring) imports rasterio, which needs the
+# system libexpat1 that api/Dockerfile installs. Serving never loads it, so without this check a
+# base-image change that drops the library would only show up the next time someone runs that tooling.
+echo "checking the grid tooling imports"
+docker compose exec -T api python -c "import api.regions.onboard" </dev/null ||
+  { echo "the api image cannot import api.regions.onboard (rasterio): check api/Dockerfile" >&2; exit 1; }
 
 if [ "$run_job" = 1 ]; then
   echo "running the daily job now"
