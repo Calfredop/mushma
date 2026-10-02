@@ -2,7 +2,7 @@
 order: 6144
 kind: task
 title: [model] proximity to water bodies
-status: In Progress
+status: Done
 ---
 
 Are we taking in account proximity to water bodies, like rivers, lakes, sea, streams... Search the web for scientific evidences against influence. For example: does flood season take away sporese and kill mycelium so that very close to streaming bodies is bad enviroment for mushrooms, or does the additional humidity helps?
