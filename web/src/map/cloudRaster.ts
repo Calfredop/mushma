@@ -234,7 +234,7 @@ export type CloudRaster = ReturnType<typeof paintCloudRaster>
 
 /** Tiny transparent PNG used as the image source placeholder before the first paint. */
 export const EMPTY_CLOUD_DATA_URL =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgAAIAAAUAAXpeqz8AAAAASUVORK5CYII='
 
 /** Encode painted cloud pixels as a PNG data URL for MapLibre's image source. */
 export function cloudRasterDataUrl(raster: CloudRaster): string {

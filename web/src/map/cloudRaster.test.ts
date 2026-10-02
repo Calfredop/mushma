@@ -3,6 +3,7 @@ import {
   CLOUD_OPACITY,
   cloudImageCoordinates,
   cloudRasterSize,
+  EMPTY_CLOUD_DATA_URL,
   mercatorY,
   paintCloudRaster,
   paddedCloudBounds,
@@ -167,5 +168,42 @@ describe('paddedCloudBounds', () => {
     expect(padded[0][0]).toBeLessThan(10)
     expect(padded[1][1]).toBeGreaterThan(42)
     expect(cloudImageCoordinates(padded)).toHaveLength(4)
+  })
+})
+
+describe('EMPTY_CLOUD_DATA_URL', () => {
+  it('decodes to a fully transparent pixel with alpha = 0', () => {
+    const base64 = EMPTY_CLOUD_DATA_URL.replace('data:image/png;base64,', '')
+    const buffer = Buffer.from(base64, 'base64')
+
+    // Find IDAT chunk (contains compressed image data)
+    let idatStart = -1
+    let idatLength = 0
+    for (let i = 8; i < buffer.length - 12; i++) {
+      if (
+        buffer[i] === 0x49 && // 'I'
+        buffer[i + 1] === 0x44 && // 'D'
+        buffer[i + 2] === 0x41 && // 'A'
+        buffer[i + 3] === 0x54 // 'T'
+      ) {
+        idatLength = buffer.readUInt32BE(i - 4)
+        idatStart = i + 4
+        break
+      }
+    }
+
+    expect(idatStart).toBeGreaterThan(0)
+
+    const compressedData = buffer.slice(idatStart, idatStart + idatLength)
+    const zlib = require('zlib')
+    const decompressed = zlib.inflateSync(compressedData)
+
+    // Image data: filter byte (0) + RGBA bytes (0,0,0,0)
+    expect(decompressed.length).toBe(5)
+    expect(decompressed[0]).toBe(0) // filter type
+    expect(decompressed[1]).toBe(0) // R
+    expect(decompressed[2]).toBe(0) // G
+    expect(decompressed[3]).toBe(0) // B
+    expect(decompressed[4]).toBe(0) // A (alpha must be 0 for fully transparent)
   })
 })

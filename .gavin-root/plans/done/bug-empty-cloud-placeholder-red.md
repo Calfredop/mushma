@@ -1,7 +1,7 @@
 ---
 kind: task
 title: [bug] empty cloud placeholder tints the region red
-status: To Do
+status: Done
 priority: medium
 complexity: trivial
 ---
