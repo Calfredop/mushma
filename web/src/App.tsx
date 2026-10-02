@@ -48,6 +48,7 @@ import {
   GitHubIcon,
   LayersIcon,
   LocateIcon,
+  SatelliteIcon,
   SquircleIcon,
 } from './components/icons'
 import { IndicatorPanel } from './components/IndicatorPanel'
@@ -196,6 +197,7 @@ function MapScreen() {
   // Analysis mode: the factors behind a species' score. They are only kept for the strip's days.
   const analysis = app.mode === 'analysis'
   const [cellStyle, , toggleCellStyle] = useCellStyle()
+  const [satellite, setSatellite] = usePersistentFlag('mushma.satellite')
   const factorDay = !seasonMode && inStrip
   const factorSpecies = app.species === 'combined' ? 'porcini' : app.species
   const scores = useScores(
@@ -573,6 +575,7 @@ function MapScreen() {
             scale={seasonMode ? 'goodDays' : 'score'}
             analysis={analysisView}
             cellStyle={cellStyle}
+            satellite={satellite}
             selectedCellId={selectedCellId}
             sightings={app.sightingsVisible ? sightings.totals : undefined}
             hotspots={
@@ -645,6 +648,16 @@ function MapScreen() {
               onClick={toggleCellStyle}
             >
               {cellStyle === 'cloud' ? <CloudIcon /> : <SquircleIcon />}
+            </button>
+            <button
+              type="button"
+              className={styles.fab}
+              aria-label={t('map.satellite')}
+              title={t('map.satellite')}
+              aria-pressed={satellite}
+              onClick={() => setSatellite(!satellite)}
+            >
+              <SatelliteIcon />
             </button>
             <button
               type="button"

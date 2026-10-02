@@ -430,6 +430,12 @@ distribution, or by scaling by backtest lift. Report which group wins how often 
 
 ## Open questions
 
+- Distance to water (streams, rivers, lakes, sea) is deliberately **not** a factor
+  (2026-10-02, `water-proximity.md`). No study measures these species against it. The evidence
+  acts at metres to a few hundred metres: negative on stream banks (waterlogging, *Phytophthora*,
+  riparian hosts already scored 0), and at most weakly positive on lower slopes. Revisit with a
+  floodplain share only if the backtest shows a residual in wet valley bottoms.
+
 - Is the ovoli autumn peak driven by the return of rain or by cooling? The lore says warmth; the
   backtest can test a cooling term.
 - Does *C. cibarius* s.str. occur in the Tuscan Apennine beech and fir belt at all? No sequenced

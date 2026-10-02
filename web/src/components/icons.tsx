@@ -138,6 +138,17 @@ export const SquircleIcon = () => (
   </Icon>
 )
 
+/** A satellite with its two panels: the satellite imagery view. */
+export const SatelliteIcon = () => (
+  <Icon>
+    <path d="m8.5 8.5 7 7" />
+    <path d="m12 5 7 7-2.5 2.5-7-7z" />
+    <path d="m5.5 3.5 4 4-2 2-4-4z" />
+    <path d="m16.5 14.5 4 4-2 2-4-4z" />
+    <path d="M4.5 15.5a4 4 0 0 0 4 4" />
+  </Icon>
+)
+
 /** The GitHub mark (Octicons `mark-github`), for the link to the source. */
 export const GitHubIcon = () => (
   <Icon stroke="none" fill="currentColor">

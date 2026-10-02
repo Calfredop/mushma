@@ -214,6 +214,12 @@ export const SOFTWARE_CREDITS: Credit[] = [
     license: 'CC BY 4.0',
   },
   {
+    name: 'Esri World Imagery (Esri, Vantor, Earthstar Geographics, GIS User Community)',
+    url: 'https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9',
+    use: 'satellite',
+    license: 'Esri Master License Agreement',
+  },
+  {
     name: 'Photon (komoot)',
     url: 'https://photon.komoot.io',
     use: 'geocoding',

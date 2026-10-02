@@ -23,7 +23,13 @@ import type { Language } from '../i18n'
 import { regionLocative } from '../regions'
 import type { CameraRequest } from '../state/AppState'
 import { boundsAround, distanceKm, OUTSIDE_CELL_KM } from '../geo/distance'
-import { basemapLayers, buildMapStyle, DATA_LAYERS_BEFORE, hillshade } from './basemap'
+import {
+  basemapLayers,
+  buildMapStyle,
+  DATA_LAYERS_BEFORE,
+  hillshade,
+  satelliteImagery,
+} from './basemap'
 import styles from './ConditionsMap.module.css'
 import { inView, type MapPadding, mergePadding } from './padding'
 import { type MapRegion, regionPadding, showRegion } from './region'
@@ -85,10 +91,23 @@ function addRelief(map: MapLibreMap) {
   if (!TERRAIN_URL || map.getSource('terrain')) return
   const relief = hillshade(TERRAIN_URL)
   map.addSource('terrain', relief.source)
-  map.addLayer(
-    relief.layer,
-    map.getLayer('cells-cloud') ? 'cells-cloud' : DATA_LAYERS_BEFORE,
-  )
+  // Under the satellite imagery when there is some: the photos carry their own relief.
+  const before = ['satellite', 'cells-cloud'].find((id) => map.getLayer(id))
+  map.addLayer(relief.layer, before ?? DATA_LAYERS_BEFORE)
+}
+
+/** Satellite imagery over the basemap's fills and relief, under the score cells. */
+function showSatellite(map: MapLibreMap, on: boolean) {
+  if (!map.getLayer('satellite')) {
+    if (!on) return
+    const imagery = satelliteImagery()
+    map.addSource('satellite', imagery.source)
+    map.addLayer(
+      imagery.layer,
+      map.getLayer('cells-cloud') ? 'cells-cloud' : DATA_LAYERS_BEFORE,
+    )
+  }
+  map.setLayoutProperty('satellite', 'visibility', on ? 'visible' : 'none')
 }
 
 /** Keeps fitted features clear of the species bar (top) and legend and dates (bottom). */
@@ -193,6 +212,8 @@ interface Props {
   analysis?: AnalysisView | null
   /** Soft continuous field, or discrete dots that morph into squares. */
   cellStyle?: CellStyle
+  /** Satellite imagery instead of the drawn basemap; roads and labels stay on top. */
+  satellite?: boolean
   selectedCellId: string | null
   /** Sighting totals per cell, or undefined to hide the overlay. */
   sightings: Map<string, number> | undefined
@@ -222,6 +243,7 @@ export function ConditionsMap({
   scale = 'score',
   analysis = null,
   cellStyle = 'cloud',
+  satellite = false,
   selectedCellId,
   sightings,
   hotspots,
@@ -397,6 +419,12 @@ export function ConditionsMap({
       forestOn ? FOREST_FILL_OPACITY : 0,
     )
   }, [forestOn, ready])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !ready) return
+    showSatellite(map, satellite)
+  }, [satellite, ready])
 
   // Colour scale for squircle layers; cloud raster is repainted with the scale below.
   useEffect(() => {

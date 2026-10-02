@@ -245,6 +245,17 @@ All seven milestones below are v1; there is no smaller cut.
   caching. One catch for M7: the Cache API can't store `206` range responses,
   so cache the Worker's z/x/y responses or per-area extracts, never raw
   PMTiles range requests.
+- **Satellite view: Esri World Imagery.** Decided in the `feat-satellite-map`
+  card (2026-10-02). OpenStreetMap publishes no imagery, so the optional
+  satellite view streams Esri's World Imagery tiles under the score cells,
+  with the Protomaps roads and labels on top. It is added only when a visitor
+  switches it on, never cached by the service worker (Esri's terms allow no
+  offline copies), and credited "Powered by Esri" with the service's source
+  text. Esri wants an ArcGIS Location Platform key for use outside ArcGIS
+  (free tier 2M tiles/month); we use the public tile endpoint until traffic
+  needs one. Rejected: EOX Sentinel-2 cloudless (10 m, blurry at forest
+  zooms; 2018+ mosaics CC BY-NC-SA) and the AGEA orthophotos on the PCN WMS
+  (older, slow and unreliable).
 - **Analytics: self-hosted Umami.** Decided in the `feat-umami-integration`
   card. Umami + Postgres run on the same Hetzner box as the API, behind Caddy
   at `m.mappafunghi.app`, so usage (which species and views people use, how
@@ -267,6 +278,7 @@ All seven milestones below are v1; there is no smaller cut.
 | Sightings | GBIF occurrence API (includes iNaturalist research-grade), iNaturalist API for the most recent records |
 | Boundaries / place names | ISTAT boundaries (region, comuni) |
 | Basemap and hillshade | Protomaps build of OpenStreetMap, Mapterhorn terrain (self-hosted extracts; see Architecture → Basemap) |
+| Satellite imagery | Esri World Imagery, streamed when the satellite view is on (see Architecture → Satellite view) |
 | Place search | Photon (komoot), OpenStreetMap data |
 
 Respect each source's license and attribution requirements (e.g. Open-Meteo CC

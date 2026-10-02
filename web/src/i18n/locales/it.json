@@ -97,7 +97,8 @@
     "marker": "Segnaposto",
     "userPosition": "La tua posizione",
     "styleCloud": "Vista a nuvole",
-    "styleSquircle": "Vista a celle"
+    "styleSquircle": "Vista a celle",
+    "satellite": "Vista satellitare"
   },
   "search": {
     "label": "Cerca un luogo",
@@ -394,6 +395,7 @@
       "basemapData": "Dati della mappa di base",
       "basemapTiles": "Stile e tessere della mappa di base",
       "terrain": "Rilievo ombreggiato della mappa di base",
+      "satellite": "Immagini satellitari",
       "geocoding": "Ricerca dei luoghi",
       "mapLibrary": "Visualizzazione della mappa",
       "fonts": "Caratteri tipografici",
