@@ -8,9 +8,9 @@
 # units if they changed, rebuild the compose stack (api + redis + caddy + umami) behind Caddy,
 # prune old images. It waits for Redis to answer PING and checks that the grid tooling (rasterio)
 # imports in the API container, then waits for /health, smoke-tests the main routes and prints
-# /status. --run-job also runs the daily pipeline straight away (about two minutes) instead of
-# waiting for 05:00 Europe/Rome — that job bumps the Redis response-cache generation after each
-# successful region.
+# /status. --run-job also runs the daily pipeline straight away (15 minutes to an hour; its step
+# log streams meanwhile) instead of waiting for 05:00 Europe/Rome — that job bumps the Redis
+# response-cache generation after each successful region.
 #
 # DEPLOY_HOST (default root@api.mappafunghi.app) and API_URL (default https://api.mappafunghi.app)
 # point it somewhere else. The gavin tool "Deploy API" runs this script.
@@ -66,7 +66,12 @@ say "Server $DEPLOY_HOST"
 remote_log="$(mktemp)"
 trap 'rm -f "$remote_log"' EXIT
 # shellcheck disable=SC2087 # the heredoc is quoted: everything in it runs on the server
-ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new "$DEPLOY_HOST" \
+# The keepalives matter for --run-job: `systemctl start` of the oneshot daily job blocks and prints
+# nothing for ~15 minutes, and a silent session gets dropped (the server's ClientAliveInterval, or
+# a NAT on the way) without this side noticing: it then waits forever. With them, a dead link fails
+# within ServerAliveInterval x ServerAliveCountMax = 3 minutes.
+ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new \
+  -o ServerAliveInterval=30 -o ServerAliveCountMax=6 "$DEPLOY_HOST" \
   bash -s -- "$sha" "$RUN_JOB" <<'REMOTE' | tee "$remote_log"
 set -euo pipefail
 want="$1"
@@ -131,7 +136,16 @@ docker compose exec -T api python -c "import api.regions.onboard" </dev/null ||
 if [ "$run_job" = 1 ]; then
   echo "running the daily job now"
   since="$(date '+%F %T')"
-  if ! systemctl start mushma-daily.service; then
+  # `systemctl start` blocks until the oneshot ends: follow the job's step log meanwhile, so the
+  # run shows it is alive (and the session is never silent).
+  journalctl -fu mushma-daily --since "$since" -o cat --no-pager -g '"event"' </dev/null &
+  follow=$!
+  started=1
+  systemctl start mushma-daily.service || started=0
+  sleep 1 # let journalctl print the last lines before it is stopped
+  kill "$follow" 2>/dev/null || true
+  { wait "$follow" || true; } 2>/dev/null
+  if [ "$started" = 0 ]; then
     journalctl -u mushma-daily --since "$since" -o cat --no-pager | tail -30
     exit 1
   fi

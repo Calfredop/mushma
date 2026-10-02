@@ -605,8 +605,11 @@ changes, a `main` that isn't pushed). It also installs the daily job's systemd u
 changed, then smoke-tests the live routes. It warns when the served scores predate the deployed
 rules. The server half ends with a `server: done` line and the script fails if that line never
 shows up, so a run cut short can't pass as a deploy. `--run-job` waits for the whole daily job
-(883 s for the 19 regions on 2026-09-30), not a couple of minutes. Only `deploy/.env` stays a
-manual edit on the server.
+(883 s for the 19 regions on 2026-09-30, 3812 s for the 05:00 run on 2026-10-02), not a couple of
+minutes, and streams the job's step log meanwhile. The ssh session sends keepalives (every 30 s,
+dead after 3 minutes of silence): the job prints nothing to `systemctl start`, and without them
+the 2026-10-01 run sat forever on a connection the server had already dropped. Only `deploy/.env`
+stays a manual edit on the server.
 
 `deploy/deploy-api.sh` brings the whole compose stack up (api, redis, caddy, umami), waits until
 the API container can PING Redis, then smoke-tests the live routes. Caddy doesn't reload
