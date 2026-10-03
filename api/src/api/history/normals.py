@@ -52,9 +52,10 @@ def _circular_mean(values: np.ndarray, window_days: int) -> np.ndarray:
 def daily_normals(rows: pd.DataFrame, years: list[int], window_days: int = 31) -> pd.DataFrame:
     """``point_id, variable, doy, normal, years`` for every point and variable in ``rows``.
 
-    ``rows`` holds ``point_id, date, variable, value`` from one source. Only ``years`` count; a
+    ``rows`` holds ``point_id, date, variable, value`` (and ``source``). Only ``years`` count; a
     calendar day's normal is the mean of its values over them, then smoothed with a centred
-    ``window_days`` window (odd, so it has a centre). ``years`` is how many years contributed."""
+    ``window_days`` window (odd, so it has a centre). ``years`` is how many years contributed, and
+    ``source`` the source most of the point's days came from (the rain scale depends on it)."""
     if window_days < 1 or window_days % 2 == 0:
         raise ValueError(f"window_days must be odd and positive, got {window_days}")
     dates = pd.to_datetime(rows["date"])
@@ -73,9 +74,11 @@ def daily_normals(rows: pd.DataFrame, years: list[int], window_days: int = 31) -
                     "doy": np.arange(1, DAYS + 1),
                     "normal": _circular_mean(by_day.to_numpy(dtype=float), window_days),
                     "years": int(group["year"].nunique()),
+                    **({"source": group["source"].mode().iloc[0]} if "source" in group else {}),
                 }
             )
         )
     if not frames:
-        return pd.DataFrame(columns=["point_id", "variable", "doy", "normal", "years"])
+        columns = ["point_id", "variable", "doy", "normal", "years"]
+        return pd.DataFrame(columns=[*columns, *(["source"] if "source" in rows else [])])
     return pd.concat(frames, ignore_index=True)

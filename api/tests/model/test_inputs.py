@@ -59,10 +59,12 @@ def test_load_cells_keeps_woodland_cells_with_attributes_and_habitat_fractions(
     assert cells.attributes["lat"].tolist() == [43.5, 43.5]  # for the sun ratio
 
 
-def _rain_factors() -> np.ndarray:
-    """The rain field's factor at the two woodland cells of ``write_grid`` (1000 m and 0 m)."""
+def _rain_factors(source: str | None = None) -> np.ndarray:
+    """The rain scale's factor at the two woodland cells of ``write_grid`` (1000 m and 0 m), for
+    ``source``'s rows (the field alone without one)."""
     scale = load_model_config().precipitation_scale
-    return scale.factor(np.array([1000.0, 0.0]), np.array([11.0, 11.01]), np.array([43.5, 43.5]))
+    lon, lat = np.array([11.0, 11.01]), np.array([43.5, 43.5])
+    return scale.factor(np.array([1000.0, 0.0]), lon, lat, source)
 
 
 def _without_microclimate() -> ModelConfig:
@@ -107,7 +109,7 @@ def test_load_weather_scales_reanalysis_rain_by_cell_height_and_flags_forecast_d
     )
 
     rain = weather.values["precipitation_sum"]
-    assert rain[:, 0] == pytest.approx(10.0 * _rain_factors())
+    assert rain[:, 0] == pytest.approx(10.0 * _rain_factors("era5_seamless"))
     assert rain[0, 0] > rain[1, 0]  # wetter with height
     assert rain[:, 1].tolist() == [10.0, 10.0]  # forecast rain is not scaled
     assert weather.values["temperature_2m_mean"][1, 0] == pytest.approx(12.0 + 0.0045 * 500)
@@ -188,7 +190,71 @@ def test_load_weather_downscales_the_rain_normals_and_scales_them_like_the_rain(
     )
 
     normal = weather.normals["precipitation_sum"]
-    assert normal[:, 0] == pytest.approx(3.0 * _rain_factors())
+    # Normals that name no source count as the Open-Meteo archive's.
+    assert normal[:, 0] == pytest.approx(3.0 * _rain_factors("era5_seamless"))
     rain = weather.values["precipitation_sum"]
     assert (rain / normal)[:, 0] == pytest.approx([2.0, 2.0])  # the ratio ignores the scale
     assert set(weather.normals) == {"precipitation_sum"}
+
+
+def _with_seamless_ratio(folder: Path, ratio: float) -> ModelConfig:
+    """``_without_microclimate`` with era5_seamless rain at ``1 / ratio`` of CDS's level."""
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / "ratio.csv"
+    pd.DataFrame(
+        {"lat": [43.0, 43.0, 44.0, 44.0], "lon": [10.0, 12.0, 10.0, 12.0], "ratio": ratio}
+    ).to_csv(path, index=False)
+    config = _without_microclimate()
+    scale = config.precipitation_scale.model_copy(
+        update={"source_ratios": {"era5_seamless": str(path)}}
+    )
+    return config.model_copy(update={"precipitation_scale": scale})
+
+
+def test_load_weather_brings_era5_seamless_rain_and_normals_to_the_fields_level(
+    tmp_path: Path,
+) -> None:
+    cells = load_cells(write_grid(tmp_path / "grid"))
+    yesterday = DAY - timedelta(days=1)
+    store = _store(
+        tmp_path / "weather",
+        [
+            ("era5_land_cds", "A", yesterday, "precipitation_sum", 10.0),
+            ("era5_seamless", "A", DAY, "precipitation_sum", 10.0),
+        ],
+        {("era5_land_cds", "A"): 500.0, ("era5_seamless", "A"): 500.0},
+    )
+    doy = day_of_year(np.array([DAY], dtype="datetime64[D]"))[0]
+
+    def load(normals_source: str):
+        normals = pd.DataFrame(
+            {
+                "point_id": "A",
+                "variable": "precipitation_sum",
+                "doy": [doy - 1, doy],
+                "normal": [5.0, 5.0],
+                "years": 10,
+                "source": normals_source,
+            }
+        )
+        return load_weather(
+            duckdb.connect(),
+            store,
+            cells,
+            _weights(),
+            yesterday,
+            DAY,
+            load_weather_config(),
+            _with_seamless_ratio(tmp_path / "config", 1.1),
+            normals,
+        )
+
+    weather = load("era5_land_cds")
+    rain = weather.values["precipitation_sum"]
+    assert rain[:, 0] == pytest.approx(10.0 * _rain_factors())  # CDS: the field alone
+    assert rain[:, 1] == pytest.approx(10.0 * 1.1 * _rain_factors())  # era5_seamless
+    # Normals are scaled as the source they were built from: CDS in most regions,
+    assert weather.normals["precipitation_sum"][:, 1] == pytest.approx(5.0 * _rain_factors())
+    # era5_seamless in Tuscany, whose history is the Open-Meteo archive.
+    seamless = load("era5_seamless").normals["precipitation_sum"]
+    assert seamless[:, 1] == pytest.approx(5.0 * 1.1 * _rain_factors())

@@ -54,17 +54,18 @@ def rules_version(
     model_file: Path = MODEL_FILE,
 ) -> str:
     """A short hash of the region's rule files, the shared bibliography and the model config,
-    with the rain field it points at (a refit changes the scores as much as a rule does)."""
+    with the rain field and source ratios it points at (a refit changes the scores as much as a
+    rule does)."""
     digest = hashlib.sha256()
     region_dir = region_rules_dir(region, species_dir)
-    rain_field = (yaml.safe_load(model_file.read_text()).get("precipitation_scale") or {}).get(
-        "field"
-    )
+    scale = yaml.safe_load(model_file.read_text()).get("precipitation_scale") or {}
+    rain_files = [scale["field"]] if scale.get("field") else []
+    rain_files += sorted((scale.get("source_ratios") or {}).values())
     paths = [
         species_dir / "references.yaml",
         *sorted(p for p in region_dir.glob("*.yaml") if p.name != "sanity.yaml"),
         model_file,
-        *([model_file.parent / rain_field] if rain_field else []),
+        *(model_file.parent / name for name in rain_files),
     ]
     for path in paths:
         digest.update(path.name.encode())

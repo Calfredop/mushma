@@ -1,6 +1,7 @@
 """One rain calibration for all of Italy, fitted on every region's open gauges at once.
 
     uv run python -m api.weather.rain_field collect [--network tuscany ...]
+    uv run python -m api.weather.rain_field cds [--region sicilia ...]
     uv run python -m api.weather.rain_field fit
 
 The reanalysis rain is too dry or too wet by an amount that depends on place and height. Each region
@@ -13,14 +14,16 @@ percentile of the gauge heights around it. The kernel width is chosen by spatial
 cross-validation (a very wide kernel is one national fit; a narrow one follows each network).
 
 ``collect`` compares each gauge's season totals (April to November, when the scores matter and
-before snow undercatch) with the reanalysis rain downscaled to the gauge as the model downscales it
-to a cell (bilinear on the 0.2° lattice of land nodes), from the Open-Meteo archive:
-``era5_seamless`` with ``elevation=nan``. Open-Meteo serves no ``era5_land`` rain, and
-``era5_seamless`` rain matched CDS ERA5-Land at 0.995 pooled over Tuscany's nodes in 2024. Networks
-whose gauges have no parser here join as pseudo-gauges carrying their published fit (``pseudo`` in
-``config/rain_field.yaml``). ``fit`` writes ``config/rain_scale_field.csv`` and a cross-validation
-report. Intermediate files live in ``$DATA_DIR/weather/rain_field/``. See
-``.gavin-root/docs/rain-scale-field.md``.
+before snow undercatch) with CDS ERA5-Land rain downscaled to the gauge as the model downscales it
+to a cell (bilinear on the 0.2° lattice of land nodes), read from the weather stores; a corner node
+no store holds is fetched from CDS first. CDS is what every region but Tuscany scores. Tuscany's
+history and every region's last few days are Open-Meteo ``era5_seamless``, which is coarse ERA5:
+``cds`` measures the two at every weather node and ``fit`` writes CDS / ``era5_seamless`` for
+``model.yaml``'s ``source_ratios`` as well. Networks whose gauges have no
+parser here join as pseudo-gauges carrying their published fit (``pseudo`` in
+``config/rain_field.yaml``). ``fit`` writes ``config/rain_scale_field.csv``,
+``config/rain_cds_per_seamless.csv`` and a cross-validation report. Intermediate files live in
+``$DATA_DIR/weather/rain_field/``. See ``.gavin-root/docs/rain-scale-field.md``.
 """
 
 import argparse
@@ -37,6 +40,7 @@ from api.model.config import CONFIG_DIR
 
 CONFIG_FILE = CONFIG_DIR / "rain_field.yaml"
 FIELD_FILE = CONFIG_DIR / "rain_scale_field.csv"
+SOURCE_RATIO_FILE = CONFIG_DIR / "rain_cds_per_seamless.csv"
 LATTICE_DEG = 0.25
 # Italy and its islands, (west, south, east, north).
 LATTICE_BBOX = (6.5, 35.5, 18.75, 47.25)
@@ -187,6 +191,35 @@ def pseudo_gauges(
     )
 
 
+def node_season_totals(cds: pd.DataFrame, seamless: pd.DataFrame, *, year: int) -> pd.DataFrame:
+    """Per weather node (``point_id``), the April-November ``year`` rain totals of CDS ERA5-Land
+    (``cds``) and ``era5_seamless`` (``seamless``), both ``point_id, date, value``, over the days
+    both report."""
+    first, last = date(year, SEASON_MONTHS[0], 1), date(year, SEASON_MONTHS[-1] + 1, 1)
+    both = cds.merge(seamless, on=["point_id", "date"], suffixes=("_cds", "_seamless")).dropna(
+        subset=["value_cds", "value_seamless"]
+    )
+    both = both[(both["date"] >= first) & (both["date"] < last)]
+    totals = both.groupby("point_id", as_index=False).agg(
+        days=("date", "size"),
+        cds_mm=("value_cds", "sum"),
+        seamless_mm=("value_seamless", "sum"),
+    )
+    return totals.assign(year=year)
+
+
+def ratio_field(
+    nodes: pd.DataFrame, at: pd.DataFrame, bandwidth_m: float, ridge: float
+) -> pd.Series:
+    """At ``at`` (projected ``x``, ``y``), the Gaussian-weighted mean of the nodes' ``ratio``,
+    pulled toward 1 (no correction) by ``ridge``, counted in nodes at distance zero."""
+    d2 = (at["x"].to_numpy(dtype=float)[:, None] - nodes["x"].to_numpy(dtype=float)[None, :]) ** 2
+    d2 += (at["y"].to_numpy(dtype=float)[:, None] - nodes["y"].to_numpy(dtype=float)[None, :]) ** 2
+    w = np.exp(-d2 / (2 * bandwidth_m**2))
+    ratio = (w @ nodes["ratio"].to_numpy(dtype=float) + ridge) / (w.sum(1) + ridge)
+    return pd.Series(ratio, index=at.index)
+
+
 def load_config(path: Path = CONFIG_FILE) -> dict:
     return yaml.safe_load(path.read_text())
 
@@ -298,11 +331,15 @@ def lattice_corners(gauges: pd.DataFrame) -> list[tuple[float, float]]:
     )
 
 
-def collect_network(network: str, years: list[int], config: dict, log=print) -> pd.DataFrame:
-    """One row per gauge and season year: its totals against the reanalysis rain downscaled to it
-    as to a cell (bilinear on the scoring lattice)."""
+def collect_network(
+    network: str, years: list[int], config: dict, folder: Path, log=print
+) -> pd.DataFrame:
+    """One row per gauge and season year: its totals against CDS ERA5-Land rain downscaled to it
+    as to a cell (bilinear on the scoring lattice), read from the weather stores; corner nodes no
+    store holds are fetched from CDS first (``_fetch_cds_nodes``)."""
     from api.grid.sources import data_dir
     from api.weather.checks import GAUGE_NETWORKS, _client
+    from api.weather.points import point_id
 
     raw = data_dir() / "raw"
     net = GAUGE_NETWORKS[network](raw, date(min(years), 1, 1), date(max(years), 12, 31))
@@ -312,9 +349,20 @@ def collect_network(network: str, years: list[int], config: dict, log=print) -> 
     gauges = gauges.dropna(subset=["elevation_m"]).reset_index(drop=True)
     gauges["code"] = gauges["code"].astype(str)
     client = _client(raw)
+    nodes = lattice_corners(gauges)
+    corners = pd.DataFrame(
+        {
+            "point_id": [point_id(lat, lon) for lat, lon in nodes],
+            "lat": [lat for lat, _ in nodes],
+            "lon": [lon for _, lon in nodes],
+        }
+    )
+    missing = corners[~corners["point_id"].isin(_held_nodes(folder))]
+    if len(missing):
+        _fetch_cds_nodes(f"gauges_{network}", missing, client, years, folder, log)
     rows = []
     for year in years:
-        model = _reanalysis(client, lattice_corners(gauges), year)
+        model = cds_rain(_store_roots(folder), nodes, year)
         weights = lattice_weights(gauges, set(model))
         for gauge in gauges.itertuples():
             mine = weights[weights["code"] == gauge.code]
@@ -352,6 +400,216 @@ def collect_network(network: str, years: list[int], config: dict, log=print) -> 
                 )
     frame = pd.DataFrame(rows)
     log(f"{network}: {frame['code'].nunique() if len(frame) else 0} gauges, {len(frame)} seasons")
+    return frame
+
+
+def cds_rain(
+    roots: list[Path], nodes: list[tuple[float, float]], year: int
+) -> dict[tuple, pd.Series]:
+    """CDS ERA5-Land daily rain (Europe/Rome days) in ``year`` at those ``nodes`` some weather
+    store under ``roots`` holds (``<root>/<store>/daily/...``), the first store's where several
+    do (a border node is in both regions' stores, with the same values)."""
+    import duckdb
+
+    from api.weather.cds import SOURCE_ID
+    from api.weather.points import point_id
+
+    files = [
+        path
+        for root in roots
+        for path in sorted(root.glob(f"*/daily/source={SOURCE_ID}/year={year}/data.parquet"))
+    ]
+    if not files:
+        return {}
+    wanted = {point_id(lat, lon): (lat, lon) for lat, lon in nodes}
+    rows = duckdb.sql(
+        f"SELECT point_id, date, value FROM read_parquet({[str(f) for f in files]!r}) "
+        f"WHERE variable = 'precipitation_sum' AND list_contains({list(wanted)!r}, point_id)"
+    ).df()
+    rows["date"] = pd.to_datetime(rows["date"]).dt.date
+    rows = rows.drop_duplicates(["point_id", "date"])
+    return {
+        wanted[pid]: group.set_index("date")["value"].sort_index()
+        for pid, group in rows.groupby("point_id")
+    }
+
+
+def _store_roots(folder: Path) -> list[Path]:
+    """Where weather stores live: the regions' own, and those ``cds`` fetched into ``folder``."""
+    from api.grid.sources import data_dir
+
+    return [data_dir() / "weather", folder / "cds_store"]
+
+
+def _held_nodes(folder: Path) -> set[str]:
+    """Every node a weather store under ``_store_roots`` lists."""
+    return {
+        pid
+        for root in _store_roots(folder)
+        for path in root.glob("*/points.parquet")
+        for pid in pd.read_parquet(path, columns=["point_id"])["point_id"]
+    }
+
+
+def cds_regions() -> list[str]:
+    """Regions whose local weather store holds CDS ERA5-Land history."""
+    from api.grid.sources import data_dir
+    from api.weather.cds import SOURCE_ID
+
+    root = data_dir() / "weather"
+    return sorted(p.parent.parent.name for p in root.glob(f"*/daily/source={SOURCE_ID}"))
+
+
+def region_nodes(region: str) -> pd.DataFrame:
+    """The scoring lattice's nodes whose lattice square around them touches ``region``: every node
+    a cell of the region can read, and some at sea (``point_id``, ``lat``, ``lon``)."""
+    from shapely.geometry import box
+
+    from api.weather.points import point_id
+
+    spacing, _ = _scoring_lattice()
+    shape = _region_shapes([region]).to_crs(4326).geometry.iloc[0]
+    west, south, east, north = shape.bounds
+    lats = np.arange(np.floor(south / spacing) - 1, np.ceil(north / spacing) + 2) * spacing
+    lons = np.arange(np.floor(west / spacing) - 1, np.ceil(east / spacing) + 2) * spacing
+    nodes = [
+        (round(lat, 1), round(lon, 1))
+        for lat in lats
+        for lon in lons
+        if shape.intersects(box(lon - spacing, lat - spacing, lon + spacing, lat + spacing))
+    ]
+    return pd.DataFrame(
+        {
+            "point_id": [point_id(lat, lon) for lat, lon in nodes],
+            "lat": [lat for lat, _ in nodes],
+            "lon": [lon for _, lon in nodes],
+        }
+    )
+
+
+def _seamless_rain(client, nodes: list[tuple[float, float]], year: int) -> pd.DataFrame:
+    """``point_id, date, value``: ``era5_seamless`` rain at the land ``nodes`` (``_reanalysis``)."""
+    from api.weather.points import point_id
+
+    frame = pd.concat(
+        [
+            pd.DataFrame(
+                {"point_id": point_id(lat, lon), "date": list(series.index), "value": series}
+            )
+            for (lat, lon), series in _reanalysis(client, nodes, year).items()
+        ],
+        ignore_index=True,
+    )
+    return frame.assign(date=pd.to_datetime(frame["date"]).dt.date)
+
+
+def _land_nodes(client, nodes: pd.DataFrame) -> set[str]:
+    """The ``point_id`` of the ``nodes`` that are land, by the weather points' own probe: one day
+    of ERA5-Land, which has no values over the sea (``era5_seamless`` fills the sea from ERA5)."""
+    from datetime import UTC, datetime
+
+    from api.weather.config import load_weather_config
+    from api.weather.openmeteo import DailyRequest, parse_daily
+
+    config = load_weather_config()
+    probe = config.points.land_probe
+    units = {name: config.variables[name].unit for name in probe.variables}
+    land = set()
+    for i in range(0, len(nodes), 100):
+        batch = nodes.iloc[i : i + 100]
+        request = DailyRequest(
+            endpoint=config.history.endpoint,
+            model=probe.model,
+            points=list(zip(batch["point_id"], batch["lat"], batch["lon"], strict=True)),
+            units=units,
+            timezone="Europe/Rome",
+            start_date=probe.date,
+            end_date=probe.date,
+        )
+        rows, _ = parse_daily(client.fetch(request), request, datetime.now(UTC))
+        complete = rows.dropna(subset=["value"]).groupby("point_id")["variable"].nunique()
+        land |= set(complete[complete == len(probe.variables)].index)
+    return land
+
+
+def _fetch_cds_nodes(
+    name: str, nodes: pd.DataFrame, client, years: list[int], folder: Path, log=print
+):
+    """A scratch store ``folder/cds_store/<name>`` of CDS ERA5-Land history over ``years`` at the
+    ``nodes`` (``point_id``, ``lat``, ``lon``) that are land (``_land_nodes``), from the CDS
+    time-series product as a region's backfill fetches them."""
+    from api.grid.sources import data_dir
+    from api.weather.cds import CdsClient, backfill_cds_timeseries
+    from api.weather.store import WeatherStore
+
+    land = nodes[nodes["point_id"].isin(_land_nodes(client, nodes))].assign(
+        land=True, grid_elevation_m=np.nan
+    )
+    store = WeatherStore(folder / "cds_store" / name)
+    store.root.mkdir(parents=True, exist_ok=True)
+    land.to_parquet(store.points_path, index=False)
+    log(f"{name}: {len(land)} land nodes of {len(nodes)}, fetching CDS time series")
+    if len(land):
+        backfill_cds_timeseries(
+            CdsClient(cache_dir=data_dir() / "raw" / "cds"),
+            store,
+            land,
+            "Europe/Rome",
+            date(min(years), 1, 1),
+            date(max(years), 12, 31),
+            log=log,
+            snowfall=False,
+        )
+    return store
+
+
+def _fetched_cds_store(region: str, client, years: list[int], folder: Path, log=print):
+    """A scratch CDS store for a region whose own store is not on this machine: the nodes
+    ``region_nodes`` finds that no local region store holds (``_fetch_cds_nodes``)."""
+    from api.weather.ingest import region_paths
+
+    held = set()  # nodes a local store already measures (a neighbour's border nodes)
+    for other in cds_regions():
+        held |= set(pd.read_parquet(region_paths(other)[1].points_path)["point_id"])
+    nodes = region_nodes(region)
+    nodes = nodes[~nodes["point_id"].isin(held)].reset_index(drop=True)
+    return _fetch_cds_nodes(region, nodes, client, years, folder, log)
+
+
+def collect_cds(region: str, years: list[int], folder: Path, log=print) -> pd.DataFrame:
+    """One row per land weather node of ``region`` and season year: its CDS ERA5-Land rain and its
+    ``era5_seamless`` rain (Open-Meteo archive) over the same days. The CDS side is the region's
+    own store, or, where that is not on this machine, one fetched here (``_fetched_cds_store``)."""
+    import duckdb
+
+    from api.weather.cds import SOURCE_ID
+    from api.weather.checks import _client
+    from api.weather.ingest import region_paths
+
+    _, store, raw = region_paths(region)
+    client = _client(raw)
+    if not (store.daily_dir / f"source={SOURCE_ID}").exists():
+        store = _fetched_cds_store(region, client, years, folder, log)
+    points = pd.read_parquet(store.points_path)
+    points = points[points["land"]] if "land" in points else points
+    nodes = sorted(zip(points["lat"].round(1), points["lon"].round(1), strict=True))
+    rows = []
+    for year in years:
+        path = store.partition_path(SOURCE_ID, year)
+        if not path.exists():
+            log(f"{region} {year}: no CDS partition")
+            continue
+        cds = duckdb.sql(
+            f"SELECT point_id, date, value FROM read_parquet('{path}') "
+            "WHERE variable = 'precipitation_sum'"
+        ).df()
+        cds["date"] = pd.to_datetime(cds["date"]).dt.date
+        rows.append(node_season_totals(cds, _seamless_rain(client, nodes, year), year=year))
+    frame = pd.concat(rows, ignore_index=True) if rows else pd.DataFrame()
+    if len(frame):
+        frame = frame.merge(points[["point_id", "lat", "lon"]], on="point_id").assign(region=region)
+        pooled = frame["seamless_mm"].sum() / frame["cds_mm"].sum()
+        log(f"{region}: {frame['point_id'].nunique()} nodes, seamless / CDS {pooled:.3f}")
     return frame
 
 
@@ -404,15 +662,52 @@ def project(frame: pd.DataFrame) -> pd.DataFrame:
     return frame.assign(x=x, y=y)
 
 
-def lattice() -> pd.DataFrame:
+def lattice(spacing: float = LATTICE_DEG) -> pd.DataFrame:
+    """The nodes at multiples of ``spacing`` degrees over Italy (``LATTICE_BBOX``)."""
     west, south, east, north = LATTICE_BBOX
-    lats = np.round(np.arange(south, north + 1e-9, LATTICE_DEG), 3)
-    lons = np.round(np.arange(west, east + 1e-9, LATTICE_DEG), 3)
+    lats = np.round(np.arange(np.ceil(south / spacing - 1e-9), north / spacing + 1e-9) * spacing, 3)
+    lons = np.round(np.arange(np.ceil(west / spacing - 1e-9), east / spacing + 1e-9) * spacing, 3)
     grid_lat, grid_lon = np.meshgrid(lats, lons, indexing="ij")
     return project(pd.DataFrame({"lat": grid_lat.ravel(), "lon": grid_lon.ravel()}))
 
 
+def cds_nodes(folder: Path) -> pd.DataFrame:
+    """Every node ``cds`` measured, its seasons pooled: ``ratio`` is CDS over era5_seamless rain."""
+    seasons = pd.concat(
+        [pd.read_csv(f) for f in sorted(folder.glob("cds_*.csv")) if f.stat().st_size > 1],
+        ignore_index=True,
+    ).drop_duplicates(["point_id", "year"])  # a border node is in two regions' stores
+    nodes = seasons.groupby("point_id", as_index=False).agg(
+        lat=("lat", "first"),
+        lon=("lon", "first"),
+        years=("year", "nunique"),
+        seamless_mm=("seamless_mm", "sum"),
+        cds_mm=("cds_mm", "sum"),
+    )
+    return project(nodes.assign(ratio=nodes["cds_mm"] / nodes["seamless_mm"]))
+
+
+def fit_source_ratio(config: dict, folder: Path, log=print) -> pd.DataFrame:
+    """Write ``SOURCE_RATIO_FILE``: CDS / era5_seamless rain on the scoring lattice, each node's
+    own pooled ratio lightly smoothed, and 1 (no correction) away from every measured node.
+    era5_seamless rain is coarse ERA5 (neighbouring nodes share 0.25° blocks), so a node's ratio
+    carries those blocks and multiplying era5_seamless by it takes them out again."""
+    nodes = cds_nodes(folder)
+    spacing, _ = _scoring_lattice()
+    ratios = lattice(spacing)
+    bandwidth, ridge = config["cds_bandwidth_km"] * 1000.0, config["cds_ridge"]
+    ratios["ratio"] = ratio_field(nodes, ratios, bandwidth, ridge)
+    ratios[["lat", "lon", "ratio"]].round({"ratio": 4}).to_csv(SOURCE_RATIO_FILE, index=False)
+    nodes["smoothed"] = ratio_field(nodes, nodes, bandwidth, ridge)
+    nodes.to_csv(folder / "cds_nodes.csv", index=False)
+    pooled = nodes["cds_mm"].sum() / nodes["seamless_mm"].sum()
+    low, high = nodes["ratio"].min(), nodes["ratio"].max()
+    log(f"CDS / seamless: {len(nodes)} nodes, pooled {pooled:.3f}, nodes {low:.2f}-{high:.2f}")
+    return nodes
+
+
 def run_fit(config: dict, folder: Path, log=print) -> dict:
+    nodes = fit_source_ratio(config, folder, log)
     gauges = gauge_table(config, folder)
     ridge = config["ridge"]
     bandwidths = [km * 1000.0 for km in config["bandwidths_km"]]
@@ -454,6 +749,8 @@ def run_fit(config: dict, folder: Path, log=print) -> dict:
         "bandwidth_km": best / 1000,
         "ridge": ridge,
         "block_km": config["block_km"],
+        "cds_nodes": len(nodes),
+        "cds_per_seamless": float(nodes["cds_mm"].sum() / nodes["seamless_mm"].sum()),
     }
     (folder / "fit.json").write_text(json.dumps(summary, indent=2))
     log(json.dumps(summary, indent=2))
@@ -461,7 +758,8 @@ def run_fit(config: dict, folder: Path, log=print) -> dict:
 
 
 def old_fits(rev: str) -> dict:
-    """Each region's ``precipitation_scale`` as the config stood at git revision ``rev``."""
+    """Each region's ``precipitation_scale`` as the config stood at git revision ``rev``, its field
+    and source ratios too (a refit changes them under an unchanged ``model.yaml``)."""
     import subprocess
     import tempfile
 
@@ -480,12 +778,43 @@ def old_fits(rev: str) -> dict:
         regions = sorted(p.stem for p in REGIONS_DIR.glob("*.yaml"))
         for region in regions:
             (root / "regions" / f"{region}.yaml").write_text(show(REGIONS_DIR / f"{region}.yaml"))
-        return {
+        scales = {
             region: load_model_config(
                 root / "model.yaml", region=region, regions_dir=root / "regions"
             ).precipitation_scale
             for region in regions
         }
+
+    def at_rev(name: str) -> str:
+        """``name`` (a lattice under ``config/``) as it stood at ``rev``, copied out of the tree."""
+        copy = _out_dir() / "at_rev" / rev / name
+        copy.parent.mkdir(parents=True, exist_ok=True)
+        copy.write_text(show(CONFIG_DIR / name))
+        return str(copy)
+
+    return {
+        region: scale.model_copy(
+            update={
+                "field": at_rev(scale.field) if scale.field else None,
+                "source_ratios": {k: at_rev(v) for k, v in scale.source_ratios.items()},
+            }
+        )
+        for region, scale in scales.items()
+    }
+
+
+def _region_shapes(regions: list[str]):
+    """The ISTAT outlines of ``regions`` in EPSG:3035, one row per ISTAT region code."""
+    import geopandas as gpd
+
+    from api.grid.region import load_region
+    from api.grid.sources import data_dir, fetch, load_sources
+
+    codes = [load_region(r).boundary.region_code for r in regions]
+    istat = load_sources()["istat_boundaries"].download or {}
+    archive = fetch(istat["url"], data_dir() / "raw" / "istat" / Path(istat["url"]).name)
+    shapes = gpd.read_file(f"zip://{archive}!{istat['regions']}").to_crs(3035)
+    return shapes[shapes["COD_REG"].isin(codes)].dissolve("COD_REG")
 
 
 def run_borders(rev: str, folder: Path, spacing_m: float = 5000, log=print) -> pd.DataFrame:
@@ -494,17 +823,15 @@ def run_borders(rev: str, folder: Path, spacing_m: float = 5000, log=print) -> p
     import geopandas as gpd
 
     from api.grid.region import load_region
-    from api.grid.sources import data_dir, fetch, load_sources
+    from api.grid.sources import data_dir
     from api.model.config import load_model_config
+    from api.weather.cds import SOURCE_ID
 
     before = old_fits(rev)
     now = load_model_config().precipitation_scale
     codes = {load_region(r).boundary.region_code: r for r in before}
-    istat = load_sources()["istat_boundaries"].download or {}
     raw = data_dir() / "raw"
-    archive = fetch(istat["url"], raw / "istat" / Path(istat["url"]).name)
-    shapes = gpd.read_file(f"zip://{archive}!{istat['regions']}").to_crs(3035)
-    shapes = shapes[shapes["COD_REG"].isin(codes)].dissolve("COD_REG")
+    shapes = _region_shapes(list(before))
     rows = []
     ids = list(shapes.index)
     for i, a in enumerate(ids):
@@ -517,6 +844,7 @@ def run_borders(rev: str, folder: Path, spacing_m: float = 5000, log=print) -> p
             frame = pd.DataFrame({"lon": points.x, "lat": points.y})
             frame["elevation_m"] = _dem_heights(frame, raw)
             z = frame["elevation_m"].to_numpy()
+            lon, lat = frame["lon"].to_numpy(), frame["lat"].to_numpy()
             ra, rb = codes[a], codes[b]
             rows.append(
                 frame.assign(
@@ -525,6 +853,9 @@ def run_borders(rev: str, folder: Path, spacing_m: float = 5000, log=print) -> p
                     before_a=before[ra].factor(z, frame["lon"], frame["lat"]),
                     before_b=before[rb].factor(z, frame["lon"], frame["lat"]),
                     after=now.factor(z, frame["lon"].to_numpy(), frame["lat"].to_numpy()),
+                    # What CDS rows (most regions' history) get, before and now.
+                    before_cds=before[ra].factor(z, lon, lat, SOURCE_ID),
+                    after_cds=now.factor(z, lon, lat, SOURCE_ID),
                 )
             )
     points = pd.concat(rows, ignore_index=True)
@@ -538,6 +869,8 @@ def run_borders(rev: str, folder: Path, spacing_m: float = 5000, log=print) -> p
         after=("after", "median"),
         after_min=("after", "min"),
         after_max=("after", "max"),
+        before_cds=("before_cds", "median"),
+        after_cds=("after_cds", "median"),
         median_step_before=("step_before", "median"),
     )
     summary["median_step_before"] = np.expm1(summary["median_step_before"])
@@ -548,9 +881,10 @@ def run_borders(rev: str, folder: Path, spacing_m: float = 5000, log=print) -> p
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("command", choices=["collect", "fit", "borders"])
+    parser.add_argument("command", choices=["collect", "cds", "fit", "borders"])
     parser.add_argument("--before", default="HEAD", help="borders: git revision of the old fits")
     parser.add_argument("--network", action="append", help="collect: only these networks")
+    parser.add_argument("--region", action="append", help="cds: only these regions' stores")
     args = parser.parse_args()
     config = load_config()
     folder = _out_dir()
@@ -559,8 +893,13 @@ def main() -> None:
         for network, years in config["networks"].items():
             if args.network and network not in args.network:
                 continue
-            collect_network(network, years, config).to_csv(
+            collect_network(network, years, config, folder).to_csv(
                 folder / f"gauges_{network}.csv", index=False
+            )
+    elif args.command == "cds":
+        for region in args.region or [*cds_regions(), *config["cds_fetch"]]:
+            collect_cds(region, config["cds_years"], folder).to_csv(
+                folder / f"cds_{region}.csv", index=False
             )
     elif args.command == "fit":
         run_fit(config, folder)

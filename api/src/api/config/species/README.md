@@ -44,7 +44,9 @@ species list follows. The rain scale is one national field fitted on every regio
    scores to check).
 5. If the region has open daily gauges, add its network to `GAUGE_NETWORKS` and
    `../rain_field.yaml`, re-run `api.weather.rain_field collect` and `fit`, and check the border
-   table (`rain_field borders`). Do not override `precipitation_scale` in the region YAML.
+   table (`rain_field borders`). Do not override `precipitation_scale` in the region YAML. Once
+   the region's CDS history is stored, run `rain_field cds --region <id>` and `fit` too, so its
+   CDS rain gets its own `era5_seamless` / CDS ratio.
 
 ## Files (Tuscany)
 

@@ -150,3 +150,101 @@ def test_a_gauge_gets_the_bilinear_weights_a_cell_would_on_the_scoring_lattice()
     assert set(by_node) == {(43.0, 11.0), (43.0, 11.2), (43.2, 11.0)}
     assert sum(by_node.values()) == pytest.approx(1.0)
     assert by_node[(43.0, 11.2)] > by_node[(43.0, 11.0)] > by_node[(43.2, 11.0)]
+
+
+def _daily(point_id: str, first, values) -> pd.DataFrame:
+    from datetime import timedelta
+
+    return pd.DataFrame(
+        {
+            "point_id": point_id,
+            "date": [first + timedelta(days=i) for i in range(len(values))],
+            "value": np.asarray(values, dtype=float),
+        }
+    )
+
+
+def test_node_season_totals_sum_both_sources_over_the_season_days_both_have() -> None:
+    from datetime import date
+
+    from api.weather.rain_field import node_season_totals
+
+    # 1 March to 30 November: both sources rain 1 mm a day, but CDS misses 1-10 May.
+    seamless = _daily("A", date(2024, 3, 1), [1.0] * 275)
+    cds = _daily("A", date(2024, 3, 1), [2.0] * 275)
+    cds = cds[~cds["date"].between(date(2024, 5, 1), date(2024, 5, 10))]
+
+    totals = node_season_totals(cds, seamless, year=2024)
+
+    season_days = (date(2024, 12, 1) - date(2024, 4, 1)).days - 10
+    row = totals.set_index("point_id").loc["A"]
+    assert row["days"] == season_days
+    assert row["seamless_mm"] == pytest.approx(season_days)
+    assert row["cds_mm"] == pytest.approx(2 * season_days)
+
+
+def test_node_season_totals_skip_a_node_one_source_lacks() -> None:
+    from datetime import date
+
+    from api.weather.rain_field import node_season_totals
+
+    seamless = _daily("A", date(2024, 4, 1), [1.0] * 244)
+    cds = _daily("B", date(2024, 4, 1), [1.0] * 244)
+
+    assert node_season_totals(cds, seamless, year=2024).empty
+
+
+def test_the_source_ratio_field_is_the_local_node_ratio_and_one_far_from_nodes() -> None:
+    from api.weather.rain_field import ratio_field
+
+    nodes = pd.DataFrame({"x": [0.0, 20_000.0, 500_000.0], "y": 0.0, "ratio": [0.9, 0.9, 1.1]})
+    lattice = pd.DataFrame({"x": [10_000.0, 500_000.0, 2_000_000.0], "y": 0.0})
+
+    field = ratio_field(nodes, lattice, bandwidth_m=10_000, ridge=0.1)
+
+    near, lone, far = field.tolist()
+    assert near == pytest.approx(0.9, abs=0.01)  # between two 0.9 nodes
+    assert lone == pytest.approx(1.1, abs=0.01)  # on its node, the ridge barely counts
+    assert far == pytest.approx(1.0)  # no CDS node: no correction
+
+
+def test_lattice_nodes_sit_on_multiples_of_the_spacing() -> None:
+    from api.weather.rain_field import lattice
+
+    nodes = lattice(0.2)
+
+    assert nodes["lat"].min() == pytest.approx(35.6) and nodes["lon"].min() == pytest.approx(6.6)
+    assert np.allclose(np.round(nodes["lat"] / 0.2), nodes["lat"] / 0.2)
+    assert len(lattice()) == 48 * 50  # the gauge field's 0.25° lattice is unchanged
+
+
+def test_cds_rain_reads_each_node_from_whichever_store_holds_it(tmp_path) -> None:
+    from datetime import date
+
+    from api.weather.rain_field import cds_rain
+
+    from .test_downscale import _store
+
+    day = date(2024, 6, 1)
+    _store(
+        tmp_path / "a" / "north",
+        [
+            ("era5_land_cds", "N43.00E011.00", day, "precipitation_sum", 3.0),
+            ("era5_land_cds", "N43.00E011.00", day, "temperature_2m_mean", 20.0),
+            ("era5_seamless", "N43.00E011.20", day, "precipitation_sum", 9.0),
+        ],
+        {("era5_land_cds", "N43.00E011.00"): 300.0},
+    )
+    _store(
+        tmp_path / "b" / "south",
+        [("era5_land_cds", "N43.00E011.20", day, "precipitation_sum", 5.0)],
+        {("era5_land_cds", "N43.00E011.20"): 300.0},
+    )
+
+    rain = cds_rain(
+        [tmp_path / "a", tmp_path / "b"], [(43.0, 11.0), (43.0, 11.2), (43.2, 11.0)], 2024
+    )
+
+    assert set(rain) == {(43.0, 11.0), (43.0, 11.2)}  # (43.2, 11.0) is in no store
+    assert rain[(43.0, 11.0)].to_dict() == {day: 3.0}
+    assert rain[(43.0, 11.2)].to_dict() == {day: 5.0}  # CDS only, never era5_seamless

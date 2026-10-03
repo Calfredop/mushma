@@ -60,10 +60,11 @@ def root(tmp_path: Path) -> Path:
 
 
 def _cell_rain(elevation: float, point_rain: float, x: float, y: float) -> float:
-    """``point_rain`` scaled for the fixture cell at ``x``, ``y`` (helpers.write_grid)."""
+    """``point_rain`` from the Open-Meteo archive (the fixture's history) scaled for the fixture
+    cell at ``x``, ``y`` (helpers.write_grid)."""
     lon, lat = [11.0 + x / 100_000], [43.0 + y / 100_000]
     scale = load_model_config().precipitation_scale
-    return point_rain * float(scale.factor([elevation], lon, lat)[0])
+    return point_rain * float(scale.factor([elevation], lon, lat, "era5_seamless")[0])
 
 
 def _cell_temperature(point_temperature: float, point_height: float, elevation: float) -> float:

@@ -46,6 +46,21 @@ def test_points_off_the_lattice_take_the_nearest_edge(tmp_path: Path) -> None:
     assert factor.tolist() == pytest.approx([2.0])  # south-east corner, unknown height = 0 m
 
 
+def test_a_lattice_of_any_named_value_reads_bilinearly(tmp_path: Path) -> None:
+    path = tmp_path / "r.csv"
+    pd.DataFrame(
+        {
+            "lat": [43.0, 43.0, 43.2, 43.2],
+            "lon": [11.0, 11.2, 11.0, 11.2],
+            "ratio": [1.0, 1.0, 0.8, 0.8],
+        }
+    ).to_csv(path, index=False)
+
+    ratio = load_rain_field(path).value("ratio", np.array([11.1, 11.0]), np.array([43.1, 43.2]))
+
+    assert ratio.tolist() == pytest.approx([0.9, 0.8])
+
+
 def test_the_rules_version_changes_when_the_rain_field_is_refitted(tmp_path: Path) -> None:
     import shutil
 
@@ -60,5 +75,23 @@ def test_the_rules_version_changes_when_the_rain_field_is_refitted(tmp_path: Pat
 
     field = config / "rain_scale_field.csv"
     field.write_text(field.read_text().replace("0.95", "0.96", 1))
+
+    assert rules_version("tuscany", species_dir=species, model_file=model_file) != before
+
+
+def test_the_rules_version_changes_when_a_source_ratio_is_refitted(tmp_path: Path) -> None:
+    import shutil
+
+    from api.model.config import CONFIG_DIR, MODEL_FILE
+    from api.model.pipeline import rules_version
+
+    config = tmp_path / "config"
+    shutil.copytree(CONFIG_DIR, config)
+    model_file = config / MODEL_FILE.name
+    species = config / "species"
+    before = rules_version("tuscany", species_dir=species, model_file=model_file)
+
+    ratios = config / "rain_cds_per_seamless.csv"
+    ratios.write_text(ratios.read_text() + "\n")
 
     assert rules_version("tuscany", species_dir=species, model_file=model_file) != before

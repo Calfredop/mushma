@@ -58,6 +58,15 @@ def cell_sun_ratio(cells: Cells, dates: np.ndarray, diffuse_fraction: list[float
     )
 
 
+def normals_source(normals: pd.DataFrame | None, weather_config: WeatherConfig) -> str:
+    """The source a region's rain normals were built from: the one most points name (CDS in every
+    region after Tuscany), or the Open-Meteo archive for normals written before they named it."""
+    rain = normals[normals["variable"] == "precipitation_sum"] if normals is not None else None
+    if rain is None or "source" not in rain or rain["source"].isna().all():
+        return weather_config.history.model
+    return str(rain.groupby("point_id")["source"].first().mode().iloc[0])
+
+
 def load_normals(root: Path, region: str) -> pd.DataFrame | None:
     """The region's point normals (``api.history.build normals``), or None before they are
     built."""
@@ -134,16 +143,18 @@ def load_weather(
     scale = model_config.precipitation_scale
     if scale.enabled and "precipitation_sum" in values:
         rank = arrays.source_rank["precipitation_sum"]
-        scaled_ranks = [order.index(s) for s in scale.sources if s in order]
         a = cells.attributes
-        factor = scale.factor(a["elevation_m"], a.get(LONGITUDE), a.get(LATITUDE))[:, np.newaxis]
-        values["precipitation_sum"] = np.where(
-            np.isin(rank, scaled_ranks),
-            values["precipitation_sum"] * factor,
-            values["precipitation_sum"],
-        )
+
+        def factor(source: str | None) -> np.ndarray:
+            elevation = a["elevation_m"]
+            return scale.factor(elevation, a.get(LONGITUDE), a.get(LATITUDE), source)[:, None]
+
+        rain = values["precipitation_sum"]
+        for source in (s for s in scale.sources if s in order):
+            rain = np.where(rank == order.index(source), rain * factor(source), rain)
+        values["precipitation_sum"] = rain
         if "precipitation_sum" in daily_normals:
-            daily_normals["precipitation_sum"] = daily_normals["precipitation_sum"] * factor
+            daily_normals["precipitation_sum"] *= factor(normals_source(normals, weather_config))
     sun = cell_sun_ratio(cells, arrays.dates, model_config.microclimate.diffuse_fraction)
     values = model_config.microclimate.apply(values, sun)
     values[SUN_SERIES] = 100.0 * sun

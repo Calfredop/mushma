@@ -113,3 +113,15 @@ def test_normals_are_kept_per_point_and_variable() -> None:
 def test_an_even_window_is_rejected() -> None:
     with pytest.raises(ValueError, match="odd"):
         daily_normals(_year("A", "precipitation_sum", 2021, 1.0), years=[2021], window_days=30)
+
+
+def test_a_normal_names_the_source_most_of_its_days_came_from() -> None:
+    rows = _rows(
+        _year("A", "precipitation_sum", 2021, 1.0).assign(source="era5_seamless"),
+        _year("A", "precipitation_sum", 2022, 1.0).assign(source="era5_land_cds"),
+        _year("A", "precipitation_sum", 2023, 1.0).assign(source="era5_land_cds"),
+    )
+
+    normals = daily_normals(rows, years=[2021, 2022, 2023], window_days=1)
+
+    assert set(normals["source"]) == {"era5_land_cds"}

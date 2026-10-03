@@ -93,6 +93,62 @@ def test_a_scale_takes_a_field_or_a_constant_fit_not_both() -> None:
         PrecipitationScale(**common, intercept=1.0)
 
 
+def _ratio_lattice(path: Path, ratio: float) -> Path:
+    import pandas as pd
+
+    pd.DataFrame(
+        {"lat": [43.0, 43.0, 43.2, 43.2], "lon": [11.0, 11.2, 11.0, 11.2], "ratio": ratio}
+    ).to_csv(path, index=False)
+    return path
+
+
+def test_a_source_ratio_multiplies_only_that_sources_factor(tmp_path: Path) -> None:
+    from api.model.config import PrecipitationScale
+
+    scale = PrecipitationScale(
+        enabled=True,
+        sources=["cds", "seamless"],
+        intercept=1.2,
+        per_km=0.0,
+        max_elevation_m=1000,
+        source_ratios={"cds": str(_ratio_lattice(tmp_path / "r.csv", 0.9))},
+        confidence="c",
+        source=["s"],
+        notes="",
+    )
+    z, lon, lat = np.array([500.0]), np.array([11.1]), np.array([43.1])
+
+    assert scale.factor(z, lon, lat, source="cds").tolist() == pytest.approx([1.2 * 0.9])
+    assert scale.factor(z, lon, lat, source="seamless").tolist() == pytest.approx([1.2])
+    assert scale.factor(z, lon, lat).tolist() == pytest.approx([1.2])
+
+
+def test_a_source_ratio_must_name_a_scaled_source() -> None:
+    from api.model.config import PrecipitationScale
+
+    with pytest.raises(ValueError, match="other.*not a scaled source"):
+        PrecipitationScale(
+            enabled=True,
+            sources=["cds"],
+            field="f.csv",
+            source_ratios={"other": "r.csv"},
+            confidence="c",
+            source=["s"],
+            notes="",
+        )
+
+
+def test_era5_seamless_rain_is_brought_to_the_cds_level_the_field_was_fitted_on() -> None:
+    scale = load_model_config().precipitation_scale
+    # Inland Sicily, where era5_seamless rain runs about 10 % below CDS ERA5-Land.
+    z, lon, lat = np.array([500.0]), np.array([14.2]), np.array([37.6])
+
+    cds = scale.factor(z, lon, lat, source="era5_land_cds")
+    seamless = scale.factor(z, lon, lat, source="era5_seamless")
+
+    assert 1.03 < (seamless / cds)[0] < 1.35
+
+
 def test_the_precipitation_scale_cites_a_known_reference() -> None:
     scale = load_model_config().precipitation_scale
 

@@ -2,7 +2,8 @@
 
 A regular lon/lat lattice of ``intercept``, ``per_km`` and ``max_elevation_m``. A cell's factor
 is ``intercept + per_km x min(elevation, max_elevation_m) / 1000`` with all three read bilinearly at
-the cell's position; positions off the lattice take its nearest edge.
+the cell's position; positions off the lattice take its nearest edge. The same loader reads any
+other lattice of named values (the ``era5_seamless`` / CDS rain ratio, ``ratio``).
 """
 
 from dataclasses import dataclass
@@ -12,8 +13,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-FIELDS = ("intercept", "per_km", "max_elevation_m")
-
 
 @dataclass(frozen=True)
 class RainField:
@@ -21,7 +20,9 @@ class RainField:
     lons: np.ndarray  # ascending
     grids: dict[str, np.ndarray]  # field -> (lats, lons)
 
-    def _at(self, name: str, lon: np.ndarray, lat: np.ndarray) -> np.ndarray:
+    def value(self, name: str, lon: np.ndarray, lat: np.ndarray) -> np.ndarray:
+        """The lattice's ``name`` read bilinearly at each position."""
+        lon, lat = np.asarray(lon, dtype=float), np.asarray(lat, dtype=float)
         grid = self.grids[name]
         fi = np.interp(lat, self.lats, np.arange(len(self.lats)))
         fj = np.interp(lon, self.lons, np.arange(len(self.lons)))
@@ -39,10 +40,10 @@ class RainField:
         """The multiplier at each position and height (unknown heights count as sea level)."""
         lon, lat = np.asarray(lon, dtype=float), np.asarray(lat, dtype=float)
         elevation = np.clip(np.nan_to_num(np.asarray(elevation_m, dtype=float)), 0, None)
-        top = self._at("max_elevation_m", lon, lat)
+        top = self.value("max_elevation_m", lon, lat)
         return (
-            self._at("intercept", lon, lat)
-            + self._at("per_km", lon, lat) * np.minimum(elevation, top) / 1000
+            self.value("intercept", lon, lat)
+            + self.value("per_km", lon, lat) * np.minimum(elevation, top) / 1000
         )
 
 
@@ -53,6 +54,7 @@ def load_rain_field(path: Path) -> RainField:
     if len(frame) != len(lats) * len(lons) or len(lats) < 2 or len(lons) < 2:
         raise ValueError(f"{path}: not a full lon/lat lattice")
     grids = {
-        name: frame[name].to_numpy(dtype=float).reshape(len(lats), len(lons)) for name in FIELDS
+        name: frame[name].to_numpy(dtype=float).reshape(len(lats), len(lons))
+        for name in frame.columns.drop(["lat", "lon"])
     }
     return RainField(lats, lons, grids)

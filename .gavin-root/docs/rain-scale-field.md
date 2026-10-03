@@ -32,25 +32,27 @@ cross-validation scores, the fitted value at every gauge, and the border tables.
 **Gauges.** Every station of the 10 networks with a parser in `api.weather.checks.GAUGE_NETWORKS`,
 not only those in woodland. Each gauge's April–November total is compared with the reanalysis rain
 over the same days. These are the months the scores use, and they avoid winter snow undercatch. The
-rain is Open-Meteo's `era5_seamless`, downscaled to the gauge exactly as to a cell: bilinear on the
-0.2° lattice of land nodes, with each network's own day cut (09–09, UTC or calendar days).
-Open-Meteo serves no `era5_land` rain.
+rain is CDS ERA5-Land, the history every region but Tuscany scores, read from the weather stores
+and downscaled to the gauge exactly as to a cell: bilinear on the 0.2° lattice of land nodes, with
+each network's own day cut (09–09, UTC or calendar days). A gauge's corner node that no store holds
+is fetched from CDS first; every one missing on 2026-10-03 but two (Lombardia) was at sea. Until
+2026-10-03 the reanalysis here was Open-Meteo's `era5_seamless` (see "CDS rain and the field").
 
 A gauge counts in a season if it reports at least 80 % of the days (70 % for Sicily). Seasons are
 pooled per gauge, and gauges whose ratio falls outside 0.33–3 are dropped.
 
-| network | years (Apr–Nov) | gauges | pooled gauge / reanalysis |
-|---|---|---:|---:|
-| ARPA Piemonte | 2023–2025 | 272 | 0.77 |
-| Provincia di Bolzano (South Tyrol) | 2022–2024 | 43 | 0.79 |
-| ARSIAL SIARL (Lazio) | 2016, 2018, 2020 | 95 | 0.91 |
-| ARPAE (Emilia-Romagna) | 2023–2025 | 305 | 0.93 |
-| ARPA Lombardia | 2023–2025 | 255 | 0.94 |
-| Servizio Idrografico (Umbria) | 2023–2025 | 85 | 1.02 |
-| ARPAL (Liguria) | 2023–2025 | 170 | 1.02 |
-| SIR Toscana | 2023–2025 | 361 | 1.05 |
-| SIAS (Sicily) | Jun–Nov 2019 | 95 | 1.15 |
-| ARPAS (Sardinia) | 2020–2022 | 299 | 1.17 |
+| network | years (Apr–Nov) | gauges | pooled gauge / CDS | (gauge / `era5_seamless`) |
+|---|---|---:|---:|---:|
+| ARPA Piemonte | 2023–2025 | 272 | 0.77 | 0.77 |
+| Provincia di Bolzano (South Tyrol) | 2022–2024 | 43 | 0.77 | 0.79 |
+| ARSIAL SIARL (Lazio) | 2016, 2018, 2020 | 95 | 0.86 | 0.91 |
+| ARPA Lombardia | 2023–2025 | 255 | 0.91 | 0.94 |
+| ARPAE (Emilia-Romagna) | 2023–2025 | 305 | 0.94 | 0.93 |
+| ARPAL (Liguria) | 2023–2025 | 171 | 1.00 | 1.02 |
+| Servizio Idrografico (Umbria) | 2023–2025 | 85 | 1.02 | 1.02 |
+| SIAS (Sicily) | Jun–Nov 2019 | 93 | 1.03 | 1.15 |
+| SIR Toscana | 2023–2025 | 357 | 1.04 | 1.05 |
+| ARPAS (Sardinia) | 2020–2022 | 299 | 1.13 | 1.17 |
 
 **Pseudo-gauges.** Six regions have no daily gauge series readable here, only yearbook totals or a
 farm network: Basilicata, Calabria, Campania, Puglia, Valle d'Aosta and Veneto. Each joins as
@@ -65,7 +67,7 @@ Marche, Molise) or missing (Friuli) add nothing: they take the field's value fro
 Σ w_i (ratio_i − a − b z_i)²  +  ridge ((a − a0)² + (b − b0)²),    w_i = exp(−d_i² / 2σ²)
 ```
 
-- `(a0, b0)` is the national fit, 0.95 + 0.05 per km.
+- `(a0, b0)` is the national fit, 0.93 + 0.05 per km.
 - The ridge is worth 2 gauges at distance zero, so a node far from any gauge stays near the
   national fit.
 - The top height is the kernel-weighted 95th percentile of the gauge heights around the node, so
@@ -80,35 +82,41 @@ network. The data choose between them.
 
 | σ | 15 km | **25 km** | 40 km | 60 km | 100 km | 200 km | national |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| log error | 0.190 | **0.186** | 0.191 | 0.196 | 0.203 | 0.217 | 0.252 |
+| log error | 0.188 | **0.184** | 0.187 | 0.191 | 0.198 | 0.213 | 0.244 |
+
+Against `era5_seamless` (the 2026-10-01 field) the same widths scored 0.190, 0.186, 0.191, 0.196,
+0.203, 0.217 and 0.252: CDS tells the gauges a little better at every width.
 
 ## The field
 
-The intercept runs from 0.67 to 1.38 and `per_km` from −0.09 to 0.41. Far from gauges both sit at
+The intercept runs from 0.68 to 1.29 and `per_km` from −0.08 to 0.40. Far from gauges both sit at
 the national value. Some examples, at 0 / 500 / 1,000 / 1,500 m:
 
 | place | factor |
 |---|---|
-| Cortona (Tuscany, by the Umbrian border) | 0.88 / 0.95 / 1.01 / 1.01 |
+| Cortona (Tuscany, by the Umbrian border) | 0.88 / 0.94 / 1.00 / 1.00 |
 | Lisciano Niccone (Umbria, 12 km east) | 0.89 / 0.96 / 1.01 / 1.01 |
-| Abetone (Apennine ridge) | 0.92 / 1.05 / 1.17 / 1.29 |
-| Monte Amiata | 0.94 / 1.04 / 1.11 / 1.11 |
-| Aosta | 0.84 / 0.80 / 0.77 / 0.73 |
+| Abetone (Apennine ridge) | 0.90 / 1.04 / 1.18 / 1.32 |
+| Monte Amiata | 0.91 / 0.98 / 1.04 / 1.04 |
+| Aosta | 0.82 / 0.79 / 0.76 / 0.73 |
 
 **Each network predicted from the others alone** (σ = 25 km, the network's own gauges left out;
 log bias > 0 means the field would be too wet there):
 
-- Within about ±0.1: Tuscany −0.00, Campania −0.01, Lombardia −0.03, Umbria −0.05, Basilicata
-  −0.06, Liguria −0.10.
-- Lazio +0.11, Puglia −0.12, Veneto +0.13 and South Tyrol +0.14 differ more.
-- Furthest off: Sicily −0.15, Emilia-Romagna +0.17, Piemonte +0.22, Sardinia −0.25, Valle d'Aosta
-  +0.31 and Calabria −0.41.
+- Within about ±0.1: Tuscany −0.00, Lombardia −0.01, Campania −0.02, Sicily −0.06, Liguria
+  −0.07, Basilicata −0.07, Umbria −0.08.
+- Veneto +0.12, South Tyrol +0.12, Puglia −0.14 and Lazio +0.15 differ more.
+- Furthest off: Emilia-Romagna +0.17, Piemonte +0.20, Sardinia −0.22, Valle d'Aosta +0.29 and
+  Calabria −0.45.
 
 So a region without gauges takes its neighbours' level within about ±0.15 in most places, but not
 everywhere. Islands, the Alps and Calabria differ from their neighbours, and only their own gauges
 pin them.
 
 ## Before and after
+
+This section is the switch to the field on 2026-10-01, when it was fitted on `era5_seamless`; the
+CDS fit moves CDS rain by −11 % to +4 % along the borders (next section).
 
 **Along the borders.** For every pair of regions sharing a land border, `borders` puts points every
 5 km along it. At each point it reads the old factor on each side and the field's, at the point's
@@ -183,33 +191,107 @@ The Tuscan drop is the largest, and it is real.
 Tuscany's rain-driver tuning (`mushma_rain_tuning_2026`) was done on the wetter rain, so **the
 Tuscan backtest must be re-run** before the field is served.
 
+## CDS rain and the field
+
+Card: `fix-rain-field-cds-vs-seamless.md` (2026-10-02 to 03).
+
+The 2026-10-01 field was fitted on Open-Meteo `era5_seamless` rain, but every region except
+Tuscany scores CDS ERA5-Land (`era5_land_cds`), and the two differ at the same node. Since
+2026-10-03 the gauges are compared with CDS (Method), so CDS rows take the field alone.
+`era5_seamless` rows also take CDS / `era5_seamless` at the cell: `model.yaml →
+precipitation_scale.source_ratios` points `era5_seamless` at `config/rain_cds_per_seamless.csv`, a
+lattice on the 0.2° weather points. Those rows are Tuscany's history, and every region's last few
+reanalysis days, because CDS runs about 5 days behind.
+
+```sh
+cd api
+uv run python -m api.weather.rain_field cds    # every local CDS store, plus config cds_fetch
+uv run python -m api.weather.rain_field fit    # also writes config/rain_cds_per_seamless.csv
+```
+
+**Measured.** `cds` sums April–November rain 2019–2025 of both sources at every land node of all
+20 regions (892 nodes), over the days both have. The CDS side is the region's local store. Six
+regions' stores live only on the server (Tuscany, Umbria, Liguria, Emilia-Romagna, Piemonte,
+Marche), so their nodes were fetched from the CDS time-series product into
+`$DATA_DIR/weather/rain_field/cds_store/`. The `era5_seamless` side comes from the Open-Meteo
+archive.
+
+| region | nodes | seamless / CDS |
+|---|---:|---:|
+| Sicily | 66 | 0.905 |
+| Puglia | 63 | 0.949 |
+| Basilicata | 51 | 0.955 |
+| Trentino-Alto Adige | 81 | 0.960 |
+| Lombardia | 101 | 0.961 |
+| Calabria | 48 | 0.965 |
+| Lazio | 81 | 0.966 |
+| Marche | 34 | 0.971 |
+| Campania | 60 | 0.973 |
+| Tuscany | 91 | 0.975 |
+| Abruzzo | 55 | 0.976 |
+| Sardinia | 61 | 0.977 |
+| Valle d'Aosta | 27 | 0.977 |
+| Molise | 32 | 0.979 |
+| Liguria | 32 | 0.982 |
+| Umbria | 30 | 0.983 |
+| Emilia-Romagna | 93 | 0.989 |
+| Veneto | 69 | 0.990 |
+| Piemonte | 87 | 0.994 |
+| Friuli-Venezia Giulia | 50 | 1.027 |
+
+What the measurement shows:
+
+- **`era5_seamless` rain is coarse ERA5.** 60 % of nodes share their season total exactly with a
+  neighbour, in blocks on the 0.2° lattice; for CDS it is 8 %. So a node's ratio is mostly the
+  ERA5 block against ERA5-Land's own 0.1° rain. In Valle d'Aosta one node reads CDS / seamless
+  0.63 and the next one east 1.28. That is why the fit runs on CDS. Applied to CDS rows, this ratio would
+  have put the blocks into every region's history. Applied to `era5_seamless` rows, it takes them
+  out.
+- **A node's ratio is its own.** Sicily's 2019–2021 and 2023–2025 node ratios agree at r 0.90
+  (rms 0.06 in log, against a spread between nodes of 0.12). The lattice keeps each node's own
+  value:
+  - smoothed by an 8 km Gaussian, which moves a node by rms 0.014 in log;
+  - pulled to 1 by a ridge worth 0.01 nodes, so a point 30 km or more from any node gets no
+    correction (1,323 of the 3,599 lattice points are corrected, 0.72–1.42).
+- **There is a year effect.** Most regions read about 0.95 in 2019–2021 and about 0.98–1.00 in
+  2022–2025: Sicily 0.87–0.94, Tuscany 0.95–1.00. The pooled 2019–2025 ratio averages it.
+- **The pseudo-gauges need no conversion.** Their six fits (`rain_field.yaml → pseudo`) were made
+  against CDS already.
+
+**What changes.**
+
+- Gauge / CDS is within 5 % of gauge / seamless for most networks. Sicily moves most: 1.03 against
+  1.15. Fitted on `era5_seamless`, Sicily's CDS rain ran about 12 % wet, the gap the card was
+  opened for.
+- The field reads 0.92–1.09 on Etna (0 to 1,500 m), against 1.10–1.24 before.
+- Along the borders, the factor CDS rain gets moves by −11 % to +4 % (`borders --before HEAD`,
+  `before_cds` / `after_cds`). Most borders stay within ±5 %. The largest move is the high-Alpine
+  Lombardia – Trentino-Alto Adige border, at 2,600 m: −11 %. Then come Tuscany – Lazio, −5 %, and
+  Umbria – Lazio and Lazio – Abruzzo, −4 %.
+
+**Normals follow their source.** The rain normals now name the source most of a point's days came
+from (`daily_normals`, column `source`), and a cell's rain normal is scaled as that source's rain,
+so percent-of-normal does not depend on the scale. Tuscany's normals are `era5_seamless`; the other
+regions' are CDS. Normals written before the column existed count as the Open-Meteo archive. So
+each CDS region's normals have to be rebuilt (`api.history.build normals`, which `history update`
+runs) before scores that read them are trusted. The time views' area rain (`api.history.build`)
+scales each source with its own factor in the same way.
+
+**Sicily, re-scored** (laptop, 2026-10-03, the largest gap). The history was scored from 18 March
+2016 to 2 October 2026 on the CDS fit, then the train backtest and the sanity check were run
+(`cds-field`). They are compared with the same run on the field fitted on `era5_seamless`
+(`field-seamless`, 2026-10-02).
+
+- Sanity check: 12 of 14 contrasts hold, against 13. The one that flips is Etna, Nebrodi and
+  Peloritani against Sicani and Ficuzza, 1–25 October 2020: 0.565 against 0.559 before, now 0.500
+  against 0.529. It was a near-tie both times. The old 0.88 + 0.10 regional fit failed the same two
+  contrasts that fail now.
+- The windows' means fall 3–36 % (median 7 %), as the drier CDS rain should give.
+- Train backtest: only 3 porcini and 4 chanterelle presences, so it says nothing either way.
+  Porcini `auc_local` is 0.46 before and after; chanterelles 0.60 and 0.56.
+
 ## Known limits
 
-- **The field is fitted on `era5_seamless` but scores CDS ERA5-Land.** Most regions' history is
-  CDS (`era5_land_cds`). At their nodes, `era5_seamless` April–November rain is 0.89 (Sicily 2019)
-  to 1.03 (Friuli 2024) of CDS:
-
-  | region | seamless / CDS |
-  |---|---:|
-  | Sicily 2019 | 0.893 |
-  | Lazio 2020 | 0.952 |
-  | Sardinia 2021 | 0.954 |
-  | South Tyrol 2023 | 0.964 |
-  | Lombardia 2024 | 0.979 |
-  | Campania 2024 | 0.983 |
-  | Calabria 2024 | 0.987 |
-  | Abruzzo 2024 | 0.987 |
-  | Molise 2024 | 0.986 |
-  | Puglia 2024 | 0.968 |
-  | Basilicata 2024 | 0.993 |
-  | Veneto 2024 | 0.995 |
-  | Valle d'Aosta 2024 | 1.004 |
-  | Friuli-Venezia Giulia 2024 | 1.031 |
-
-  Those regions' scaled rain therefore runs up to 11 % wet (Sicily), 1–5 % in most, and about 3 %
-  dry in Friuli. The fix is to fit against
-  the source each region scores, or to carry a smooth seamless/CDS ratio. Follow-up card:
-  `fix-rain-field-cds-vs-seamless.md`.
 - **Sicily rests on one half-season** (June–November 2019): `api.weather.sias` reads June 2019 to
   June 2020 only.
 - **Pseudo-gauges stand in for 278 real gauges**, carrying their region's old fit rather than

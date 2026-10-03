@@ -117,11 +117,11 @@ def build_normals(
     sources = weather_config.reanalysis_order
     first, last = config.baseline.start_year, config.baseline.end_year
 
-    rows = pd.DataFrame(columns=["point_id", "date", "variable", "value"])
+    rows = pd.DataFrame(columns=["point_id", "date", "variable", "value", "source"])
     if weather.daily_files():
         rows = weather.best_daily(
             con, date(first, 1, 1), date(last, 12, 31), sources, variables
-        ).df()[["point_id", "date", "variable", "value"]]
+        ).df()[["point_id", "date", "variable", "value", "source"]]
     years = complete_years(rows, point_ids, variables)
     normals = daily_normals(rows, years, config.normals.window_days)
     meta = {
@@ -153,19 +153,26 @@ class _AreaWeather:
         rain_var = weather_config.variables[RAIN]
         temperature_var = weather_config.variables[TEMPERATURE]
         scale = model_config.precipitation_scale
-        factor = pd.Series(
-            scale.factor(
-                cells["elevation_m"].to_numpy(dtype=float),
-                cells["lon"].to_numpy(dtype=float),
-                cells["lat"].to_numpy(dtype=float),
-            ),
-            index=cells["cell_id"],
-        )
+
+        def factor(source: str) -> pd.Series:
+            return pd.Series(
+                scale.factor(
+                    cells["elevation_m"].to_numpy(dtype=float),
+                    cells["lon"].to_numpy(dtype=float),
+                    cells["lat"].to_numpy(dtype=float),
+                    source,
+                ),
+                index=cells["cell_id"],
+            )
+
         self.rain = area_point_weights(members, weights, rain_var.downscale)
-        self.rain_scaled = area_point_weights(
-            members, weights, rain_var.downscale, cell_factor=factor
-        )
-        self.scaled_sources = set(scale.sources) if scale.enabled else set()
+        # Each scaled source's own weights: CDS rain also carries its ratio to era5_seamless.
+        self.rain_scaled = {
+            source: area_point_weights(
+                members, weights, rain_var.downscale, cell_factor=factor(source)
+            )
+            for source in (scale.sources if scale.enabled else [])
+        }
         self.temperature = area_point_weights(members, weights, temperature_var.downscale)
         history = weather_config.history.model
         heights = point_cells[point_cells["source"] == history].set_index("point_id")["elevation_m"]
@@ -184,21 +191,24 @@ class _AreaWeather:
         self.history_source = history
 
     def rain_values(self, rows: pd.DataFrame) -> pd.DataFrame:
-        values = rows.assign(scaled=rows["source"].isin(self.scaled_sources))
-        return aggregate_to_areas(values, self.rain, scaled_weights=self.rain_scaled)
+        return aggregate_to_areas(rows, self.rain, scaled_weights=self.rain_scaled)
 
     def temperature_values(self, rows: pd.DataFrame) -> pd.DataFrame:
         return aggregate_to_areas(rows, self.temperature, offset=self.offset)
 
     def normals(self, point_normals: pd.DataFrame) -> pd.DataFrame:
-        """Per area and day of year: normals come from the reanalysis, so rain is scaled."""
+        """Per area and day of year: normals come from the reanalysis, so rain is scaled as the
+        source each point's normal was built from (normals written before they named it: the
+        Open-Meteo archive)."""
         by_variable = {}
         for variable in (RAIN, TEMPERATURE):
             rows = point_normals[point_normals["variable"] == variable].rename(
                 columns={"doy": "date", "normal": "value"}
             )
             if variable == RAIN:
-                out = self.rain_values(rows.assign(source=self.history_source))
+                if "source" not in rows:
+                    rows = rows.assign(source=self.history_source)
+                out = self.rain_values(rows.fillna({"source": self.history_source}))
             else:
                 out = self.temperature_values(rows)
             by_variable[variable] = out.rename(columns={"date": "doy", "value": variable})

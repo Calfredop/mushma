@@ -17,6 +17,23 @@ networks:
   sicilia: [2019]  # api.weather.sias reads June 2019 to June 2020 only: June-November 2019
   sardegna: [2020, 2021, 2022]  # ARPAS publishes 2016-2022
 
+# The gauges are compared with CDS ERA5-Land rain read from the weather stores (a gauge corner node
+# no store holds is fetched from CDS). Tuscany's history and every region's last few days are
+# era5_seamless, which is coarse ERA5 (neighbouring nodes share 0.25° blocks; Sicily's runs
+# 0.87-0.94 of CDS each year, a node keeping its level from year to year). `cds` compares the two
+# over these seasons at every node of each CDS store; `fit` writes CDS / era5_seamless onto the
+# weather lattice for model.yaml.
+cds_years: [2019, 2020, 2021, 2022, 2023, 2024, 2025]
+# Regions whose CDS store lives only on the server: `cds` fetches their nodes' CDS time series here
+# (rain only, about 35 s a node) into $DATA_DIR/weather/rain_field/cds_store/.
+cds_fetch: [tuscany, umbria, liguria, emilia_romagna, piemonte, marche]
+# The ratio lattice (config/rain_cds_per_seamless.csv) is the nodes' own pooled ratios under a
+# Gaussian this wide, pulled to 1 by a ridge worth this many nodes at distance zero: a node keeps
+# most of its own value (its four neighbours, 20 km off, weigh 0.04 each), and a lattice node
+# 30 km or more from every measured node gets no correction.
+cds_bandwidth_km: 8
+cds_ridge: 0.01
+
 # Networks whose gauges have no parser here join as pseudo-gauges: `count` points at the region's
 # own woodland cells between low_m and high_m, each carrying the published fit's ratio at its
 # height (intercept + per_km x km). `count` is the number of gauges behind that fit. All were fitted

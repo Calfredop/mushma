@@ -122,7 +122,7 @@ def _values(*rows: tuple) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["point_id", "date", "value"])
 
 
-D1, D2 = date(2025, 10, 1), date(2025, 10, 2)
+D1, D2, D3 = date(2025, 10, 1), date(2025, 10, 2), date(2025, 10, 3)
 
 
 def test_an_area_value_is_the_weighted_mean_of_its_points() -> None:
@@ -149,19 +149,26 @@ def test_a_missing_point_drops_out_and_the_rest_renormalise() -> None:
     assert np.isnan(out[("053002", D1)])  # R did not report on D1
 
 
-def test_scaled_rows_use_the_scaled_weights() -> None:
+def test_each_scaled_source_uses_its_own_weights() -> None:
     members = area_members(_cells(), REGION)
     plain = area_point_weights(members, _weights(), "bilinear")
-    doubled = area_point_weights(
-        members, _weights(), "bilinear", cell_factor=pd.Series({"c1": 2.0, "c2": 2.0, "c3": 2.0})
-    )
-    values = _values(("R", D1, 1.0), ("R", D2, 1.0)).assign(scaled=[True, False])
 
-    out = aggregate_to_areas(values, plain, scaled_weights=doubled)
+    def times(k: float) -> pd.DataFrame:
+        factor = pd.Series({"c1": k, "c2": k, "c3": k})
+        return area_point_weights(members, _weights(), "bilinear", cell_factor=factor)
+
+    values = _values(("R", D1, 1.0), ("R", D2, 1.0), ("R", D3, 1.0)).assign(
+        source=["cds", "seamless", "forecast"]
+    )
+
+    out = aggregate_to_areas(
+        values, plain, scaled_weights={"cds": times(1.8), "seamless": times(2)}
+    )
     beta = out[out["area_code"] == "053002"].set_index("date")["value"]
 
-    assert beta[D1] == pytest.approx(2.0)  # reanalysis rain, scaled by height
-    assert beta[D2] == pytest.approx(1.0)  # forecast rain, left as it is
+    assert beta[D1] == pytest.approx(1.8)  # CDS rain: the field and the CDS ratio
+    assert beta[D2] == pytest.approx(2.0)  # era5_seamless rain: the field alone
+    assert beta[D3] == pytest.approx(1.0)  # forecast rain, left as it is
 
 
 def test_an_offset_is_added_per_area() -> None:

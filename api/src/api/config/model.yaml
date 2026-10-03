@@ -21,23 +21,30 @@ groups:
 # region's open gauges at once (api.weather.rain_field, config/rain_field.yaml), so there is no step
 # where one region's gauge network meets another's. Forecast rain (ecmwf_ifs) is left as it is: the
 # gauge check covers the reanalysis only, and IFS already ran wetter than ERA5 at the seam.
+# The gauges are compared with CDS ERA5-Land rain, the history of every region but Tuscany.
+# Open-Meteo's era5_seamless rain (Tuscany's history, and every region's last few reanalysis days
+# while CDS runs about 5 days behind) is coarse ERA5 and differs node by node, so its rows are also
+# multiplied by CDS / era5_seamless at the cell, read from `source_ratios` (written by the same
+# `fit`, from `rain_field cds`); CDS rows take the field alone.
 precipitation_scale:
   enabled: true
   sources: [era5_land_cds, era5_seamless]
   field: rain_scale_field.csv
+  source_ratios: {era5_seamless: rain_cds_per_seamless.csv}
   confidence: plausible
   source: [mushma_rain_field_2026]
   notes: >-
     One field for all of Italy, written by `uv run python -m api.weather.rain_field fit`: at every
-    node of a 0.25° lattice, a local least-squares fit of gauge/reanalysis season ratios (April to
-    November) on height, the gauges weighted by a Gaussian of 25 km in distance and pulled toward
-    the national 0.95 + 0.05 per km by a ridge worth 2 gauges; the height clamp is the 95th
-    percentile of the nearby gauges' heights. 1,980 gauges in 10 open networks (2016-2025, mostly 2023-2025, all
-    stations, the reanalysis downscaled to each gauge as to a cell) and 278 pseudo-gauges carrying
-    six yearbook or farm-network fits. The 25 km width won spatial-block cross-validation (50 km
-    blocks): log error 0.186, against 0.252 for one national fit. It replaces 19 region fits that
-    disagreed at their borders (x1.37 on the Tuscan side of the Umbrian border, x1.00 across it;
-    the field gives 0.92-1.03 along the whole border). See .gavin-root/docs/rain-scale-field.md.
+    node of a 0.25° lattice, a local least-squares fit of gauge/CDS ERA5-Land season ratios (April
+    to November) on height, the gauges weighted by a Gaussian of 25 km in distance and pulled
+    toward the national 0.93 + 0.05 per km by a ridge worth 2 gauges; the height clamp is the 95th
+    percentile of the nearby gauges' heights. 1,975 gauges in 10 open networks (2016-2025, mostly
+    2023-2025, all stations, CDS downscaled to each gauge as to a cell) and 278 pseudo-gauges
+    carrying six yearbook or farm-network fits. The 25 km width won spatial-block
+    cross-validation (50 km blocks): log error 0.184, against 0.244 for one national fit. It
+    replaced 19 region fits that disagreed at their borders (x1.37 on the Tuscan side of the
+    Umbrian border, x1.00 across it). era5_seamless rows also take CDS / era5_seamless at their
+    node (892 nodes over 20 regions, 2019-2025). See .gavin-root/docs/rain-scale-field.md.
 
 # Terrain microclimate. Before scoring, each cell's weather is moved to its own slope: a sunny slope
 # is warmer and dries faster than flat ground, a shady one cooler and slower to dry. The measure is

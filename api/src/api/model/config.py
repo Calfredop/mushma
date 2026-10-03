@@ -38,7 +38,9 @@ class PrecipitationScale(_Strict):
 
     With ``field`` (a CSV under ``config/``, ``api.model.rain_field``) the factor's intercept,
     slope and height clamp are read at the cell's position; without it they are the constant
-    ``intercept + per_km x elevation_km`` up to ``max_elevation_m``.
+    ``intercept + per_km x elevation_km`` up to ``max_elevation_m``. The fit is against one
+    source's rain; ``source_ratios`` names, per other source, a lattice of that source's rain level
+    relative to it (column ``ratio``), which multiplies the factor for that source's rows.
     """
 
     enabled: bool
@@ -47,6 +49,7 @@ class PrecipitationScale(_Strict):
     intercept: Annotated[float, Field(gt=0)] | None = None
     per_km: float | None = None
     max_elevation_m: Annotated[float, Field(gt=0)] | None = None
+    source_ratios: dict[str, str] = {}
     confidence: str
     source: Annotated[list[str], Field(min_length=1)]
     notes: str
@@ -60,6 +63,11 @@ class PrecipitationScale(_Strict):
             )
         if self.field is not None and any(value is not None for value in constant):
             raise ValueError("precipitation_scale takes a field or a constant fit, not both")
+        for name in self.source_ratios:
+            if name not in self.sources:
+                raise ValueError(
+                    f"precipitation_scale source_ratios: {name} is not a scaled source"
+                )
         return self
 
     def factor(
@@ -67,17 +75,24 @@ class PrecipitationScale(_Strict):
         elevation_m: np.ndarray,
         lon: np.ndarray | None = None,
         lat: np.ndarray | None = None,
+        source: str | None = None,
     ) -> np.ndarray:
         """The multiplier for cells at ``elevation_m`` (unknown heights count as sea level) and,
-        for a field, at ``lon``/``lat``."""
+        for a field or a ``source`` with a ratio, at ``lon``/``lat``."""
         elevation = np.clip(np.nan_to_num(np.asarray(elevation_m, dtype=float)), 0, None)
         if not self.enabled:
             return np.ones_like(elevation)
+        ratio = self.source_ratios.get(source) if source is not None else None
+        if (self.field is not None or ratio is not None) and (lon is None or lat is None):
+            raise ValueError("a precipitation_scale field needs each cell's lon and lat")
         if self.field is not None:
-            if lon is None or lat is None:
-                raise ValueError("a precipitation_scale field needs each cell's lon and lat")
-            return load_rain_field(CONFIG_DIR / self.field).factor(elevation, lon, lat)
-        return self.intercept + self.per_km * np.minimum(elevation, self.max_elevation_m) / 1000
+            factor = load_rain_field(CONFIG_DIR / self.field).factor(elevation, lon, lat)
+        else:
+            height = np.minimum(elevation, self.max_elevation_m)
+            factor = self.intercept + self.per_km * height / 1000
+        if ratio is not None:
+            factor = factor * load_rain_field(CONFIG_DIR / ratio).value("ratio", lon, lat)
+        return factor
 
 
 class Microclimate(_Strict):

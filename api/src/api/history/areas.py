@@ -138,15 +138,16 @@ def _matrix(weights: pd.DataFrame, areas: list[str], points: list[str]) -> np.nd
 def aggregate_to_areas(
     values: pd.DataFrame,
     weights: pd.DataFrame,
-    scaled_weights: pd.DataFrame | None = None,
+    scaled_weights: dict[str, pd.DataFrame] | None = None,
     offset: pd.Series | None = None,
 ) -> pd.DataFrame:
-    """``area_code, date, value`` from point values ``point_id, date, value`` (and ``scaled``).
+    """``area_code, date, value`` from point values ``point_id, date, value`` (and ``source``).
 
-    Rows flagged ``scaled`` use ``scaled_weights`` (e.g. reanalysis rain with the model's height
-    scaling); the rest use ``weights``. Points without a value that day drop out and the rest are
-    renormalised by their share of the plain weights; an area with none of its points is NaN.
-    ``offset`` (per area) is added last."""
+    Rows whose ``source`` has weights in ``scaled_weights`` use them (e.g. reanalysis rain with the
+    model's scaling for that source); the rest use ``weights``. Points without a value that day
+    drop out and the rest are renormalised by their share of the plain weights; an area with none
+    of its points is NaN. ``offset`` (per area) is added last."""
+    scaled_weights = scaled_weights or {}
     areas = sorted(weights["area_code"].unique())
     points = sorted(set(weights["point_id"]) | set(values["point_id"]))
     dates = sorted(values["date"].unique())
@@ -154,20 +155,23 @@ def aggregate_to_areas(
     date_pos = {d: i for i, d in enumerate(dates)}
 
     grid = np.full((len(points), len(dates)), np.nan)
-    scaled = np.zeros((len(points), len(dates)), dtype=bool)
+    source = np.full((len(points), len(dates)), None, dtype=object)
     p = values["point_id"].map(point_pos).to_numpy()
     d = values["date"].map(date_pos).to_numpy()
     grid[p, d] = values["value"].to_numpy(dtype=float)
-    if "scaled" in values:
-        scaled[p, d] = values["scaled"].to_numpy(dtype=bool)
+    if "source" in values:
+        source[p, d] = values["source"].to_numpy(dtype=object)
 
     plain = _matrix(weights, areas, points)
-    boosted = _matrix(scaled_weights, areas, points) if scaled_weights is not None else plain
     present = ~np.isnan(grid)
     filled = np.where(present, grid, 0.0)
-    total = plain @ np.where(present & ~scaled, filled, 0.0) + boosted @ np.where(
-        present & scaled, filled, 0.0
-    )
+    unscaled = present.copy()
+    total = np.zeros((len(areas), len(dates)))
+    for name, scaled in scaled_weights.items():
+        rows = present & (source == name)
+        total += _matrix(scaled, areas, points) @ np.where(rows, filled, 0.0)
+        unscaled &= ~rows
+    total += plain @ np.where(unscaled, filled, 0.0)
     coverage = plain @ present.astype(float)
     with np.errstate(invalid="ignore", divide="ignore"):
         result = np.where(coverage > 0, total / coverage, np.nan)
