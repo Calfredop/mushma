@@ -1,7 +1,7 @@
 ---
 kind: task
 title: [bug] deploy-api.sh --run-job hangs after the job finishes: the silent ssh session dies
-status: To Do
+status: Done
 priority: medium
 complexity: simple
 ---
@@ -17,3 +17,5 @@ Steps:
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+
+- [ ] Human test: Push main (commit 03ef252), then run the "Deploy API" gavin tool with run_job=yes: the daily job's step-log lines should stream while it runs, and the run should end in "server: done", the smoke test and the rules_version check (the job can take up to an hour).
