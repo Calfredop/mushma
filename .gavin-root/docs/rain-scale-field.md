@@ -290,6 +290,20 @@ scales each source with its own factor in the same way.
 - Train backtest: only 3 porcini and 4 chanterelle presences, so it says nothing either way.
   Porcini `auc_local` is 0.46 before and after; chanterelles 0.60 and 0.56.
 
+**Tuscany, on the server** (2026-10-05). Tuscany's history is `era5_seamless`, so it now takes the
+CDS ratio. The backtest was re-run on the deployed fit (`backtest/tuscany/cds-field-holdout`,
+`cds-field-train`) and compared with the 2026-10-01 field fitted on `era5_seamless`. Figures are
+model, all seasons, `auc_local` / `auc_time_effort`:
+
+| | hold-out, seamless field | hold-out, CDS field | train, seamless field | train, CDS field |
+|---|---|---|---|---|
+| porcini | 0.512 / 0.606 | 0.524 / 0.604 | 0.455 / 0.657 | 0.461 / 0.658 |
+| gallinacci | 0.564 / 0.597 | 0.560 / 0.595 | 0.502 / 0.566 | 0.506 / 0.562 |
+| ovoli | 0.654 / 0.361 | 0.654 / 0.420 | 0.549 / 0.570 | 0.553 / 0.569 |
+
+There is no drop. Every change is within the noise of the 35 hold-out sightings, so the Tuscan
+tuning stands.
+
 ## Known limits
 
 - **Sicily rests on one half-season** (June–November 2019): `api.weather.sias` reads June 2019 to

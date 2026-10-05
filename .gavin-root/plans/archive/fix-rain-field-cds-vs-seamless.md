@@ -1,6 +1,7 @@
 ---
+order: 8192
 title: [model] Rain field: fit against the source each region scores (CDS vs era5_seamless)
-status: In Progress
+status: Done
 priority: medium
 complexity: moderate
 ---
@@ -28,9 +29,12 @@ The national rain field (`config/rain_scale_field.csv`) is fitted on gauge/reana
 - [x] Refit, re-run `rain_field borders`, then re-score and backtest Sicily first (the largest gap).
   - [x] `borders --before HEAD`: CDS rows move −11 % (Lombardia–Trentino, 2,600 m) to +4 %, most within ±5 %; no steps.
   - [x] Sicily on the CDS fit (`cds-field`): sanity 12/14 (the October 2020 near-tie flips, 0.500 vs 0.529), window means −3 to −36 % (median −7 %), backtest of 3–4 presences says nothing. In the doc.
-- [ ] Commit (code, config, both fitted CSVs, doc, card).
-- [ ] Deploy and re-score every region on the server. Each region's normals must be rebuilt first (`history update` does it), so they record their source; until then they count as `era5_seamless` and a CDS region's percent-of-normal would be off by its ratio.
-- [ ] Re-run the Tuscan backtest (the field card's open item; Tuscan rain moves again here).
+- [x] Commit (code, config, both fitted CSVs, doc, card): `f19ec36`.
+- [x] Deploy and re-score every region on the server. Each region's normals must be rebuilt first (`history update` does it), so they record their source; until then they count as `era5_seamless` and a CDS region's percent-of-normal would be off by its ratio.
+  - Deployed 2026-10-05; the daily job re-scored all 20 regions' served window (through 2026-10-12) between 12:38 and 12:52 UTC. Every region's `/status` rules version matches `rules_version(region)` at `f19ec36` (Tuscany `48487f826584`, Sicily `b93870c5e2d2`). History before the served window was not re-scored.
+- [x] Re-run the Tuscan backtest (the field card's open item; Tuscan rain moves again here).
+  - Server, 2026-10-05 (`backtest/tuscany/cds-field-holdout`, `cds-field-train`), model, all seasons, `auc_local` / `auc_time_effort`, against the 2026-10-01 seamless field (`rain-field-*`): hold-out porcini 0.524 / 0.604 (was 0.512 / 0.606), gallinacci 0.560 / 0.595 (0.564 / 0.597), ovoli 0.654 / 0.420 (0.654 / 0.361); train porcini 0.461 / 0.658 (0.455 / 0.657), gallinacci 0.506 / 0.562 (0.502 / 0.566), ovoli 0.553 / 0.569 (0.549 / 0.570). No drop; within the noise of 35 hold-out sightings. No re-tuning.
+- [ ] Re-score every region's history on the CDS fit (server, transient unit `mushma-rescore`, script `scratchpad/rescore-cds-remote.sh` of session 18c35117, started 2026-10-05 13:42 UTC): per region, normals → `pipeline score --no-factors` 2016 to today −7 → `history.build update` → `bump_region`.
 - [x] Decision: era5_seamless rain turned out to be coarse ERA5 (2x2 blocks), so the per-node CDS ratio adds those blocks to CDS history. Flip the fit to CDS and give era5_seamless rows a CDS/seamless ratio, or ship the current version?
   Options: A) Flip: fit gauges against CDS (recommended) B) Ship the current seamless-based version
   Answer (2026-10-03): Flip: fit gauges against CDS (recommended)

@@ -1,4 +1,5 @@
 ---
+order: 5120
 kind: task
 title: [bug] deploy-api.sh --run-job hangs after the job finishes: the silent ssh session dies
 status: Done
