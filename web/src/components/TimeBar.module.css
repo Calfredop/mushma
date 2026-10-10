@@ -10,13 +10,14 @@
   min-width: 0;
 }
 
-.row > :last-child {
+.row > [role='radiogroup'] {
   flex: 1;
   min-width: 0;
 }
 
 .play,
 .calendar,
+.expand,
 .bar,
 .picker {
   composes: glass from global;
@@ -30,6 +31,20 @@
   width: 3.25rem;
   border: 0;
   color: var(--humus);
+}
+
+.expand {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  border: 0;
+  color: var(--humus);
+}
+
+.expand[aria-expanded='true'] {
+  background: var(--humus);
+  color: var(--carta);
 }
 
 .play {

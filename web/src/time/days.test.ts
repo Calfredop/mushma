@@ -8,7 +8,12 @@ import {
   formatDayLong,
   formatDayMonth,
   formatMonth,
+  formatMonthYear,
   formatUpdatedAt,
+  monthGrid,
+  monthOf,
+  shiftMonth,
+  weekdayInitials,
   sameDayLastYear,
   todayInRome,
 } from './days'
@@ -83,5 +88,36 @@ describe('sameDayLastYear', () => {
   it('steps back a year, and 29 February lands on the 28th', () => {
     expect(sameDayLastYear('2026-09-18')).toBe('2025-09-18')
     expect(sameDayLastYear('2024-02-29')).toBe('2023-02-28')
+  })
+})
+
+describe('month calendar', () => {
+  it('lays a month out in Monday-first weeks, padding with nulls', () => {
+    // 1 October 2026 is a Thursday; the 31st a Saturday.
+    const grid = monthGrid('2026-10')
+    expect(grid).toHaveLength(35)
+    expect(grid.slice(0, 4)).toEqual([null, null, null, '2026-10-01'])
+    expect(grid[33]).toBe('2026-10-31')
+    expect(grid[34]).toBeNull()
+  })
+
+  it('starts on the first cell when the month starts on a Monday', () => {
+    // February 2027 starts on a Monday and has exactly four weeks.
+    const grid = monthGrid('2027-02')
+    expect(grid).toHaveLength(28)
+    expect(grid[0]).toBe('2027-02-01')
+    expect(grid[27]).toBe('2027-02-28')
+  })
+
+  it('moves between months across years', () => {
+    expect(monthOf('2026-10-10')).toBe('2026-10')
+    expect(shiftMonth('2026-12', 1)).toBe('2027-01')
+    expect(shiftMonth('2026-01', -1)).toBe('2025-12')
+  })
+
+  it('names a month with its year and the weekdays from Monday', () => {
+    expect(formatMonthYear('2026-10', 'it-IT')).toBe('ottobre 2026')
+    expect(weekdayInitials('it-IT')).toEqual(['L', 'M', 'M', 'G', 'V', 'S', 'D'])
+    expect(weekdayInitials('en-GB')).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S'])
   })
 })

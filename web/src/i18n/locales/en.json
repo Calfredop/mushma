@@ -80,7 +80,13 @@
     "forecastDay": "{{date}}, forecast",
     "observedDay": "{{date}}, observed data",
     "previous": "Earlier days",
-    "next": "Later days"
+    "next": "Later days",
+    "calendar": "Calendar",
+    "expand": "Show the calendar",
+    "collapse": "Hide the calendar",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "horizon": "Daily forecast until {{date}}: further ahead there is only the trend, in the Outlook."
   },
   "map": {
     "label": "Map of conditions scores {{where}}",

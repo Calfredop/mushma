@@ -1,0 +1,132 @@
+.calendar {
+  composes: glass from global;
+  display: grid;
+  gap: var(--space-2);
+  justify-self: end;
+  width: 100%;
+  max-width: 22rem;
+  padding: var(--space-2);
+  border-radius: var(--radius-l);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.title {
+  flex: 1;
+  margin: 0;
+  color: var(--humus);
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.title::first-letter {
+  text-transform: uppercase;
+}
+
+.nav {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--humus);
+}
+
+.nav:hover {
+  background: rgb(28 33 29 / 6%);
+}
+
+.nav:disabled {
+  color: rgb(28 33 29 / 25%);
+  background: transparent;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.weekday {
+  color: var(--felce);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* The same marks as the date strip: today ringed, forecast days hatched, the chosen day inked. */
+.day {
+  position: relative;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--humus);
+  font-family: var(--font-data);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  isolation: isolate;
+}
+
+.day:hover:not(:disabled) {
+  border-color: var(--rule);
+}
+
+.day[data-kind='forecast']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--hatch);
+  opacity: 0.55;
+}
+
+.day[data-kind='today'] {
+  border-color: var(--humus);
+}
+
+.day[aria-pressed='true'] {
+  background: var(--humus);
+  border-color: var(--humus);
+  color: var(--carta);
+}
+
+.day[aria-pressed='true'][data-kind='forecast']::before {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgb(248 250 246 / 42%) 0 1.5px,
+    transparent 1.5px 5px
+  );
+  opacity: 1;
+}
+
+/* Beyond the daily forecast (or before the history): drawn, faint, not pickable. */
+.day:disabled {
+  color: rgb(28 33 29 / 28%);
+}
+
+.day:disabled::before {
+  display: none;
+}
+
+.horizon {
+  margin: 0;
+  padding: 0 var(--space-1);
+  color: var(--felce);
+  font-size: var(--text-caption);
+  line-height: 1.35;
+}

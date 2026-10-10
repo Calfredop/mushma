@@ -39,14 +39,18 @@ export function daysBetween(from: IsoDate, to: IsoDate): number {
   return Math.round((toUtc(to).getTime() - toUtc(from).getTime()) / MS_PER_DAY)
 }
 
+/** Which side of today a day falls on, from its offset in days. */
+export function dayKind(offset: number): DayKind {
+  return offset < 0 ? 'past' : offset === 0 ? 'today' : 'forecast'
+}
+
 export function dateWindow(
   today: IsoDate,
   { pastDays, forecastDays }: { pastDays: number; forecastDays: number },
 ): WindowDay[] {
   const days: WindowDay[] = []
   for (let offset = -pastDays; offset <= forecastDays; offset++) {
-    const kind: DayKind = offset < 0 ? 'past' : offset === 0 ? 'today' : 'forecast'
-    days.push({ date: addDays(today, offset), offset, kind })
+    days.push({ date: addDays(today, offset), offset, kind: dayKind(offset) })
   }
   return days
 }
@@ -121,6 +125,48 @@ export function formatMonth(
   return new Intl.DateTimeFormat(locale, { month: width, timeZone: 'UTC' })
     .format(toUtc(date))
     .replace('.', '')
+}
+
+/** A calendar month, `YYYY-MM`. */
+export type IsoMonth = string
+
+export function monthOf(date: IsoDate): IsoMonth {
+  return date.slice(0, 7)
+}
+
+export function shiftMonth(month: IsoMonth, months: number): IsoMonth {
+  const [year, index] = month.split('-').map(Number)
+  const total = year * 12 + (index - 1) + months
+  return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}`
+}
+
+/** A month's days in Monday-first weeks, with `null` before the 1st and after the last day. */
+export function monthGrid(month: IsoMonth): (IsoDate | null)[] {
+  const first = `${month}-01`
+  const length = daysBetween(first, `${shiftMonth(month, 1)}-01`)
+  const lead = (toUtc(first).getUTCDay() + 6) % 7
+  const cells: (IsoDate | null)[] = Array.from({ length: lead }, () => null)
+  for (let day = 0; day < length; day++) cells.push(addDays(first, day))
+  while (cells.length % 7 !== 0) cells.push(null)
+  return cells
+}
+
+/** A month with its year, for a calendar's title: "ottobre 2026". */
+export function formatMonthYear(month: IsoMonth, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(toUtc(`${month}-01`))
+}
+
+/** The weekdays' initials from Monday, for a calendar's header row: L M M G V S D. */
+export function weekdayInitials(locale: string): string[] {
+  const format = new Intl.DateTimeFormat(locale, { weekday: 'narrow', timeZone: 'UTC' })
+  // 1 January 2001 was a Monday.
+  return Array.from({ length: 7 }, (_, day) =>
+    format.format(toUtc(addDays('2001-01-01', day))),
+  )
 }
 
 /** The same calendar day a year earlier; 29 February becomes the 28th. */

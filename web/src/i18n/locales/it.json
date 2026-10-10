@@ -80,7 +80,13 @@
     "forecastDay": "{{date}}, previsione",
     "observedDay": "{{date}}, dati osservati",
     "previous": "Giorni precedenti",
-    "next": "Giorni successivi"
+    "next": "Giorni successivi",
+    "calendar": "Calendario",
+    "expand": "Mostra il calendario",
+    "collapse": "Nascondi il calendario",
+    "previousMonth": "Mese precedente",
+    "nextMonth": "Mese successivo",
+    "horizon": "Previsione giornaliera fino a {{date}}: più avanti c'è solo la tendenza, nelle Prospettive."
   },
   "map": {
     "label": "Mappa dell'indice delle condizioni {{where}}",

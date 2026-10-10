@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { TimeBar } from './TimeBar'
@@ -39,6 +39,65 @@ describe('TimeBar', () => {
       screen.getByRole('button', { name: 'Stesso giorno, un anno prima' }),
     )
     expect(onDate).toHaveBeenLastCalledWith('2025-09-18')
+  })
+
+  it('expands the date strip into a month calendar, bounded by the history and the forecast', async () => {
+    const onDate = vi.fn()
+    render(<TimeBar {...props} onDate={onDate} />)
+    const toggle = screen.getByRole('button', { name: 'Mostra il calendario' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByRole('group', { name: 'Calendario' })).not.toBeInTheDocument()
+
+    await userEvent.click(toggle)
+    const calendar = screen.getByRole('group', { name: 'Calendario' })
+    expect(within(calendar).getByText('settembre 2026')).toBeInTheDocument()
+    expect(
+      within(calendar).getByRole('button', {
+        name: 'venerdì 18 settembre, dati osservati',
+      }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    // Daily scores reach today + 7; later days are only an outlook, so they can't be picked.
+    expect(
+      within(calendar).getByRole('button', { name: 'venerdì 25 settembre, previsione' }),
+    ).toBeEnabled()
+    expect(
+      within(calendar).getByRole('button', { name: 'sabato 26 settembre, previsione' }),
+    ).toBeDisabled()
+    expect(within(calendar).getByText(/fino a venerdì 25 settembre/)).toBeInTheDocument()
+    expect(
+      within(calendar).getByRole('button', { name: 'Mese successivo' }),
+    ).toBeDisabled()
+
+    // A strip day keeps the calendar open, so days can be compared.
+    await userEvent.click(
+      within(calendar).getByRole('button', { name: 'martedì 22 settembre, previsione' }),
+    )
+    expect(onDate).toHaveBeenLastCalledWith('2026-09-22')
+    expect(calendar).toBeInTheDocument()
+
+    // An older day is a replay: it goes on the map and the calendar folds away.
+    await userEvent.click(
+      within(calendar).getByRole('button', { name: 'Mese precedente' }),
+    )
+    expect(within(calendar).getByText('agosto 2026')).toBeInTheDocument()
+    await userEvent.click(
+      within(calendar).getByRole('button', {
+        name: 'mercoledì 12 agosto, dati osservati',
+      }),
+    )
+    expect(onDate).toHaveBeenLastCalledWith('2026-08-12')
+    expect(screen.queryByRole('group', { name: 'Calendario' })).not.toBeInTheDocument()
+  })
+
+  it('stops the calendar at the first day of the history', async () => {
+    render(<TimeBar {...props} historyStart="2026-09-10" />)
+    await userEvent.click(screen.getByRole('button', { name: 'Mostra il calendario' }))
+    expect(screen.getByRole('button', { name: 'Mese precedente' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'mercoledì 9 settembre, dati osservati' }),
+    ).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: 'Nascondi il calendario' }))
+    expect(screen.queryByRole('group', { name: 'Calendario' })).not.toBeInTheDocument()
   })
 
   it('steps through a replayed day and goes back to today', async () => {

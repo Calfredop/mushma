@@ -9,6 +9,7 @@ import {
   type IsoDate,
   sameDayLastYear,
 } from '../time/days'
+import { DateCalendar } from './DateCalendar'
 import { DateStrip } from './DateStrip'
 import { CalendarIcon, ChevronIcon, CloseIcon, PauseIcon, PlayIcon } from './icons'
 import styles from './TimeBar.module.css'
@@ -29,7 +30,10 @@ interface Props {
   playback?: { playing: boolean; onToggle: () => void; onTouch: () => void }
 }
 
-/** Which day (or season) the map shows: the date strip, a replayed past day, or a season. */
+/**
+ * Which day (or season) the map shows: the date strip (which a chevron opens up into a month
+ * calendar), a replayed past day, or a season.
+ */
 export function TimeBar({
   today,
   date,
@@ -44,6 +48,7 @@ export function TimeBar({
   const { t, i18n } = useTranslation()
   const locale = intlLocale(i18n.resolvedLanguage as Language)
   const [picking, setPicking] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const [draft, setDraft] = useState('')
   const yesterday = addDays(today, -1)
 
@@ -56,6 +61,19 @@ export function TimeBar({
   const openPicker = () => {
     setDraft(date < today ? date : '')
     setPicking((open) => !open)
+    setExpanded(false)
+  }
+
+  const toggleCalendar = () => {
+    setExpanded((open) => !open)
+    setPicking(false)
+  }
+
+  // A day on the strip keeps the calendar open to compare days; an older one is a replay, which
+  // has its own bar, so the calendar folds away.
+  const pickFromCalendar = (value: IsoDate) => {
+    onDate(value)
+    if (daysBetween(today, value) < -window.pastDays) setExpanded(false)
   }
 
   // A typed date is only a draft: each keystroke can already make a valid date (day first, in
@@ -186,6 +204,16 @@ export function TimeBar({
   return (
     <div className={styles.stack}>
       {picker}
+      {expanded && (
+        <DateCalendar
+          today={today}
+          value={date}
+          window={window}
+          historyStart={historyStart}
+          onChange={pickFromCalendar}
+          onTouch={playback?.onTouch}
+        />
+      )}
       <div className={styles.row}>
         {playback && (
           <button
@@ -214,6 +242,15 @@ export function TimeBar({
           onChange={onDate}
           onTouch={playback?.onTouch}
         />
+        <button
+          type="button"
+          className={styles.expand}
+          aria-label={t(expanded ? 'date.collapse' : 'date.expand')}
+          aria-expanded={expanded}
+          onClick={toggleCalendar}
+        >
+          <ChevronIcon direction={expanded ? 'down' : 'up'} />
+        </button>
       </div>
     </div>
   )
