@@ -1,3 +1,4 @@
+import { inflateSync } from 'node:zlib'
 import { describe, expect, it } from 'vitest'
 import {
   CLOUD_OPACITY,
@@ -195,8 +196,7 @@ describe('EMPTY_CLOUD_DATA_URL', () => {
     expect(idatStart).toBeGreaterThan(0)
 
     const compressedData = buffer.slice(idatStart, idatStart + idatLength)
-    const zlib = require('zlib')
-    const decompressed = zlib.inflateSync(compressedData)
+    const decompressed = inflateSync(compressedData)
 
     // Image data: filter byte (0) + RGBA bytes (0,0,0,0)
     expect(decompressed.length).toBe(5)
